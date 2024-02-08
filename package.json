@@ -1,0 +1,89 @@
+{
+    "name": "edurange3",
+    "version": "1.0.0",
+    "description": "EDURange",
+    "scripts": {
+      "build": "NODE_ENV=production webpack --progress --colors -p && npm run flask-static-digest",
+      "start": "concurrently -n \"FLASK,CELERY,FLOWER,WEBSSH,CHATSERVER\" -c \"bgBlue.bold,bgMagenta.bold,bgGreen.bold,bgRed.bold,bgCyan.bold,bgYellow.bold\" \"npm run flask-server\" \"celery -A edurange_refactored.tasks worker -B -E -f celery.log -l DEBUG\" \"celery -A edurange_refactored.tasks --broker=redis://localhost:6379/0 flower --port=5555\" \"node webssh2/app/index.js\" \"node edurange_refactored/chat_server/chat_server.js\"",
+      "webpack-watch": "NODE_ENV=debug webpack --mode development --watch",
+      "flask-server": "flask run --host=0.0.0.0",
+      "flask-static-digest": "flask digest compile",
+      "lint": "eslint \"assets/js/*.js\""
+    },
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/coojac09/edurange_refactored.git"
+    },
+    "author": "Jack Cook",
+    "license": "MIT",
+    "engines": {
+      "node": ">=14"
+    },
+    "browser": {
+      "fs": false
+    },
+    "bugs": {
+      "url": "https://github.com/coojac09/edurange_refactored/issues"
+    },
+    "homepage": "https://github.com/coojac09/edurange_refactored#readme",
+    "dependencies": {
+      "@fortawesome/fontawesome-free": "^6.4.2",
+      "axios": "^1.4.0",
+      "bootstrap": "^4.6.2",
+      "cidr-matcher": "^2.1.1",
+      "cors": "^2.8.5",
+      "dotenv": "^16.0.2",
+      "express": "^4.17.1",
+      "express-session": "^1.17.1",
+      "font-awesome": "^4.7.0",
+      "fs": "^0.0.1-security",
+      "jquery": "^3.5.1",
+      "jsx": "^0.9.89",
+      "morgan": "^1.10.0",
+      "nanoid": "^4.0.2",
+      "npm": "^8.5.1",
+      "path": "^0.12.7",
+      "pg": "^8.11.3",
+      "popper.js": "^1.15.0",
+      "react": "^18.2.0",
+      "react-bootstrap": "^2.8.0",
+      "react-dom": "^18.2.0",
+      "react-icons": "^4.10.1",
+      "react-router-dom": "^6.14.2",
+      "redis": "^3.0.2",
+      "serve-favicon": "^2.5.0",
+      "socket.io": "^4.7.2",
+      "socket.io-client": "^4.7.2",
+      "ssh2": "^0.8.9",
+      "validator": "^13.5.2",
+      "xterm": "^5.2.1",
+      "xterm-addon-fit": "^0.7.0"
+    },
+    "devDependencies": {
+      "@babel/core": "^7.12.3",
+      "@babel/helper-call-delegate": "^7.12.1",
+      "@babel/preset-env": "^7.18.6",
+      "@babel/preset-react": "^7.18.6",
+      "@json-editor/json-editor": "^2.5.1",
+      "babel-eslint": "^10.1.0",
+      "babel-loader": "^8.2.1",
+      "concurrently": "^5.2.0",
+      "css-loader": "^3.5.3",
+      "eslint": "^6.2.2",
+      "eslint-config-airbnb-base": "^14.2.1",
+      "eslint-plugin-import": "^2.22.1",
+      "expose-loader": "^1.0.1",
+      "file-loader": "^5.1.0",
+      "install": "^0.13.0",
+      "less": "^3.9.0",
+      "less-loader": "^5.0.0",
+      "mini-css-extract-plugin": "^0.9.0",
+      "nodemon": "^2.0.19",
+      "raw-loader": "^4.0.2",
+      "read-config-ng": "^3.0.7",
+      "url-loader": "^3.0.0",
+      "webpack": "^4.46.0",
+      "webpack-cli": "^3.3.2"
+    }
+  }
+  
