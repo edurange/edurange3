@@ -1,0 +1,88 @@
+*.py[cod]
+
+# C extensions
+*.so
+
+# Packages
+*.egg
+*.egg-info
+build
+eggs
+parts
+bin
+var
+sdist
+develop-eggs
+.installed.cfg
+lib
+lib64
+
+# Installer logs
+pip-log.txt
+
+# Unit test / coverage reports
+.coverage
+.tox
+nosetests.xml
+
+# Translations
+*.mo
+
+# Mr Developer
+.mr.developer.cfg
+.project
+.pydevproject
+.notes
+.vscode/
+
+# Complexity
+output/*.html
+output/*/index.html
+
+# Sphinx
+docs/_build
+.webassets-cache
+
+# Virtualenvs
+env/
+
+# npm
+/node_modules/
+/edurange_refactored/nodejs/node_modules
+
+# webpack-built files
+/edurange_refactored/static/build/
+
+# Configuration
+.env
+
+# Development database
+*.db
+edurange_refactored/static/cache_manifest.json
+.idea/
+
+# JWT Generator
+edurange_refactored/templates/utils/.keys/
+package-lock.json
+
+# Directories
+data/tmp/
+logs/
+log_analysis/
+migrations/
+
+# Files
+.csv
+.DS_Store
+*.info
+*.tfstate
+npm-debug.log
+dump.rdb
+celerybeat-schedule
+celery.log
+assets/js/.Rhistory
+assets/css/.Rhistory
+
+
+.notes
+terraform*.zip*
