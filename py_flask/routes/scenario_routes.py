@@ -1,7 +1,7 @@
 """Student View API routes."""
 
-from edurange_refactored.extensions import db, csrf_protect
-from edurange_refactored.user.models import (
+from py_flask.config.extensions import db, csrf_protect
+from py_flask.db.models import (
     GroupUsers, 
     ScenarioGroups, 
     Scenarios, 
@@ -10,13 +10,11 @@ from edurange_refactored.user.models import (
     StudentGroups,  
 )
 import json
-from edurange_refactored.scenario_utils import (
+from py_flask.utils.scenario_utils import (
      identify_state
 )
-from edurange_refactored.form_utils import process_request
-# from edurange_refactored.utils import bashAnswer,  questionReader
-from edurange_refactored.role_utils import get_roles, scenario_exists, student_has_access
-from edurange_refactored.user.forms import scenarioResponseForm
+# from py_flask.utils import bashAnswer,  questionReader
+# from py_flask.utils.role_utils import get_roles, scenario_exists, student_has_access
 from flask import (
     Blueprint,
     request,
@@ -24,8 +22,8 @@ from flask import (
     current_app,
     g, ## see note
 )
-from edurange_refactored.flask.modules.utils.auth_utils import jwt_and_csrf_required
-from edurange_refactored.flask.modules.utils.guide_utils import (
+from py_flask.utils.auth_utils import jwt_and_csrf_required
+from py_flask.utils.guide_utils import (
     getContent, 
     getScenarioMeta,
     evaluateResponse

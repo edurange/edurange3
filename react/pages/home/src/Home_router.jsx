@@ -11,18 +11,18 @@ import Register from './components/login/Register';
 import Logout from './components/login/Register';
 import Options_controller from '../options/src/Options_controller';
 import InfoRouter from '../info/src/Info_router';
-import HomeHead from './components/frame/head/HomeHead';
 import SessionKeeper from './SessionKeeper';
-import Dashboard_router from '../../dashboard/src/Dashboard_router';
-import HomeFoot from './components/frame/foot/HomeFoot';
-
+import HomeFoot from '../../../frame/foot/Frame_foot';
+import Scenarios_router from '../../scenarios/Scenarios_router';
+import Frame_head from '../../../frame/head/Frame_head';
+import InstructorDash from '../../instructor/InstructorDash';
 
 export const HomeRouterContext = React.createContext();
 
-const loginExpiry = (1000 * 60 * 60 * 1); // 1 hr in miliseconds
+const loginExpiry = (1000 * 60 * 60 * 1); // 1 hr in milliseconds
 
 function Home_router() {
-  
+
   ////HOOKS//////////////////////////////////////
   const [navName_state, set_navName_state] = useState('logout');
   const [clipboard_state, set_clipboard_state] = useState('');
@@ -33,12 +33,12 @@ function Home_router() {
   const navigate = useNavigate();
   ///////////////////////////////////////////////
 
-  function updateNav (newURL, newNavName) {
+  function updateNav(newURL, newNavName) {
     console.log('updating nav...');
     set_navName_state(newNavName);
     const newExpiry = (Date.now() + loginExpiry);
-    sessionStorage.setItem ('navName', JSON.stringify(newNavName));
-    sessionStorage.setItem ('loginExpiry', JSON.stringify(newExpiry));
+    sessionStorage.setItem('navName', JSON.stringify(newNavName));
+    sessionStorage.setItem('loginExpiry', JSON.stringify(newExpiry));
     navigate(newURL);
   };
 
@@ -51,17 +51,17 @@ function Home_router() {
 
       <HomeRouterContext.Provider value={{
         userData_state, set_userData_state,
-        login_state,    set_login_state,
-        navName_state,  set_navName_state,
+        login_state, set_login_state,
+        navName_state, set_navName_state,
         updateNav, loginExpiry,
         sideNav_isVisible_state, set_sideNav_isVisible_state,
         sideNav_isSmall_state, set_sideNav_isSmall_state,
         clipboard_state, set_clipboard_state
       }}>
 
-        <SessionKeeper/>
+        <SessionKeeper />
 
-        <HomeHead navToShow={navToShow} />
+        <Frame_head navToShow={navToShow} />
 
         <div id='edurange-content'>
           <div className='universal-content-outer'>
@@ -73,13 +73,15 @@ function Home_router() {
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
                   <Route path="/logout" element={<Logout />} />
-                  <Route path="/options/*" element={<Options_controller/>} />
+                  <Route path="/options/*" element={<Options_controller />} />
                   <Route path="/info/*" element={<InfoRouter />} />
-                  <Route path="/dashboard/*" element={
+                  <Route path="/scenarios/*" element={
                     <LoggedIn_context>
-                      <Dashboard_router />
+                      <Scenarios_router />
                     </LoggedIn_context>
                   } />
+
+                  <Route path="/instructor/*" element={<InstructorDash />} />
                 </Routes>
 
               </div>

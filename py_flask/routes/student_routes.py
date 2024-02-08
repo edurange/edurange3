@@ -1,9 +1,7 @@
 
 from flask_login import logout_user
-from edurange_refactored.extensions import db, csrf_protect
-from edurange_refactored.user.models import (
-    User
-)
+from py_flask.config.extensions import db, csrf_protect
+from py_flask.db.models import User
 from flask import (
     Blueprint,
     request,
@@ -12,9 +10,9 @@ from flask import (
     abort,
     g, # see note
 )
-from edurange_refactored.flask.modules.utils.auth_utils import jwt_and_csrf_required
+from py_flask.utils.auth_utils import jwt_and_csrf_required
 
-from edurange_refactored.flask.modules.db.schemas.user_schemas import UpdateEmailSchema
+from py_flask.db.user_schemas import UpdateEmailSchema
 
 #######
 # The `g` object is a global flask object that lasts ONLY for the life of a single request.

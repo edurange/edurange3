@@ -6,7 +6,7 @@ import { navArrays } from '../../../../modules/nav/navItemsData';
 import Options_home from './Options_home';
 import Options_accessibility from './Options_accessibility';
 import Options_themes from './Options_themes';
-import SideNav from '../../../dashboard/src/sidenav/SideNav';
+import Frame_side from '../../../../frame/sidenav/Frame_side';
 
 
 function Options_controller() {
@@ -20,7 +20,7 @@ function Options_controller() {
     <div className='newdash-frame'>
       <div className='newdash-frame-carpet'>
 
-        < SideNav navDataToShow={navArrays.side_dash} />
+        < Frame_side navDataToShow={navArrays.side_dash} />
 
         <div className="newdash-infopane-frame">
           <div className='newdash-infopane-content'>

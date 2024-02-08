@@ -1,0 +1,13 @@
+
+.bubble-frame{
+    display:flex;
+}
+.bubble-carpet{
+    display:flex;
+}
+.bubble-items-container{
+    display:flex;
+}
+.bubble-item{
+    display:flex;
+}

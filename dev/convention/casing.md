@@ -36,19 +36,20 @@ lower_snake_case
   isActive remain `camelCase`
 
     e.g. `set_isActive_state`. Here `isActive` is the "real" variable, 
-    and `set_` and `_state` are flags.
+    and `set_` and `_state` are flags. (this mixed casing is sometimes known as chimeraCase)
 
-  - There is ofc no single way to do this, but I think you'll agree
-   `set_isActive` is more clear than `set_is_active`, by a lot...
+  - There is of course no single way to do this, but I think
+   `set_isActive` is more clear than `set_is_active`.
 
   - in other words, `_snake casing` in React is mostly for flags_ 
 
   - the main exception for that is `veryLongVariables_youNeedToBreakUp`, which 
   again use a combination of camel and snake
 
-  - in flask, `lower_snake_case_is_safest`
+  - in flask, `lower_snake_case_is_safest`, but camelCase, or even_chimeraCase 
+    is totally fine if it makes sense
 
-  - whenever making queries between React and Flask, `lower_snake_case_is_safest`
+  - whenever making requests/reponses between React and Flask, `lower_snake_case_is_safest`
 
   - when making urls (and therefore routes), `lower_snake_case_is_practically_required`
 

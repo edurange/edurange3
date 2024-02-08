@@ -15,7 +15,7 @@ from flask import (
     reference_col,
     relationship,
 )
-from flask.config.extensions import bcrypt
+from py_flask.config.extensions import bcrypt
 
 def generate_registration_code(size=8, chars=string.ascii_lowercase + string.digits):
     return "".join(random.choice(chars) for _ in range(size))

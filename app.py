@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
+
+# this was previously `autoapp.py`
+
 """Create an application instance."""
-from py_flask.config.app import create_app
+from py_flask.config.init import create_app
 from py_flask.config.extensions import db
 import os
 from datetime import datetime
@@ -14,16 +17,6 @@ from py_flask.db.models import StudentGroups, User
 app = create_app()
 app.app_context().push()
 db.create_all()
-
-
-# @app.context_processor
-# def utility_processor():
-#     def navigation(role, view=session.get('viewMode')):
-#         return generateNavElements(role, view)
-#     def print_in_console(message): # print a message to console in jinja
-#         print(str(message))
-#     return dict(navigation=navigation, mdebug=print_in_console)
-
 
 def create_admin():
     username = os.environ["FLASK_USERNAME"]
@@ -47,7 +40,6 @@ admin_exists = User.query.limit(1).all()
 
 if not admin_exists:
     create_admin()
-    
 
 group = StudentGroups.query.limit(1).all()
 admin = User.query.filter_by(username=os.environ["FLASK_USERNAME"]).first()

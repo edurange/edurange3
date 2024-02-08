@@ -1,4 +1,4 @@
-from edurange_refactored.extensions import db, csrf_protect
+from py_flask.config.extensions import db, csrf_protect
 
 from flask import (
     Blueprint,
@@ -8,7 +8,7 @@ from flask import (
     session,
     g, ## see note
 )
-from edurange_refactored.flask.modules.utils.auth_utils import jwt_and_csrf_required
+from utils.auth_utils import jwt_and_csrf_required
 
  # THESE ROUTES ARE CURRENTLY NOT ENABLED. 
  # To enable this routes file, uncomment the admin_routes lines in app.py

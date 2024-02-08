@@ -1,3 +1,5 @@
+
+# python (??? ... what is [cod]?)
 *.py[cod]
 
 # C extensions
@@ -25,17 +27,17 @@ pip-log.txt
 .tox
 nosetests.xml
 
-# Translations
+# Translations (???)
 *.mo
 
-# Mr Developer
+# Mr Developer (???)
 .mr.developer.cfg
 .project
 .pydevproject
 .notes
 .vscode/
 
-# Complexity
+# Complexity (???)
 output/*.html
 output/*/index.html
 
@@ -48,41 +50,43 @@ env/
 
 # npm
 /node_modules/
-/edurange_refactored/nodejs/node_modules
-
-# webpack-built files
-/edurange_refactored/static/build/
+npm-debug.log
 
 # Configuration
 .env
 
 # Development database
 *.db
-edurange_refactored/static/cache_manifest.json
 .idea/
 
-# JWT Generator
-edurange_refactored/templates/utils/.keys/
+# JWT Generator (???)
+/.keys/
 package-lock.json
 
 # Directories
+
+# terraform data (replace data/tmp)
 data/tmp/
+*.tfstate
+terraform*.zip*
+
+# logs
 logs/
 log_analysis/
+
+# ???
 migrations/
 
-# Files
+# celery
+celery.log
+celerybeat-schedule
+
+# other
 .csv
 .DS_Store
 *.info
-*.tfstate
-npm-debug.log
 dump.rdb
-celerybeat-schedule
-celery.log
 assets/js/.Rhistory
 assets/css/.Rhistory
 
-
 .notes
-terraform*.zip*

@@ -1,18 +1,17 @@
 from sqlalchemy.exc import SQLAlchemyError
 from flask_login import login_user, logout_user
-from edurange_refactored.user.models import User, StudentGroups, Scenarios, ScenarioGroups, GroupUsers
-from edurange_refactored.extensions import db, csrf_protect
+from db.models import User, StudentGroups, Scenarios, ScenarioGroups, GroupUsers
+from config.extensions import db, csrf_protect
 from flask import (
     Blueprint,
     request,
     jsonify,
     g
 )
-from edurange_refactored.flask.modules.utils.auth_utils import jwt_and_csrf_required, instructor_only
-from edurange_refactored.flask.modules.utils.instructor_utils import generateTestAccts
-from edurange_refactored.user.models import generate_registration_code as grc
-from edurange_refactored.user.forms import changeEmailForm
-from edurange_refactored.flask.modules.utils.scenario_interface import (
+from utils.auth_utils import jwt_and_csrf_required, instructor_only
+from utils.instructor_utils import generateTestAccts
+from db.models import generate_registration_code as grc
+from utils.scenario_interface import (
     list_all_scenarios, 
     scenario_create, 
     scenario_start,
