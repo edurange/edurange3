@@ -1,6 +1,6 @@
 from sqlalchemy.exc import SQLAlchemyError
 from flask_login import login_user, logout_user
-from config.extensions import db, csrf_protect
+from py_flask.config.extensions import db
 from flask import (
     Blueprint,
     request,
@@ -33,8 +33,6 @@ blueprint_edurange3_public = Blueprint(
     __name__, 
     url_prefix='/api')
 
-# disable legacy csrf_protect; enforced w/ @jwt_and_csrf_required()
-csrf_protect.exempt(blueprint_edurange3_public) 
 
 @blueprint_edurange3_public.errorhandler(418)
 def custom_error_handler(error):

@@ -3,9 +3,7 @@ import os
 
 from random import seed, getrandbits
 import yaml
-from flask import flash
 from py_flask.config.settings import KNOWN_SCENARIOS
-from py_flask.config.database import db
 
 # Import the scenario string, and set to 'known_types' as a list
 known_types = KNOWN_SCENARIOS

@@ -1,17 +1,17 @@
 from sqlalchemy.exc import SQLAlchemyError
 from flask_login import login_user, logout_user
-from db.models import User, StudentGroups, Scenarios, ScenarioGroups, GroupUsers
-from config.extensions import db, csrf_protect
+from py_flask.db.models import User, StudentGroups, Scenarios, ScenarioGroups, GroupUsers
+from py_flask.config.extensions import db
 from flask import (
     Blueprint,
     request,
     jsonify,
     g
 )
-from utils.auth_utils import jwt_and_csrf_required, instructor_only
-from utils.instructor_utils import generateTestAccts
-from db.models import generate_registration_code as grc
-from utils.scenario_interface import (
+from py_flask.utils.auth_utils import jwt_and_csrf_required, instructor_only
+from py_flask.utils.instructor_utils import generateTestAccts
+from py_flask.db.models import generate_registration_code as grc
+from py_flask.utils.scenario_interface import (
     list_all_scenarios, 
     scenario_create, 
     scenario_start,
@@ -45,8 +45,10 @@ from werkzeug.exceptions import abort
 #######
 
 db_ses = db.session
-blueprint_edurange3_instructor = Blueprint('edurange3_instructor',__name__, url_prefix='/api')
-csrf_protect.exempt(blueprint_edurange3_instructor) # disables legacy csrf_protect interference; enforced elsewhere
+blueprint_edurange3_instructor = Blueprint(
+    'edurange3_instructor',
+    __name__, 
+    url_prefix='/api')
 
 @blueprint_edurange3_instructor.errorhandler(418)
 def custom_error_handler(error):

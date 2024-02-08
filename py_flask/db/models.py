@@ -7,7 +7,7 @@ from sqlalchemy import inspect
 
 from flask_login import UserMixin
 
-from flask import (
+from py_flask.db.db_classes import (
     Column,
     Model,
     SurrogatePK,

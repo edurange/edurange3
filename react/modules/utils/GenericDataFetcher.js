@@ -11,7 +11,7 @@ function GenericDataFetcher() {
 
   const fetchData = async (fetchRoute, fetchBody) => {
     try {
-      const response = await fetch(`http://127.0.0.1:8008/edurange3/api/${fetchRoute}`, {
+      const response = await fetch(`http://127.0.0.1:8008/api/${fetchRoute}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',   // Sending JSON data
@@ -84,7 +84,7 @@ export default GenericDataFetcher;
 
 //   async function fetchData (fetchRoute, fetchBody) {
 //     try {
-//       const response = await fetch(`http://127.0.0.1:8008/edurange3/api/${fetchRoute}`, {
+//       const response = await fetch(`http://127.0.0.1:8008/api/${fetchRoute}`, {
 //         method: 'POST',
 //         headers: {
 //           'Content-Type': 'application/json',   // Sending JSON data

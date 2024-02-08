@@ -6,8 +6,8 @@
 # for most needs, db query filtering is a better fit than grabbing everything,
 # then filtering after.
 
-from edurange_refactored.extensions import db
-from edurange_refactored.user.models import (
+from py_flask.config.extensions import db
+from py_flask.db.models import (
     GroupUsers, 
     ScenarioGroups, 
     Scenarios, 

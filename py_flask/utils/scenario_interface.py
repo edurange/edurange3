@@ -1,19 +1,19 @@
 
 from celery import group
-from edurange_refactored.extensions import db
-from edurange_refactored.user.models import User, GroupUsers, StudentGroups, Scenarios
-from edurange_refactored.notification_utils import NotifyCapture
-from edurange_refactored.tasks_sister import (
+from py_flask.config.extensions import db
+from py_flask.db.models import User, GroupUsers, StudentGroups, Scenarios
+from py_flask.utils.notification_utils import NotifyCapture
+from py_scripts.tasks_sister import (
     create_scenario_task, 
     start_scenario_task, 
     stop_scenario_task, 
     update_scenario_task,
     destroy_scenario_task
     )
-from edurange_refactored.tasks import (
+from py_scripts.tasks import (
     CreateScenarioTask
     )
-from edurange_refactored.scenario_utils import gen_chat_names
+from py_flask.utils.scenario_utils import gen_chat_names
 from flask import jsonify, abort, g
 
 def scenario_create(scenario_type, scenario_name, studentGroup_name):

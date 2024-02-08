@@ -1,6 +1,6 @@
 """Student View API routes."""
 
-from py_flask.config.extensions import db, csrf_protect
+from py_flask.config.extensions import db
 from py_flask.db.models import (
     GroupUsers, 
     ScenarioGroups, 
@@ -13,7 +13,7 @@ import json
 from py_flask.utils.scenario_utils import (
      identify_state
 )
-# from py_flask.utils import bashAnswer,  questionReader
+# from py_flask.utils.general_utils import bashAnswer,  questionReader
 # from py_flask.utils.role_utils import get_roles, scenario_exists, student_has_access
 from flask import (
     Blueprint,
@@ -54,8 +54,10 @@ from py_flask.utils.guide_utils import (
 #######
 
 db_ses = db.session
-blueprint_edurange3_scenarios = Blueprint('edurange3_scenario', __name__, url_prefix='/edurange3/api')
-csrf_protect.exempt(blueprint_edurange3_scenarios) # enforced elsewhere
+blueprint_edurange3_scenarios = Blueprint(
+    'edurange3_scenario', 
+    __name__, 
+    url_prefix='/api')
 
 @blueprint_edurange3_scenarios.errorhandler(418)
 def custom_error_handler(error):

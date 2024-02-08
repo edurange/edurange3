@@ -11,7 +11,7 @@ at the moment, so plz bear with me. - Jonah (exoriparian)
 
 # These legacy Models may all find use w/ the new UI, in one form or another.  TBD.
 # Each relates directly to a table in the db
-from edurange_refactored.user.models import (
+from py_flask.db.models import (
     In use:
         User, 
         GroupUsers, 
@@ -25,7 +25,7 @@ from edurange_refactored.user.models import (
 
 # the utils will mostly be replaced with a (sometimes very minorly) changed version
 # new versions will mostly be in edurange_refactored.flask.modules.utils
-from edurange_refactored.utils import (
+from py_flask.utils.general_utils import (
     check_role_view, replaced by frontend validation and other role auth logic
     displayCorrectAnswers,  #DEV_TODO
     displayProgress,    #DEV_TODO

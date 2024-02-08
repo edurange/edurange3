@@ -23,13 +23,13 @@ blueprint_routing_sample = Blueprint(
     url_prefix='/api')
 
 ### very simple example (protected) route
-@blueprint_routing_sample.route("/edurange3/api/jwt_auth", methods=["POST"]) # DEV_ONLY
+@blueprint_routing_sample.route("/api/jwt_auth", methods=["POST"]) # DEV_ONLY
 @jwt_and_csrf_required
 def jwt_auth():
     decoded = g.decoded_jwt_token   # use this to get the decoded jwt token dict/object (use g.decoded_jwt_token, not the decode() method)
     return jsonify({"message": f"Welcome {decoded['sub']}"}) # the original jwt payload is stored in the ['sub'] property...in this case, the username.
 
-@blueprint_routing_sample.route("/edurange3/api/sample", methods=["POST"]) # DEV_ONLY
+@blueprint_routing_sample.route("/api/sample", methods=["POST"]) # DEV_ONLY
 @jwt_and_csrf_required
 def sample_route():
 

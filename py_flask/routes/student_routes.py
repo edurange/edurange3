@@ -1,6 +1,6 @@
 
 from flask_login import logout_user
-from py_flask.config.extensions import db, csrf_protect
+from py_flask.config.extensions import db
 from py_flask.db.models import User
 from flask import (
     Blueprint,
@@ -42,8 +42,6 @@ blueprint_edurange3_student = Blueprint(
     'edurange3_student', 
     __name__, 
     url_prefix='/api')
-
-csrf_protect.exempt(blueprint_edurange3_student) # disables legacy csrf_protect interference; enforced elsewhere
 
 @blueprint_edurange3_student.errorhandler(418)
 def custom_error_handler(error):

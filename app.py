@@ -11,7 +11,7 @@ from datetime import datetime
 from flask import session
 # from flask_login import current_user
 
-from flask.app import create_app
+# from app import create_app
 from py_flask.db.models import StudentGroups, User
 
 app = create_app()

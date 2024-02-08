@@ -1,4 +1,4 @@
-from py_flask.config.extensions import db, csrf_protect
+from py_flask.config.extensions import db
 
 from flask import (
     Blueprint,
@@ -8,7 +8,7 @@ from flask import (
     session,
     g, ## see note
 )
-from utils.auth_utils import jwt_and_csrf_required
+from py_flask.utils.auth_utils import jwt_and_csrf_required
 
  # THESE ROUTES ARE CURRENTLY NOT ENABLED. 
  # To enable this routes file, uncomment the admin_routes lines in app.py
@@ -38,7 +38,6 @@ from utils.auth_utils import jwt_and_csrf_required
 
 db_ses = db.session
 blueprint_edurange3_admin = Blueprint('edurange3_admin', __name__, url_prefix='/api')
-csrf_protect.exempt(blueprint_edurange3_admin) # csrf imposed elsewhere (see below)
 
 @blueprint_edurange3_admin.errorhandler(418)
 def custom_error_handler(error):

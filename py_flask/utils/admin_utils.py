@@ -5,8 +5,8 @@ import ast
 import docker
 from flask import abort
 
-from edurange_refactored.extensions import db
-from edurange_refactored.user.models import Scenarios, User, Responses
+from py_flask.config.extensions import db
+from py_flask.db.models import Scenarios, User, Responses
 
 path_to_key = os.path.dirname(os.path.abspath(__file__))
 

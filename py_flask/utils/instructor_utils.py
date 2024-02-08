@@ -6,10 +6,10 @@ import docker
 from flask import abort
 import string
 import random
-from ..utils.account_utils import register_user
+from py_flask.utils.account_utils import register_user
 
-from edurange_refactored.extensions import db
-from edurange_refactored.user.models import Scenarios, User, Responses, generate_registration_code
+from py_flask.config.extensions import db
+from py_flask.db.models import Scenarios, User, Responses, generate_registration_code
 
 path_to_key = os.path.dirname(os.path.abspath(__file__))
 

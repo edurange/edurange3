@@ -1,10 +1,10 @@
 
 from flask import abort
-from config.extensions import db, bcrypt
+from py_flask.config.extensions import db, bcrypt
+from py_flask.db.models import GroupUsers, ScenarioGroups, Scenarios, StudentGroups, User, Notification
 from flask_marshmallow import Marshmallow
 from marshmallow import ValidationError, validate, validates_schema
 from marshmallow.fields import String
-from db.models import GroupUsers, ScenarioGroups, Scenarios, StudentGroups, User, Notification
 ma = Marshmallow()
 db_ses = db.session
 

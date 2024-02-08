@@ -5,8 +5,8 @@ import ast
 import docker
 from flask import abort
 
-from edurange_refactored.extensions import db
-from edurange_refactored.user.models import Scenarios, User, Responses
+from py_flask.config.extensions import db
+from py_flask.db.models import Scenarios, User, Responses
 
 # Guide utils are functions that primarily populate and run the 
 # question & answer 'guide' that students see on the eduRange webpage (not the terminal ssh)

@@ -1,5 +1,5 @@
 
-from edurange_refactored.user.models import GroupUsers, StudentGroups, User
+from py_flask.db.models import GroupUsers, StudentGroups, User
 
 # account utils available to student (e.g. non-instructor) routes
 
