@@ -82,7 +82,7 @@ function InstructorDash() {
     <div className='newdash-frame'>
       <div className='newdash-frame-carpet'>
 
-        <Frame_side navToShow={'instructor_scenario_side'} />
+        <Frame_side navToShow={'side_scenarios_instructor'} />
         <div className="group-creation-container">
           <form onSubmit={handle_createGroup_submit}>
             <input

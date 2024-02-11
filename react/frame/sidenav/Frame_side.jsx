@@ -12,14 +12,15 @@ function Frame_side({navToShow}) {
     sideNav_isSmall_state
   } = useContext(HomeRouterContext);
 
-  navToShow = (navToShow) ? navToShow : navArrays.side_logout; 
+  // navToShow = (navToShow) ? navToShow : navArrays.side_logout; 
+  const myNav =  navArrays.side_scenarios_instructor
 
   if (!sideNav_isVisible_state) {return <></>}
     
   return (
         <div className='newdash-sidebar-frame'>
 
-          {navToShow.map((val, key) => {
+          {myNav.map((val, key) => {
             return (
               <div className='newdash-sidebar-row' key={nanoid(3)} onClick={() => updateNav(val.path, val.navStub)} >
                 <div className='newdash-sidebar-item'>

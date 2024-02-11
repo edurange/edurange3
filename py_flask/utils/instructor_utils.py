@@ -3,10 +3,12 @@ import os
 import yaml
 import ast
 import docker
-from flask import abort, jsonify
+from flask import abort, jsonify, g
 import string
 import random
 from py_flask.utils.auth_utils import register_user
+from py_flask.utils.auth_utils import jwt_and_csrf_required, instructor_only
+
 
 from py_flask.config.extensions import db
 from py_flask.database.models import (
@@ -79,7 +81,9 @@ def NotifyClear():
     #   - CREATE USER INFO FOR SCENARIO (ALLOW FOR UPDATING IN CASE STUDENT ACCT CREATED AFTER SCENARIO)
 
 
+@jwt_and_csrf_required
 def scenario_create(scenario_type, scenario_name, studentGroup_name):
+    
     db_ses = db.session
     owner_user_id = g.current_user_id
     print("CREATE REQ INFO: ",scenario_type, scenario_name, studentGroup_name)

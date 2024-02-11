@@ -162,7 +162,7 @@ export const navArrays = {
     side_dash_instructor:   [ home, instructor, options, account, logout ],
     top_dash_instructor:    [ jwt_test, instructor, home, options, account, logout, login ],
 //instructor-dashboard
-    side_scenarios_instructor:   [ home, students, groups, scenarios ],
+    side_scenarios_instructor:   [ home, instructor_users, scenarios ],
     top_scenarios_instructor:    [ jwt_test, home, options, account, logout, login ],
 
 };
