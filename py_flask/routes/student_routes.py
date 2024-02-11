@@ -1,7 +1,7 @@
 
 from flask_login import logout_user
 from py_flask.config.extensions import db
-from py_flask.db.models import User
+from py_flask.database.models import User
 from flask import (
     Blueprint,
     request,
@@ -12,7 +12,7 @@ from flask import (
 )
 from py_flask.utils.auth_utils import jwt_and_csrf_required
 
-from py_flask.db.user_schemas import UpdateEmailSchema
+from py_flask.database.user_schemas import UpdateEmailSchema
 
 #######
 # The `g` object is a global flask object that lasts ONLY for the life of a single request.

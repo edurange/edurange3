@@ -11,7 +11,7 @@ from flask import (
     g
 )
 
-from py_flask.db.models import User,GroupUsers, ScenarioGroups, Scenarios, StudentGroups,  Responses, Notification
+from py_flask.database.models import User,GroupUsers, ScenarioGroups, Scenarios, StudentGroups,  Responses, Notification
 from py_flask.config.extensions import db
 from py_flask.utils.auth_utils import jwt_and_csrf_required
 

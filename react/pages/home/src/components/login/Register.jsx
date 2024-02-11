@@ -19,15 +19,16 @@ function Register() {
         console.log('invoke sendRegistrationRequest()');
 
         try {
-            const response = await axios.post('/register',
+            const response = await axios.post('/api/register',
                 {
                     username: username_input,
-                    email: email_input,
                     password: password_input,
                     confirm_password: confirm_password_input,
-                    code: code_input // required; generated reference to user groupCode
+                    code: code_input,
+                    email: email_input
                 }
             );
+            console.log(response)
             const reg_response = response.data;
             const userData = response.data;
 
@@ -55,7 +56,6 @@ function Register() {
             console.error('Error:', error);
         };
     };
-
     const handleSubmit = event => {
         event.preventDefault();
         const username_input = event.target.elements.username.value;
@@ -65,55 +65,63 @@ function Register() {
         const email_input = event.target.elements.email.value;
         sendRegistrationRequest(username_input, email_input, password_input, confirm_password_input, code_input);
     };
-
+    const handleLoginNav_click = event => {
+        event.preventDefault();
+        updateNav('/login', `logged_out`);
+    };
 
     return (
-        <div className='edu3-login-container'>
+        <div className='registration-container'>
 
-            <h2 className='edu3-login-placard'>
-                <div className='edu3-login-placard-text'>
-                    Enter your credentials
+            <h2 className='registration-placard'>
+                <div className='registration-placard-text'>
+                    Enter new account info
                 </div>
             </h2>
 
-            <form className='edu3-login-submit-frame' onSubmit={handleSubmit}>
-                <div className='edu3-login-submit-row'>
+            <form className='registration-submit-frame' onSubmit={handleSubmit}>
+                
 
-                    <div className='edu3-login-submit-row-left'>
-                        <div className='edu3-login-submit-item'>
-                            <label className='edu3-login-prompt-text' htmlFor='username'>Username:</label>
-                            <input className='edu3-login-input-text' type='text' id='username' name='username' />
-                        </div>
-
-                        <div className='edu3-login-submit-item'>
-                            <label className='edu3-login-prompt-text' htmlFor='password'>Password:</label>
-                            <input className='edu3-login-input-text' type='password' id='password' name='password' />
-                        </div>
-                    </div>
-                    <div className='edu3-login-submit-row-left'>
-                        <div className='edu3-login-submit-item'>
-                            <label className='edu3-login-prompt-text' htmlFor='confirm_password'>Confirm Password:</label>
-                            <input className='edu3-login-input-text' type='password' id='confirm_password' name='confirm_password' />
-                        </div>
-
-                        <div className='edu3-login-submit-item'>
-                            <label className='edu3-login-prompt-text' htmlFor='email'>Email:</label>
-                            <input className='edu3-login-input-text' type='text' id='email' name='email' />
-                        </div>
-                        <div className='edu3-login-submit-item'>
-                            <label className='edu3-login-prompt-text' htmlFor='code'>Code:</label>
-                            <input className='edu3-login-input-text' type='text' id='code' name='code' />
-                        </div>
+                <div className='registration-submit-stack'>
+                    <div className='registration-submit-item'>
+                        <label className='registration-prompt-text' htmlFor='username'>Username:</label>
+                        <input className='registration-input-text' type='text' id='username' name='username' />
                     </div>
 
-                    <div className='edu3-login-submit-row-right'>
-                        <button className='edu3-login-button' type='submit'>
-                            {edurange_icons.user_check}
-                        </button>
+                    <div className='registration-submit-item'>
+                        <label className='registration-prompt-text' htmlFor='password'>Password:</label>
+                        <input className='registration-input-text' type='password' id='password' name='password' />
+                    </div>
+                
+                    <div className='registration-submit-item'>
+                        <label className='registration-prompt-text' htmlFor='confirm_password'>Confirm Password:</label>
+                        <input className='registration-input-text' type='password' id='confirm_password' name='confirm_password' />
+                    </div>
+                    
+                    <div className='edu3-login-submit-item'>
+                        <label className='registration-prompt-text' htmlFor='email'>Email:</label>
+                        <input className='registration-input-text' type='text' id='email' name='email' />
                     </div>
 
+                    <div className='registration-submit-item'>
+                        <label className='registration-prompt-text' htmlFor='code'>Code:</label>
+                        <input className='registration-input-text' type='text' id='code' name='code' />
+                    </div>
+                    <div className='registration-button-frame'>
+                        <div type='submit' className='registration-submit-clicker'>
+                            SUBMIT
+                            <button className='registration-button' type='submit'>
+                                {edurange_icons.user_check}
+                            </button>
+                        </div>
+                    </div>
                 </div>
+
+
             </form>
+            <div className='reg-redirect-clicker' onClick={handleLoginNav_click}>
+                Already have an acct?  Login here!
+            </div>
         </div>
     );
 };

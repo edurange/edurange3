@@ -9,7 +9,7 @@ to whatever we decide (or delete it).
 - Jonah / exoriparian
 
 edurange3
-  /flask
+  /py_flask
     /routes
       public etc
       user etc
@@ -20,29 +20,18 @@ edurange3
     /node_modules # react specific node modules
     /pages (react component 'zones', note more shallow structure)
       /home
-      /dashboard 
-        # In retrospect, we may not need this.  
-        #   students can go straight to /scenarios,
-        #   and instructors can go straight to their own scenario interface.
-        # From there, they still have access to account, options, etc.
-        # Unless there's some other major function that would be logically
-        #   seperate from the scenarios in the UI, 
-        #   then /dashboard is redundant and just causes directory bloat
       /scenarios
       /instructor
-        # arguably redundant, but because /scenarios (the student's UI)
-        #   is already quite busy with files and subdirs, as is this area,
-        #   I think it makes more sense to keep them separated for now.
     /entry (only contains index.html and entry.jsx, to load react initial script)
   /node 
     /node_modules # non-react node modules to support the socket server
     /ssh # (won't necessarily need subdirs for ssh & chat bc they both can run on same node server) 
     /chat
-  /docker
+  /dock
   /logging
   /algo (hint system, possibly mixed language)
-  /celery (does this make sense?)
-  /terraform
+  /py_celery (does this make sense?)
+  /tform
     /data?/tmp? # dynamic (terraform related) scen data moved from /scenarios into /terraform (?)
   /scenarios
     for more static scen data like scenario text, questions and answers, etc
@@ -52,6 +41,11 @@ edurange3
   /supervisord_programs? # maybe unncessesary / optional
 
   install.sh # keep in root?  
+  package.json
+  .gitignore
+  app.py
+  celery.log?
+  celerybeat-schedule? (can these be moved?)
 
   # loose python files should be moved into /flask or maybe /py_scripts
 

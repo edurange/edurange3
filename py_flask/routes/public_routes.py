@@ -7,11 +7,11 @@ from flask import (
     jsonify,
     g
 )
-from py_flask.db.models import User, StudentGroups, Scenarios, ScenarioGroups, GroupUsers
+from py_flask.database.models import User, StudentGroups, Scenarios, ScenarioGroups, GroupUsers
 from py_flask.utils.auth_utils import jwt_and_csrf_required, instructor_only, login_er3
 from py_flask.utils.instructor_utils import generateTestAccts
-from py_flask.utils.account_utils import register_user
-from py_flask.db.user_schemas import LoginSchema, RegistrationSchema
+from py_flask.utils.auth_utils import register_user
+from py_flask.database.user_schemas import LoginSchema, RegistrationSchema
 from werkzeug.exceptions import abort
 from flask import current_app
 import secrets
@@ -55,7 +55,7 @@ def login_edurange3():
     
     validated_user_dump = validation_schema.dump(vars(validated_user_obj))
     del validated_user_dump['password']   # remove pw hash from return obj
-    # - The first and only role check. [`role`] property is soon placed in jwt.
+    # - only db-query-based role check. [`role`] property is soon placed in jwt.
     # - Afterward, role value should be accessed from `g.current_user_role` 
     temp_role = "student"
 
@@ -65,12 +65,19 @@ def login_edurange3():
     del validated_user_dump['is_admin']
     
     validated_user_dump['role'] = temp_role
-    logged_in_return = login_er3(validated_user_dump, '/')
+
+    # PROCESS SEEMS FINE UNTIL HERE
+
+    logged_in_return = login_er3(validated_user_dump)
+    
+    # DOES NOT REACH THIS LINE
+    print("LOOKS LIKE WE MADE IT AGAIN! ")
     return logged_in_return
 
 @blueprint_edurange3_public.route("/register", methods=["POST"])
 def registration():
     
+    print("PRINT REQUEST JSON: ",request.json)
     validation_schema = RegistrationSchema()  # instantiate validation schema
     validated_data = validation_schema.load(request.json) # validate registration. reject if bad.
     

@@ -6,10 +6,9 @@ import { HomeRouterContext } from '../home/src/Home_router';
 import Scenario_controller from './guide/Scenario_controller';
 import Scenarios_home from './Scenarios_home';
 import Chat_Student from '../chat/student/Chat_Student';
-import Logout from '../home/src/components/logout/Logout';
-import Account from '../account/Account';
 import Notifications from '../notifications/Notifications';
-import JWT_Test from '../../frame/JWT_test';
+import { navArrays } from '../../modules/nav/navItemsData';
+import Frame_side from '../../frame/sidenav/Frame_side';
 
 export const ScenariosRouterContext = React.createContext();
 
@@ -66,7 +65,7 @@ function Scenarios_router() {
         <div className='newdash-frame'>
             <div className='newdash-frame-carpet'>
 
-                <SideNav navToShow={navToShow} smallMode={true} hiddenMode={false} />
+                <Frame_side navToShow={navToShow} smallMode={true} hiddenMode={false} />
 
                 <div className="newdash-infopane-frame">
                     <div className='newdash-infopane-content'>
@@ -83,10 +82,7 @@ function Scenarios_router() {
                                 <Route path="/:scenarioID" element={<Scenario_controller />} />
                                 <Route path="/:scenarioID/:pageID" element={<Scenario_controller />} />
                                 <Route path="/:scenarioID/chat" element={<Chat_Student />} />
-                                {/* <Route path="/:scenarioID/ssh" element={<SSHmodal />}/> */}
-                                <Route path="/jwt_test" element={<JWT_Test />} />
-                                <Route path="/logout" element={<Logout />} />
-                                <Route path="/account" element={<Account />} />
+
                                 <Route path="/notifications" element={<Notifications notifsArray={notifsArray_state} />} />
                             </Routes>
                         </ScenariosRouterContext.Provider>

@@ -1,7 +1,9 @@
 import os
 import shutil
 import json
-
+import csv
+from py_flask.config.extensions import db
+from py_flask.database.models import Scenarios
 
 def find_and_copy_template(s_type, c_name):
     path = '../../../scenarios/prod/' + s_type
@@ -179,3 +181,29 @@ def write_resource(address, name, s_type,
 
     with open(c_name + '.tf.json', 'w') as outfile:
         outfile.write(data)
+
+
+
+def readCSV(value, attribute):
+    if attribute == 'id':
+        sName = db.session.query(Scenarios.name).filter(Scenarios.id == value).first()[0]
+        sName = "".join(e for e in sName if e.isalnum())
+    else:
+        sName = value
+
+    fd = open(f"./data/tmp/{sName}/{sName}-history.csv")
+    reader = csv.reader(fd, delimiter="|", quotechar="%", quoting=csv.QUOTE_MINIMAL)
+
+    return [row for row in reader if len(row) == 8]
+
+
+def groupCSV(arr, keyIndex): # keyIndex - value in csv line to group by
+    dict = {}
+    for entry in arr:
+        key = str(entry[keyIndex].replace('-', ''))
+        if key in dict:
+            dict[key].append(entry)
+        else:
+            dict[key] = [entry]
+
+    return dict

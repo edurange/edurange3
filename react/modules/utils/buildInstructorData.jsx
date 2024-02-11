@@ -1,8 +1,8 @@
 
 // import React from 'react'
 import { nanoid } from 'nanoid'
-
 import { UserShell, UserGroupShell, ScenarioGroupShell, ScenarioShell } from '../shells/instructorData_shells';
+
 
 
 //////////
@@ -40,7 +40,7 @@ function assignUserRole(inputData) {
 function makeFirstPass(inputObj) {
 
     function processUsers(inputData) {
-        const inputUserArray = inputData.instructor_data[0];
+        const inputUserArray = inputData[0];
         const tempUserArray = [];
         tempUserArray.push(new UserShell());
         if (inputUserArray) {
@@ -66,7 +66,7 @@ function makeFirstPass(inputObj) {
     }
 
     function processScenarios(inputData) {
-        const inputScenarioArray = inputData.instructor_data[3];
+        const inputScenarioArray = inputData[3];
         const tempScenarioArray = [];
         tempScenarioArray.push(new ScenarioShell());
         if (inputScenarioArray) {
@@ -78,7 +78,7 @@ function makeFirstPass(inputObj) {
         return tempScenarioArray;
     };
     function processScenarioGroups(inputData) {
-        const inputScenarioGroupArray = inputData.instructor_data[4];
+        const inputScenarioGroupArray = inputData[4];
         const tempScenarioGroupArray = [];
         tempScenarioGroupArray.push(new ScenarioGroupShell());
         if (inputScenarioGroupArray) {
@@ -91,7 +91,7 @@ function makeFirstPass(inputObj) {
     };
 
     const processedUsers = processUsers(inputObj);
-    const processedUserGroups = processUserGroups(inputObj.instructor_data[1]);
+    const processedUserGroups = processUserGroups(inputObj[1]);
     const processedScenarios = processScenarios(inputObj);
     const processedScenarioGroups = processScenarioGroups(inputObj);
 
@@ -108,7 +108,7 @@ function makeFirstPass(inputObj) {
 function assignGroupsToUsers(firstPassObj, originalObj) {
 
     const users = originalObj[0];
-    const userGroupAssignments = originalObj.instructor_data[2];
+    const userGroupAssignments = originalObj[2];
 
     const outputObj = { ...firstPassObj };
 
@@ -131,7 +131,7 @@ function assignGroupsToUsers(firstPassObj, originalObj) {
 
 function assignUsersToGroups(firstPassObj, originalObj) {
     const outputObj = { ...firstPassObj };
-    const userGroupAssignments = originalObj.instructor_data[2];
+    const userGroupAssignments = originalObj[2];
 
     for (let assignment of userGroupAssignments) {
         const userId = assignment.user_id;
@@ -149,7 +149,7 @@ function assignUsersToGroups(firstPassObj, originalObj) {
 }
 
 function assignScenariosToGroups(newObject, inputObj) {
-    const scenarioGroupAssignments = inputObj.instructor_data[4];
+    const scenarioGroupAssignments = inputObj[4];
 
     const outputObj = { ...newObject };
 

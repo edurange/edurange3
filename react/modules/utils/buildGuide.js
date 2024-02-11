@@ -1,8 +1,9 @@
 
 // an "item" is a single reading or question
 
-import GuideQuestion from "../../guide/Q_and_A/GuideQuestion";
-import GuideReading from "../../guide/Q_and_A/GuideReading";
+import GuideQuestion from "../../pages/scenarios/guide/Q_and_A/GuideQuestion";
+import GuideReading from "../../pages/scenarios/guide/Q_and_A/GuideReading";
+
 
 // one or more grouped items make up a 'chapter'
 

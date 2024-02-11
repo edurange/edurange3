@@ -13,6 +13,7 @@ from py_flask.routes.scenario_routes import blueprint_edurange3_scenarios
 
 
 from py_scripts import commands
+from py_flask import database
 # from py_scripts import commands, public, user, tutorials, api
 
 from py_flask.config.extensions import (
@@ -25,7 +26,7 @@ from py_flask.config.extensions import (
     migrate,
     jwtman,
 )
-from py_flask.db.models import User
+from py_flask.database.models import User
 
 # check config object value
 def create_app(config_object="py_flask.config.settings"):
@@ -94,7 +95,7 @@ def register_shellcontext(app):
 
     def shell_context():
         """Shell context objects."""
-        return {"db": db, "User": db.models.User} # DEV_CHECK
+        return {"db": db, "User": database.models.User} # DEV_CHECK
 
     app.shell_context_processor(shell_context)
 

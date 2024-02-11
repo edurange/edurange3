@@ -12,7 +12,7 @@ from flask import session
 # from flask_login import current_user
 
 # from app import create_app
-from py_flask.db.models import StudentGroups, User
+from py_flask.database.models import StudentGroups, User
 
 app = create_app()
 app.app_context().push()

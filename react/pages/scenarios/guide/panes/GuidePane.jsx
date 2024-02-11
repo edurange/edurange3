@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { nanoid } from 'nanoid';
-import buildGuide from '../../modules/utils/buildGuide';
 import HomeChapter from '../Q_and_A/HomeChapter';
 import './GuidePane.css';
+import buildGuide from '../../../../modules/utils/buildGuide';
 
 function GuidePane({ guideContent, set_leftPane_state }) {
 

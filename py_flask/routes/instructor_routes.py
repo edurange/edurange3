@@ -1,6 +1,6 @@
 from sqlalchemy.exc import SQLAlchemyError
 from flask_login import login_user, logout_user
-from py_flask.db.models import User, StudentGroups, Scenarios, ScenarioGroups, GroupUsers
+from py_flask.database.models import User, StudentGroups, Scenarios, ScenarioGroups, GroupUsers
 from py_flask.config.extensions import db
 from flask import (
     Blueprint,
@@ -10,8 +10,8 @@ from flask import (
 )
 from py_flask.utils.auth_utils import jwt_and_csrf_required, instructor_only
 from py_flask.utils.instructor_utils import generateTestAccts
-from py_flask.db.models import generate_registration_code as grc
-from py_flask.utils.scenario_interface import (
+from py_flask.database.models import generate_registration_code as grc
+from py_flask.utils.instructor_utils import (
     list_all_scenarios, 
     scenario_create, 
     scenario_start,
@@ -21,6 +21,7 @@ from py_flask.utils.scenario_interface import (
     )
 from werkzeug.exceptions import abort
 
+from py_flask.utils.panopticon_utils import get_instructor_data
 #######
 # The `g` object is a global flask object that lasts ONLY for the life of a single request.
 #
@@ -150,6 +151,17 @@ def generate_users():
             "message" : f"{requestJSON['new_user_count']} users for group {requestJSON['group_name']} created", 
             "generated_users":generated_users
         })
+
+@blueprint_edurange3_instructor.route("/get_instructorData")
+@jwt_and_csrf_required
+def get_instructorData():
+    instructor_only()
+    
+    panop_data = get_instructor_data()
+
+    return jsonify(panop_data)
+
+
 
 @blueprint_edurange3_instructor.route("/scenario_interface", methods=["POST"])
 @jwt_and_csrf_required

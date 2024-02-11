@@ -8,7 +8,7 @@ from flask import (
 
 from functools import wraps
 from flask_jwt_simple import decode_jwt, create_jwt
-
+from py_flask.database.models import GroupUsers, StudentGroups, User
 
 ###########
 #  This `@jwt_and_csrf_required()` decorator function should be used on ALL 
@@ -62,16 +62,19 @@ def instructor_only():
     if g.current_user_role not in ('instructor', 'admin'):
         return jsonify({"error": "insufficient role privileges"}), 418
 
-def login_er3(userObj, user_role):
+def login_er3(userObj):
 
+    print('STARtING login_er3')
     login_return = make_response(jsonify(userObj))
+    print ('1')
     # generates JWT and encodes these values. (NOT hidden from user)
     # note: 'identity' is a payload keyword for Flask-JWT-Simple. best to leave it
     token_return = create_jwt(identity=({  
         "username": userObj["username"],
-        "user_role": user_role,
+        "user_role": userObj["role"],
         "user_id": userObj["id"]
         }))
+    print ('2')
     
     # httponly=True ; this property mitigates XSS attacks by 'blinding' JS to the value
     login_return.set_cookie(
@@ -81,6 +84,7 @@ def login_er3(userObj, user_role):
         httponly=True,
         path='/'
     )
+    print ('3')
     # mitigate JWT/session related CSRF attacks
     # no httponly=True ; JS needs access to value
     login_return.set_cookie(
@@ -89,5 +93,31 @@ def login_er3(userObj, user_role):
         samesite='Lax',
         path='/'
     )
+    print ('4')
+    print ('LOGIN RETURN: ', login_return)
+    return login_return
 
-    return jsonify(login_return)
+
+
+# account utils available to student (e.g. non-instructor) routes
+
+# create student account (add to postgreSQL db)
+def register_user(validated_registration_data):
+    data = validated_registration_data
+    User.create(
+            username=data["username"],
+            email=data["email"],
+            password=data["password"],
+            active=True,
+    )
+    
+    # won't work unless provided code matches the code for an existing group
+    group = StudentGroups.query.filter_by(code=data["code"]).first()
+    user = User.query.filter_by(username=data["username"]).first()
+    group_id = group.get_id()
+    user_id = user.get_id()
+    GroupUsers.create(user_id=user_id, group_id=group_id)
+
+# update email
+    
+# delete account

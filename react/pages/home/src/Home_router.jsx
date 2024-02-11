@@ -8,7 +8,6 @@ import { LoggedIn_context } from '../../../modules/context/LoggedIn_context';
 import Home from './Home';
 import Login from './components/login/Login';
 import Register from './components/login/Register';
-import Logout from './components/login/Register';
 import Options_controller from '../options/src/Options_controller';
 import InfoRouter from '../info/src/Info_router';
 import SessionKeeper from './SessionKeeper';
@@ -16,6 +15,9 @@ import HomeFoot from '../../../frame/foot/Frame_foot';
 import Scenarios_router from '../../scenarios/Scenarios_router';
 import Frame_head from '../../../frame/head/Frame_head';
 import InstructorDash from '../../instructor/InstructorDash';
+import JWT_Test from '../../../frame/JWT_test';
+import Logout from './components/logout/Logout';
+import Account from '../../account/Account';
 
 export const HomeRouterContext = React.createContext();
 
@@ -42,7 +44,8 @@ function Home_router() {
     navigate(newURL);
   };
 
-  const navToShow = navArrays[`top_${navName_state}`];
+  // const navToShow = navArrays[`top_${navName_state}`];
+  const navToShow = navArrays[`top_dash`];
 
   // these routes extend the base URL of /edurange3/
   // e.g. dashboard is URL /edurange3/dashboard
@@ -80,6 +83,8 @@ function Home_router() {
                       <Scenarios_router />
                     </LoggedIn_context>
                   } />
+                  <Route path="/jwt_test" element={<JWT_Test />} />
+                  <Route path="/account" element={<Account />} />
 
                   <Route path="/instructor/*" element={<InstructorDash />} />
                 </Routes>

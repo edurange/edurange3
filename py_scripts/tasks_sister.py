@@ -12,10 +12,9 @@ from celery.utils.log import get_task_logger
 from flask import current_app, flash, render_template
 from flask_mail import Mail, Message
 
-from py_flask.utils.scenario_json_utils import adjust_network, find_and_copy_template, write_resource
-from py_flask.utils.scenario_utils import gather_files
+from py_flask.utils.parse_utils import adjust_network, find_and_copy_template, write_resource
 from py_flask.config.settings import CELERY_BROKER_URL, CELERY_RESULT_BACKEND
-from py_flask.db.models import ScenarioGroups, Scenarios
+from py_flask.database.models import ScenarioGroups, Scenarios
 
 logger = get_task_logger(__name__)
 
@@ -94,7 +93,9 @@ def test_send_async_email(email_data):
 @celery.task(bind=True)
 def create_scenario_task(self, scen_name, scen_type, owner_user_id, group, grp_id, scen_id, namedict):
     ''' self is the task instance, other arguments are the results of database queries '''
-    from py_flask.db.models import ScenarioGroups, Scenarios
+    from py_flask.database.models import ScenarioGroups, Scenarios
+    from py_flask.utils.scenario_utils import gather_files
+
 
     app = current_app
     scen_type = scen_type.lower()
@@ -202,8 +203,8 @@ def create_scenario_task(self, scen_name, scen_type, owner_user_id, group, grp_i
 
 @celery.task(bind=True)
 def start_scenario_task(self, scenario_id):
-    from py_flask.db.models import Scenarios
-    from py_flask.utils.general_utils import setAttempt
+    from py_flask.database.models import Scenarios
+    from py_flask.utils.scenario_utils import setAttempt
     from py_flask.utils.notification_utils import NotifyCapture
 
     app = current_app
@@ -241,7 +242,7 @@ def start_scenario_task(self, scenario_id):
 
 @celery.task(bind=True)
 def stop_scenario_task(self, scenario_id):
-    from py_flask.db.models import Scenarios
+    from py_flask.database.models import Scenarios
     from py_flask.utils.notification_utils import NotifyCapture
 
     app = current_app
@@ -274,7 +275,7 @@ def stop_scenario_task(self, scenario_id):
 
 @celery.task(bind=True)
 def update_scenario_task(self, scenario_id):
-    from py_flask.db.models import Scenarios
+    from py_flask.database.models import Scenarios
     from py_flask.utils.notification_utils import NotifyCapture
 
     app = current_app
@@ -308,7 +309,7 @@ def update_scenario_task(self, scenario_id):
 
 @celery.task(bind=True)
 def destroy_scenario_task(self, scenario_id):
-    from py_flask.db.models import Scenarios, ScenarioGroups, Responses
+    from py_flask.database.models import Scenarios, ScenarioGroups, Responses
     from py_flask.utils.notification_utils import NotifyCapture
 
     app = current_app
@@ -354,8 +355,8 @@ scenarios_dict = {}
 @celery.task(bind=True)
 #def scenarioTimeoutWarningEmail(self):
 def scenarioTimeoutWarningEmail(self, arg):
-    from py_flask.db.models import Scenarios
-    from py_flask.db.models import User
+    from py_flask.database.models import Scenarios
+    from py_flask.database.models import User
     scenarios = Scenarios.query.all()
     users = User.query.all()
     global scenarios_dict
@@ -385,7 +386,7 @@ def scenarioTimeoutWarningEmail(self, arg):
 def scenarioCollectLogs(self, arg):
     from py_flask.utils.csv_utils import readCSV
     from py_flask.config.extensions import db
-    from py_flask.db.models import BashHistory
+    from py_flask.database.models import BashHistory
 
     def get_or_create(session, model, **kwargs):
         instance = session.query(model).filter_by(**kwargs).first()

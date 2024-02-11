@@ -32,7 +32,7 @@ function Login() {
                 sessionStorage.setItem('navName', `dash`);
                 sessionStorage.setItem('login', true);
                 sessionStorage.setItem('loginExpiry', newExpiry);
-                updateNav('/dashboard/', `dash`);
+                updateNav('/scenarios/', `dash`);
             } else {
                 const errData = response.data.error;
                 console.log(errData);
@@ -49,39 +49,47 @@ function Login() {
         const passwordInput = event.target.elements.password.value;
         sendLoginRequest(usernameInput, passwordInput);
     };
+    const handleRegNav_click = event => {
+        event.preventDefault();
+        updateNav('/register', `logged_out`);
+    };
 
     return (
-        <div className='edu3-login-container'>
+        <div className='registration-container'>
 
-            <h2 className='edu3-login-placard'>
-                <div className='edu3-login-placard-text'>
+            <h2 className='registration-placard'>
+                <div className='registration-placard-text'>
                     Enter your credentials
                 </div>
             </h2>
 
-            <form className='edu3-login-submit-frame' onSubmit={handleSubmit}>
-                <div className='edu3-login-submit-row'>
+            <form className='registration-submit-frame' onSubmit={handleSubmit}>
+                <div className='registration-submit-row'>
 
-                    <div className='edu3-login-submit-row-left'>
-                        <div className='edu3-login-submit-item'>
-                            <label className='edu3-login-prompt-text' htmlFor='username'>Username:</label>
-                            <input className='edu3-login-input-text' type='text' id='username' name='username' />
+                    <div className='registration-submit-row-left'>
+                        <div className='registration-submit-item'>
+                            <label className='registration-prompt-text' htmlFor='username'>Username:</label>
+                            <input className='registration-input-text' type='text' id='username' name='username' />
                         </div>
 
-                        <div className='edu3-login-submit-item'>
-                            <label className='edu3-login-prompt-text' htmlFor='password'>Password:</label>
-                            <input className='edu3-login-input-text' type='password' id='password' name='password' />
+                        <div className='registration-submit-item'>
+                            <label className='registration-prompt-text' htmlFor='password'>Password:</label>
+                            <input className='registration-input-text' type='password' id='password' name='password' />
                         </div>
                     </div>
 
-                    <div className='edu3-login-submit-row-right'>
-                        <button className='edu3-login-button' type='submit'>
+                    <div className='registration-submit-row-right'>
+                        <button className='registration-button' type='submit'>
                             {edurange_icons.user_check}
                         </button>
                     </div>
 
                 </div>
             </form>
+            <div className='reg-redirect-clicker' onClick={handleRegNav_click}>
+                No account? Register here!
+            </div>
+
         </div>
     );
 };

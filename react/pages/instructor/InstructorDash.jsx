@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import Instructor_ScenTable from './Instructor_ScenTable';
 import axios from 'axios';
 import Instructor_ScenDetail from './Instructor_ScenDetail';
 import { scenarioShells } from '../../modules/shells/scenarioType_shells';
+import { buildInstructorData } from '../../modules/utils/buildInstructorData';
+import Frame_side from '../../frame/sidenav/Frame_side';
 
 function InstructorDash() {
 
@@ -12,7 +14,22 @@ function InstructorDash() {
   // State of desired name input field for adding NEW ScenarioGroup to db
   // IMPORTANT! (not to be confused with the name of currently existing scen group that is used as arg for create_scenario!)
   const [newScenGroup_name_state, set_newScenGroup_name_state] = useState('');
-  
+  const [instructorData_state, set_instructorData_state] = useState({});
+
+
+  async function getData() {
+    try {
+      const response = await axios.get("/api/get_instructorData");
+      const responseData = response.data;
+      const instr_data = buildInstructorData(responseData);
+      console.log(instr_data)
+      set_instructorData_state(instr_data);
+    }
+    catch (error) { console.log('get_instructorData error:', error); };
+  };
+
+  useEffect(() => { getData(); }, []);
+
   const handle_newGroup_name_change = (event) => {
     set_newScenGroup_name_state(event.target.value);
   };
@@ -21,19 +38,19 @@ function InstructorDash() {
     axios.post('/api/create_group', {
       group_name: newScenGroup_name_state
     })
-    .then(response => {
-      console.log('Group created:', response.data);
-      set_newScenGroup_name_state(''); // Reset the input field after submission
-    })
-    .catch(error => {
-      console.error('Error creating group:', error);
-    });
+      .then(response => {
+        console.log('Group created:', response.data);
+        set_newScenGroup_name_state(''); // Reset the input field after submission
+      })
+      .catch(error => {
+        console.error('Error creating group:', error);
+      });
   };
   // NEW SCENARIOS
   // just for creating a new scenario, not updating
   const [newScenType_state, set_newScenType_state] = useState('');
   const [newScenName_state, set_newScenName_state] = useState('');
-  
+
   // IMPORTANT! (not to be confused with desired name for NEW scen group that is used as arg for create_group!)
   const [newScen_groupName_state, set_newScen_groupName_state] = useState('');
   // state of scenario type selected, for new scenario creation
@@ -50,71 +67,75 @@ function InstructorDash() {
     event.preventDefault();
     console.log('submit clicked')
     axios.post('/api/scenario_interface', {
-      METHOD:'CREATE',
+      METHOD: 'CREATE',
       type: newScenType_state,
       name: newScenName_state,
       group_name: newScen_groupName_state
     })
   };
-  
+
   // EXISTING SCENARIOS
   // state of info for currently selected scenario (previously created), from instructor table
   const [scenarioDetail_state, set_scenarioDetail_state] = useState({})
 
   return (
-    <>
-      <div className="group-creation-container">
-        <form onSubmit={handle_createGroup_submit}>
+    <div className='newdash-frame'>
+      <div className='newdash-frame-carpet'>
+
+        <Frame_side navToShow={'instructor_scenario_side'} />
+        <div className="group-creation-container">
+          <form onSubmit={handle_createGroup_submit}>
+            <input
+              type="text"
+              className="group-input"
+              placeholder="Enter new group name"
+              value={newScenGroup_name_state}
+              onChange={handle_newGroup_name_change}
+            />
+            <button type="submit" className="group-submit-btn">Create Group</button>
+          </form>
+        </div>
+
+
+        <Instructor_ScenDetail scenario_detail={scenarioDetail_state} />
+        <Instructor_ScenTable set_scenarioDetail_state={set_scenarioDetail_state} />
+        New Scenario Type:
+        <form onSubmit={handle_createScenario_submit}>
+          {Object.keys(scenarioShells).map((key) => {
+            const scenario = scenarioShells[key];
+            return (
+
+              <div key={key}>
+                <input
+                  type="radio"
+                  name="scenarioType"
+                  value={scenario.type}
+                  checked={newScenType_state === scenario.type}
+                  onChange={handle_scenTypebtn_change}
+                />
+                <label>{scenario.type}</label>
+              </div>
+            );
+          })}
+          New Scenario Name:
+          <br></br>
           <input
             type="text"
-            className="group-input"
-            placeholder="Enter new group name"
-            value={newScenGroup_name_state}
-            onChange={handle_newGroup_name_change}
+            placeholder="scenario unique name"
+            value={newScenName_state}
+            onChange={handle_scenName_change}
           />
-          <button type="submit" className="group-submit-btn">Create Group</button>
+          <br></br>
+          <input
+            type="text"
+            placeholder="student group name"
+            value={newScen_groupName_state}
+            onChange={handle_groupName_change}
+          />
+          <button type="submit">Submit</button>
         </form>
       </div>
-
-
-    <Instructor_ScenDetail scenario_detail={scenarioDetail_state}/>
-    <Instructor_ScenTable set_scenarioDetail_state={set_scenarioDetail_state}/>
-    New Scenario Type:
-      <form onSubmit={handle_createScenario_submit}>
-        {Object.keys(scenarioShells).map((key) => {
-          const scenario = scenarioShells[key];
-          return (
-            
-            <div key={key}>
-              <input
-                type="radio"
-                name="scenarioType"
-                value={scenario.type}
-                checked={newScenType_state === scenario.type}
-                onChange={handle_scenTypebtn_change}
-              />
-              <label>{scenario.type}</label>
-            </div>
-          );
-        })}
-        New Scenario Name:
-        <br></br>
-        <input
-          type="text"
-          placeholder="scenario unique name"
-          value={newScenName_state}
-          onChange={handle_scenName_change}
-        />
-        <br></br>
-        <input
-          type="text"
-          placeholder="student group name"
-          value={newScen_groupName_state}
-          onChange={handle_groupName_change}
-        />
-        <button type="submit">Submit</button>
-      </form>
-    </>
+    </div>
   );
 }
 

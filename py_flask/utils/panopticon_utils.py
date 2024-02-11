@@ -7,7 +7,7 @@
 # then filtering after.
 
 from py_flask.config.extensions import db
-from py_flask.db.models import (
+from py_flask.database.models import (
     GroupUsers, 
     ScenarioGroups, 
     Scenarios, 
