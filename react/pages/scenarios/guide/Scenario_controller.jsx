@@ -8,9 +8,9 @@ import GuidePane from './panes/GuidePane';
 import FootControls from './controls/FootControls';
 import SSH_web from './ssh/SSH_web';
 
-import "../../../frame/Frame.css";
+import "@frame/Frame.css";
 import './Scenario_controller.css';
-import { HomeRouterContext } from '../../home/src/Home_router';
+import { HomeRouterContext } from '@home/Home_router';
 
 function Scenario_controller() {
   

@@ -26,7 +26,6 @@ def get_user(input_name):
     user_info = {
         "id": user.id,
         "username": user.username,
-        "email": user.email,
         # "pwh": user.password.decode('utf-8'),  # this shouldn't be returned to the user
         "created_at": user.created_at,
         "active": user.active,
@@ -43,7 +42,6 @@ def get_users():
         user_info = {
             "id": user.id,
             "username": user.username,
-            "email": user.email,
             # "pwh": user.password.decode('utf-8'), # this shouldn't be returned to the user
             "created_at": user.created_at,
             "active": user.active,

@@ -1,8 +1,8 @@
 import React from 'react';
 import { useContext } from 'react';
 
-import { HomeRouterContext } from '../../pages/home/src/Home_router';
-import Login from '../../pages/home/src/components/login/Login';
+import { HomeRouterContext } from '@home/Home_router';
+import Login from '@home/login/Login';
 
 export const Instructor_context = ({ children }) => {
 

@@ -12,8 +12,6 @@ from flask import (
 )
 from py_flask.utils.auth_utils import jwt_and_csrf_required
 
-from py_flask.database.user_schemas import UpdateEmailSchema
-
 #######
 # The `g` object is a global flask object that lasts ONLY for the life of a single request.
 #
@@ -79,32 +77,3 @@ def jwt_test():
         'user_id' : current_user_id,
         'user_role': current_user_role
     })
-
-
-@blueprint_edurange3_student.route("/change_email", methods=['POST'])
-@jwt_and_csrf_required
-def change_email():
-
-    if (request.json['email'] is None):
-        abort(403)
-
-    emailChangeObj = {
-        'username': g.current_username,
-        'email': request.json['email']
-    }
-    
-    validation_schema = UpdateEmailSchema()  # instantiate validation schema
-    validated_data = validation_schema.load(emailChangeObj) # validate registration. reject if bad.
-
-    if (validated_data) != None:
-        user = db_ses.query(User).filter(User.id == g.current_user_id).first()
-        print(user)
-        print(validated_data)
-        user.update(email=validated_data['email'], is_static=False)
-        return jsonify(validated_data)
-    else: abort(403)
-
-
-# deactivate acct (request deletion)
-    
-# 

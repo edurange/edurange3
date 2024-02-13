@@ -1,7 +1,7 @@
 
 import { nanoid } from 'nanoid';
 import React from 'react';
-import { edurange_icons } from '../../ui/edurangeIcons';
+import { edurange_icons } from '@modules/ui/edurangeIcons';
 
 
 export async function fetchScenarioList() {

@@ -27,7 +27,6 @@ export class UserShell {
         this.username = input.username ?? 'none';
         this.role = (input.username) ? assignUserRole(input) : 'none'; // assigns role if user exists, otherwise 'none'
         this.is_active = input.active || false;
-        this.email = input.email ?? 'none';
         this.userGroups_memberOf = input.userGroups_memberOf ?? [];
         this.scenarios_memberOf = input.scenarios_memberOf ?? [];
         this.created_at = formatDate (input.created_at) ?? 'none';

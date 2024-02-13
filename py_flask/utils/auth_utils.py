@@ -101,7 +101,6 @@ def register_user(validated_registration_data):
     data = validated_registration_data
     User.create(
             username=data["username"],
-            email=data["email"],
             password=data["password"],
             active=True,
     )
@@ -113,6 +112,5 @@ def register_user(validated_registration_data):
     user_id = user.get_id()
     GroupUsers.create(user_id=user_id, group_id=group_id)
 
-# update email
     
 # delete account

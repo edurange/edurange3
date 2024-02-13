@@ -2,7 +2,7 @@
 import React, {useContext, useEffect} from 'react';
 
 import { HomeRouterContext } from "./Home_router";
-import Login from './components/login/Login';
+import Login from './login/Login';
 
 function SessionKeeper () {
 

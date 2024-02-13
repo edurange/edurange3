@@ -12,7 +12,7 @@ from py_flask.routes.instructor_routes import blueprint_edurange3_instructor
 from py_flask.routes.scenario_routes import blueprint_edurange3_scenarios
 
 
-from py_scripts import commands
+from py_flask.utils import commands
 from py_flask import database
 # from py_scripts import commands, public, user, tutorials, api
 

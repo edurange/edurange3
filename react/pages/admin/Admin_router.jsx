@@ -6,8 +6,8 @@ import React, { useContext, useState, useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import Admin_home from './Admin_home';
 import Admin_controller from './Admin_controller';
-import ScenarioChat from '../../../scenarios/chat/src/ScenarioChat';
-import { HomeRouterContext } from '../../../home/src/Home_router';
+import ScenarioChat from '@chat/src/ScenarioChat';
+import { HomeRouterContext } from '@home/Home_router';
 
 export const AdminRouterContext = React.createContext();
 

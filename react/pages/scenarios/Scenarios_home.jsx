@@ -3,7 +3,7 @@ import React, {useContext} from 'react';
 import './Scenarios_home.css'
 
 import ScenarioTable from './list/ScenarioTable';
-import { HomeRouterContext } from '../home/src/Home_router';
+import { HomeRouterContext } from '@home/Home_router';
 
 function Scenarios_home () {
     

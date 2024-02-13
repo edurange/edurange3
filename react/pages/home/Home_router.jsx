@@ -3,21 +3,21 @@ import { Route, Routes, useNavigate } from 'react-router-dom';
 
 
 import './Home.css';
-import { navArrays } from '../../../modules/nav/navItemsData';
-import { LoggedIn_context } from '../../../modules/context/LoggedIn_context';
+import { navArrays } from '@modules/nav/navItemsData';
+import { LoggedIn_context } from '@modules/context/LoggedIn_context';
 import Home from './Home';
-import Login from './components/login/Login';
-import Register from './components/login/Register';
-import Options_controller from '../options/src/Options_controller';
-import InfoRouter from '../info/src/Info_router';
+import Login from './login/Login';
+import Register from './login/Register';
+import Options_controller from '../options/Options_controller';
+import InfoRouter from '../info/Info_router';
 import SessionKeeper from './SessionKeeper';
-import HomeFoot from '../../../frame/foot/Frame_foot';
-import Scenarios_router from '../../scenarios/Scenarios_router';
-import Frame_head from '../../../frame/head/Frame_head';
-import InstructorDash from '../../instructor/InstructorDash';
-import JWT_Test from '../../../frame/JWT_test';
-import Logout from './components/logout/Logout';
-import Account from '../../account/Account';
+import HomeFoot from '@frame/foot/Frame_foot';
+import Scenarios_router from '@scenarios/Scenarios_router';
+import Frame_head from '@frame/head/Frame_head';
+import InstructorDash from '@instructor/InstructorDash';
+import JWT_Test from '@frame/JWT_test';
+import Logout from './logout/Logout';
+import Account from '@account/Account';
 
 export const HomeRouterContext = React.createContext();
 

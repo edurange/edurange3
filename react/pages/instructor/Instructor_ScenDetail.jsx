@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useContext, useState } from 'react';
 
-import '../scenarios/list/ScenarioTable.css'
+import '@scenarios/list/ScenarioTable.css'
 
 function Instructor_ScenDetail({scenario_detail}) {
 

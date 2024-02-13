@@ -2,14 +2,14 @@ import axios from 'axios';
 import React, { useState, useEffect, useContext } from 'react';
 import { useParams } from 'react-router-dom';
 
-import InfoPane from '../../../scenarios/src/guide/panes/InfoPane';
-import GuidePane from '../../../scenarios/src/guide/panes/GuidePane';
-import FootControls from '../../../scenarios/src/guide/controls/FootControls';
-import SSH_web from '../../../scenarios/src/guide/ssh/SSH_web';
+import InfoPane from '@scenarios/src/guide/panes/InfoPane';
+import GuidePane from '@scenarios/src/guide/panes/GuidePane';
+import FootControls from '@scenarios/src/guide/controls/FootControls';
+import SSH_web from '@scenarios/src/guide/ssh/SSH_web';
 
-import '../../frame/Frame.css';
-import '../../../scenarios/src/guide/Scenario_controller.css'
-import { HomeRouterContext } from '../../../home/src/Home_router';
+import '@frame/Frame.css';
+import '@scenarios/src/guide/Scenario_controller.css'
+import { HomeRouterContext } from '@home/Home_router';
 import { AdminRouterContext } from './Admin_router';
 
 function Admin_controller() {

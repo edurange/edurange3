@@ -1,5 +1,3 @@
-
-
 //  by "resources", we mean links to docs and other resources 
 //  associated w/ a given scenario
 

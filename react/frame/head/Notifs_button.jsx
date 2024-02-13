@@ -1,8 +1,8 @@
 "use strict";
 import React, { useContext } from 'react';
 import './Notifs_button.css';
-import { HomeRouterContext } from '../../pages/home/src/Home_router';
-import edurange_icons from '../../modules/ui/edurangeIcons';
+import { HomeRouterContext } from '@home/Home_router';
+import edurange_icons from '@modules/ui/edurangeIcons';
 
 function Notifs_button() {
 

@@ -1,9 +1,9 @@
 import React, { useContext } from 'react';
 
-import { HomeRouterContext } from '../../Home_router';
 import axios from 'axios';
 import './Login.css'
-import edurange_icons from '../../../../../modules/ui/edurangeIcons';
+import edurange_icons from '@modules/ui/edurangeIcons';
+import { HomeRouterContext } from '../Home_router';
 // import Login from './Login';
 // import { sendLoginRequest } from './Login';
 
@@ -14,7 +14,7 @@ function Register() {
         updateNav, loginExpiry
     } = useContext(HomeRouterContext);
 
-    async function sendRegistrationRequest(username_input, email_input, password_input, confirm_password_input, code_input) {
+    async function sendRegistrationRequest(username_input, password_input, confirm_password_input, code_input) {
 
         console.log('invoke sendRegistrationRequest()');
 
@@ -25,7 +25,6 @@ function Register() {
                     password: password_input,
                     confirm_password: confirm_password_input,
                     code: code_input,
-                    email: email_input
                 }
             );
             console.log(response)
@@ -62,8 +61,7 @@ function Register() {
         const password_input = event.target.elements.password.value;
         const confirm_password_input = event.target.elements.confirm_password.value;
         const code_input = event.target.elements.code.value;
-        const email_input = event.target.elements.email.value;
-        sendRegistrationRequest(username_input, email_input, password_input, confirm_password_input, code_input);
+        sendRegistrationRequest(username_input, password_input, confirm_password_input, code_input);
     };
     const handleLoginNav_click = event => {
         event.preventDefault();
@@ -96,11 +94,6 @@ function Register() {
                     <div className='registration-submit-item'>
                         <label className='registration-prompt-text' htmlFor='confirm_password'>Confirm Password:</label>
                         <input className='registration-input-text' type='password' id='confirm_password' name='confirm_password' />
-                    </div>
-                    
-                    <div className='edu3-login-submit-item'>
-                        <label className='registration-prompt-text' htmlFor='email'>Email:</label>
-                        <input className='registration-input-text' type='text' id='email' name='email' />
                     </div>
 
                     <div className='registration-submit-item'>

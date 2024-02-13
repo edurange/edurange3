@@ -1,6 +1,6 @@
 import React, {useEffect, useContext} from 'react';
 import axios from 'axios';
-import { HomeRouterContext } from '../../Home_router';
+import { HomeRouterContext } from '../Home_router';
 
 function Logout () {
 

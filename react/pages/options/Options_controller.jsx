@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
 
 import './Options.css';
-import { navArrays } from '../../../../modules/nav/navItemsData';
+import { navArrays } from '@modules/nav/navItemsData';
 import Options_home from './Options_home';
 import Options_accessibility from './Options_accessibility';
 import Options_themes from './Options_themes';
-import Frame_side from '../../../../frame/sidenav/Frame_side';
-
+// import Frame_side from '@frame/sidenav/Frame_side';
+import Frame_side from '@frame/sidenav/Frame_side';
 
 function Options_controller() {
   

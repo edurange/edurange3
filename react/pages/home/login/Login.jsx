@@ -1,9 +1,9 @@
 import React, { useContext } from 'react';
 
-import { HomeRouterContext } from '../../Home_router';
+import { HomeRouterContext } from '@home/Home_router';
 import axios from 'axios';
 import './Login.css'
-import edurange_icons from '../../../../../modules/ui/edurangeIcons';
+import edurange_icons from '@modules/ui/edurangeIcons';
 
 function Login() {
 

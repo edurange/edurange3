@@ -1,8 +1,8 @@
 import React, {useContext} from 'react';
 import { nanoid } from 'nanoid';
 import './Frame_side.css';
-import { navArrays } from '../../modules/nav/navItemsData';
-import { HomeRouterContext } from '../../pages/home/src/Home_router';
+import { navArrays } from '@modules/nav/navItemsData';
+import { HomeRouterContext } from '@home/Home_router';
 
 function Frame_side({navToShow}) {
 

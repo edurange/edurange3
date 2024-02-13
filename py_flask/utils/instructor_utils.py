@@ -8,7 +8,7 @@ import string
 import random
 from py_flask.utils.auth_utils import register_user
 from py_flask.utils.auth_utils import jwt_and_csrf_required, instructor_only
-
+from py_flask.utils.scenario_utils import gen_chat_names
 
 from py_flask.config.extensions import db
 from py_flask.database.models import (
@@ -16,15 +16,13 @@ from py_flask.database.models import (
     Responses, Notification, 
     StudentGroups, GroupUsers, 
     generate_registration_code)
-from py_scripts.tasks_sister import (
+from py_flask.utils.tasks import (
     create_scenario_task, 
     start_scenario_task, 
     stop_scenario_task, 
     update_scenario_task,
     destroy_scenario_task)
-from py_scripts.tasks import (
-    CreateScenarioTask
-    )
+
 path_to_key = os.path.dirname(os.path.abspath(__file__))
 
 ## whole file is currently WIP 1/17/24 -Jonah (exoriparian)
@@ -55,7 +53,6 @@ def generateTestAccts(new_user_count, group_name, group_code):
             'password' : newPass,
             'confirm_password' : newPass,
             'code' : group_code,
-            'email': 'DEV_ONLY@EMAIL.COM'
         }
 
         register_user(user_obj)
@@ -134,7 +131,7 @@ def scenario_create(scenario_type, scenario_name, studentGroup_name):
     print(f"group_id: {group_id}")
     print(f"scenario_id: {scenario_id[0]}")
     print(f"namedict: {namedict}")
-    CreateScenarioTask.delay(scenario_name, scenario_type, owner_user_id, students, group_id, scenario_id[0],  namedict)
+    create_scenario_task.delay(scenario_name, scenario_type, owner_user_id, students, group_id, scenario_id[0],  namedict)
 
     # convert db-formatted-list to list of python dicts
     students_list = [{'username': student['username']} for student in students]

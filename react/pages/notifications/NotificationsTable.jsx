@@ -17,8 +17,6 @@ function DashNotificationsTable(props) {
                             <th className='pucs-table-cell'>Message</th>
                         </tr>
                     </thead>
-                    {/* Temporarily Disabled for Dev */}
-                    {/* <tbody>{notifications_built}</tbody> */}
                 </table>
             </div>
         </div>

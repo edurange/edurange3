@@ -17,7 +17,6 @@ function Test_controls () {
         username: 'buddy',
         group: [1,2],
         role: 'student',
-        email: '',
     }
 
     const [navName_state, set_navName_state] = useState('logout');

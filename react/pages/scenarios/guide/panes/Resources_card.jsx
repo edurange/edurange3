@@ -4,7 +4,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { nanoid } from 'nanoid';
 import './Resources_card.css';
-import { scenarioShells } from '../../../../modules/shells/scenarioType_shells';
+import { scenarioShells } from '@modules/shells/scenarioType_shells';
 
 function Resources_card({ guideContent }) {
 

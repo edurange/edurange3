@@ -20,11 +20,9 @@ db.create_all()
 
 def create_admin():
     username = os.environ["FLASK_USERNAME"]
-    email = os.environ["EMAIL"]
     password = os.environ["PASSWORD"]
     User.create(
         username=username,
-        email=email,
         password=password,
         active=True,
         is_admin=True,

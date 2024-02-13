@@ -2,7 +2,7 @@ import React from 'react';
 import Resources_card from './Resources_card';
 import SSH_card from './SSH_card';
 import './InfoPane.css';
-import { scenarioShells } from '../../../../modules/shells/scenarioType_shells';
+import { scenarioShells } from '@modules/shells/scenarioType_shells';
 
 function InfoPane({ guideContent }) {
 

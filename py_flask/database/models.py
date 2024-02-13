@@ -50,16 +50,15 @@ class User(UserMixin, SurrogatePK, Model):
     """A user of the app."""
     __tablename__ = "users"
     username = Column(db.String(80), unique=True, nullable=False)
-    email = Column(db.String(80), unique=True, nullable=False)
     password = Column(db.LargeBinary(128), nullable=True)   # hashed
     created_at = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
     active = Column(db.Boolean(), default=False)
     is_admin = Column(db.Boolean(), default=False)
     is_instructor = Column(db.Boolean(), default=False)
     is_static = Column(db.Boolean(), default=False) # static: user belongs to one group only (for generated groups)
-    def __init__(self, username, email, password=None, **kwargs):
+    def __init__(self, username, password=None, **kwargs):
         """Create instance."""
-        db.Model.__init__(self, username=username, email=email, **kwargs)
+        db.Model.__init__(self, username=username, **kwargs)
         if password:
             self.set_password(password)
         else:

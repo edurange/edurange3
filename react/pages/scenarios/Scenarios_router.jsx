@@ -2,14 +2,13 @@
 import axios from 'axios';
 import React, { useContext, useState, useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
-import { HomeRouterContext } from '../home/src/Home_router';
+import { HomeRouterContext } from '@home/Home_router';
 import Scenario_controller from './guide/Scenario_controller';
 import Scenarios_home from './Scenarios_home';
-import Chat_Student from '../chat/student/Chat_Student';
-import Notifications from '../notifications/Notifications';
-import { navArrays } from '../../modules/nav/navItemsData';
-import Frame_side from '../../frame/sidenav/Frame_side';
-
+import Chat_Student from '@chat/student/Chat_Student';
+import Notifications from '@notifications/Notifications';
+import { navArrays } from '@modules/nav/navItemsData';
+import Frame_side from '@frame/sidenav/Frame_side';
 export const ScenariosRouterContext = React.createContext();
 
 function Scenarios_router() {

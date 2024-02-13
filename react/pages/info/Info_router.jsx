@@ -1,12 +1,12 @@
 
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
-import Contact from '../contact/src/Contact';
-import HelpPage from '../help/src/HelpPage';
+import Contact from './contact/src/Contact';
+import HelpPage from './help/src/HelpPage';
 import InfoHome from './Info_home';
-import About from '../about/src/About';
-import Documents from '../docs/src/Documents';
-import FAQ from '../faq/FAQ';
+import About from './about/src/About';
+import Documents from './docs/src/Documents';
+import FAQ from './faq/FAQ';
 
 function InfoRouter (    ) {
 

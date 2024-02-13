@@ -3,8 +3,8 @@ import React, { useContext } from 'react';
 import { nanoid } from 'nanoid';
 import Notifs_button from './Notifs_button';
 import './Frame_head.css';
-import edurange_icons from '../../modules/ui/edurangeIcons';
-import { HomeRouterContext } from '../../pages/home/src/Home_router';
+import edurange_icons from '@modules/ui/edurangeIcons';
+import { HomeRouterContext } from '@home/Home_router';
 
 function Frame_head({ navToShow }) {
 
