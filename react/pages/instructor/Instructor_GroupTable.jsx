@@ -32,7 +32,6 @@ function Instructor_GroupTable() {
                 <div className='table-cell-item table-active' >ID</div>
                 <div className='table-cell-item table-scenario-name'>Name</div>
                 <div className='table-cell-item table-scenario-name'>Code</div>
-                <div className='table-cell-item table-scenario-name'>Status</div>
             </div>
             {instructorData_state.userGroups.slice(0).map((group, index) => (
                 <div  key={index} onClick={() => handleInspectClick(index)} >
@@ -40,7 +39,6 @@ function Instructor_GroupTable() {
                         <div className='table-cell-item table-active'>{group.id}</div>
                         <div className='table-cell-item table-group-name'>{group.name}</div>
                         <div className='table-cell-item table-group-name'>{group.code}</div>
-                        <div className='table-cell-item table-group-name'>{group.status}</div>
                     </div>
                 </div>
             ))}

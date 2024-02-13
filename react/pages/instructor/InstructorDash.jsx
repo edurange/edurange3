@@ -8,18 +8,14 @@ import Frame_side from '@frame/sidenav/Frame_side';
 import CreateScenario from './CreateScenario.jsx';
 import './InstructorDash.css';
 import Instructor_GroupTable from './Instructor_GroupTable.jsx';
+import CreateGroup from './CreateGroup.jsx';
 
 export const InstructorDashContext = React.createContext();
 
 function InstructorDash() {
 
-  // CREATE NEW SCENARIO GROUP 
-
-  // State of desired name input field for adding NEW ScenarioGroup to db
-  // IMPORTANT! (not to be confused with the name of currently existing scen group that is used as arg for create_scenario!)
-  const [newScenGroup_name_state, set_newScenGroup_name_state] = useState('');
   const [instructorData_state, set_instructorData_state] = useState({});
-
+  const [scenarioDetail_state, set_scenarioDetail_state] = useState({})
 
   async function getData() {
     try {
@@ -34,35 +30,12 @@ function InstructorDash() {
 
   useEffect(() => { getData(); }, []);
 
-  const handle_newGroup_name_change = (event) => {
-    set_newScenGroup_name_state(event.target.value);
-  };
-  function handle_createGroup_submit(event) {
-    event.preventDefault();
-    axios.post('/api/create_group', {
-      group_name: newScenGroup_name_state
-    })
-      .then(response => {
-        console.log('Group created:', response.data);
-        set_newScenGroup_name_state(''); // Reset the input field after submission
-      })
-      .catch(error => {
-        console.error('Error creating group:', error);
-      });
-  };
-
-
-  // EXISTING SCENARIOS
-  // state of info for currently selected scenario (previously created), from instructor table
-  const [scenarioDetail_state, set_scenarioDetail_state] = useState({})
-
   return (
 
     <InstructorDashContext.Provider value={{
-      instructorData_state
+      instructorData_state, 
+      scenarioDetail_state, set_scenarioDetail_state
     }}>
-
-
 
       <div className='newdash-frame'>
         <div className='newdash-frame-carpet'>
@@ -87,16 +60,7 @@ function InstructorDash() {
                 <div className="group-creation-container">
 
                   <div className='instructor-dash-section'>
-                    <form onSubmit={handle_createGroup_submit}>
-                      <input
-                        type="text"
-                        className="group-input"
-                        placeholder="Enter new group name"
-                        value={newScenGroup_name_state}
-                        onChange={handle_newGroup_name_change}
-                      />
-                      <button type="submit" className="group-submit-btn">Create Group</button>
-                    </form>
+                    <CreateGroup/>
                     <Instructor_GroupTable/>
                   </div>
 

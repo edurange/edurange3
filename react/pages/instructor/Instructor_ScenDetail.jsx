@@ -2,36 +2,36 @@ import axios from 'axios';
 import React, { useEffect, useContext, useState } from 'react';
 
 import '@scenarios/list/ScenarioTable.css'
+import { InstructorDashContext } from './InstructorDash';
 
-function Instructor_ScenDetail({scenario_detail}) {
+function Instructor_ScenDetail() {
 
-    console.log(scenario_detail)
+    const { scenarioDetail_state } = useContext( InstructorDashContext );
+
+    console.log("scen detail state: ",scenarioDetail_state);
+    if (!scenarioDetail_state) return (<>Click Scenario on table for details</>)
+    
     return (
         <div>
             <div>
-                SCENARIO DETAILS TOP BAR
-            </div>
-            <div>
-                SCENARIO DETAILS MAIN SPACE
                 <div>
-                    MAIN SPACE COLUMN LABEL ROW
                     <div>
-                    scenario_created_at {scenario_detail.scenario_created_at}
+                    CREATED_AT: {scenarioDetail_state.created_at}
                     </div>
                     <div>
-                    scenario_description {scenario_detail.scenario_description}
+                    DESCRIPTION: {scenarioDetail_state.description}
                     </div>
                     <div>
-                    scenario_id {scenario_detail.scenario_id}
+                    ID: {scenarioDetail_state.id}
                     </div>
                     <div>
-                    scenario_name {scenario_detail.scenario_name}
+                    NAME: {scenarioDetail_state.name}
                     </div>
                     <div>
-                    scenario_owner_id {scenario_detail.scenario_owner_id}
+                    OWNER ID: {scenarioDetail_state.owner_id}
                     </div>
                     <div>
-                    scenario_status {scenario_detail.scenario_status}
+                    STATUS: {scenarioDetail_state.status}
                     </div>
                 </div>
 

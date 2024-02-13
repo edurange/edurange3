@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 import './ScenarioTable.css';
 import { ScenariosRouterContext } from '../Scenarios_router';
+import { nanoid } from 'nanoid';
 
 function ScenarioTable() {
 
@@ -28,24 +29,22 @@ function ScenarioTable() {
         const currentMeta = scenarioList_state[scenario_index];
         navigate(`${currentMeta.scenario_id}/0`);
     };
-
+    
     return (
         <div className="newdash-datatable-frame">
             <div className="newdash-datatable-header">
-                <div className='table-cell-item table-active' >ID</div>
-                <div className='table-cell-item table-scenario-name'>Title</div>
-                <div className='table-cell-item table-scenario-name'>Type</div>
-                <div className='table-cell-item table-scenario-name'>Group</div>
-                <div className='table-cell-item table-scenario-name'>Owner</div>
+                <div className='table-cell-item table-int' >ID</div>
+                <div className='table-cell-item table-name'>Name</div>
+                <div className='table-cell-item table-scenario-type'>Type</div>
+                <div className='table-cell-item table-name'>Gr.Name</div>
             </div>
             {scenarioList_state.slice(0).map((scenario, index) => (
-                <div  key={scenario.scenario_id} onClick={() => handleNavClick(index)} >
+                <div key={nanoid(3)} onClick={() => handleNavClick(index)} >
                     <div className="table-row">
-                        <div className='table-cell-item table-active'>{scenario.scenario_id}</div>
-                        <div className='table-cell-item table-scenario-name'>{scenario.scenario_name}</div>
-                        <div className='table-cell-item table-scenario-name'>{scenario.scenario_type}</div>
-                        <div className='table-cell-item table-scenario-name'>{scenario.group_name}</div>
-                        <div className='table-cell-item table-scenario-name'>{scenario.owner_name}</div>
+                        <div className='table-cell-item table-int'>{scenario.scenario_id}</div>
+                        <div className='table-cell-item table-name'>{scenario.scenario_name}</div>
+                        <div className='table-cell-item table-scenario-type'>{scenario.scenario_type}</div>
+                        <div className='table-cell-item table-name'>{scenario.group_name}</div>
                     </div>
                 </div>
             ))}
