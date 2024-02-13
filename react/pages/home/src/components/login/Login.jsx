@@ -32,7 +32,10 @@ function Login() {
                 sessionStorage.setItem('navName', `dash`);
                 sessionStorage.setItem('login', true);
                 sessionStorage.setItem('loginExpiry', newExpiry);
-                updateNav('/scenarios/', `dash`);
+                if ((userData?.role == 'instructor') || (userData?.role == 'admin')) {
+                    updateNav('/instructor/', `dash`);
+                }
+                else { updateNav('/scenarios/', `dash`); }
             } else {
                 const errData = response.data.error;
                 console.log(errData);

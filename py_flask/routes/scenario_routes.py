@@ -112,6 +112,8 @@ def get_scenarios():
     db_ses = db.session
     group_id = db_ses.query(GroupUsers.group_id).filter(GroupUsers.user_id == g.current_user_id).first()
     
+    if filter_group_id == None:
+        return jsonify({"scenarios_list":[]})
     filter_group_id = group_id[0]
 
     # query for all entries with the given 'group_id' value

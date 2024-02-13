@@ -7,8 +7,9 @@ from flask import (
 )
 
 from functools import wraps
-from flask_jwt_simple import decode_jwt, create_jwt
+# from flask_jwt_simple import decode_jwt, create_jwt
 from py_flask.database.models import GroupUsers, StudentGroups, User
+from flask_jwt_extended import create_access_token, decode_token
 
 ###########
 #  This `@jwt_and_csrf_required()` decorator function should be used on ALL 
@@ -40,7 +41,7 @@ def jwt_and_csrf_required(fn):
         if not token: return jsonify({"error": "jwt request denied"}), 418
         try:
 
-            validated_jwt_token = decode_jwt(token)  # check if signature still valid
+            validated_jwt_token = decode_token(token)  # check if signature still valid
             decoded_payload = validated_jwt_token["sub"]
 
             g.current_username = decoded_payload["username"]  
@@ -64,17 +65,14 @@ def instructor_only():
 
 def login_er3(userObj):
 
-    print('STARtING login_er3')
     login_return = make_response(jsonify(userObj))
-    print ('1')
     # generates JWT and encodes these values. (NOT hidden from user)
     # note: 'identity' is a payload keyword for Flask-JWT-Simple. best to leave it
-    token_return = create_jwt(identity=({  
+    token_return = create_access_token(identity=({  
         "username": userObj["username"],
         "user_role": userObj["role"],
         "user_id": userObj["id"]
         }))
-    print ('2')
     
     # httponly=True ; this property mitigates XSS attacks by 'blinding' JS to the value
     login_return.set_cookie(
@@ -84,7 +82,6 @@ def login_er3(userObj):
         httponly=True,
         path='/'
     )
-    print ('3')
     # mitigate JWT/session related CSRF attacks
     # no httponly=True ; JS needs access to value
     login_return.set_cookie(
@@ -93,8 +90,6 @@ def login_er3(userObj):
         samesite='Lax',
         path='/'
     )
-    print ('4')
-    print ('LOGIN RETURN: ', login_return)
     return login_return
 
 

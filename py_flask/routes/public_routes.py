@@ -15,7 +15,9 @@ from py_flask.database.user_schemas import LoginSchema, RegistrationSchema
 from werkzeug.exceptions import abort
 from flask import current_app
 import secrets
-from flask_jwt_simple import create_jwt
+# from flask_jwt_simple import create_jwt
+
+# from flask_jwt_extended import create_access_token
 
 from flask import (
     Blueprint,
@@ -66,12 +68,8 @@ def login_edurange3():
     
     validated_user_dump['role'] = temp_role
 
-    # PROCESS SEEMS FINE UNTIL HERE
-
     logged_in_return = login_er3(validated_user_dump)
     
-    # DOES NOT REACH THIS LINE
-    print("LOOKS LIKE WE MADE IT AGAIN! ")
     return logged_in_return
 
 @blueprint_edurange3_public.route("/register", methods=["POST"])

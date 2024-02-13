@@ -205,7 +205,7 @@ def create_scenario_task(self, scen_name, scen_type, owner_user_id, group, grp_i
 def start_scenario_task(self, scenario_id):
     from py_flask.database.models import Scenarios
     from py_flask.utils.scenario_utils import setAttempt
-    from py_flask.utils.notification_utils import NotifyCapture
+    from py_flask.utils.instructor_utils import NotifyCapture
 
     app = current_app
     logger.info(
@@ -243,7 +243,7 @@ def start_scenario_task(self, scenario_id):
 @celery.task(bind=True)
 def stop_scenario_task(self, scenario_id):
     from py_flask.database.models import Scenarios
-    from py_flask.utils.notification_utils import NotifyCapture
+    from py_flask.utils.instructor_utils import NotifyCapture
 
     app = current_app
     logger.info(
@@ -276,7 +276,7 @@ def stop_scenario_task(self, scenario_id):
 @celery.task(bind=True)
 def update_scenario_task(self, scenario_id):
     from py_flask.database.models import Scenarios
-    from py_flask.utils.notification_utils import NotifyCapture
+    from py_flask.utils.instructor_utils import NotifyCapture
 
     app = current_app
     logger.info(
@@ -310,7 +310,7 @@ def update_scenario_task(self, scenario_id):
 @celery.task(bind=True)
 def destroy_scenario_task(self, scenario_id):
     from py_flask.database.models import Scenarios, ScenarioGroups, Responses
-    from py_flask.utils.notification_utils import NotifyCapture
+    from py_flask.utils.instructor_utils import NotifyCapture
 
     app = current_app
     logger.info(
