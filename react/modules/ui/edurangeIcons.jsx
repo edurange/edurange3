@@ -50,8 +50,6 @@ import {
     MdNotificationsActive,
   } from "react-icons/md";
 
-// assign to specific vars to use appwide. (use these instead of importing directly)
-
  const edurange_icons = {
     accessibility : <FaUniversalAccess/>,
     bell : <MdNotifications/>,

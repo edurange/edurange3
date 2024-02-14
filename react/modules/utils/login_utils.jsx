@@ -1,4 +1,4 @@
-
+import { updateNav} from '@home/Home_router';
 
 export async function sendLoginRequest(username_input, password_input) {
     try {
@@ -20,7 +20,7 @@ export async function sendLoginRequest(username_input, password_input) {
         sessionStorage.setItem('navName', `dash`);
         sessionStorage.setItem('login', true);
         sessionStorage.setItem('loginExpiry', newExpiry);
-        updateNav('/edurange3/dashboard/', `dash`);
+        updateNav('/dashboard/', `dash`);
       } else {
         const errData = response.data.error;
         console.log(errData);

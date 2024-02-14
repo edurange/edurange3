@@ -1,4 +1,4 @@
-.newdash-datatable-frame {
+.table-frame {
     width: 100%;
     border: 1px solid  rgb(135, 96, 12);
     border-radius: 15px;
@@ -6,7 +6,7 @@
     cursor: default;
 }
 
-.newdash-datatable-header {
+.table-header {
     white-space: nowrap;
     display: flex;
     grid-auto-flow: column;
@@ -14,7 +14,9 @@
     contain: content;
     border-radius: 15px 15px 0 0;
     cursor: pointer;
-
+    justify-content: flex-start;
+    display: flex;
+    align-items: flex-start;
 }
 .table-row {
     text-align: left;
@@ -33,23 +35,23 @@
     background-color: rgba(250, 255, 173, 0.217);
     border-radius: 15px;
 }
-.table-date{
-    max-width: 155px;
-    min-width: 155px;
+.col-xsmall{
+    max-width: 40px;
+    min-width: 40px;
 }
-.table-role{
-    max-width: 155px;
-    min-width: 155px;
-}
-.table-int{
-    max-width: 35px;
-    min-width: 35px;
-}
-.table-name{
+.col-small{
     max-width: 80px;
     min-width: 80px;
 }
-.table-scenario-type {
-    max-width: 180px;
-    min-width: 180px;
+.col-medium{
+    max-width: 120px;
+    min-width: 120px;
+}
+.col-large{
+    max-width: 160px;
+    min-width: 160px;
+}
+.col-xlarge {
+    max-width: 200px;
+    min-width: 200px;
 }

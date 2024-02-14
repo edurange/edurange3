@@ -18,14 +18,14 @@ import InstructorDash from '@instructor/InstructorDash';
 import JWT_Test from '@frame/JWT_test';
 import Logout from './logout/Logout';
 import Account from '@account/Account';
+import Instructor_router from '../instructor/Instructor_router';
 
-export const HomeRouterContext = React.createContext();
+export const HomeRouter_context = React.createContext();
 
 const loginExpiry = (1000 * 60 * 60 * 1); // 1 hr in milliseconds
 
 function Home_router() {
 
-  ////HOOKS//////////////////////////////////////
   const [navName_state, set_navName_state] = useState('logout');
   const [clipboard_state, set_clipboard_state] = useState('');
   const [sideNav_isVisible_state, set_sideNav_isVisible_state] = useState(true);
@@ -33,7 +33,6 @@ function Home_router() {
   const [userData_state, set_userData_state] = useState({});
   const [login_state, set_login_state] = useState(false);
   const navigate = useNavigate();
-  ///////////////////////////////////////////////
 
   function updateNav(newURL, newNavName) {
     console.log('updating nav...');
@@ -44,15 +43,12 @@ function Home_router() {
     navigate(newURL);
   };
 
-  // const navToShow = navArrays[`top_${navName_state}`];
   const navToShow = navArrays[`top_dash`];
 
-  // these routes extend the base URL of /edurange3/
-  // e.g. dashboard is URL /edurange3/dashboard
   return (
     <div id='edurange-appframe'>
 
-      <HomeRouterContext.Provider value={{
+      <HomeRouter_context.Provider value={{
         userData_state, set_userData_state,
         login_state, set_login_state,
         navName_state, set_navName_state,
@@ -85,8 +81,7 @@ function Home_router() {
                   } />
                   <Route path="/jwt_test" element={<JWT_Test />} />
                   <Route path="/account" element={<Account />} />
-
-                  <Route path="/instructor/*" element={<InstructorDash />} />
+                  <Route path="/instructor/*" element={<Instructor_router />} />
                 </Routes>
 
               </div>
@@ -96,7 +91,7 @@ function Home_router() {
 
         <HomeFoot />
 
-      </HomeRouterContext.Provider>
+      </HomeRouter_context.Provider>
     </div>
   );
 };

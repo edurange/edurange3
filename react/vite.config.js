@@ -19,6 +19,7 @@ export default defineConfig({
       '@frame': path.resolve(__dirname, './frame'),
       '@admin': path.resolve(__dirname, './pages/admin'),
       '@config': path.resolve(__dirname, './config'),
+      '@components': path.resolve(__dirname, './components'),
       '@notifications': path.resolve(__dirname, './pages/notifications'),
     },
   },

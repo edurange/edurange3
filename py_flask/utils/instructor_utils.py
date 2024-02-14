@@ -8,7 +8,7 @@ import string
 import random
 from py_flask.utils.auth_utils import register_user
 from py_flask.utils.auth_utils import jwt_and_csrf_required, instructor_only
-from py_flask.utils.scenario_utils import gen_chat_names
+from py_flask.utils.chat_utils import gen_chat_names
 
 from py_flask.config.extensions import db
 from py_flask.database.models import (

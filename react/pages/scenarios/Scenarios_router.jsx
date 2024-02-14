@@ -2,22 +2,18 @@
 import axios from 'axios';
 import React, { useContext, useState, useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
-import { HomeRouterContext } from '@home/Home_router';
+import { HomeRouter_context } from '@home/Home_router';
 import Scenario_controller from './guide/Scenario_controller';
 import Scenarios_home from './Scenarios_home';
 import Chat_Student from '@chat/student/Chat_Student';
 import Notifications from '@notifications/Notifications';
 import { navArrays } from '@modules/nav/navItemsData';
 import Frame_side from '@frame/sidenav/Frame_side';
-export const ScenariosRouterContext = React.createContext();
+export const ScenariosRouter_context = React.createContext();
 
 function Scenarios_router() {
 
-  const { 
-    login_state, set_login_state,
-    navName_state,
-    userData_state, set_userData_state
-  } = useContext(HomeRouterContext);
+  const { navName_state } = useContext(HomeRouter_context);
 
   const fakeNotif= {
     id: 123,
@@ -50,7 +46,7 @@ function Scenarios_router() {
 
     async function fetchScenarioList() {
         try {
-            const response = await axios.get("/api/get_scenarios");
+            const response = await axios.get("/get_scenarios");
             if (response.data.scenarioTable) {
                 set_scenarioList_state(response.data.scenarioTable);
             };
@@ -69,7 +65,7 @@ function Scenarios_router() {
                 <div className="newdash-infopane-frame">
                     <div className='newdash-infopane-content'>
 
-                        <ScenariosRouterContext.Provider value={{
+                        <ScenariosRouter_context.Provider value={{
                             scenarioList_state, set_scenarioList_state,
                             scenarioPage_state, set_scenarioPage_state,
                             guideBook_state, set_guideBook_state,
@@ -84,7 +80,7 @@ function Scenarios_router() {
 
                                 <Route path="/notifications" element={<Notifications notifsArray={notifsArray_state} />} />
                             </Routes>
-                        </ScenariosRouterContext.Provider>
+                        </ScenariosRouter_context.Provider>
                     </div>
                 </div>
             </div>

@@ -1,20 +1,19 @@
 import React, { useContext } from 'react';
-
-import { HomeRouterContext } from '@home/Home_router';
 import axios from 'axios';
-import './Login.css'
+import { HomeRouter_context } from '@home/Home_router';
 import edurange_icons from '@modules/ui/edurangeIcons';
+import './Login.css'
 
 function Login() {
 
     const {
         set_userData_state, set_login_state,
-        updateNav, loginExpiry
-    } = useContext(HomeRouterContext);
+        loginExpiry, updateNav
+    } = useContext(HomeRouter_context);
 
     async function sendLoginRequest(username_input, password_input) {
         try {
-            const response = await axios.post('/api/login',
+            const response = await axios.post('/login',
                 {
                     username: username_input,
                     password: password_input

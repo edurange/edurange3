@@ -21,7 +21,7 @@ instructor_utils:
     scenario_update
     scenario_destroy
 
-parse_utils:
+parse_utils (marged json_utils and csv_utils):
     adjust_network
     build_users
     build_uploads
@@ -41,36 +41,47 @@ panopticon_utils:
     get_student_responses 
     get_instructor_data
 
-scenario_utils:
-    bashResponse
-    CatalogEntry
-    calcScr
-    displayCorrectAnswers
-    displayProgress
-    evaluateResponse
-    gather_files
-    gen_chat_names
+guide_utils:
     getContent
     getScenarioMeta
-    get_dockerPort
-    getDescription
-    getPass
-    getResponses
-    getTotalScore
-    getScore
-    getAttempt
-    getProgress
-    item_generator
-    identify_type
-    identify_state
-    populate_catalog
-    queryPolish
-    readScenario
-    recentCorrect
+    bashResponse
     readQuestions
-    responseSelector
-    responseProcessing
-    scoreSetup
-    scoreCheck
-    scoreCheck2
-    setAttempt
+    evaluateResponse
+    get_dockerPort
+
+scenario_utils:
+    
+
+    evaluate: keep/move/edit/delete ?
+
+    keep:
+        gen_chat_names (moved to chat_utils)
+
+    questionable:
+        CatalogEntry
+        displayProgress
+        getTotalScore
+        getScore
+        getAttempt
+        getProgress
+
+    
+        getResponses
+        calcScr
+        displayCorrectAnswers
+        gather_files
+        getDescription
+        getPass
+        item_generator
+        identify_type
+        identify_state
+        populate_catalog
+        queryPolish
+        readScenario
+        recentCorrect
+        responseSelector
+        responseProcessing
+        scoreSetup
+        scoreCheck
+        scoreCheck2
+        setAttempt

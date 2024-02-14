@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useContext } from 'react';
 import Messages_pane from '../common/Messages_pane.jsx';
-import { ChatRouterContext } from '../Chat_Router.jsx';
+import { ChatRouter_context } from '../Chat_Router.jsx';
 import '../ChatApp.css';
 import { ChatMessage } from '../common/chatUtils.js';
 
@@ -14,7 +14,7 @@ function Chat_Student() {
         socket_state,   set_socket_state,
         user_state,     set_user_state,
         chatSession_state, set_chatSession_state
-      } = useContext(ChatRouterContext);
+      } = useContext(ChatRouter_context);
 
 
     const testMessage = new ChatMessage(chatSession_state, user_state, 1, undefined, undefined, "hello eduRange!");

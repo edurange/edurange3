@@ -1,25 +1,17 @@
 import React, { useContext } from 'react';
-
 import axios from 'axios';
 import './Login.css'
 import edurange_icons from '@modules/ui/edurangeIcons';
-import { HomeRouterContext } from '../Home_router';
-// import Login from './Login';
-// import { sendLoginRequest } from './Login';
+import { HomeRouter_context } from '../Home_router';
 
 function Register() {
 
-    const {
-        set_userData_state, set_login_state,
-        updateNav, loginExpiry
-    } = useContext(HomeRouterContext);
-
     async function sendRegistrationRequest(username_input, password_input, confirm_password_input, code_input) {
-
+        const { updateNav } = useContext(HomeRouter_context);
         console.log('invoke sendRegistrationRequest()');
 
         try {
-            const response = await axios.post('/api/register',
+            const response = await axios.post('/register',
                 {
                     username: username_input,
                     password: password_input,
@@ -34,22 +26,10 @@ function Register() {
             if (reg_response) {
                 console.log("Registration Success!");
                 console.log("reg_response: ", reg_response);
-
-                // set_userData_state(userData);
-                // set_login_state(true);
-                // const newExpiry = Date.now() + loginExpiry;
-                // sessionStorage.setItem('userData', JSON.stringify(userData));
-                // sessionStorage.setItem('navName', `dash`);
-                // sessionStorage.setItem('login', true);
-                // sessionStorage.setItem('loginExpiry', newExpiry);
                 updateNav('/edurange3/login/', 'home');
-
-
             } else {
                 const errData = response.data.error;
-                console.log(errData);
-                console.log('Registration failure.');
-                
+                console.log('Registration failure.', errData);
             };
         } catch (error) {
             console.error('Error:', error);

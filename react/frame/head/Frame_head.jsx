@@ -4,15 +4,15 @@ import { nanoid } from 'nanoid';
 import Notifs_button from './Notifs_button';
 import './Frame_head.css';
 import edurange_icons from '@modules/ui/edurangeIcons';
-import { HomeRouterContext } from '@home/Home_router';
+import { HomeRouter_context } from '@home/Home_router';
 
 function Frame_head({ navToShow }) {
 
     const {
-        updateNav, navName_state,
+        navName_state, updateNav,
         sideNav_isVisible_state, set_sideNav_isVisible_state,
         sideNav_isSmall_state, set_sideNav_isSmall_state
-    } = useContext(HomeRouterContext);
+    } = useContext(HomeRouter_context);
 
     function toggle_sideNav_vis() {
         set_sideNav_isVisible_state(!sideNav_isVisible_state); // toggle to opposite

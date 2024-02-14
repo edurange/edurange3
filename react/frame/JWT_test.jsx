@@ -12,7 +12,7 @@ function JWT_Test() {
 
     async function beginTest() {
         try {
-            const response = await axios.get("/api/jwt_test");
+            const response = await axios.get("/jwt_test");
             console.log(response)
             if (response.data.user_id) {
                 set_testResponse(response.data);

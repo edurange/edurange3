@@ -1,6 +1,6 @@
 import React, {useEffect, useContext} from 'react';
 import axios from 'axios';
-import { HomeRouterContext } from '../Home_router';
+import { HomeRouter_context } from '../Home_router';
 
 function Logout () {
 
@@ -10,11 +10,11 @@ function Logout () {
         set_login_state ,
         set_navName_state,
 
-    } = useContext(HomeRouterContext);
+    } = useContext(HomeRouter_context);
 
     async function sendLogoutRequest() {
         try {
-            const response = await axios.post('/api/logout');
+            const response = await axios.post('/logout');
             const responseData = response.data;
 
             if (responseData.message) {

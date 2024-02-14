@@ -1,27 +1,106 @@
 
 .instructor-dash-frame{
     display: flex;
-    border: 2px solid goldenrod;
-    align-items: center;
-    justify-content: center;
+    border: 2px solid rgba(218, 32, 32, 0.453);
+    align-items: flex-start;
+    justify-content: flex-start;
     flex-direction: row;
     width: 100%;
+    border-radius: 15px;
 }
-.instructor-dash-column{
+.instructor-dash-column-main{
     display: flex;
-    align-items: center;
-    justify-content: center;
+    align-items: flex-start;
+    justify-content: flex-start;
     flex-direction: column;
-    border: 1px solid red;
-    width: 100%;
+    width: auto;
+    max-width: 750px;
+    min-width: 750px;
     height: 100%;
+    /* gap: 15px; */
+    overflow-y: auto;
+    overflow-x: unset;
+    box-sizing: border-box;
+    padding: 5px;
+}
+.instructor-dash-column-alt{
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex-direction: column;
+    /* border-left: 1px solid rgba(255, 0, 0, 0.387); */
+    width: auto;
+    /* max-width: 20%; */
+    height: 100%;
+    gap: 5px;
+    overflow-y: auto;
+    overflow-x: unset;
+    box-sizing: border-box;
+    padding: 5px;
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
 }
 .instructor-dash-section{
     display: flex;
     align-items: center;
-    justify-content: center;
     flex-direction: column;
-    border: 1px solid red;
-    width: auto;
-    height: 100%;
+    border: 1px solid rgba(218, 165, 32, 0.49);
+    width: 100%;
+    height: auto;
+    border-radius: 15px;
+    box-sizing: border-box;
+    padding: 8px;
+}
+
+.row-aligned{
+    display: flex;
+    flex-direction: row;
+}
+ 
+.create-frame{
+    display: flex;
+    width: 100%;
+    justify-content: stretch;
+    align-items: stretch;
+    gap: 10px;
+    box-sizing: border-box;
+    margin: 8px;
+}
+.create-input-fields{
+    min-width: 200px;
+    max-width: 200px;
+    
+    border: 1px solid black;
+}
+.form-frame{
+    display: flex;
+    width: 100%;
+    justify-content: flex-start;
+    gap: 3px;
+}
+.submit-btn{
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+}
+.detail-frame{
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+    align-content: flex-start;
+    justify-items: flex-start;
+    width: 100%;
+    gap: 5px;
+}
+.instructions-bubble{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    border: 1px solid rgba(218, 165, 32, 0.49);
+    width: 100%;
+    height: auto;
+    border-radius: 15px;
+    box-sizing: border-box;
+    padding: 8px;
 }

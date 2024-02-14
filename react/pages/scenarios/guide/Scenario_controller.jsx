@@ -2,7 +2,7 @@ import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useContext } from 'react';
-import { ScenariosRouterContext } from '../Scenarios_router';
+import { ScenariosRouter_context } from '../Scenarios_router';
 import InfoPane from './panes/InfoPane';
 import GuidePane from './panes/GuidePane';
 import FootControls from './controls/FootControls';
@@ -10,13 +10,13 @@ import SSH_web from './ssh/SSH_web';
 
 import "@frame/Frame.css";
 import './Scenario_controller.css';
-import { HomeRouterContext } from '@home/Home_router';
+import { HomeRouter_context } from '@home/Home_router';
 
 function Scenario_controller() {
   
   const { scenarioID, pageID } = useParams(); // from URL parameters
-  const { userData_state } = useContext(HomeRouterContext);
-  const { guideContent_state, set_guideContent_state } = useContext(ScenariosRouterContext);
+  const { userData_state } = useContext(HomeRouter_context);
+  const { guideContent_state, set_guideContent_state } = useContext(ScenariosRouter_context);
 
   const [leftPaneName_state, set_leftPaneName_state] = useState("info");
   const [rightPaneName_state, set_rightPaneName_state] = useState("guide");

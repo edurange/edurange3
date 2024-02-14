@@ -1,12 +1,12 @@
 import React, { useContext } from 'react';
 import edurange_icons from '@modules/ui/edurangeIcons';
-import { HomeRouterContext } from '@home/Home_router';
+import { HomeRouter_context } from '@home/Home_router';
 import copyToClipboard from '@modules/utils/copyToClipboard';
 import './Copy_button_small.css';
 
 function Copy_button_small({ thingToCopy }) {
 
-    const { clipboard_state, set_clipboard_state } = useContext(HomeRouterContext);
+    const { clipboard_state, set_clipboard_state } = useContext(HomeRouter_context);
 
     function handle_copyClick(textToCopy) {
         set_clipboard_state(textToCopy);

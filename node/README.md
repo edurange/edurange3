@@ -1,5 +1,7 @@
-This is a standalone / microservice style chat app for use the in the larger eduRange project.
-It is currently being developed for websocket connection with .csv logging.  
+This was a standalone / microservice style chat app for 
+use the in the larger eduRange project.  It is currently 
+being integrated into the main edurange3 new interface,
+and developed for websocket connection with .csv logging.  
 
 *****
 Important correction / note on React "entry" :
@@ -39,4 +41,4 @@ As this process is still in flux, please consider the database and .csv portions
 
 # Start Express Server:
 =======
-`node chatSocket.js` (or better yet, if you have nodemon: `nodemon chatSocket.js` )
+`node nodeSocket.js` (or better yet, if you have nodemon: `nodemon chatSocket.js` )

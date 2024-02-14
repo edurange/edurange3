@@ -7,7 +7,6 @@ from flask import (
 )
 
 from functools import wraps
-# from flask_jwt_simple import decode_jwt, create_jwt
 from py_flask.database.models import GroupUsers, StudentGroups, User
 from flask_jwt_extended import create_access_token, decode_token
 
@@ -93,9 +92,9 @@ def login_er3(userObj):
     return login_return
 
 
-
+####
 # account utils available to student (e.g. non-instructor) routes
-
+####
 # create student account (add to postgreSQL db)
 def register_user(validated_registration_data):
     data = validated_registration_data
@@ -113,4 +112,4 @@ def register_user(validated_registration_data):
     GroupUsers.create(user_id=user_id, group_id=group_id)
 
     
-# delete account
+# delete account (Add here)

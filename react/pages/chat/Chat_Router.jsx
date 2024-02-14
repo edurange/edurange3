@@ -5,7 +5,7 @@ import Chat_Instructor from './instructor/Chat_Instructor';
 
 
 
-export const ChatRouterContext = React.createContext();
+export const ChatRouter_context = React.createContext();
 const chatSession_lifespan = (1000 * 60 * 60 * 6); // 6 hr in miliseconds;
 
 function Chat_Router() {
@@ -36,7 +36,7 @@ function Chat_Router() {
     } else {'chat session found in state; continuing...'};
   
     return (
-        <ChatRouterContext.Provider value={{
+        <ChatRouter_context.Provider value={{
             socket_state,   set_socket_state,
             user_state,     set_user_state,
             chatSession_state, set_chatSession_state
@@ -45,7 +45,7 @@ function Chat_Router() {
                 <Route path="/" element={<Chat_Student />} />
                 <Route path="/instructor" element={<Chat_Instructor />} />
             </Routes>
-        </ChatRouterContext.Provider>
+        </ChatRouter_context.Provider>
     );
 };
 

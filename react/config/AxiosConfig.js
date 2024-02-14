@@ -29,7 +29,7 @@ function getCSRFfromCookie() {
 const csrfToken = getCSRFfromCookie();
 
 // const baseURL = 'http://URL_TO_BE_REPLACED:5000/'
-const baseURL = 'https://er3.riparian.dev/';
+const baseURL = 'https://er3.riparian.dev/api/';
 
 if (!csrfToken) { console.log('Axios: CSRF cookie not found'); } // DEV_ONLY
 

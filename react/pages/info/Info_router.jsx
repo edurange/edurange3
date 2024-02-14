@@ -1,18 +1,18 @@
 
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
-import Contact from './contact/src/Contact';
-import HelpPage from './help/src/HelpPage';
+import Contact from './Contact';
+import HelpPage from './HelpPage';
 import InfoHome from './Info_home';
-import About from './about/src/About';
-import Documents from './docs/src/Documents';
-import FAQ from './faq/FAQ';
+import About from './About';
+import Documents from './Documents';
+import FAQ from './FAQ';
 
 function InfoRouter (    ) {
 
 
-// these routes extend /edurange3/info
-// e.g. about is URL /edurange3/info/about
+// these routes extend /info
+// e.g. about is URL /info/about
     return (
         <div className='edu3-dashpanes-outer-wrap'>
                 <div className='dash-sidebar-pane'>

@@ -22,7 +22,7 @@ from flask import (
     g, ## see note
 )
 from py_flask.utils.auth_utils import jwt_and_csrf_required
-from py_flask.utils.scenario_utils import (
+from py_flask.utils.guide_utils import (
     getContent, 
     getScenarioMeta,
     evaluateResponse

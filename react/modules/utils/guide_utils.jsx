@@ -1,12 +1,7 @@
 
-import { nanoid } from 'nanoid';
-import React from 'react';
-import { edurange_icons } from '@modules/ui/edurangeIcons';
-
-
 export async function fetchScenarioList() {
     try {
-        const response = await axios.get("/api/get_scenarios");
+        const response = await axios.get("/get_scenarios");
         if (response.data.scenarioTable) {
             return response.data.scenarioTable;
         };
@@ -17,7 +12,7 @@ export async function fetchScenarioList() {
 
 export async function getScenarioMeta(scenario_id) {
     try {
-        const response = await axios.get("/api/get_scenario_meta");
+        const response = await axios.get("/get_scenario_meta");
         if (response.data.meta) {
             return response.data.meta;
         };

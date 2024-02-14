@@ -12,7 +12,7 @@ import ReactDOM from "react-dom/client";
 import { BrowserRouter } from 'react-router-dom';
 import Home_router from '@home/Home_router'
 import AxiosConfig from '@config/AxiosConfig';
-import '@assets/base.css' 
+import '@assets/css/base.css' 
 
 const root = ReactDOM.createRoot(document.getElementById("er3_entry"));
 root.render (

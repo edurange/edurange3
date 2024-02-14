@@ -2,15 +2,14 @@ import React, {useContext} from 'react';
 import { nanoid } from 'nanoid';
 import './Frame_side.css';
 import { navArrays } from '@modules/nav/navItemsData';
-import { HomeRouterContext } from '@home/Home_router';
+import { HomeRouter_context } from '@home/Home_router';
 
 function Frame_side({navToShow}) {
 
-  const { 
-    updateNav,
-    sideNav_isVisible_state,
+  const {
+    sideNav_isVisible_state, updateNav,
     sideNav_isSmall_state
-  } = useContext(HomeRouterContext);
+  } = useContext(HomeRouter_context);
 
   // navToShow = (navToShow) ? navToShow : navArrays.side_logout; 
   const myNav =  navArrays.side_scenarios_instructor
