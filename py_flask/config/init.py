@@ -21,8 +21,6 @@ from py_flask.config.extensions import (
     cache,
     db,
     debug_toolbar,
-    flask_static_digest,
-    login_manager,
     migrate,
     jwtman,
 )
@@ -54,10 +52,8 @@ def register_extensions(app):
 
     jwtman.init_app(app)
  
-    login_manager.init_app(app)
     debug_toolbar.init_app(app)
     migrate.init_app(app, db)
-    flask_static_digest.init_app(app)
 
     return None
 

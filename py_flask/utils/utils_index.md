@@ -34,7 +34,7 @@ csv_utils:
     groupCSV
 
 
-panopticon_utils:
+instructorData_utils:
     get_user
     get_users
     get_groups
