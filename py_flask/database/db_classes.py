@@ -1,10 +1,35 @@
 # -*- coding: utf-8 -*-
 """Database module, including the SQLAlchemy database object and DB-related utilities."""
 from py_flask.config.extensions import db
+from sqlalchemy import inspect
 
 # Alias common SQLAlchemy names
 Column = db.Column
 relationship = db.relationship
+
+# custom methods for all models
+class Edu3Mixin:
+    def get_id(self):
+        """Return the user ID as a unicode string."""
+        return str(self.id)    
+
+    # def to_dict(self):
+    #     """Return a dictionary representation of the instance."""
+    #     return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
+
+    # EXPERIMENTAL, more recursive w/ relationships:
+        # with this, we can get values from other sqlAlchemy raw objects,
+        # that also have to_dict, if they are 'related' by way of db
+    def to_dict(self, include_relationships=False):
+        """Return a dictionary representation of the instance, optionally including relationships."""
+        result = {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
+        if include_relationships:
+            for key, value in result.items():
+                if hasattr(value, 'to_dict'):
+                    result[key] = value.to_dict(include_relationships=True)
+                elif isinstance(value, list):
+                    result[key] = [item.to_dict(include_relationships=True) if hasattr(item, 'to_dict') else item for item in value]
+        return result
 
 
 class CRUDMixin(object):

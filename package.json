@@ -1,6 +1,6 @@
 {
   "name": "edurange3",
-  "version": "1.0.0",
+  "version": "3.0.0",
   "description": "eduRange",
   "main": "index.js",
   "directories": {
@@ -8,11 +8,14 @@
   },
   "scripts": {
     "build": "NODE_ENV=production webpack --progress --colors -p && npm run flask-static-digest",
-    "start": "concurrently -n \"FLASK,CELERY,FLOWER\" -c \"bgBlue.bold,bgMagenta.bold,bgGreen.bold,bgRed.bold,bgCyan.bold,bgYellow.bold\" \"npm run flask-server\" \"celery -A py_flask.utils.tasks worker -B -E -f celery.log -l DEBUG\" \"celery -A py_flask.utils.tasks --broker=redis://localhost:6379/0 flower --port=5555\" ",
+    "start": "concurrently -n \"FLASK,CELERY,FLOWER,VITE-REACT\" -c \"bgCyan.bold,bgGreen.bold,bgRed.bold,bgMagenta.bold,bgCyan.bold,bgYellow.bold\" \"npm run flask-server\" \"celery -A py_flask.utils.tasks worker -B -E -f celery.log -l DEBUG\" \"celery -A py_flask.utils.tasks --broker=redis://localhost:6379/0 flower --port=5555\" \"npm run vite-react-dev\"",
     "flask-server": "flask run --host=0.0.0.0",
     "flask-static-digest": "flask digest compile",
-    "lint": "eslint \"assets/js/*.js\""
+    "lint": "eslint \"assets/js/*.js\"",
+    "vite-react-dev": "cd react && npm run dev"
   },
+  
+  
   "repository": {
     "type": "git",
     "url": "git+https://github.com/edurange/edurange3.git"

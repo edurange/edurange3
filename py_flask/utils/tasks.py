@@ -6,35 +6,24 @@ import shutil
 import string
 import subprocess
 from datetime import datetime
-from os import environ
-
 from celery import Celery
 from celery.utils.log import get_task_logger
-from flask import current_app, flash, render_template
-from flask_mail import Mail, Message
-
+from flask import current_app, flash
 from py_flask.utils.terraform_utils import adjust_network, find_and_copy_template, write_resource
 from py_flask.config.settings import CELERY_BROKER_URL, CELERY_RESULT_BACKEND
-from py_flask.database.models import ScenarioGroups, Scenarios
-
-logger = get_task_logger(__name__)
 
 #DEV_FIX (paths)
 
-
+logger = get_task_logger(__name__)
 path_to_directory = os.path.dirname(os.path.abspath(__file__))
-
 
 def get_path(file_name):
     mail_path = os.path.normpath(
         os.path.join(path_to_directory, "templates/utils", file_name)
     )
-
     return mail_path
 
-
 celery = Celery(__name__, broker=CELERY_BROKER_URL, backend=CELERY_RESULT_BACKEND)
-
 
 class ContextTask(celery.Task):
     ''' This allows tasks to assume the create_app() context, and access the database '''
@@ -46,9 +35,7 @@ class ContextTask(celery.Task):
         with create_app().app_context():
             return super(ContextTask, self).__call__(*args, **kwargs)
 
-
 celery.Task = ContextTask
-
 
 @celery.task(bind=True)
 def create_scenario_task(self, scen_name, scen_type, owner_user_id, students_list, grp_id, scen_id, namedict):
@@ -162,8 +149,6 @@ def create_scenario_task(self, scen_name, scen_type, owner_user_id, students_lis
 
         ScenarioGroups.create(group_id=grp_id, scenario_id=scen_id)
 
-
-
 @celery.task(bind=True)
 def start_scenario_task(self, scenario_id):
     from py_flask.database.models import Scenarios
@@ -268,7 +253,6 @@ def update_scenario_task(self, scenario_id):
             logger.info("Something went wrong")
             NotifyCapture("Failed to stop scenario " + name + ": Invalid Status")
             flash("Something went wrong", "warning")
-
 
 @celery.task(bind=True)
 def destroy_scenario_task(self, scenario_id):
@@ -448,8 +432,8 @@ def CreateScenarioTask(self, name, s_type, owner, group, g_id, s_id, namedict):
         with open(f"../chatnames.json", "w") as chatnamefile:
            json.dump(namedict, chatnamefile)
 
-        questions = open(f"../../../scenarios/prod/{s_type}/questions.yml", "r+")
-        content = open(f"../../../scenarios/prod/{s_type}/student_view/content.json", "r+")
+        questions = open(f"../../../scenarios/prod/{s_type}/questions.yml", "r+") #DEV_FIX
+        content = open(f"../../../scenarios/prod/{s_type}/student_view/content.json", "r+") #DEV_FIX
 
         logger.info(f"Questions Type: {type(questions)}")
         logger.info(f"Content Type: {type(content)}")
@@ -503,139 +487,3 @@ def CreateScenarioTask(self, name, s_type, owner, group, g_id, s_id, namedict):
         os.chdir("../../..")
 
         ScenarioGroups.create(group_id=g_id, scenario_id=s_id)
-
-
-# ADJUSTED LEGACY VERSION, KEEP UNTIL REPLACEMENT VERIFIED TO WORK..
-# import json
-# import os
-# import random
-# import shutil
-# import string
-# import subprocess
-# from datetime import datetime
-# from os import environ
-
-# from celery import Celery
-# from celery.utils.log import get_task_logger
-# from flask import current_app, flash, render_template
-# from flask_mail import Mail, Message
-
-# from py_flask.utils.parse_utils import adjust_network, find_and_copy_template, write_resource
-# from py_flask.utils.scenario_utils import gather_files
-# from py_flask.config.settings import CELERY_BROKER_URL, CELERY_RESULT_BACKEND
-
-# logger = get_task_logger(__name__) 
-
-# path_to_directory = os.path.dirname(os.path.abspath(__file__))
-
-# celery.Task = ContextTask
-
-# @celery.task(bind=True)
-# def CreateScenarioTask(self, name, s_type, owner, group, g_id, s_id, namedict):
-#     ''' self is the task instance, other arguments are the results of database queries '''
-#     from py_flask.database.models import ScenarioGroups, Scenarios
-
-#     app = current_app
-#     s_type = s_type.lower()
-#     g_id = g_id["id"]
-
-#     c_names, g_files, s_files, u_files, packages, ip_addrs = gather_files(s_type, logger)
-
-#     logger.info(
-#         "Executing task id {0.id}, args: {0.args!r} kwargs: {0.kwargs!r}".format(
-#             self.request
-#         )
-#     )
-
-#     students = {}
-#     usernames, passwords = [], []
-
-#     print("WHAT IS 'GROUP'?: ",group)
-#     logger.info("WHAT IS 'GROUP'?: ",group)
-
-#     for i in range(len(group)):
-#         username = "".join(e for e in group[i]["username"] if e.isalnum())
-#         password = "".join(
-#             random.choice(string.ascii_letters + string.digits) for _ in range(6)
-#         )
-
-#         usernames.append(username)
-#         passwords.append(password)
-
-#         logger.info(f'User: {group[i]["username"]}')
-#         students[username] = []
-#         students[username].append({"username": username, "password": password})
-
-#     logger.info("All names: {}".format(students))
-
-#     with app.test_request_context():
-#         scenario = Scenarios.query.filter_by(id=s_id).first()
-#         name = "".join(e for e in name if e.isalnum())
-
-#         os.makedirs("./scenarios/tmp/" + name)
-#         os.chdir("./scenarios/tmp/" + name)
-
-#         os.makedirs("./student_view")
-
-#         with open("students.json", "w") as outfile:
-#             json.dump(students, outfile)
-
-#         # create file of chat names for the scenario
-#         with open(f"../chatnames.json", "w") as chatnamefile:
-#            json.dump(namedict, chatnamefile)
-
-#         questions = open(f"../../../scenarios/prod/{s_type}/questions.yml", "r+")
-#         content = open(f"../../../scenarios/prod/{s_type}/student_view/content.json", "r+")
-
-#         logger.info(f"Questions Type: {type(questions)}")
-#         logger.info(f"Content Type: {type(content)}")
-
-#         flags = []
-#         if s_type == "getting_started" or s_type == "file_wrangler":
-#             flags.append("".join(random.choice(string.ascii_letters + string.digits) for _ in range(8)))
-#             flags.append("".join(random.choice(string.ascii_letters + string.digits) for _ in range(8)))
-
-#             questions = questions.read().replace("$RANDOM_ONE", flags[0]).replace("$RANDOM_TWO", flags[1])
-#             content = content.read().replace("$RANDOM_ONE", flags[0]).replace("$RANDOM_TWO", flags[1])
-
-#         with open("questions.yml", "w") as outfile:
-#             if type(questions) == str:
-#                 outfile.write(questions)
-#             else:
-#                 outfile.write(questions.read())
-
-#         with open("./student_view/content.json", "w") as outfile:
-#             if type(content) == str:
-#                 outfile.write(content)
-#             else:
-#                 outfile.write(content.read())
-
-#         active_scenarios = Scenarios.query.count()
-#         starting_octet = int(os.getenv("SUBNET_STARTING_OCTET", 10))
-
-#         # Local addresses begin at the subnet 10.0.0.0/24
-#         address = str(starting_octet + active_scenarios)
-
-#         # Write provider and networks
-#         find_and_copy_template(s_type, "network")
-#         adjust_network(address, name)
-#         os.system("terraform init")
-#         os.system("terraform plan -out network")
-
-#         logger.info("All flags: {}".format(flags))
-
-#         # Each container and their names are pulled from the 's_type'.json file
-#         for i, c in enumerate(c_names):
-#             find_and_copy_template(s_type, c)
-#             write_resource(
-#                 address, name, s_type, c_names[i], usernames, passwords,
-#                 s_files[i], g_files[i], u_files[i], flags
-#             )
-
-#         scenario.update(
-#             status=0,
-#             subnet=f"{address}.0.0.0/27"
-#         )
-#         os.chdir("../../..")
-
-#         ScenarioGroups.create(group_id=g_id, scenario_id=s_id)

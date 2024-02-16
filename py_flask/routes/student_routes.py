@@ -35,19 +35,19 @@ from py_flask.utils.auth_utils import jwt_and_csrf_required
 #######
 
 db_ses = db.session
-blueprint_edurange3_student = Blueprint(
+blueprint_student = Blueprint(
     'edurange3_student', 
     __name__, 
     url_prefix='/api')
 
-@blueprint_edurange3_student.errorhandler(418)
+@blueprint_student.errorhandler(418)
 def custom_error_handler(error):
     response = jsonify({"error": "request denied"})
     response.status_code = 418
     response.content_type = "application/json"
     return response
 
-@blueprint_edurange3_student.route("/logout", methods=["POST"])
+@blueprint_student.route("/logout", methods=["POST"])
 @jwt_and_csrf_required
 def logout():
     current_username = g.current_username
@@ -61,7 +61,7 @@ def logout():
     return response
 
 
-@blueprint_edurange3_student.route('/get_identity', methods=['GET']) # DEV_ONLY
+@blueprint_student.route('/get_identity', methods=['GET']) # DEV_ONLY
 @jwt_and_csrf_required
 def get_identity():
 

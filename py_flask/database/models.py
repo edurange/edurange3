@@ -12,6 +12,7 @@ from py_flask.database.db_classes import (
     db,
     reference_col,
     relationship,
+    Edu3Mixin
 )
 from py_flask.config.extensions import bcrypt
 
@@ -19,7 +20,7 @@ def generate_registration_code(size=8, chars=string.ascii_lowercase + string.dig
     return "".join(random.choice(chars) for _ in range(size))
 
 
-class StudentGroups( SurrogatePK, Model):
+class StudentGroups(Edu3Mixin, SurrogatePK, Model):
     """"Groups of Users"""
     __tablename__ = "groups"
     name = Column(db.String(40), unique=True, nullable=False)
@@ -30,12 +31,12 @@ class StudentGroups( SurrogatePK, Model):
     )
     hidden = Column(db.Boolean(), nullable=False, default=False)
     users = relationship("GroupUsers", backref="groups", cascade="all, delete-orphan")
-    def to_dict(self):
-        """Return a dictionary representation of the StudentGroups instance."""
-        return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
+    # def to_dict(self):
+    #     """Return a dictionary representation of the StudentGroups instance."""
+    #     return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
 
 
-class GroupUsers( SurrogatePK, Model):
+class GroupUsers(Edu3Mixin, SurrogatePK, Model):
     """Users belong to groups"""
     ___tablename___ = "group_users"
     user_id = reference_col("users", nullable=False)
@@ -44,7 +45,7 @@ class GroupUsers( SurrogatePK, Model):
     group = relationship("StudentGroups", backref="group_users", viewonly=True)
 
 
-class User( SurrogatePK, Model):
+class User(Edu3Mixin, SurrogatePK, Model):
     """A user of the app."""
     __tablename__ = "users"
     username = Column(db.String(80), unique=True, nullable=False)
@@ -72,7 +73,7 @@ class User( SurrogatePK, Model):
         return f"<User({self.username!r})>"
 
 
-class Scenarios( SurrogatePK, Model):
+class Scenarios(Edu3Mixin, SurrogatePK, Model):
     """A scenario."""
     __tablename__ = "scenarios"
     name = Column(db.String(40), unique=False, nullable=False)
@@ -89,13 +90,13 @@ class Scenarios( SurrogatePK, Model):
         return f"<Scenario({self.name!r})>"
 
 
-class Notification( SurrogatePK, Model):
+class Notification(Edu3Mixin, SurrogatePK, Model):
     #more columns could be added. Type of notification is one thing
     detail = Column(db.String(60), unique=False, nullable=False)
     date = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
 
 
-class ScenarioGroups( SurrogatePK, Model):
+class ScenarioGroups(Edu3Mixin, SurrogatePK, Model):
     """Groups associated with scenarios"""
     __tablename__ = "scenario_groups"
     group_id = reference_col("groups", nullable=False)
@@ -104,7 +105,7 @@ class ScenarioGroups( SurrogatePK, Model):
     scenario = relationship("Scenarios", backref="scenario_groups")
 
 
-class Responses( SurrogatePK, Model):
+class Responses(Edu3Mixin, SurrogatePK, Model):
     """Student responses to scenario questions"""
     __tablename__ = "responses"
     user_id = reference_col("users", nullable=False)
@@ -120,7 +121,7 @@ class Responses( SurrogatePK, Model):
     # learning objective field?
 
 
-class BashHistory( SurrogatePK, Model):
+class BashHistory(Edu3Mixin, SurrogatePK, Model):
     """Bash Histories, associated with users and scenarios"""
     __tablename__ = "bash_history"
     scenario_name = Column(db.String(40), unique=False, nullable=False)
@@ -131,7 +132,7 @@ class BashHistory( SurrogatePK, Model):
     output = Column(db.String(10000), nullable=False, unique=False)
     prompt = Column(db.String(80), nullable=False, unique=False)
 
-class ChatHistory( SurrogatePK, Model):
+class ChatHistory(Edu3Mixin, SurrogatePK, Model):
     """Chat Histories, associated with users and scenarios"""
 
     __tablename__ = "chat_history"
@@ -145,7 +146,7 @@ class ChatHistory( SurrogatePK, Model):
     message_contents = Column(db.String(10000), nullable=False, unique=False)
     
 
-class GroupChatHistory( SurrogatePK, Model):
+class GroupChatHistory(Edu3Mixin, SurrogatePK, Model):
     """Group Chat Histories"""
 
     __tablename__ = "group_chat_history"

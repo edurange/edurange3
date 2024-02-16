@@ -53,12 +53,12 @@ from py_flask.utils.guide_utils import (
 #######
 
 db_ses = db.session
-blueprint_edurange3_scenarios = Blueprint(
+blueprint_scenarios = Blueprint(
     'edurange3_scenario', 
     __name__, 
     url_prefix='/api')
 
-@blueprint_edurange3_scenarios.errorhandler(418)
+@blueprint_scenarios.errorhandler(418)
 def custom_error_handler(error):
     response = jsonify({"error": "request denied"})
     response.status_code = 418
@@ -67,7 +67,7 @@ def custom_error_handler(error):
 
 ### Reviewed / Working Routes  ##############
 
-@blueprint_edurange3_scenarios.route('/get_content/<int:i>', methods=['GET']) # WIP
+@blueprint_scenarios.route('/get_content/<int:i>', methods=['GET']) # WIP
 @jwt_and_csrf_required
 def get_content(i):
     current_username = g.current_username
@@ -105,7 +105,7 @@ def get_content(i):
         })
 
 
-@blueprint_edurange3_scenarios.route('/get_group_scenarios', methods=['GET'])
+@blueprint_scenarios.route('/get_group_scenarios', methods=['GET'])
 @jwt_and_csrf_required
 def get_scenarios():
     
@@ -153,7 +153,7 @@ def get_scenarios():
 
     return jsonify({"scenarios_list":myScenarios})
 
-@blueprint_edurange3_scenarios.route('/check_response', methods=['POST'])
+@blueprint_scenarios.route('/check_response', methods=['POST'])
 @jwt_and_csrf_required
 def checkResponse():
 
@@ -172,7 +172,7 @@ def checkResponse():
 
 ### UNReviewed Routes Below ##############
 
-# @blueprint_edurange3_scenarios.route('/get_docker_info/<int:i>', methods=['GET']) # WIP
+# @blueprint_scenarios.route('/get_docker_info/<int:i>', methods=['GET']) # WIP
 # @jwt_and_csrf_required
 # def get_docker_info(i):
 #     current_username = g.current_username

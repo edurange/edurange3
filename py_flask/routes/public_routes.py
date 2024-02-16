@@ -24,20 +24,20 @@ db_ses = db.session
 edurange3_csrf = secrets.token_hex(32)
 
 
-blueprint_edurange3_public = Blueprint(
+blueprint_public = Blueprint(
     'edurange3_public', 
     __name__, 
     url_prefix='/api')
 
 
-@blueprint_edurange3_public.errorhandler(418)
+@blueprint_public.errorhandler(418)
 def custom_error_handler(error):
     response = jsonify({"error": "request pubroute denied"})
     response.status_code = 418
     response.content_type = "application/json"
     return response
 
-@blueprint_edurange3_public.route("/login", methods=["POST"])
+@blueprint_public.route("/login", methods=["POST"])
 def login_edurange3():
     
     validation_schema = LoginSchema()  # instantiate validation schema
@@ -65,7 +65,7 @@ def login_edurange3():
     
     return logged_in_return
 
-@blueprint_edurange3_public.route("/register", methods=["POST"])
+@blueprint_public.route("/register", methods=["POST"])
 def registration():
     
     print("PRINT REQUEST JSON: ",request.json)

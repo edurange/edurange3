@@ -45,12 +45,12 @@ from py_flask.utils.instructorData_utils import get_instructorData
 # (i.e. if you forgot to use the decorator).
 #######
 
-blueprint_edurange3_instructor = Blueprint(
+blueprint_instructor = Blueprint(
     'edurange3_instructor',
     __name__, 
     url_prefix='/api')
 
-@blueprint_edurange3_instructor.errorhandler(418)
+@blueprint_instructor.errorhandler(418)
 def custom_error_handler(error):
     response = jsonify({"error": "request denied"})
     response.status_code = 418
@@ -59,7 +59,7 @@ def custom_error_handler(error):
 
 
 # TESTED AND WORKING ROUTES
-@blueprint_edurange3_instructor.route("/create_group", methods=['POST'])
+@blueprint_instructor.route("/create_group", methods=['POST'])
 @jwt_and_csrf_required
 def create_group():
     instructor_only()
@@ -90,14 +90,14 @@ def create_group():
             'group_obj':group_obj_dict
         })
 
-@blueprint_edurange3_instructor.route("/get_instructor_data", methods=['GET'])
+@blueprint_instructor.route("/get_instructor_data", methods=['GET'])
 @jwt_and_csrf_required
 def get_instructor_data():
     instructor_only()
     instructor_data = get_instructorData()
     return jsonify(instructor_data)
 
-@blueprint_edurange3_instructor.route("/scenario_interface", methods=["POST"])
+@blueprint_instructor.route("/scenario_interface", methods=["POST"])
 @jwt_and_csrf_required
 def scenario_interface():
     instructor_only()
@@ -198,7 +198,7 @@ def scenario_interface():
     return (returnJSON)
 
 # UNTESTED / WIP ROUTES
-@blueprint_edurange3_instructor.route("/delete_group", methods=['POST'])
+@blueprint_instructor.route("/delete_group", methods=['POST'])
 @jwt_and_csrf_required
 def delete_group(group_name):
     instructor_only()
@@ -225,7 +225,7 @@ def delete_group(group_name):
     return jsonify({"message":"Successfully deleted group {0}".format(group_name)})
 
 
-@blueprint_edurange3_instructor.route("/delete_user", methods=['POST'])
+@blueprint_instructor.route("/delete_user", methods=['POST'])
 @jwt_and_csrf_required
 def delete_user():
     instructor_only()
