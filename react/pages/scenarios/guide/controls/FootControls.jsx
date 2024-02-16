@@ -5,7 +5,7 @@ import React from 'react';
 import { scenarioShells } from '@modules/shells/scenarioType_shells';
 import './FootControls.css';
 import edurange_icons from     '@modules/ui/edurangeIcons';
-import Copy_button from '../panes/Copy_button';
+import Copy_button from '@components/Copy_button';
 
 const zws = `\u200B`;
 

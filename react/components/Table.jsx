@@ -4,16 +4,18 @@ import { useNavigate } from 'react-router-dom';
 import '@assets/css/tables.css';
 import { InstructorDashContext } from './InstructorDash';
 
+// work in progress
+
 function Table({ columnData, rowData, use_crud }) {
     const navigate = useNavigate();
-    const { instructorData_state, set_scenarioDetail_state } = useContext(InstructorDashContext);
+    const { instr_scenarios_state, set_scenarioDetail_state } = useContext(InstructorDashContext);
 
     function handleDetailClick(scenario_index) {
-        const currentMeta = instructorData_state.scenarios[scenario_index];
+        const currentMeta = instr_scenarios_state[scenario_index];
         set_scenarioDetail_state(currentMeta);
     }
 
-    if (!instructorData_state?.scenarios) {
+    if (!instr_scenarios_state) {
         return <></>;
     }
 

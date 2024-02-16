@@ -1,7 +1,6 @@
 import React from 'react';
 import './SSH_card.css';
-import Copy_button from './Copy_button';
-
+import Copy_button from '@components/Copy_button';
 const zws = `\u200B`;
 
 function SSH_card({ guideContent }) {

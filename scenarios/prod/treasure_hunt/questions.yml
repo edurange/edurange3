@@ -1,0 +1,96 @@
+- Text: Who is the author of awan's quote?
+  Type: String
+  Answers:
+    - Value: Woody Allen
+      Points: 20
+  Points: 20
+- Text: Who is the author of bduomo's quote?
+  Type: String
+  Answers:
+    - Value: Robert Benchley
+      Points: 5
+  Points: 5
+- Text: Who is the author of cdry's quote?
+  Type: String
+  Answers:
+    - Value: Benjamin Franklin
+      Points: 20
+  Points: 20
+- Text: Who is the author of dshi's quote?
+  Type: String
+  Answers:
+    - Value: Orson Welles
+      Points: 15
+  Points: 15
+- Text: From what country is the proverb of equintu's quote?
+  Type: String
+  Answers:
+    - Value: China
+      Points: 5
+  Points: 5
+- Text: What is the last word in fsexon's quote?
+  Type: String
+  Answers:
+    - Value: man
+      Points: 10
+  Points: 10
+- Text: From what country is the proverb of ghepta's quote?
+  Type: String
+  Answers:
+    - Value: Japan
+      Points: 15
+  Points: 15
+- Text: Who is the author of hochoa's quote?
+  Type: String
+  Answers:
+    - Value: Robert Frost
+      Points: 15
+  Points: 15
+- Text: Who is the author of inunez's quote?
+  Type: String
+  Answers:
+    - Value: Mark Twain
+      Points: 15
+  Points: 15
+- Text: Who is the author of jdekka's quote?
+  Type: String
+  Answers:
+    - Value: Ellen DeGeneres
+      Points: 5
+  Points: 5
+- Text: Who is the author of kelva's quote?
+  Type: String
+  Answers:
+    - Value: P. G. Wodehouse
+      Points: 15
+  Points: 15
+- Text: Who is the author of ldouzette's quote?
+  Type: String
+  Answers:
+    - Value: Norm Crosby
+      Points: 10
+  Points: 10
+- Text: Who is the author of pkaideka's quote?
+  Type: String
+  Answers:
+    - Value: Max Lerner
+      Points: 10
+  Points: 10
+- Text: Who is the author of pradessime's quote?
+  Type: String
+  Answers:
+    - Value: George Burns
+      Points: 25
+  Points: 25
+- Text: Who is the author of qsanera's quote?
+  Type: String
+  Answers:
+    - Value: Mark Twain
+      Points: 10
+  Points: 10
+- Text: Who is the author of tdaforth's quote?
+  Type: String
+  Answers:
+    - Value: Erma Bombeck
+      Points: 15
+  Points: 15

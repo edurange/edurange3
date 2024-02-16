@@ -11,7 +11,8 @@ from py_flask.database.models import Scenarios, User, Responses
 # Guide utils are functions that primarily populate and run the 
 # question & answer 'guide' that students see on the eduRange webpage (not the terminal ssh)
 
-## TESTED/WORKING
+## TESTED/WORKING (except: #DEV_FIX (paths))
+
 
 def getContent(scenario_id, username):
     db_ses = db.session
@@ -34,9 +35,9 @@ def getContent(scenario_id, username):
       
     unique_name = "".join(e for e in unique_name if e.isalnum())
     
-    with open(f'data/tmp/{unique_name}/student_view/content.json', 'r') as fp:
+    with open(f'scenarios/tmp/{unique_name}/student_view/content.json', 'r') as fp:
         contentJSON = json.load(fp)
-    with open(f'data/tmp/{unique_name}/students.json', 'r') as fp:
+    with open(f'scenarios/tmp/{unique_name}/students.json', 'r') as fp:
         credentialsJSON = json.load(fp)
     
     saniName = username.replace('-','')
@@ -68,7 +69,7 @@ def bashResponse(sid, uid, ans):
     sName = "".join(e for e in sName if e.isalnum())
 
     if "${player.login}" in ans:
-        students = open(f"./data/tmp/{sName}/students.json")
+        students = open(f"./scenarios/tmp/{sName}/students.json")
         user = ast.literal_eval(students.read())
         username = user[uName][0]["username"]
         ansFormat = ans[0:6]
@@ -77,7 +78,7 @@ def bashResponse(sid, uid, ans):
     elif "${scenario.instances" in ans:
         wordIndex = ans[21:-1].index(".")
         containerName = ans[21:21+wordIndex]
-        containerFile = open(f"./data/tmp/{sName}/{containerName}.tf.json")
+        containerFile = open(f"./scenarios/tmp/{sName}/{containerName}.tf.json")
         content = ast.literal_eval(containerFile.read())
         index = content["resource"][0]["docker_container"][0][sName + "_" + containerName][0]["networks_advanced"]
         ans = ""
@@ -92,7 +93,7 @@ def bashResponse(sid, uid, ans):
 def readQuestions(scenario):
     scenario = "".join(e for e in scenario if e.isalnum())
 
-    with open(f"./data/tmp/{scenario}/questions.yml") as yml:
+    with open(f"./scenarios/tmp/{scenario}/questions.yml") as yml:
         return yaml.full_load(yml)
 
 def evaluateResponse(user_id, scenario_id, question_num, student_response):

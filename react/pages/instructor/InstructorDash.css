@@ -17,7 +17,6 @@
     max-width: 750px;
     min-width: 750px;
     height: 100%;
-    /* gap: 15px; */
     overflow-y: auto;
     overflow-x: unset;
     box-sizing: border-box;
@@ -28,9 +27,7 @@
     align-items: flex-start;
     justify-content: flex-start;
     flex-direction: column;
-    /* border-left: 1px solid rgba(255, 0, 0, 0.387); */
     width: auto;
-    /* max-width: 20%; */
     height: 100%;
     gap: 5px;
     overflow-y: auto;
@@ -47,31 +44,16 @@
     border: 1px solid rgba(218, 165, 32, 0.49);
     width: 100%;
     height: auto;
-    border-radius: 15px;
-    box-sizing: border-box;
+    border-radius: 8px;
     padding: 8px;
+    box-sizing: border-box;
 }
 
 .row-aligned{
     display: flex;
     flex-direction: row;
 }
- 
-.create-frame{
-    display: flex;
-    width: 100%;
-    justify-content: stretch;
-    align-items: stretch;
-    gap: 10px;
-    box-sizing: border-box;
-    margin: 8px;
-}
-.create-input-fields{
-    min-width: 200px;
-    max-width: 200px;
-    
-    border: 1px solid black;
-}
+
 .form-frame{
     display: flex;
     width: 100%;
@@ -83,6 +65,9 @@
     width: 100%;
     justify-content: center;
     align-items: center;
+    height: 30px;
+    width: 80px;
+    max-width: 80px;
 }
 .detail-frame{
     display: flex;
@@ -95,12 +80,83 @@
 }
 .instructions-bubble{
     display: flex;
-    align-items: center;
+    align-items: flex-start;
+    justify-content: center;
     flex-direction: column;
     border: 1px solid rgba(218, 165, 32, 0.49);
     width: 100%;
     height: auto;
-    border-radius: 15px;
+    border-radius: 8px;
     box-sizing: border-box;
     padding: 8px;
+}
+.instructions-header{
+    align-items: center;
+}
+ 
+.create-frame{
+    display: flex;
+    width: 100%;
+    justify-content: stretch;
+    align-items: center;
+    gap: 10px;
+    box-sizing: border-box;
+    margin: 8px;
+    height: 52px;;
+    border: 1px solid rgba(218, 165, 32, 0.471);
+    border-radius: 8px;
+    padding: 5px;
+}
+.create-row{
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    gap: 4px;
+    box-sizing: border-box;
+    height: 30px;
+    border-radius: 4px;
+}
+.create-group-row{
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    gap: 4px;
+    box-sizing: border-box;
+    height: 30px;
+    border-radius: 4px;
+}
+.create-input-fields{
+    min-width: 200px;
+    max-width: 200px;
+    height: 30px;
+    border: 1px solid black;
+}
+.fullwidth{
+    width: auto;
+}
+.create-group-input{
+    max-width: 250px;
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    gap: 4px;
+    box-sizing: border-box;
+    height: 30px;
+    border-radius: 4px;
+}
+.gen-test-users-frame{
+    display: flex;
+    flex-direction: column;
+}
+.test-user-intbox{
+    display: flex;
+    flex-direction: row;
+
+}
+.box-and-text-container{
+    display: flex;
+    flex-direction: row;
 }

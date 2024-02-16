@@ -10,6 +10,7 @@ import Notifications from '@notifications/Notifications';
 import { navArrays } from '@modules/nav/navItemsData';
 import Frame_side from '@frame/sidenav/Frame_side';
 export const ScenariosRouter_context = React.createContext();
+import '@assets/css/dashboard.css';
 
 function Scenarios_router() {
 
@@ -24,7 +25,7 @@ function Scenarios_router() {
   const [notifsArray_state, set_notifsArray_state] = useState([fakeNotif]);
   
   const navLongname = `side_${navName_state}`
-  const navToShow = navArrays[navLongname];
+  const navArr_toShow = navArrays[navLongname];
 
     const [guideBook_state, set_guideBook_state] = useState({});
     const [guideContent_state, set_guideContent_state] = useState({});
@@ -60,7 +61,7 @@ function Scenarios_router() {
         <div className='newdash-frame'>
             <div className='newdash-frame-carpet'>
 
-                <Frame_side navToShow={navToShow} smallMode={true} hiddenMode={false} />
+                <Frame_side navArr_toShow={navArr_toShow} smallMode={true} hiddenMode={false} />
 
                 <div className="newdash-infopane-frame">
                     <div className='newdash-infopane-content'>

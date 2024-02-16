@@ -1,0 +1,43 @@
+{
+	"containers": [{
+		"name" : "target",
+		"files": [{
+			"global_files": [
+			],
+			"system_files": [
+				"Install",
+				"target_firewall_rules"
+			],
+			"user_files": [
+				"milestones.txt"
+			]
+		}]
+	},
+	{
+		"name" : "nat",
+		"files": [{
+			"global_files": [
+			],
+			"system_files": [
+				"attacker_firewall_rules"
+			],
+			"user_files": [
+				"milestones.txt"
+			]
+		}]
+	},        
+    {
+        "name" : "gateway",
+        "files":[
+            {
+                "global_files": [
+                ],
+                "system_files": [
+                ],
+                "user_files": [
+                    "milestones.txt"
+                ]
+            }
+        ]
+    }]
+}

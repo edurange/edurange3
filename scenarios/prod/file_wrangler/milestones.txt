@@ -1,0 +1,13 @@
+*,pwd,*
+*,man\s{1}pwd,*
+*,ls,*
+*,man\sls,*
+*,ls\s-l,*
+*,cd\sview,*
+*,ls\s-a,*
+*,cd\s\.\.,*
+*,ls\s-l\s-a|ls\s-la|ls\s-al|ls\s-a\s-l,*
+*,mv\sfile1\.txt\srenamed_file1\.txt,*
+*,cp\sfile2\.txt\scopied_file2\.txt,*
+*,chmod\s660\scopied_perm1\.txt,*
+*,chmod\s764\scopied_perm2\.txt,*

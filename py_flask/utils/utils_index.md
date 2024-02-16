@@ -21,15 +21,18 @@ instructor_utils:
     scenario_update
     scenario_destroy
 
-parse_utils (marged json_utils and csv_utils):
+terraform_utils (was scenario_json):
     adjust_network
     build_users
     build_uploads
     build_execute_files
     find_and_copy_template
-    groupCSV
-    readCSV
     write_resource
+
+csv_utils:
+    readCSV
+    groupCSV
+
 
 panopticon_utils:
     get_user
@@ -56,6 +59,8 @@ scenario_utils:
 
     keep:
         gen_chat_names (moved to chat_utils)
+        gather_files (used in scenario creation)
+        item_generator (used in scenario creation, parsing)
 
     questionable:
         CatalogEntry
@@ -65,14 +70,15 @@ scenario_utils:
         getAttempt
         getProgress
 
-    
+    nix:
+        setAttempt (doesn't even work right)
+        getPass (gets ssh credentials for certain container)
+
+    uncategorized:
         getResponses
         calcScr
         displayCorrectAnswers
-        gather_files
         getDescription
-        getPass
-        item_generator
         identify_type
         identify_state
         populate_catalog
@@ -84,4 +90,3 @@ scenario_utils:
         scoreSetup
         scoreCheck
         scoreCheck2
-        setAttempt

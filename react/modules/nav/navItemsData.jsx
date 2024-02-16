@@ -7,10 +7,11 @@
 // to determine which set of navigation items to show upon navigation
 // by inserting the stub into a dict reference in order to point to a given navArray (at bottom)
 
-// the array of nav objects is then passed to HomeHead.js or DashSideNav.js as a prop.
+// the array of nav objects is then passed to Frame_head or Frame_side as a prop.
 
 import edurange_icons from "../ui/edurangeIcons";
 
+// PUBLIC
 const home = {
     title: "Home",
     icon: edurange_icons.home,
@@ -21,12 +22,6 @@ const login = {
     title: "Login",
     icon: edurange_icons.user_check,
     path: `/login`,
-    navStub: 'home'
-};
-const logout = {
-    title: "Logout",
-    icon: edurange_icons.user_x,
-    path: `/scenarios/logout`,
     navStub: 'home'
 };
 const info_home = {
@@ -77,17 +72,13 @@ const accessibility = {
     path: `/options/accessibility`,
     navStub: 'options'
 };
-const admin = {
-    title: "Admin",
-    icon: edurange_icons.admin,
-    path: `/admin`,
-    navStub: 'dash_admin'
-};
-const instructor = {
-    title: "Instructor",
-    icon: edurange_icons.instructor,
-    path: `/instructor`,
-    navStub: 'dash_instructor'
+
+// LOGGED-IN-ONLY
+const logout = {
+    title: "Logout",
+    icon: edurange_icons.user_x,
+    path: `/logout`,
+    navStub: 'logout'
 };
 const account = {
     title: "Account",
@@ -107,24 +98,6 @@ const notifications = {
     path: `/notifications`,
     navStub: 'dash'
 };
-const instructor_userGroups = {
-    title: "Student Groups",
-    icon: edurange_icons.userGroup,
-    path: `/instructor/userGroups`,
-    navStub: 'dash_instructor'
-};
-const instructor_scenarioGroups = {
-    title: "Scenario Groups",
-    icon: edurange_icons.scenarioGroup,
-    path: `/instructor/scenarioGroups`,
-    navStub: 'dash_instructor'
-};
-const instructor_users = {
-    title: "Students",
-    icon: edurange_icons.user,
-    path: `/instructor/users`,
-    navStub: 'dash_instructor'
-};
 const jwt_test = {
     title: "jwt_test",
     icon: edurange_icons.key,
@@ -132,37 +105,62 @@ const jwt_test = {
     navStub: 'dash'
 };
 
+// INSTRUCTOR ONLY
+const instructor = {
+    title: "Dashboard",
+    icon: edurange_icons.wizardHat,
+    path: `/instructor`,
+    navStub: 'dash_instructor'
+};
+const studentGroups = {
+    title: "Student Groups",
+    icon: edurange_icons.userGroup,
+    path: `/instructor/studentGroups`,
+    navStub: 'dash_instructor'
+};
+const scenarioGroups = {
+    title: "Scenario Groups",
+    icon: edurange_icons.scenarioGroup,
+    path: `/instructor/scenarioGroups`,
+    navStub: 'dash_instructor'
+};
+const students = {
+    title: "Students",
+    icon: edurange_icons.user,
+    path: `/instructor/students`,
+    navStub: 'dash_instructor'
+};
+const instr_scenarios = {
+    title: "Scenarios",
+    icon: edurange_icons.chess_knight,
+    path: `/instructor/scenarios`,
+    navStub: 'dash_instructor'
+};
+
+
 export const navArrays = {
 
 //logged_out
-    side_logout:            [ jwt_test, home, docs, options, login, logout ],
-    top_logout:             [ jwt_test, home, docs, options, login, logout ],
+    side_logout:            [ docs, login, logout ],
+    top_logout:             [ docs, login, logout ],
 
 //home  
-    side_home:              [ home, scenarios, docs, options, account, logout , help, login ],
-    top_home:               [ jwt_test, scenarios, home, options, account, logout, login ],
+    side_home:              [ login ],
+    top_home:               [ docs, login, logout ],
 
 //options
     side_options:           [ accessibility, themes, home ],
-    top_options:            [ jwt_test, scenarios, home, options, account, logout, login ],
+    top_options:            [ scenarios, home, account, login, logout ],
 
-//scenarios
-    side_dash:              [ home, scenarios, instructor, options, account, logout ],
-    top_dash:               [ jwt_test, scenarios, home, options, account, logout, login ],
+//student scenarios
+    side_dash:              [ scenarios, instructor, account, logout ],
+    top_dash:               [ scenarios, login, logout ],
 
 //guide
-    side_guide:              [ home, scenarios, options, account, logout ],
-    top_guide:               [ jwt_test, scenarios, home, options, account, logout, login ],
+    side_guide:              [ scenarios, logout ],
+    top_guide:               [ login, logout ],
 
-//admin-dashboard
-    side_dash_admin:        [ home, instructor, options, account, logout ],
-    top_dash_admin:         [ jwt_test, instructor, home, options, account, logout, login ],
-
-//instructor-dashboard
-    side_dash_instructor:   [ home, instructor, options, account, logout ],
-    top_dash_instructor:    [ jwt_test, instructor, home, options, account, logout, login ],
-//instructor-dashboard
-    side_scenarios_instructor:   [ home, instructor_users, scenarios ],
-    top_scenarios_instructor:    [ jwt_test, home, options, account, logout, login ],
-
+//instructor's dashboard
+    side_dash_instructor:   [ instructor, students, studentGroups, instr_scenarios, scenarioGroups ],
+    top_dash_instructor:    [ instructor, login, logout ],
 };

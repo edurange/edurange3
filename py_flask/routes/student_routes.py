@@ -1,5 +1,4 @@
 
-from flask_login import logout_user
 from py_flask.config.extensions import db
 from py_flask.database.models import User
 from flask import (
@@ -52,7 +51,6 @@ def custom_error_handler(error):
 @jwt_and_csrf_required
 def logout():
     current_username = g.current_username
-    logout_user()
 
     response_data = {"message": f"User {current_username} has been successfully logged out."}
     response = make_response(jsonify(response_data))
@@ -63,9 +61,9 @@ def logout():
     return response
 
 
-@blueprint_edurange3_student.route('/jwt_test', methods=['GET']) # DEV_ONLY
+@blueprint_edurange3_student.route('/get_identity', methods=['GET']) # DEV_ONLY
 @jwt_and_csrf_required
-def jwt_test():
+def get_identity():
 
     current_username = g.current_username
     current_user_id = g.current_user_id

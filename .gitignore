@@ -65,8 +65,8 @@ package-lock.json
 
 # Directories
 
-# terraform data (replace data/tmp)
-data/tmp/
+# terraform data (replace scenarios/tmp)
+scenarios/tmp/
 *.tfstate
 terraform*.zip*
 

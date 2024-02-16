@@ -1,0 +1,42 @@
+- Text: What is the value of the secret flag on the Starting Line?
+  Type: String
+  Answers:
+    - Value: $RANDOM 
+      Points: 15
+  Points: 15
+- Text: What is the value of the secret flag on the First Stop?
+  Type: String
+  Answers:
+    - Value: $RANDOM 
+      Points: 15
+  Points: 15
+- Text: What is the value of the secret flag on the Second Stop?
+  Type: String
+  Answers:
+    - Value: $RANDOM 
+      Points: 15
+  Points: 15
+- Text: What is the value of the secret flag on the Third Stop?
+  Type: String
+  Answers:
+    - Value: $RANDOM 
+      Points: 15
+  Points: 15
+- Text: What is the value of the secret flag on the Fourth Stop?
+  Type: String
+  Answers:
+    - Value: $RANDOM 
+      Points: 15
+  Points: 15
+- Text: What is the value of the secret flag on the Fifth Stop?
+  Type: String
+  Answers:
+    - Value: $RANDOM 
+      Points: 15
+  Points: 15
+- Text: What is the value of the final secret flag?
+  Type: String
+  Answers:
+    - Value: $RANDOM 
+      Points: 15
+  Points: 15

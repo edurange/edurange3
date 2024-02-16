@@ -1,25 +1,24 @@
 import React, {useContext} from 'react';
 import { nanoid } from 'nanoid';
-import './Frame_side.css';
+import '../frame.css';
 import { navArrays } from '@modules/nav/navItemsData';
 import { HomeRouter_context } from '@home/Home_router';
 
-function Frame_side({navToShow}) {
+function Frame_side({navArr_toShow}) {
 
   const {
     sideNav_isVisible_state, updateNav,
     sideNav_isSmall_state
   } = useContext(HomeRouter_context);
 
-  // navToShow = (navToShow) ? navToShow : navArrays.side_logout; 
-  const myNav =  navArrays.side_scenarios_instructor
-
+  // navArr_toShow = (navArr_toShow) ? navArr_toShow : navArrays.side_logout; 
+  // const myNav =  navArrays.side_dash_instructor
   if (!sideNav_isVisible_state) {return <></>}
-    
+  if (!navArr_toShow) {return <></>}
   return (
         <div className='newdash-sidebar-frame'>
 
-          {myNav.map((val, key) => {
+          {navArr_toShow.map((val, key) => {
             return (
               <div className='newdash-sidebar-row' key={nanoid(3)} onClick={() => updateNav(val.path, val.navStub)} >
                 <div className='newdash-sidebar-item'>

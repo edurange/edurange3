@@ -1,7 +1,7 @@
 .table-frame {
     width: 100%;
     border: 1px solid  rgb(135, 96, 12);
-    border-radius: 15px;
+    border-radius: 8px;
     box-sizing: border-box;
     cursor: default;
 }
@@ -12,7 +12,7 @@
     grid-auto-flow: column;
     background-color: rgb(12, 20, 44);
     contain: content;
-    border-radius: 15px 15px 0 0;
+    border-radius: 8px 8px 0 0;
     cursor: pointer;
     justify-content: flex-start;
     display: flex;
@@ -33,7 +33,7 @@
 }
 .table-row:hover{
     background-color: rgba(250, 255, 173, 0.217);
-    border-radius: 15px;
+    border-radius: 8px;
 }
 .col-xsmall{
     max-width: 40px;
@@ -54,4 +54,33 @@
 .col-xlarge {
     max-width: 200px;
     min-width: 200px;
+}
+.status-standby{
+    color: orange;
+}
+.status-success{
+    color: var(--success);
+}
+.status-neutral{
+    color: var(--green-light);
+}
+.status-failure{
+    color: red;
+}
+.status-disabled{
+    color: grey;
+}
+.row-btns{
+    display: flex;
+    gap: 2px;
+    overflow: hidden;
+}
+.row-btn{
+    cursor: pointer;
+    max-width: 80px;
+}
+.row-btn:hover{
+    background: rgb(85, 85, 85);
+    border-radius: 4px;
+    color: white;
 }

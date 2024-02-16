@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { nanoid } from 'nanoid';
 import HomeChapter from '../Q_and_A/HomeChapter';
 import './GuidePane.css';
-import buildGuide from '@modules/utils/buildGuide';
+import buildGuide from '@modules/utils/guide_utils';
 
 function GuidePane({ guideContent, set_leftPane_state }) {
 

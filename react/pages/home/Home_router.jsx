@@ -16,7 +16,7 @@ import Scenarios_router from '@scenarios/Scenarios_router';
 import Frame_head from '@frame/head/Frame_head';
 import InstructorDash from '@instructor/InstructorDash';
 import JWT_Test from '@frame/JWT_test';
-import Logout from './logout/Logout';
+import Logout from './login/Logout';
 import Account from '@account/Account';
 import Instructor_router from '../instructor/Instructor_router';
 
@@ -30,20 +30,27 @@ function Home_router() {
   const [clipboard_state, set_clipboard_state] = useState('');
   const [sideNav_isVisible_state, set_sideNav_isVisible_state] = useState(true);
   const [sideNav_isSmall_state, set_sideNav_isSmall_state] = useState(false);
-  const [userData_state, set_userData_state] = useState({});
+  const [userData_state, set_userData_state] = useState();
   const [login_state, set_login_state] = useState(false);
   const navigate = useNavigate();
 
   function updateNav(newURL, newNavName) {
-    console.log('updating nav...');
-    set_navName_state(newNavName);
+    if (!newURL) {
+      console.log('ERROR: MISSING UPDATENAV URL');
+      return;
+    }
+    const navNameToUse = newNavName ?? navName_state;
+    // console.log('updating nav...');
+    set_navName_state(navNameToUse);
     const newExpiry = (Date.now() + loginExpiry);
-    sessionStorage.setItem('navName', JSON.stringify(newNavName));
+    sessionStorage.setItem('navName', JSON.stringify(navNameToUse));
     sessionStorage.setItem('loginExpiry', JSON.stringify(newExpiry));
     navigate(newURL);
   };
 
-  const navToShow = navArrays[`top_dash`];
+  if (!navName_state) {return <></>}
+  
+  const navArr_toShow = navArrays[`top_${navName_state}`];
 
   return (
     <div id='edurange-appframe'>
@@ -60,7 +67,7 @@ function Home_router() {
 
         <SessionKeeper />
 
-        <Frame_head navToShow={navToShow} />
+        <Frame_head navArr_toShow={navArr_toShow} />
 
         <div id='edurange-content'>
           <div className='universal-content-outer'>

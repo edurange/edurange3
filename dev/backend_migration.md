@@ -72,7 +72,6 @@ DONE
     Instructor:
     - Create Scenario
     - Create User Group
-    - Add Users to Group
     - Start Scenario
     - Modify Senario
     - Stop Scenario
@@ -91,6 +90,7 @@ DONE
 TODO (approx order of urgency):
 
     Instructor:
+    - Add Users to Group
     - Get Bash History of User
     - Get Answers Data for User
 

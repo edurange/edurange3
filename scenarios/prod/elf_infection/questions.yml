@@ -1,0 +1,6 @@
+- Text: There are no questions here. This is not a questions.
+  Type: String
+  Answers:
+    - Value: 000
+      Points: 0
+  Points: 0

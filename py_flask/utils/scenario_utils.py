@@ -20,6 +20,9 @@ from celery import group
 from py_flask.config.extensions import db
 from flask import jsonify, abort, g
 
+#DEV_FIX (paths)
+
+
 class CatalogEntry:
     def __init__(self, name, description):
         self.name = name
@@ -123,9 +126,9 @@ def identify_state(name, state):
     addresses = {}
     c_names = []
     name = "".join(e for e in name if e.isalnum())
-    if os.path.isdir(os.path.join("./data/tmp/", name)):
+    if os.path.isdir(os.path.join("./scenarios/tmp/", name)):
         try:
-            state_file = open("./data/tmp/" + name + "/terraform.tfstate", "r")
+            state_file = open("./scenarios/tmp/" + name + "/terraform.tfstate", "r")
             data = json.load(state_file)
 
             containers = item_generator(data, "name")
@@ -157,7 +160,7 @@ def getDescription(scenario):
 
 def getPass(scenario, username):
     scenario = "".join(e for e in scenario if e.isalnum())
-    with open(f'./data/tmp/{scenario}/students.json') as fd:
+    with open(f'./scenarios/tmp/{scenario}/students.json') as fd:
         data = json.load(fd)
     user = data.get(username)[0]
     return user.get('password')

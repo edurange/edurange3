@@ -21,7 +21,9 @@ from py_flask.utils.tasks import (
     start_scenario_task, 
     stop_scenario_task, 
     update_scenario_task,
-    destroy_scenario_task)
+    destroy_scenario_task,
+    CreateScenarioTask,
+)
 
 path_to_key = os.path.dirname(os.path.abspath(__file__))
 
@@ -30,35 +32,43 @@ path_to_key = os.path.dirname(os.path.abspath(__file__))
 # def generate_registration_code(size=8, chars=string.ascii_lowercase + string.digits):
 #     return "".join(random.choice(chars) for _ in range(size))
 
-# - INSTRUCTOR: GENERATE USER GROUP W/ GROUP CODE
-def createUserGroup():
-    return 0
-
-
 # - INSTRUCTOR: GENERATE GENERIC USER ACCTS FOR EXISTING GROUP
-def generateTestAccts(new_user_count, group_name, group_code):
+def generateTestAccts(group_db_obj, new_user_count, group_code):
+    # group_db_obj is pre-validated direct sqlalchemy db object, not dict
 
-    # check for code input
-    if not group_code:
-        print('You must have group code')
-    # check to see if code is in database
-        # if code NOT in database, reject request
+    group_obj_dict = group_db_obj.to_dict()
 
     generatedUsers = []
     for i in range(new_user_count):
 
         newPass = generate_registration_code()
-        user_obj = {
-            'username' : group_name + '-' + i,
+        user_dict = {
+            'username' : group_obj_dict['name'] + '-' + str(i),
             'password' : newPass,
             'confirm_password' : newPass,
             'code' : group_code,
         }
 
-        register_user(user_obj)
-        generatedUsers.append(user_obj)
+        user_dict['id'] = register_user(user_dict)
+        generatedUsers.append(user_dict)
 
-    return []
+
+    return generatedUsers
+
+def addGroupUsers(group_obj, userDict_list):
+
+    db_ses = db.session
+    group_id = group_obj.id
+
+    for user_dict in userDict_list:
+        user_id = user_dict['id']
+
+        existing_relation = db_ses.query(GroupUsers).filter_by(user_id=user_id, group_id=group_id).first()
+        if existing_relation is None:
+            new_relation = GroupUsers(user_id=user_id, group_id=group_id)
+            db_ses.add(new_relation)
+    db_ses.commit()
+    return userDict_list
 
 
 # - ASSIGN USERS/GROUPS TO SCENARIO
@@ -83,39 +93,43 @@ def scenario_create(scenario_type, scenario_name, studentGroup_name):
     
     db_ses = db.session
     owner_user_id = g.current_user_id
-    print("CREATE REQ INFO: ",scenario_type, scenario_name, studentGroup_name)
-    students = (
+    students_list = (
         db_ses.query(User.username)
         .filter(StudentGroups.name == studentGroup_name)
         .filter(StudentGroups.id == GroupUsers.group_id)
         .filter(GroupUsers.user_id == User.id)
         .all()
     )
-    for i, s in enumerate(students):
-        students[i] = s._asdict()
+    for i, s in enumerate(students_list):
+        students_list[i] = s._asdict()
 
+    print ('CREATE SCENARIO 1')
     Scenarios.create(name=scenario_name, description=scenario_type, owner_id=owner_user_id)
     NotifyCapture(f"Scenario {scenario_name} has been created.")
     
-    scenario_id = db_ses.query(Scenarios.id).filter(Scenarios.name == scenario_name).first()
+    scen_id_dbList = db_ses.query(Scenarios.id).filter(Scenarios.name == scenario_name).first()
+    print ('CREATE SCENARIO 2, SCENARIO ID: ', scen_id_dbList)
     
-    s_id_list = list(scenario_id._asdict().values())[0]
+    scenario_id = list(scen_id_dbList._asdict().values())[0]
+    print ('CREATE SCENARIO 3, scenario_id: ', scenario_id)
 
-
-    scenario = Scenarios.query.filter_by(id=s_id_list).first()
+    scenario = Scenarios.query.filter_by(id=scenario_id).first()
+    print ('CREATE SCENARIO 4, scenario: ', scenario)
     scenario.update(status=7)
     
     group_id = db_ses.query(StudentGroups.id).filter(StudentGroups.name == studentGroup_name).first()
     group_id = group_id._asdict()
     
+    print ('CREATE SCENARIO 5, group_id: ', group_id)
     
     student_ids = db_ses.query(GroupUsers.id).filter(GroupUsers.group_id == group_id['id']).all()
     namedict = gen_chat_names(student_ids, scenario_id)
+    print ('CREATE SCENARIO 5, namedict: ', namedict)
 
     if ( scenario_name is None \
         or scenario_type is None\
         or owner_user_id is None\
-        or students is None\
+        or students_list is None\
         or group_id is None\
         or scenario_id is None\
         or namedict is None
@@ -123,19 +137,21 @@ def scenario_create(scenario_type, scenario_name, studentGroup_name):
         print('missing create arg, aborting')
         abort(418)
 
-    print('Attempting to create scenario w/ args: ')
+    print ('CREATE SCENARIO 6, Attempting to create scenario w/ args: ')
     print(f"name: {scenario_name}")
     print(f"s_type: {scenario_type}")
     print(f"own_id: {owner_user_id}")
-    print(f"students: {students}")
+    print(f"students_list: {students_list}")
     print(f"group_id: {group_id}")
-    print(f"scenario_id: {scenario_id[0]}")
+    print(f"scenario_id: {scenario_id}")
     print(f"namedict: {namedict}")
-    create_scenario_task.delay(scenario_name, scenario_type, owner_user_id, students, group_id, scenario_id[0],  namedict)
 
-    # convert db-formatted-list to list of python dicts
-    students_list = [{'username': student['username']} for student in students]
-    return jsonify({"student_list": students_list})
+    create_scenario_task.delay(scenario_name, scenario_type, owner_user_id, students_list, group_id, scenario_id, namedict)
+    # CreateScenarioTask.delay(scenario_name, scenario_type, owner_user_id, students_list, group_id, scenario_id, namedict)
+    
+    students_return = [{'username': student['username']} for student in students_list]
+    print ('CREATE SCENARIO 7, students_return: ', students_return)
+    return jsonify({"student_list": students_return})
 
 def list_all_scenarios(requestJSON):
     print("Performing LIST method")

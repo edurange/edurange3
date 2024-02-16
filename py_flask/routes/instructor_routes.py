@@ -1,5 +1,5 @@
 from sqlalchemy.exc import SQLAlchemyError
-from flask_login import login_user, logout_user
+from py_flask.database.user_schemas import CreateGroupSchema, TestUserListSchema
 from py_flask.database.models import User, StudentGroups, Scenarios, ScenarioGroups, GroupUsers
 from py_flask.config.extensions import db
 from flask import (
@@ -9,7 +9,7 @@ from flask import (
     g
 )
 from py_flask.utils.auth_utils import jwt_and_csrf_required, instructor_only
-from py_flask.utils.instructor_utils import generateTestAccts
+from py_flask.utils.instructor_utils import generateTestAccts, addGroupUsers
 from py_flask.database.models import generate_registration_code as grc
 from py_flask.utils.instructor_utils import (
     list_all_scenarios, 
@@ -21,7 +21,7 @@ from py_flask.utils.instructor_utils import (
     )
 from werkzeug.exceptions import abort
 
-from py_flask.utils.panopticon_utils import get_instructor_data
+from py_flask.utils.instructorData_utils import get_instructorData
 #######
 # The `g` object is a global flask object that lasts ONLY for the life of a single request.
 #
@@ -45,7 +45,6 @@ from py_flask.utils.panopticon_utils import get_instructor_data
 # (i.e. if you forgot to use the decorator).
 #######
 
-db_ses = db.session
 blueprint_edurange3_instructor = Blueprint(
     'edurange3_instructor',
     __name__, 
@@ -58,110 +57,45 @@ def custom_error_handler(error):
     response.content_type = "application/json"
     return response
 
-@blueprint_edurange3_instructor.route("/instructor_test")
-@jwt_and_csrf_required
-def instructor_test():
-    instructor_only()
-    return jsonify ({"message":"this is /instructor_test, successful"})
 
-# tested 1/31/24; seems to be working -exoriparian
+# TESTED AND WORKING ROUTES
 @blueprint_edurange3_instructor.route("/create_group", methods=['POST'])
 @jwt_and_csrf_required
 def create_group():
-    # instructor_only()
-    
-    reqJSON = request.json
-
-    group_obj = None
-    code = grc()
-    group_name = reqJSON['group_name']
-    
-    group_obj = StudentGroups.create(name=group_name, owner_id=g.current_user_id, code=code)
-
-    group_obj_dict = group_obj.to_dict()
-    return jsonify ({"message":f"userGroup {group_name} created", 'group_obj':group_obj_dict})
-
-@blueprint_edurange3_instructor.route("/delete_group")
-@jwt_and_csrf_required
-def delete_group(group_name):
     instructor_only()
 
-    db_ses = db.session
-
-    student_group = db_ses.query(StudentGroups).filter(StudentGroups.name == group_name).first()
-    group_id = student_group.id
-    group_scenarios = db_ses.query(ScenarioGroups).filter(ScenarioGroups.group_id == group_id).first()
-    group_users = db_ses.query(GroupUsers).filter(GroupUsers.group_id == group_id).all()
-
-    chat_history = {}
-
-    if group_scenarios is not None:
-        jsonify({"message":"Cannot delete group - Are there still scenarios for this group?"})
-    else:
-        players = []
-        for user in group_users:
-            players.append(db_ses.query(User).filter(User.id == user.id).first())
-            user.delete()
-        for plr in players:
-            if plr is not None:
-                if plr.is_static:
-                    plr.delete()
-        student_group.delete()
-    return jsonify({"message":"Successfully deleted group {0}".format(group_name)})
-
-
-@blueprint_edurange3_instructor.route("/delete_user", methods=['POST'])
-@jwt_and_csrf_required
-def delete_user():
-    instructor_only()
-
-    try:
-        requestJSON = request.json 
-        user_to_delete = requestJSON.get('user_to_delete')
-
-        if not user_to_delete:
-            return jsonify({"message": "Missing required argument 'user_to_delete', delete aborted"}), 400
-
-        db_ses = db.session
-        user = db_ses.query(User).filter(User.name == user_to_delete).first()
-        
-        if not user:
-            return jsonify({"message": f"Cannot delete user - does username {user_to_delete} exist?"}), 404
-        else:
-            db_ses.delete(user)
-            db_ses.commit()
-            return jsonify({"message": f"Successfully deleted user {user_to_delete}"})
-
-    except SQLAlchemyError as e:
-        db_ses.rollback()
-        return jsonify({"message": f"An error occurred: {str(e)}"}), 500
-
-@blueprint_edurange3_instructor.route("/generate_users")
-@jwt_and_csrf_required
-def generate_users():
-    instructor_only()
-    
     requestJSON = request.json
 
-    generated_users = []
-    generated_users = generateTestAccts(requestJSON['new_user_count'], requestJSON['group_name'])
+    createGroup_schema = CreateGroupSchema()
+    validatedJSON = createGroup_schema.load(requestJSON)    
 
-    return jsonify (
-        {
-            "message" : f"{requestJSON['new_user_count']} users for group {requestJSON['group_name']} created", 
-            "generated_users":generated_users
+    group_name = validatedJSON['group_name']
+    new_code = grc()
+
+    group_obj = StudentGroups.create(name=group_name, owner_id=g.current_user_id, code=new_code)
+    group_obj_dict = group_obj.to_dict()
+
+    if (validatedJSON['should_generate']):
+
+        newUsers_list = generateTestAccts(group_obj, validatedJSON['new_user_count'], new_code)
+        return_userList = addGroupUsers(group_obj, newUsers_list)
+
+        return jsonify ({
+            "message": f"userGroup {group_name} created and {len(return_userList)} test accts created",
+            'group_obj': group_obj_dict,
+            'test_accts': return_userList
+        })
+    return jsonify ({
+            "message":f"userGroup {group_name} created", 
+            'group_obj':group_obj_dict
         })
 
-@blueprint_edurange3_instructor.route("/get_instructorData")
+@blueprint_edurange3_instructor.route("/get_instructor_data", methods=['GET'])
 @jwt_and_csrf_required
-def get_instructorData():
+def get_instructor_data():
     instructor_only()
-    
-    panop_data = get_instructor_data()
-
-    return jsonify(panop_data)
-
-
+    instructor_data = get_instructorData()
+    return jsonify(instructor_data)
 
 @blueprint_edurange3_instructor.route("/scenario_interface", methods=["POST"])
 @jwt_and_csrf_required
@@ -249,11 +183,6 @@ def scenario_interface():
             print ("Scenario DESTROY failed")
             return None
 
-
-    def update_scenario(requestJSON):
-        print("Performing UPDATE method")
-
-
     method_switch = {
         "LIST": list_scenarios,
         "CREATE": create_scenario,
@@ -267,3 +196,57 @@ def scenario_interface():
     returnJSON = methodToUse(requestJSON)
 
     return (returnJSON)
+
+# UNTESTED / WIP ROUTES
+@blueprint_edurange3_instructor.route("/delete_group", methods=['POST'])
+@jwt_and_csrf_required
+def delete_group(group_name):
+    instructor_only()
+
+    db_ses = db.session
+
+    student_group = db_ses.query(StudentGroups).filter(StudentGroups.name == group_name).first()
+    group_id = student_group.id
+    group_scenarios = db_ses.query(ScenarioGroups).filter(ScenarioGroups.group_id == group_id).first()
+    group_users = db_ses.query(GroupUsers).filter(GroupUsers.group_id == group_id).all()
+
+    if group_scenarios is not None:
+        jsonify({"message":"Cannot delete group - Are there still scenarios for this group?"})
+    else:
+        players = []
+        for user in group_users:
+            players.append(db_ses.query(User).filter(User.id == user.id).first())
+            user.delete()
+        for plr in players:
+            if plr is not None:
+                if plr.is_static:
+                    plr.delete()
+        student_group.delete()
+    return jsonify({"message":"Successfully deleted group {0}".format(group_name)})
+
+
+@blueprint_edurange3_instructor.route("/delete_user", methods=['POST'])
+@jwt_and_csrf_required
+def delete_user():
+    instructor_only()
+
+    try:
+        requestJSON = request.json 
+        user_to_delete = requestJSON.get('user_to_delete')
+
+        if not user_to_delete:
+            return jsonify({"message": "Missing required argument 'user_to_delete', delete aborted"}), 400
+
+        db_ses = db.session
+        user = db_ses.query(User).filter(User.name == user_to_delete).first()
+        
+        if not user:
+            return jsonify({"message": f"Cannot delete user - does username {user_to_delete} exist?"}), 404
+        else:
+            db_ses.delete(user)
+            db_ses.commit()
+            return jsonify({"message": f"Successfully deleted user {user_to_delete}"})
+
+    except SQLAlchemyError as e:
+        db_ses.rollback()
+        return jsonify({"message": f"An error occurred: {str(e)}"}), 500

@@ -1,0 +1,20 @@
+---
+Name: File_Wrangler
+Description: File Wrangler teaches the basics of files and directories in the Linux command line.
+Instructions: Follow the instructions in EDURange to log in and then follow the prompts in the environment.
+Codelab: https://edurange.github.io/file_wrangler_tutorial/
+Groups:
+- Name: Students
+  Instructions: Log on to the file_wrangler instance and then follow the prompts in the environment.
+  Access:
+  - Instance: file_wrangler
+    IP_Visible: true
+  Users:
+  - Login: student
+  Variables:
+  - Name: manipulate
+    Type: random
+  - Name: permissions
+    Type: random
+Instances:
+- Name: file_wrangler

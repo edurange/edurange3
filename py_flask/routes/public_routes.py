@@ -1,5 +1,3 @@
-from sqlalchemy.exc import SQLAlchemyError
-from flask_login import login_user, logout_user
 from py_flask.config.extensions import db
 from flask import (
     Blueprint,
@@ -8,16 +6,12 @@ from flask import (
     g
 )
 from py_flask.database.models import User, StudentGroups, Scenarios, ScenarioGroups, GroupUsers
-from py_flask.utils.auth_utils import jwt_and_csrf_required, instructor_only, login_er3
-from py_flask.utils.instructor_utils import generateTestAccts
+from py_flask.utils.auth_utils import login_er3
 from py_flask.utils.auth_utils import register_user
 from py_flask.database.user_schemas import LoginSchema, RegistrationSchema
 from werkzeug.exceptions import abort
 from flask import current_app
 import secrets
-# from flask_jwt_simple import create_jwt
-
-# from flask_jwt_extended import create_access_token
 
 from flask import (
     Blueprint,
@@ -50,7 +44,6 @@ def login_edurange3():
     validated_data = validation_schema.load(request.json) # validate login. reject if bad.
     
     validated_user_obj = User.query.filter_by(username=validated_data["username"]).first()
-    if validated_user_obj: login_user(validated_user_obj) # login to legacy app
 
     if 'X-XSRF-TOKEN' not in session:
         session['X-XSRF-TOKEN'] = secrets.token_hex(32)

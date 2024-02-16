@@ -1,10 +1,27 @@
-
 from flask import abort
 from py_flask.config.extensions import db, bcrypt
-from py_flask.database.models import GroupUsers, ScenarioGroups, Scenarios, StudentGroups, User, Notification
+from py_flask.database.models import (
+    GroupUsers, 
+    Notification,
+    ScenarioGroups, 
+    Scenarios, 
+    StudentGroups, 
+    User, 
+    )
 from flask_marshmallow import Marshmallow
-from marshmallow import ValidationError, validate, validates_schema
-from marshmallow.fields import String
+from marshmallow import (
+    fields, 
+    Schema, 
+    validate, 
+    validates,
+    ValidationError,
+    validates_schema,
+    )
+
+
+from marshmallow import Schema, fields, validates, ValidationError
+from marshmallow.fields import String, Boolean, Integer
+from marshmallow.validate import OneOf, Length, Regexp
 ma = Marshmallow()
 db_ses = db.session
 
@@ -63,3 +80,34 @@ class RegistrationSchema(ma.SQLAlchemyAutoSchema):
 
     class Meta:
         model = User
+        
+
+class CreateGroupSchema(Schema):
+
+    group_name = fields.String(required=True, validate=[
+        validate.Length(min=3, max=25, error="Group name must be between 3 and 25 characters"),
+        validate.Regexp('^[A-Za-z0-9]+(-?[A-Za-z0-9]+)*$', error="Group name must be alphanumeric")
+    ])
+    should_generate = fields.Boolean(required=True)
+    new_user_count = fields.Integer(required=True, validate=validate.Range(min=1, max=100))
+    code = fields.String(required=False)
+
+    @validates_schema
+    def validate_groupCreate(self, data, **kwargs):
+        group_name_input = data.get("group_name")
+        existingGroup = db_ses.query(StudentGroups).filter_by(name=group_name_input).first()
+        if existingGroup is not None:
+            raise ValidationError("Group already exists!", field_names=["group_name"])
+
+    class Meta:
+        model = StudentGroups
+
+class UserSchema(Schema):
+    username = fields.Str(required=True, validate=[Length(min=3, max=25), Regexp('^[A-Za-z0-9]+$')])
+
+class TestUserListSchema(Schema):
+    newUsers_list = fields.List(fields.Nested(UserSchema), required=True)
+    @validates_schema
+    def validate_usersList(self, data, **kwargs):
+        # other custom validations
+        pass

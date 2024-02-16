@@ -1,17 +1,17 @@
 
 // FILE IN USE; KEEP
 
-import elf from '@assets/img/svg//elf.svg';
-import fingerprint from '@assets/img/svg//fingerprint.svg';
-import gettingStarted from '@assets/img/svg//getting_started.svg';
+import elf from '@assets/img/svg/elf.svg';
+import fingerprint from '@assets/img/svg/fingerprint.svg';
+import gettingStarted from '@assets/img/svg/getting_started.svg';
 
-import kick from '@assets/img/svg//kick.svg';
-import survivalist from '@assets/img/svg//survivalist.svg';
-import alchemy from '@assets/img/svg//alchemy.svg';
-import maze from '@assets/img/svg//maze.svg';
-import twoHeads from '@assets/img/svg//twoHeads.svg';
-import wrangler from '@assets/img/svg//wrangler.svg';
-import treasureMap from '@assets/img/svg//tmap.svg';
+import kick from '@assets/img/svg/kick.svg';
+import survivalist from '@assets/img/svg/survivalist.svg';
+import alchemy from '@assets/img/svg/alchemy.svg';
+import maze from '@assets/img/svg/maze.svg';
+import twoHeads from '@assets/img/svg/twoHeads.svg';
+import wrangler from '@assets/img/svg/wrangler.svg';
+import treasureMap from '@assets/img/svg/tmap.svg';
 import resData from '@modules/shells/scenarioResources';
 
 // these classes are called by their .name from /dashboard/scenarios/ in this format:
@@ -125,15 +125,13 @@ class Ransomware_shell {
 };
 
 export const scenarioShells = {
-
-    Getting_Started:    new Getting_Started_shell,
-    Total_Recon:        new Total_Recon_shell,
-    File_Wrangler:      new File_Wrangler_shell,
     Elf_Infection:      new ELF_Infection_shell,
-    Strace:             new Strace_shell,
+    File_Wrangler:      new File_Wrangler_shell,
+    Getting_Started:    new Getting_Started_shell,
     Metasploitable:     new Metasploitable_shell,
     Ransomware:         new Ransomware_shell,
-    Treasure_Hunt:      new Treasure_Hunt_shell,
     Ssh_Inception:      new Ssh_Inception_shell,
-
+    Strace:             new Strace_shell,
+    Total_Recon:        new Total_Recon_shell,
+    Treasure_Hunt:      new Treasure_Hunt_shell,
 };

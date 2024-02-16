@@ -23,7 +23,6 @@ function Login() {
 
             if (userData) {
                 console.log("Login success!");
-                console.log("Login userData", userData);
                 set_userData_state(userData);
                 set_login_state(true);
                 const newExpiry = Date.now() + loginExpiry;
@@ -31,10 +30,11 @@ function Login() {
                 sessionStorage.setItem('navName', `dash`);
                 sessionStorage.setItem('login', true);
                 sessionStorage.setItem('loginExpiry', newExpiry);
-                if ((userData?.role == 'instructor') || (userData?.role == 'admin')) {
-                    updateNav('/instructor/', `dash`);
+                if ((userData?.role === 'instructor') || (userData?.role === 'admin')) {
+                    updateNav('/instructor/', `dash_instructor`);
                 }
-                else { updateNav('/scenarios/', `dash`); }
+                else { 
+                    updateNav('/scenarios/', `dash`); }
             } else {
                 const errData = response.data.error;
                 console.log(errData);

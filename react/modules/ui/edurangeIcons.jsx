@@ -33,7 +33,7 @@ import {
     FaChevronRight,
     FaRegCopy,
     FaCheck,
-
+    FaHatWizard
 } from "react-icons/fa6";
 
 import { 
@@ -85,6 +85,7 @@ import {
     menuClose_up: <HiMiniBarsArrowUp/>,
     panelOpen_left: <LuPanelLeftOpen/>,
     panelClose_left: <LuPanelLeftClose/>,
+    wizardHat: <FaHatWizard/>
 }
 export default edurange_icons
 

@@ -5,9 +5,9 @@ import { InstructorRouter_context } from './Instructor_router';
 
 function Instructor_GroupTable() {
 
-    const { instructorData_state } = useContext(InstructorRouter_context);
+    const { instr_studentGroups_state } = useContext(InstructorRouter_context);
 
-    if (!instructorData_state?.userGroups) {return <></>}
+    if (!instr_studentGroups_state) {return <></>}
     
     return (
         <div className="table-frame">
@@ -17,7 +17,7 @@ function Instructor_GroupTable() {
                 <div className='table-cell-item col-medium'>Name</div>
                 <div className='table-cell-item col-small'>Code</div>
             </div>
-            {instructorData_state.userGroups.slice(0).map((group, index) => (
+            {instr_studentGroups_state.slice(2).map((group, index) => (
                 <div key={index}>
                     <div className="table-row">
                         <div className='table-cell-item col-xsmall'>{group.id}</div>

@@ -111,5 +111,7 @@ def register_user(validated_registration_data):
     user_id = user.get_id()
     GroupUsers.create(user_id=user_id, group_id=group_id)
 
+    return user_id
+
     
 # delete account (Add here)

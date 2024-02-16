@@ -100,7 +100,7 @@ table {
     --blue-deep: #00022d;
     --purple-deep: #030028;
 
-    --success: green;
+    --success: rgb(0, 255, 0);
     --warning:  rgb(255, 217, 0);
     --danger: red;
 }

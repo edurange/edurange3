@@ -1,0 +1,14 @@
+---
+Name: SSH Inception
+Description: SSH Inception teaches students the basics of ssh, a secure a program for logging into a remote machine.
+Codelab: http://localhost:5000/404
+#Roles:
+Groups:
+- Name: Students
+  Instructions: First ssh into strace with the Public IP Address and credentials. Then follow the instructions presented at each stage.
+  Access:
+  - Instance: ssh_inception
+  Users:
+  - Login: student
+Instances:
+- Name: ssh_inception

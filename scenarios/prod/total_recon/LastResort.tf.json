@@ -1,0 +1,86 @@
+{
+  "resource": [
+    {
+      "docker_container": [
+        {
+          "SNAME_LastResort": [
+            {
+              "capabilities": [
+                {
+                  "add": [
+                    "NET_ADMIN",
+                    "SYS_PTRACE"
+                  ]
+                }
+              ],
+              "command": [
+                "/usr/sbin/sshd",
+                "-D"
+              ],
+              "connection": [
+                {
+                  "host": "${self.ports[0].ip}",
+                  "password": "root",
+                  "port": "${self.ports[0].external}",
+                  "type": "ssh",
+                  "user": "root"
+                }
+              ],
+              "hostname": "LastResort",
+              "image": "edurange2/ubuntu-sshd:16.04",
+              "name": "SNAME_LastResort",
+              "networks_advanced": [
+                {
+                  "ipv4_address": "10.OCTET.1.9",
+                  "name": "SNAME_NAT"
+                },
+                {
+                  "ipv4_address": "10.OCTET.216.144",
+                  "name": "SNAME_MARS"
+                }
+              ],
+              "ports": [
+                {
+                  "internal": 22
+                }
+              ],
+              "provisioner": [
+                {
+                  "remote-exec": [
+                    {
+                      "inline": [
+                        "USERS",
+                        "EXECS",
+                        "chmod -x /usr/bin/nmap"
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "restart": "always"
+            }
+          ]
+        }
+      ]
+    }],
+  "locals": [
+    {
+      "SNAME_LastResort_extern": "HIDDEN"
+    }
+  ],
+  "output": [
+    {
+      "SNAME_LastResort": [
+        {
+          "value": [
+            {
+              "ip_address_public": "${join(\":\", [\"EXTERN_HOST\", local.SNAME_LastResort_extern])}",
+              "name": "SNAME_LastResort"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+
+}

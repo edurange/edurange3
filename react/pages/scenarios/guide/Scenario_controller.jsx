@@ -8,7 +8,7 @@ import GuidePane from './panes/GuidePane';
 import FootControls from './controls/FootControls';
 import SSH_web from './ssh/SSH_web';
 
-import "@frame/Frame.css";
+import "@frame/frame.css";
 import './Scenario_controller.css';
 import { HomeRouter_context } from '@home/Home_router';
 
