@@ -8,7 +8,7 @@ function CreateScenario() {
   const [newScenType_state, set_newScenType_state] = useState('');
   const [newScenName_state, set_newScenName_state] = useState('');
   const [newScen_groupName_state, set_newScen_groupName_state] = useState('');
-  const { instr_scenarios_state, instr_studentGroups_state, set_scenarioDetail_state } = useContext(InstructorRouter_context);
+  const { instr_scenarios_state, instr_studentGroups_state, set_instr_scenarioDetail_state } = useContext(InstructorRouter_context);
 
   const handle_scenType_change = (event) => {
     set_newScenType_state(event.target.value);
@@ -41,7 +41,7 @@ function CreateScenario() {
   };
 
   if (!instr_scenarios_state) { return <></> }
-
+  console.log(instr_scenarios_state)
 
   return (
     <div className='create-frame'>
@@ -54,7 +54,7 @@ function CreateScenario() {
         >
           <option value="" disabled>Choose Group</option>
           {instr_studentGroups_state.length > 2 ? (
-            instr_studentGroups_state.slice(2).map((group, index) => (
+            instr_studentGroups_state.slice(0).map((group, index) => (
               <option key={index} value={group.name}>{group.name}</option>
             ))) : (
             <option disabled>No groups found</option>

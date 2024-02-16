@@ -34,7 +34,7 @@ function Scenario_controller() {
   useEffect(() => {
     async function getContent() {
       try {
-        const contentReturn = await axios.get(`api/get_content/${scenarioID}`);
+        const contentReturn = await axios.get(`get_content/${scenarioID}`);
         const contentData = contentReturn.data;
         set_guideContent_state(contentData);
       } catch (error) {

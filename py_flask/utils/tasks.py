@@ -30,7 +30,7 @@ class ContextTask(celery.Task):
     abstract = True
 
     def __call__(self, *args, **kwargs):
-        from app import create_app
+        from py_flask.config.init import create_app
 
         with create_app().app_context():
             return super(ContextTask, self).__call__(*args, **kwargs)
@@ -171,6 +171,7 @@ def start_scenario_task(self, scenario_id):
             NotifyCapture("Failed to start scenario " + name + ": Invalid Status")
             raise Exception(f"Scenario must be stopped before starting")
         elif os.path.isdir(os.path.join("./scenarios/tmp/", name)):
+            print('174 IN TASKS.PY')
             scenario.update(status=3)
             logger.info("Folder Found")
             os.chdir("./scenarios/tmp/" + name)

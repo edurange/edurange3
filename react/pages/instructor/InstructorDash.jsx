@@ -16,7 +16,7 @@ function InstructorDash() {
   const { 
     instr_scenarios_state, 
     scenarioDetail_state, 
-    set_scenarioDetail_state } = useContext(InstructorRouter_context);
+    set_instr_scenarioDetail_state } = useContext(InstructorRouter_context);
   const { 
     navName_state } = useContext(HomeRouter_context);
 
@@ -42,7 +42,7 @@ function InstructorDash() {
             <div className='instructor-dash-section'>
               <Placard placard_text='SCENARIOS' />
               <CreateScenario />
-              <Instructor_ScenTable set_scenarioDetail_state={set_scenarioDetail_state} />
+              <Instructor_ScenTable set_instr_scenarioDetail_state={set_instr_scenarioDetail_state} />
             </div>
           </div>
 

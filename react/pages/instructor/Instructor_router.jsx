@@ -19,6 +19,8 @@ function Instructor_router() {
             const response = await axios.get("/get_instructor_data");
             const responseData = response.data;
             const instr_data = buildInstructorData(responseData);
+            console.log(instr_data)
+            console.log(responseData)
             set_instr_students_state(instr_data.users);
             set_instr_studentGroups_state(instr_data.userGroups);
             set_instr_scenarios_state(instr_data.scenarios);

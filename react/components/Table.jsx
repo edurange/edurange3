@@ -8,11 +8,11 @@ import { InstructorDashContext } from './InstructorDash';
 
 function Table({ columnData, rowData, use_crud }) {
     const navigate = useNavigate();
-    const { instr_scenarios_state, set_scenarioDetail_state } = useContext(InstructorDashContext);
+    const { instr_scenarios_state, set_instr_scenarioDetail_state } = useContext(InstructorDashContext);
 
     function handleDetailClick(scenario_index) {
         const currentMeta = instr_scenarios_state[scenario_index];
-        set_scenarioDetail_state(currentMeta);
+        set_instr_scenarioDetail_state(currentMeta);
     }
 
     if (!instr_scenarios_state) {
@@ -103,11 +103,11 @@ export default Table;
 
 //     const navigate = useNavigate();
 
-//     const { instructorData_state, set_scenarioDetail_state } = useContext( InstructorDashContext );
+//     const { instructorData_state, set_instr_scenarioDetail_state } = useContext( InstructorDashContext );
     
 //         function handleDetailClick (scenario_index) {
 //             const currentMeta = instructorData_state.scenarios[scenario_index];
-//             set_scenarioDetail_state(currentMeta);
+//             set_instr_scenarioDetail_state(currentMeta);
 //         };
 
 //     if (!instructorData_state?.scenarios) {return <></>}

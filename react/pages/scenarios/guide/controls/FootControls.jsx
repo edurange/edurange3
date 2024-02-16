@@ -6,19 +6,16 @@ import { scenarioShells } from '@modules/shells/scenarioType_shells';
 import './FootControls.css';
 import edurange_icons from     '@modules/ui/edurangeIcons';
 import Copy_button from '@components/Copy_button';
+import Copy_button_small from '@components/Copy_button_small';
 
 const zws = `\u200B`;
 
-
-// UNDER HEAVY CONSTRUCTION
 
 function FootControls({ guideContent, updatePane, paneSide }) {
 
   const meta = guideContent.scenario_meta;
 
-  // GUARD
   if ((!meta)) { return (<>Scenario not found</>); }
-  // GUARD
   
   const SSH_key = `${guideContent.unique_scenario_name}_StartingLine`
   const SSH_IP = guideContent.SSH_IP

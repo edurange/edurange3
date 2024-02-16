@@ -5,7 +5,7 @@ import '@assets/css/tables.css'
 
 function Instructor_ScenTable() {
 
-    const { instr_studentGroups_state, set_scenarioDetail_state, instr_scenarios_state } = useContext(InstructorRouter_context);
+    const { instr_studentGroups_state, set_instr_scenarioDetail_state, instr_scenarios_state } = useContext(InstructorRouter_context);
     
     const statusSwitch = {
         0: <div className='status-disabled'>Stopped</div>,
@@ -20,24 +20,25 @@ function Instructor_ScenTable() {
     if (!instr_studentGroups_state) {return <></>}
 
     function handleInspectClick (scenario_index) {
-        set_scenarioDetail_state(instr_scenarios_state[scenario_index])
+        set_instr_scenarioDetail_state(instr_scenarios_state[scenario_index])
     };
     function handleStartClick (scenario) {
+        console.log(scenario)
         axios.post('/scenario_interface',{
             METHOD: 'START',
-            scenario_id: scenario.scenario_id
+            scenario_id: scenario.id
         })
     };
     function handleStopClick (scenario) {
         axios.post('/scenario_interface',{
             METHOD: 'STOP',
-            scenario_id: scenario.scenario_id
+            scenario_id: scenario.id
         })
     };
     function handleDestroyClick (scenario) {
         axios.post('/scenario_interface',{
             METHOD: 'DESTROY',
-            scenario_id: scenario.scenario_id
+            scenario_id: scenario.id
         })
     };
 
@@ -52,7 +53,7 @@ function Instructor_ScenTable() {
                 <div className='table-cell-item col-small'>Status</div>
                 <div className='table-cell-item col-large'>CONTROL PANEL</div>
             </div>
-            {instr_scenarios_state.slice(1).map((scenario, index) => (
+            {instr_scenarios_state.slice(0).map((scenario, index) => (
                 <div key={index+2000} onClick={() => handleInspectClick(index)} >
                     <div className="table-row">
                         <div className='table-cell-item col-xsmall'>{scenario.id}</div>
