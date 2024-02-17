@@ -14,8 +14,6 @@ import SessionKeeper from './SessionKeeper';
 import HomeFoot from '@frame/foot/Frame_foot';
 import Scenarios_router from '@scenarios/Scenarios_router';
 import Frame_head from '@frame/head/Frame_head';
-import InstructorDash from '@instructor/InstructorDash';
-import JWT_Test from '@frame/JWT_test';
 import Logout from './login/Logout';
 import Account from '@account/Account';
 import Instructor_router from '../instructor/Instructor_router';
@@ -86,7 +84,6 @@ function Home_router() {
                       <Scenarios_router />
                     </LoggedIn_context>
                   } />
-                  <Route path="/jwt_test" element={<JWT_Test />} />
                   <Route path="/account" element={<Account />} />
                   <Route path="/instructor/*" element={<Instructor_router />} />
                 </Routes>

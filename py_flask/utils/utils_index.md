@@ -45,16 +45,26 @@ instructorData_utils:
     get_instructor_data
 
 guide_utils:
-    getContent
-    getScenarioMeta
+    getContent ( gets generic data, unique data, and user credentials for scenarios, for UI )
+    getScenarioMeta ( gets metadata for a scenario, used for listings etc in UI )
     bashResponse
-    readQuestions
-    evaluateResponse
-    get_dockerPort
+    readQuestions ( returns all questions for a certain scenario )
+    evaluateResponse ( grades a student's answer, returns true/false, correct answer, and pts awarded )
+    get_dockerPort  
+
+    From Legacy:
+        getResponses
+        calcScr
+        displayCorrectAnswers
+        recentCorrect
+        responseSelector
+        responseProcessing
+        scoreSetup
+        scoreCheck
+        scoreCheck2
 
 scenario_utils:
     
-
     evaluate: keep/move/edit/delete ?
 
     keep:
@@ -75,18 +85,9 @@ scenario_utils:
         getPass (gets ssh credentials for certain container)
 
     uncategorized:
-        getResponses
-        calcScr
-        displayCorrectAnswers
         getDescription
         identify_type
         identify_state
         populate_catalog
         queryPolish
         readScenario
-        recentCorrect
-        responseSelector
-        responseProcessing
-        scoreSetup
-        scoreCheck
-        scoreCheck2

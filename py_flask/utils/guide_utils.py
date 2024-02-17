@@ -11,7 +11,7 @@ from py_flask.database.models import Scenarios, User, Responses
 # Guide utils are functions that primarily populate and run the 
 # question & answer 'guide' that students see on the eduRange webpage (not the terminal ssh)
 
-## TESTED/WORKING (except: #DEV_FIX (paths))
+## TESTED/WORKING 
 
 
 def getContent(scenario_id, username):

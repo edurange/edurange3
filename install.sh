@@ -13,6 +13,7 @@ secretKey="not-so-secret"
 hostAddress="localhost"
 rootPass="change-me"
 
+
 # Add pip-executables to the path if they aren't already
 grep -qxF 'export PATH=$PATH:/home/$(whoami)/.local/bin' ~/.bashrc || echo 'export PATH=$PATH:/home/$(whoami)/.local/bin' >> ~/.bashrc
 source ~/.bashrc
@@ -113,8 +114,6 @@ then
 	read flaskUser
 	echo -e "${YLW}Please enter your Flask (web interface) password:${NC}"
 	read flaskPass
-	#echo -e "${YLW}Please enter your external address (Like example.com):${NC}"
-	#read hostAddress
 	echo -e "${YLW}Please enter your root password for all containers:${NC}"
 	read rootPass
 	# Generate secret string for cookie encryption
@@ -127,7 +126,7 @@ then
 	sed -i "s/not-so-secret/${secretKey}/" .env
 	sed -i "s/localhost/${hostAddress}/" .env
 	sed -i "s/change-me/${rootPass}/" .env
-  sed -i "s/URL_TO_BE_CHANGED/${hostAddress}/" react/config/AxiosConfig.js
+
 elif [ $1 = "auto" ];
 then
 	cp ./.env.example ./.env
@@ -161,13 +160,9 @@ sudo -Hiu postgres psql -U postgres -c "alter user postgres with password '"$dbp
 sudo -Hiu postgres psql -U postgres -c "CREATE DATABASE $dbname ;"
 
 
-# Install the requirements for webssh
-#DEV_FIX (new web ssh)
-# ./webssh-install.sh
-
 # Fix the script dumping us to a different directory after installation
 cd $current_directory
-npm run build
+# npm run build # DEV_FIX build will be done w/ vite (not webpack) but disabled for now
 
 # Clean up
 rm ./terraform_1.2.2_linux_amd64.zip

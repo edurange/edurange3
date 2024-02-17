@@ -1,8 +1,6 @@
 import csv
 from py_flask.config.extensions import db
 
-#DEV_FIX (paths)
-
 def readCSV(value, attribute):
     if attribute == 'id':
         sName = db.session.query(Scenarios.name).filter(Scenarios.id == value).first()[0]

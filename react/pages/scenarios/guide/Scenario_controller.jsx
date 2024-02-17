@@ -11,6 +11,7 @@ import SSH_web from './ssh/SSH_web';
 import "@frame/frame.css";
 import './Scenario_controller.css';
 import { HomeRouter_context } from '@home/Home_router';
+import Chat_Router from '../../chat/Chat_Router';
 
 function Scenario_controller() {
   
@@ -67,6 +68,11 @@ function Scenario_controller() {
         SSH_address={SSH_IP}
         SSH_username={SSH_username}
         SSH_password={SSH_password} 
+      />
+    ), 
+    chat : (
+      <Chat_Router
+        
       />
     ), 
     guide : (

@@ -2,22 +2,34 @@ import { useState, useRef, useEffect, useContext } from 'react';
 import Messages_pane from '../common/Messages_pane.jsx';
 import { ChatRouter_context } from '../Chat_Router.jsx';
 import '../ChatApp.css';
-import { ChatMessage } from '../common/chatUtils.js';
+import { ScenariosRouter_context } from '@scenarios/Scenarios_router.jsx';
+import { HomeRouter_context } from '@home/Home_router.jsx';
 
 // !important! use 'wss:' for production (reqs SSL certs) // DEV_ONLY
 
-const socketURL = "wss://wsChat.riparian.dev/socket"  // routed through nginx reverse proxy to port 5008
+const socketURL = "wss://er3.riparian.dev/chat"  // routed through nginx reverse proxy to port 5008
+
+export class ChatMessage {
+    constructor(scenarioID, content) {
+        this.scenarioID = scenarioID;
+        this.content = content || "I love edurange";
+    }
+}
 
 function Chat_Student() {
 
-    const { 
-        socket_state,   set_socket_state,
-        user_state,     set_user_state,
-        chatSession_state, set_chatSession_state
-      } = useContext(ChatRouter_context);
+    // const {
+    //     chatSession_state, set_chatSession_state
+    //   } = useContext(ChatRouter_context);
+    const {
+        userData_state
+      } = useContext(HomeRouter_context);
 
+    console.log(userData_state)
+    
+    
 
-    const testMessage = new ChatMessage(chatSession_state, user_state, 1, undefined, undefined, "hello eduRange!");
+    const testMessage = new ChatMessage(1, "hello eduRange!");
     const [messageContent_state, set_messageContent_state] = useState('');
     const [chatLog_state, set_chatLog_state] = useState([]);
     const lastChat_ref = useRef(null);
@@ -86,7 +98,7 @@ function Chat_Student() {
     
     const handleSubmit = (event) => {
         event.preventDefault();
-        const chatMsg = new ChatMessage(chatSession_state, user_state, 1, undefined, undefined, messageContent_state);
+        const chatMsg = new ChatMessage(1, messageContent_state);
         const newChat = {
             type: 'chatMessage',
             data: chatMsg
@@ -106,13 +118,13 @@ function Chat_Student() {
         <div className='er3chat-frame'>
         <div className='er3chat-panes-container-frame'>
             <div className="er3chat-pane">
-                <Messages_pane chatSessionID={chatSession_state.sessionID} chatLog_state={chatLog_state} lastChat_ref={lastChat_ref}/>
+                <Messages_pane chatSessionID='someSessionID' chatLog_state={chatLog_state} lastChat_ref={lastChat_ref}/>
             </div>
         </div>
         <div className='er3chat-input-frame'>
             <form className='er3chat-input-frame' onSubmit={handleSubmit}>
-                <div className='er3chat-input-item'>ID: {user_state.userID}</div>
-                <div className='er3chat-input-item'>Alias: {chatSession_state.userAlias}</div>
+                <div className='er3chat-input-item'>ID: someID</div>
+                <div className='er3chat-input-item'>Alias: someAlias</div>
                 <div className='er3chat-input-item sender-frame'>
                     <textarea className='sender-text' value={messageContent_state} onChange={(e) => handleInputChange(e, set_messageContent_state)} placeholder="Enter your message"></textarea>
                     <button className='sender-button connect-button' type="submit">Send</button>

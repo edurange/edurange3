@@ -12,7 +12,6 @@ from flask import current_app, flash
 from py_flask.utils.terraform_utils import adjust_network, find_and_copy_template, write_resource
 from py_flask.config.settings import CELERY_BROKER_URL, CELERY_RESULT_BACKEND
 
-#DEV_FIX (paths)
 
 logger = get_task_logger(__name__)
 path_to_directory = os.path.dirname(os.path.abspath(__file__))
@@ -251,7 +250,7 @@ def update_scenario_task(self, scenario_id):
             scenario.update(status=4)
             os.chdir("./scenarios/tmp/" + name)
             os.system("terraform destroy --auto-approve")
-            os.chdir("../../..") #DEV_FIX
+            os.chdir("../../..") 
             scenario.update(status=0)
             NotifyCapture("Scenario " + name + " has successfully stopped.")
         else:

@@ -1,26 +1,17 @@
 
 import json
 import os
-
-from random import seed, getrandbits
 import yaml
-from py_flask.config.settings import KNOWN_SCENARIOS
-
-# These functions have not yet been implemented, but 
-# Import the scenario string, and set to 'known_types' as a list
-known_types = KNOWN_SCENARIOS
-
-import ast
-import docker
-
 from py_flask.config.extensions import db
-from py_flask.database.models import Scenarios, User, Responses, User, GroupUsers, StudentGroups
 from py_flask.utils.guide_utils import readQuestions
-from celery import group
-from py_flask.config.extensions import db
-from flask import jsonify, abort, g
-
-#DEV_FIX (paths)
+from py_flask.database.models import (
+    Scenarios, 
+    User, 
+    Responses
+    )
+# Import the scenario string, and set to 'known_types' as a list
+from py_flask.config.settings import KNOWN_SCENARIOS
+known_types = KNOWN_SCENARIOS
 
 
 class CatalogEntry:
@@ -292,7 +283,7 @@ def setAttempt(sid):
 def getAttempt(sid):
     return db.session.query(Scenarios.attempt).filter(Scenarios.id == sid).first()[0]
 
-def readScenario():
+def readScenarios():
     desc = []
     scenarios = [
         dI
@@ -301,7 +292,7 @@ def readScenario():
     ]
     for scenario in scenarios:
         desc.append(getDescription(scenario))
-    return 0
+    return readScenarios
 
 def recentCorrect(uid, qnum, sid):
     return db.session.query(Responses.points).filter(Responses.user_id == uid) \

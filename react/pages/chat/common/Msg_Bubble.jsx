@@ -1,5 +1,6 @@
 
 import React from "react";
+import './Msg_Bubble.css';
 
 function Msg_Bubble({message_obj, chatSessionID}){
 

@@ -98,12 +98,6 @@ const notifications = {
     path: `/notifications`,
     navStub: 'dash'
 };
-const jwt_test = {
-    title: "jwt_test",
-    icon: edurange_icons.key,
-    path: `/jwt_test`,
-    navStub: 'dash'
-};
 
 // INSTRUCTOR ONLY
 const instructor = {

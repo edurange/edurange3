@@ -1,6 +1,8 @@
 
 .bubble-frame{
     display:flex;
+    color: black;
+    border: 1px solid black;
 }
 .bubble-carpet{
     display:flex;

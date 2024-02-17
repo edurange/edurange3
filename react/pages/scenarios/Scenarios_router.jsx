@@ -78,7 +78,6 @@ function Scenarios_router() {
                                 <Route path="/:scenarioID" element={<Scenario_controller />} />
                                 <Route path="/:scenarioID/:pageID" element={<Scenario_controller />} />
                                 <Route path="/:scenarioID/chat" element={<Chat_Student />} />
-
                                 <Route path="/notifications" element={<Notifications notifsArray={notifsArray_state} />} />
                             </Routes>
                         </ScenariosRouter_context.Provider>

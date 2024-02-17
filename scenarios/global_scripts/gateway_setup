@@ -1,8 +1,6 @@
 #!/bin/bash
 ssh-keygen -b 2048 -t rsa -f /tmp/start_key -q -N ""
 
-#DEV_FIX what is this?
-
 while read student_username; do
   cp /tmp/start_key /home/$student_username/start_key
   chown $student_username /home/$student_username/start_key

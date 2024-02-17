@@ -44,27 +44,27 @@ function GuidePane({ guideContent, set_leftPane_state }) {
             <div className='guidepane-controlbar-tabs-frame'>
 
               <Link
-                to={`/edurange3/dashboard/scenarios/${scenarioID}/0`}
+                to={`/scenarios/${scenarioID}/0`}
                 className={`guidepane-tab-left ${pageID === "0" ? tabActiveClass : tabInactiveClass}`}>
                 <div >
                   Brief
                 </div>
               </Link>
 
-              {guideBook_state.map((val, key) => {
+              {guideBook_state.map((val, index) => {
                 return (
                   <Link
-                    to={`/edurange3/dashboard/scenarios/${scenarioID}/${key + 1}`} key={nanoid(5)}
-                    className={`guidepane-tab-middles ${pageID === (key + 1).toString() ? tabActiveClass : tabInactiveClass}`}>
-                    <div key={key} >
-                      Chpt.{key + 1}
+                    to={`/scenarios/${scenarioID}/${index + 1}`} key={index + 3000}
+                    className={`guidepane-tab-middles ${pageID === (index + 1).toString() ? tabActiveClass : tabInactiveClass}`}>
+                    <div key={index} >
+                      Chpt.{index + 1}
                     </div>
                   </Link>
                 );
               })}
 
               <Link
-                to={`/edurange3/dashboard/scenarios/${scenarioID}/1337`}
+                to={`/scenarios/${scenarioID}/1337`}
                 className={`guidepane-tab-right ${pageID === "1337" ? tabActiveClass : tabInactiveClass}`}>
                 <div >
                   Debrief

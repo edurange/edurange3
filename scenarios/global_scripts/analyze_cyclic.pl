@@ -1,7 +1,4 @@
 
-#DEV_FIX (paths)
-
-
 while(1)
 {
 	system("cat /usr/local/src/logs/ttylog.\$\(hostname\).\$\(whoami\).* > /usr/local/src/logs/alltty.\$\(hostname\).\$\(whoami\)");

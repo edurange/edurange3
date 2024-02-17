@@ -29,7 +29,7 @@ class Getting_Started_shell {
         this.icon = gettingStarted;
         this.description_short = '"Getting Started" teaches basics of the Linux terminal shell.  These skills may also extend to the Mac terminal.';
         this.description_long = ("this is where the longer description goes");
-        this.resources = [ resData.man, resData.ssh, resData.ls, resData.file, resData.echo, resData.touch, resData.angle_brackets, resData.vim, resData.find ]
+        this.resources = [ resData.ssh, resData.ls, resData.file, resData.echo, resData.touch, resData.angle_brackets, resData.vim, resData.find ]
     };
 };
 class Ssh_Inception_shell {
@@ -39,7 +39,7 @@ class Ssh_Inception_shell {
         this.type = "Ssh_Inception";
         this.description_short = '"SSH_Inception" teaches basics of the "Secure Shell" (SSH), a secure protocol for logging into a remote machine.';
         this.description_long = "this is where the longer description goes";
-        this.resources = [ resData.man, resData.ssh, resData.grep, resData.locate, resData.find, resData.ftp ];
+        this.resources = [ resData.ssh, resData.grep, resData.locate, resData.find, resData.ftp ];
     };
 };
 class Total_Recon_shell {
@@ -49,7 +49,7 @@ class Total_Recon_shell {
         this.type = "Total_Recon";
         this.description_short = '"Total_Recon" is a progressive, story-based game designed to teach nmap network reconnaissance.';
         this.description_long = "this is where the longer description goes";
-        this.resources = [ resData.man, resData.ssh, resData.tcp, resData.udp, resData.icmp, resData.ftp, resData.smtp, resData.imap ];
+        this.resources = [ resData.ssh, resData.tcp, resData.udp, resData.icmp, resData.ftp, resData.smtp, resData.imap ];
     };
 };
 class File_Wrangler_shell {
@@ -59,7 +59,7 @@ class File_Wrangler_shell {
         this.type = "File_Wrangler";
         this.description_short = '"File_Wrangler" teaches the basics of files and directories in the Linux command line.';
         this.description_long = "this is where the longer description goes";
-        this.resources = [ resData.man, resData.ssh, resData.ls ];
+        this.resources = [ resData.ssh, resData.ls ];
     };
 };
 class ELF_Infection_shell {
@@ -69,7 +69,7 @@ class ELF_Infection_shell {
         this.type = "Elf_Infection";
         this.description_short = "This game teaches about infected ELF binaries.";
         this.description_long = "this is where the longer description goes";
-        this.resources = [ resData.man, resData.ssh, resData.elf ];
+        this.resources = [ resData.ssh, resData.elf ];
     };
 };
 class Strace_shell {
@@ -79,7 +79,7 @@ class Strace_shell {
         this.type = "Strace";
         this.description_short = '"Strace" is a game that teaches how to use Linux `strace` to examine executable files.';
         this.description_long = "this is where the longer description goes";
-        this.resources = [ resData.man, resData.ssh, resData.strace ];
+        this.resources = [ resData.ssh, resData.strace ];
     };
 };
 
@@ -90,7 +90,7 @@ class Metasploitable_shell {
         this.type = "Metasploitable";
         this.description_short = `"Metasploitable" is a game that teaches the basic usage of the Metasploit framework.`;
         this.description_long = "this is where the longer description goes";
-        this.resources = [ resData.man, resData.ssh, resData.metasploit ];
+        this.resources = [ resData.ssh, resData.metasploit ];
     };
 };
 class Web_Fu_shell {
@@ -100,7 +100,7 @@ class Web_Fu_shell {
         this.type = "Web_Fu";
         this.description_short = `"Web_Fu" teaches the basics of web application security. Put in practice your SQLi and XSS skills!`;
         this.description_long = "this is where the longer description goes";
-        this.resources = [ resData.man, resData.ssh ];
+        this.resources = [ resData.ssh ];
     };
 };
 class Treasure_Hunt_shell {
@@ -110,7 +110,7 @@ class Treasure_Hunt_shell {
         this.type = "Treasure_Hunt";
         this.description_short = `"Treasure_Hunt" is an exercise that teaches about permissions and other security loopholes in Linux. The goal is to find the passwords of 16 fake users.`;
         this.description_long = "this is where the longer description goes";
-        this.resources = [ resData.man, resData.ssh ];
+        this.resources = [ resData.ssh ];
     };
 };
 class Ransomware_shell {
@@ -120,7 +120,7 @@ class Ransomware_shell {
         this.type = "Ransomware";
         this.description_short = "blurb needed for Ransomware",
         this.description_long = "this is where the longer description goes";
-        this.resources = [ resData.man, resData.ssh ];
+        this.resources = [ resData.ssh ];
     };
 };
 

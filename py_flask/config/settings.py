@@ -24,6 +24,7 @@ SQLALCHEMY_TRACK_MODIFICATIONS = False
 CELERY_BROKER_URL = "redis://localhost:6379/0"
 CELERY_RESULT_BACKEND = "redis://localhost:6379/0"
 KNOWN_SCENARIOS = env.str("SCENARIO_LIST_ENV").replace('"', '').split(",")
+
 JWT_SECRET_KEY = env.str("JWT_SECRET_KEY")
 JWT_COOKIE_NAME = 'edurange3_jwt'
 JWT_IN_COOKIE = True

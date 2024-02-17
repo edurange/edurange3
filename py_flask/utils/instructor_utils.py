@@ -147,7 +147,6 @@ def scenario_create(scenario_type, scenario_name, studentGroup_name):
     print(f"namedict: {namedict}")
 
     create_scenario_task.delay(scenario_name, scenario_type, owner_user_id, students_list, group_id, scenario_id, namedict)
-    # CreateScenarioTask.delay(scenario_name, scenario_type, owner_user_id, students_list, group_id, scenario_id, namedict)
     
     students_return = [{'username': student['username']} for student in students_list]
     print ('CREATE SCENARIO 7, students_return: ', students_return)

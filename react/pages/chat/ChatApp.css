@@ -6,18 +6,11 @@ html, body{
   margin: 0;
 }
 
-#entry-root{
-  display: flex;
-  width: 100dvw;
-  height: 100dvh;
-  overflow: hidden;
-}
 .er3chat-frame{
   display: flex;
   flex-direction: column;
   width: 100%;
   height: 100%;
-  overflow: hidden;
 }
 .er3chat-pane{
   background-color: rgb(211, 176, 130);
@@ -25,7 +18,6 @@ html, body{
   height: 100%;
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
   background-color: grey;
 }
 .er3chat-chat-carpet{
@@ -52,6 +44,7 @@ html, body{
   padding: 10px;
   box-sizing: border-box;
   background-color: paleturquoise;
+  color: black;
 }
 .er3chat-message-item{
   width: 100%;

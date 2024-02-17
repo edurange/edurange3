@@ -3,9 +3,6 @@
 import os
 from glob import glob
 from subprocess import call
-
-#DEV_FIX (paths)
-
 import click
 
 HERE = os.path.abspath(os.path.dirname(__file__))

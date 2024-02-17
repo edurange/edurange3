@@ -1,17 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react';
-import io from 'socket.io-client';
 import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
 import 'xterm/css/xterm.css';
 import './SSH_web.css';
 
-const NODEJS_WEBSSH_IP = "10.0.0.55:31337";
+const NODEJS_WEBSSH_URL = "wss://er3.riparian.dev/ssh";
 
 function SSH_web(props) {
+
     const terminalRef = useRef(null);
     const term = useRef(new Terminal());
     const fitAddon = useRef(new FitAddon());
-    const socketRef = useRef(null); 
+    const socketRef = useRef(null);
 
     const [SSH_ip, SSH_port_str] = props.SSH_address.split(':');
     const SSH_port = parseInt(SSH_port_str, 10);
@@ -23,33 +23,29 @@ function SSH_web(props) {
         term.current.open(terminalRef.current);
         fitAddon.current.fit();
 
-        const newSocket = io.connect(`http://${NODEJS_WEBSSH_IP}`);
-        socketRef.current = newSocket;  // Store the socket in the ref.
+        const newSocket = new WebSocket(NODEJS_WEBSSH_URL);
+        socketRef.current = newSocket;
 
-        newSocket.on('connect', () => {
-            newSocket.emit('set_credentials', { 
-                SSH_username: SSH_username, 
+        newSocket.onopen = () => {
+            newSocket.send(JSON.stringify({
+                type: 'set_credentials',
+                SSH_username: SSH_username,
                 SSH_password: SSH_password,
                 SSH_ip: SSH_ip,
                 SSH_port: SSH_port
-            });
-        });
-    
-        newSocket.on('greeting', (data) => {
-            term.current.write(data.greeting);
-        });
-        
-        newSocket.on('edu3_response', (data) => {
-            term.current.write(data.result);
-        });
+            }));
+        };
 
+        newSocket.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            if (data.type === 'greeting') {term.current.write(data.greeting);} 
+            else if (data.type === 'edu3_response') {term.current.write(data.result);}
+        };
 
         term.current.onData(data => {
-            if (socketRef.current) {
-                socketRef.current.emit('edu3_command_data', { data: data });
-            } else {
-                console.error('Socket is not connected.');
-            }
+            if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
+                socketRef.current.send(JSON.stringify({ type: 'edu3_command_data', data: data }));
+            } else {console.error('Socket is not connected.');}
         });
 
         return () => {
@@ -65,10 +61,10 @@ function SSH_web(props) {
                     eduRange pseudo-terminal
                 </div>
             </div>
-            
+
             <div className='ssh-terminal-output-frame' ref={terminalRef}></div>
         </div>
     );
-};
+}; 
 
 export default SSH_web;

@@ -16,8 +16,8 @@
 import { useState, useRef, useEffect } from 'react';
 import '../ChatApp.css';
 import Messages_pane from '../common/Messages_pane.jsx';
-import { ChatMessage, ChatUser, generateInt } from '../common/chatUtils.js';
 import Instructor_UsersList from './Instructor_UsersList.jsx';
+import { ChatMessage } from '../student/Chat_Student.jsx';
 
 // !important! use 'wss:' for production (reqs SSL certs) // DEV_ONLY
 const socketURL = "wss://riparian.dev/chatSocket"  
@@ -26,12 +26,7 @@ function Chat_Instructor() {
 
     const chatUsers = []; // array of user objects, w/ their chats
 
-    const testInstructor = new ChatUser(undefined, true);
-    const chatSessionID = generateInt(); // arbitrary value; helps instructor get chat for user
-    const testMessage = new ChatMessage(chatSessionID, testInstructor, 1, undefined, undefined, "hello students!");
-    const [user_state, set_user_state] = useState(testInstructor)
-    const [scenarioID_state, set_scenarioID_state] = useState(123);
-    const [chatSessionID_state, set_chatSessionID_state] = useState(chatSessionID);
+    const testMessage = new ChatMessage(1, "hello students!");
     const [messageContent_state, set_messageContent_state] = useState('');
     const [chatLog_state, set_chatLog_state] = useState([]);
     const lastChat_ref = useRef(null);
@@ -52,7 +47,7 @@ function Chat_Instructor() {
         socket.current.onopen = () => {
             console.log('websocket connected!');
             console.log("doing initial handshake...");
-            const newnewChat2 = new ChatMessage(chatSessionID_state, user_state, 1, undefined, undefined, messageContent_state);
+            const newnewChat2 = new ChatMessage(1, messageContent_state);
             const newChat2 = {
                 type: 'chatMessage',
                 data: newnewChat2
@@ -99,7 +94,7 @@ function Chat_Instructor() {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        const chatMsg = new ChatMessage(chatSessionID_state, user_state, 1, undefined, undefined, messageContent_state);
+        const chatMsg = new ChatMessage(1, messageContent_state);
         const newChat = {
             type: 'chatMessage',
             data: chatMsg
@@ -119,7 +114,7 @@ function Chat_Instructor() {
         <div className='er3chat-frame'>
         <div className='er3chat-panes-container-frame'>
             <div className="er3chat-pane">
-                <Messages_pane chatSessionID={chatSessionID_state} chatLog_state={chatLog_state} lastChat_ref={lastChat_ref}/>
+                <Messages_pane chatSessionID='123' chatLog_state={chatLog_state} lastChat_ref={lastChat_ref}/>
             </div>
             <div className="er3chat-pane">
                 <Instructor_UsersList/>
@@ -127,8 +122,8 @@ function Chat_Instructor() {
         </div>
         <div className='er3chat-input-frame'>
             <form className='er3chat-input-frame' onSubmit={handleSubmit}>
-                <div className='er3chat-input-item'>ID: {testMessage.userID}</div>
-                <div className='er3chat-input-item'>Alias: {testMessage.userAlias}</div>
+                <div className='er3chat-input-item'>ID: someID</div>
+                <div className='er3chat-input-item'>Alias: someAlias</div>
                 <div className='er3chat-input-item sender-frame'>
                     <textarea className='sender-text' value={messageContent_state} onChange={(e) => handleInputChange(e, set_messageContent_state)} placeholder="Enter your message"></textarea>
                     <button className='sender-button connect-button' type="submit">Send</button>

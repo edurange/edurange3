@@ -7,11 +7,12 @@
     "doc": "docs"
   },
   "scripts": {
-    "start": "concurrently -n \"FLASK,CELERY,FLOWER,VITE-REACT\" -c \"bgCyan.bold,bgGreen.bold,bgRed.bold,bgMagenta.bold,bgCyan.bold,bgYellow.bold\" \"npm run flask-server\" \"celery -A py_flask.utils.tasks worker -B -E -f celery.log -l DEBUG\" \"celery -A py_flask.utils.tasks --broker=redis://localhost:6379/0 flower --port=5555\" \"npm run vite-react-dev\"",
+    "start": "concurrently -n \"FLASK,CELERY,FLOWER,VITE-REACT,NODE\" -c \"bgCyan.bold,bgGreen.bold,bgRed.bold,bgMagenta.bold,cyan,cyan\" \"npm run flask-server\" \"celery -A py_flask.utils.tasks worker -B -E -f celery.log -l DEBUG\" \"celery -A py_flask.utils.tasks --broker=redis://localhost:6379/0 flower --port=5555\" \"npm run vite-react-dev\" \"npm run node\"",
     "flask-server": "flask run --host=0.0.0.0",
     "flask-static-digest": "flask digest compile",
     "lint": "eslint \"assets/js/*.js\"",
-    "vite-react-dev": "cd react && npm run dev"
+    "vite-react-dev": "cd react && npm run dev",
+    "node": "cd node && nodemon nodeServer"
   },
   "repository": {
     "type": "git",

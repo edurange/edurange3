@@ -42,7 +42,8 @@ function FootControls({ guideContent, updatePane, paneSide }) {
           web-SSH
         </div>
 
-        <div className='footcontrol-item footcontrol-chat-button'>
+        <div className='footcontrol-item footcontrol-chat-button'
+          onClick={() => updatePane("chat")}>
           Chat
         </div>
 

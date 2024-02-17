@@ -69,23 +69,12 @@ function Frame_head({ navArr_toShow }) {
         );
     };
 
-    function handle_jwtTest_click() {
-        updateNav('/jwt_test', navName_state)
-    }
-
     return (
         <div className="er3-homehead">
 
             <div className="er3-homehead-left"><Hamburger /></div>
             <div className='homehead-notifs-section'><Notifs_button /></div>
-            {/* <div className='homehead-test-section'>
-                <div
-                    className='homehead-test-frame topnav-button-panes'
-                    onClick={handle_jwtTest_click}
-                >
-                    JWT_TEST
-                </div>
-            </div> */}
+
             <Frame_UserBox/>
 
             <div className='er3-homehead-right'>
