@@ -35,11 +35,9 @@ const csrfToken = getCSRFfromCookie();
 // - Do NOT add port if using domain w/ nginx reverse proxy
 // - USE leading slash for axios calls a la 'axios.post('/someRoute')'
 
-const baseURL = 'https://er3.riparian.dev/api'; 
-
 if (!csrfToken) { console.log('Axios: CSRF cookie not found'); } // DEV_ONLY
 
-axios.defaults.baseURL = baseURL;  
+axios.defaults.baseURL = '/api';  
 axios.defaults.headers.common['X-XSRF-TOKEN'] = csrfToken || ""; // provide empty for login
 axios.defaults.withCredentials = true; // very important
 

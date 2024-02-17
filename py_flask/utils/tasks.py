@@ -138,12 +138,12 @@ def create_scenario_task(self, scen_name, scen_type, owner_user_id, students_lis
             find_and_copy_template(scen_type, c)
             write_resource(
                 address, scen_name, scen_type, c_names[i], usernames, passwords,
-                s_files[i], g_files[i], u_files[i], flags
+                s_files[i], g_files[i], u_files[i], flags, c_names
             )
 
         scenario.update(
             status=0,
-            subnet=f"{address}.0.0.0/27"
+            subnet=f"10.{address}.0.0/27"
         )
         os.chdir("../../..")
 
@@ -166,6 +166,9 @@ def start_scenario_task(self, scenario_id):
         logger.info("Found Scenario: {}".format(scenario))
         name = str(scenario.name)
         name = "".join(e for e in name if e.isalnum())
+        gateway = name + "_gateway"
+        start = name + "_nat"
+        start_ip = '10.' + scenario.subnet.split('.')[1] + '.0.2'
         if int(scenario.status) != 0:
             logger.info("Invalid Status")
             NotifyCapture("Failed to start scenario " + name + ": Invalid Status")
@@ -177,6 +180,7 @@ def start_scenario_task(self, scenario_id):
             os.chdir("./scenarios/tmp/" + name)
             os.system("terraform apply network")
             os.system("terraform apply --auto-approve")
+            os.system("../../../shell_scripts/scenario_movekeys.sh {} {} {}".format(gateway, start, start_ip))
             os.chdir("../../..")
             scenario.update(status=1)
             scenario.update(attempt=setAttempt(scenario_id))
@@ -478,7 +482,7 @@ def CreateScenarioTask(self, name, s_type, owner, group, g_id, s_id, namedict):
             find_and_copy_template(s_type, c)
             write_resource(
                 address, name, s_type, c_names[i], usernames, passwords,
-                s_files[i], g_files[i], u_files[i], flags
+                s_files[i], g_files[i], u_files[i], flags, c_names
             )
 
         scenario.update(

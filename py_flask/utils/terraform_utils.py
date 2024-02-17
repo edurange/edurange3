@@ -1,10 +1,7 @@
 import os
 import shutil
 import json
-from py_flask.config.extensions import db
-from py_flask.database.models import Scenarios
 
-#DEV_FIX (paths)
 
 def find_and_copy_template(s_type, c_name):
     path = '../../../scenarios/prod/' + s_type
@@ -114,7 +111,7 @@ def adjust_network(address, name):
 
 def write_resource(address, name, s_type,
                    c_name, usernames, passwords,
-                   s_files, g_files, u_files, flags):
+                   s_files, g_files, u_files, flags, c_names):
     # Generate a list of strings of commands for adding users
 
     template_folder = "../../../scenarios/prod/" + s_type + "/"
@@ -123,16 +120,27 @@ def write_resource(address, name, s_type,
     log_files = ["tty_setup", "analyze.py", "makeTsv.py",
                  "milestone-lbl.pl", "intervention.py", "start_ttylog.sh",
                  "ttylog", "clearlogs", "iamfrustrated",
-                 "place_milestone_file", "change_root_pass", "cgconfig.conf", "limit_resources"]
-    # Generate a list of 'provisioner' blocks to upload all files
-    uploads = build_uploads(s_files, g_files, u_files, log_files, s_type)
+                 "place_milestone_file", "change_root_pass", "cgconfig.conf",
+                 "limit_resources", "gateway_setup"]
 
-    s_files = ["tty_setup", "place_milestone_file", "change_root_pass", "limit_resources"] + s_files
-    g_files = ["iamfrustrated", "clearlogs"] + g_files
-    u_files = ["ttylog", "start_ttylog.sh", "makeTsv.py", "analyze.py",
+    global_scripts = ["cgconfig.conf", "limit_resources", "iamfrustrated", "change_root_pass"]
+    # Generate a list of 'provisioner' blocks to upload all files
+    if c_name == "gateway":
+        uploads = build_uploads(s_files, g_files, u_files, log_files, s_type)
+        s_files = ["tty_setup", "place_milestone_file", "change_root_pass", "limit_resources","gateway_setup"] + s_files
+        g_files = ["iamfrustrated", "clearlogs"] + g_files
+        u_files = ["ttylog", "start_ttylog.sh", "makeTsv.py", "analyze.py",
                "milestone-lbl.pl", "intervention.py"] + u_files
+    else:
+        uploads = build_uploads(s_files, g_files, u_files, global_scripts, s_type)
+        s_files = ["change_root_pass", "limit_resources"] + s_files
+        g_files = ["iamfrustrated"] + g_files
+
     # Generate a list of commands to move files, and run them if needed
     execs = build_execute_files(s_files, g_files, u_files, flags)
+    if c_name == "gateway":
+        host_names = '\\n'.join(name for name in c_names)
+        execs += "\",\n\"echo '" + host_names.casefold() + "' > /usr/local/src/ttylog/host_names"
 
     host = os.getenv('HOST_EXTERN_ADDRESS', 'localhost')
     # Make sure the container has a known template
@@ -141,6 +149,7 @@ def write_resource(address, name, s_type,
         config = json.load(tf)
     except FileNotFoundError:
         return "Template not found"
+
 
     # SNAME and OCTET appear in multiple places, so this 'for' loop is used to replace all occurrences of them.
     # To inspect the structure of the 'config', use 'flask shell', import json, and load the data as in the above 'try'
@@ -182,4 +191,3 @@ def write_resource(address, name, s_type,
 
     with open(c_name + '.tf.json', 'w') as outfile:
         outfile.write(data)
-
