@@ -127,7 +127,7 @@ then
 	sed -i "s/not-so-secret/${secretKey}/" .env
 	sed -i "s/localhost/${hostAddress}/" .env
 	sed -i "s/change-me/${rootPass}/" .env
-  sed -i "s/URL_TO_BE_CHANGED/${hostAddress}/" edurange_refactored/react/api/config/AxiosConfig.js
+  sed -i "s/URL_TO_BE_CHANGED/${hostAddress}/" react/config/AxiosConfig.js
 elif [ $1 = "auto" ];
 then
 	cp ./.env.example ./.env
@@ -136,7 +136,7 @@ fi
 echo -e "${GRN}Downloading and setting up terraform${NC}"
 
 # Updated Terraform to newest release June 4 2022
-wget https://releases.hashicorp.com/terraform/1.2.2/terraform_1.2.2_linux_amd64.zip #DEV_FIX (version?)
+wget https://releases.hashicorp.com/terraform/1.2.2/terraform_1.2.2_linux_amd64.zip
 unzip terraform_1.2.2_linux_amd64.zip
 sudo mv terraform /usr/bin/terraform
 
@@ -163,14 +163,14 @@ sudo -Hiu postgres psql -U postgres -c "CREATE DATABASE $dbname ;"
 
 # Install the requirements for webssh
 #DEV_FIX (new web ssh)
-./webssh-install.sh
+# ./webssh-install.sh
 
 # Fix the script dumping us to a different directory after installation
 cd $current_directory
 npm run build
 
 # Clean up
-rm ./terraform_1.2.2_linux_amd64.zip #DEV_FIX (version?)
+rm ./terraform_1.2.2_linux_amd64.zip
 rm ./docker.sh
 
 echo -e "${GRN}To run the app any time, use: ${NC} npm start"
