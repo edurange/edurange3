@@ -292,7 +292,7 @@ def readScenarios():
     ]
     for scenario in scenarios:
         desc.append(getDescription(scenario))
-    return readScenarios
+    return scenarios
 
 def recentCorrect(uid, qnum, sid):
     return db.session.query(Responses.points).filter(Responses.user_id == uid) \
