@@ -87,7 +87,8 @@ chatSocketServer.on('connection', (socketConnection, request) => {
     const {username, user_role, user_id} = request.get_id();
 
     if (!username) {return {error: 'username not found in validated jwt'}}
-
+    
+    // DEV_ONLY
     console.log(
         `#  User connected w/ jwt id: `,
         `\n#    username: ${username}`,
@@ -101,6 +102,8 @@ chatSocketServer.on('connection', (socketConnection, request) => {
             return;
         }
         const messageData = data.data;
+
+        // DEV_ONLY
         console.log(
             `#  Chat message received:`,
             `\n#    scenario_id: ${messageData?.scenarioID}`,
@@ -124,12 +127,13 @@ chatSocketServer.on('connection', (socketConnection, request) => {
         }
         const thisDictUser =  chatSession?.studentDict[user_id];
 
+        // DEV_FIX (db is disabled)
         // const query = `INSERT INTO chats (messageID, userID, userAlias, content, scenarioID, timeStamp)
         //                VALUES (
         //                 ${value.messageID}, 
         //                 ${value.userID},
         //                 ${value.scenarioID}, 
-        //                 '${value.userAlias}', 
+        //                 '${value.userAlias}', (remove from db)
         //                 '${value.content}', 
         //                 '${value.timeStamp}')`;
 
@@ -141,19 +145,25 @@ chatSocketServer.on('connection', (socketConnection, request) => {
             console.log(`The user ${thisDictUser.isInstructor ? "IS" : "is NOT"} an instructor!`)
             console.log(`Trying to send response back to sender: USER ${thisDictUser.userID}...`);
 
-            thisDictUser.connection.send(JSON.stringify({ type: 'newChatMessage', data: value }));
 
             const instructorConnectionArr = Object.values(chatSession.instructorDict).map(entry => entry.connection);
+
             instructorConnectionArr.forEach(connection => {
                 if (connection.readyState === 1) {
                     connection.send(JSON.stringify({ type: 'newChatMessage', data: value }));
                 }
 
             })
-            const responseMsg = {
-                scenarioID: value.scenarioID,
-                content: value.content,
+
+            if (!chatSession?.instructorDict.hasOwnProperty(user_id)) {
+                const responseMsg = {
+                    scenarioID: value.scenarioID,
+                    content: value.content,
+                };
+                thisDictUser.connection.send(JSON.stringify({ type: 'newChatMessage', data: responseMsg }));
             }
+            
+
 
         } catch (err) {
             console.error('Database error:', err);
