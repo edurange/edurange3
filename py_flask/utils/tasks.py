@@ -136,7 +136,7 @@ def create_scenario_task(self, scen_name, scen_type, owner_user_id, students_lis
         for i, c in enumerate(c_names):
             find_and_copy_template(scen_type, c)
             write_resource(
-                address, scen_name, scen_type, c_names[i], usernames, passwords,
+                address, scen_name, scen_type, i, usernames, passwords,
                 s_files[i], g_files[i], u_files[i], flags, c_names
             )
 
@@ -480,7 +480,7 @@ def CreateScenarioTask(self, name, s_type, owner, group, g_id, s_id, namedict):
         for i, c in enumerate(c_names):
             find_and_copy_template(s_type, c)
             write_resource(
-                address, name, s_type, c_names[i], usernames, passwords,
+                address, name, s_type, i, usernames, passwords,
                 s_files[i], g_files[i], u_files[i], flags, c_names
             )
 

@@ -110,7 +110,7 @@ def adjust_network(address, name):
 
 
 def write_resource(address, name, s_type,
-                   c_name, usernames, passwords,
+                   container_index, usernames, passwords,
                    s_files, g_files, u_files, flags, c_names):
     # Generate a list of strings of commands for adding users
 
@@ -125,7 +125,7 @@ def write_resource(address, name, s_type,
 
     global_scripts = ["cgconfig.conf", "limit_resources", "iamfrustrated", "change_root_pass"]
     # Generate a list of 'provisioner' blocks to upload all files
-    if c_name == "gateway":
+    if c_names[container_index] == "gateway":
         uploads = build_uploads(s_files, g_files, u_files, log_files, s_type)
         s_files = ["tty_setup", "place_milestone_file", "change_root_pass", "limit_resources","gateway_setup"] + s_files
         g_files = ["iamfrustrated", "clearlogs"] + g_files
@@ -138,14 +138,14 @@ def write_resource(address, name, s_type,
 
     # Generate a list of commands to move files, and run them if needed
     execs = build_execute_files(s_files, g_files, u_files, flags)
-    if c_name == "gateway":
+    if c_names[container_index] == "gateway":
         host_names = '\\n'.join(name for name in c_names)
         execs += "\",\n\"echo '" + host_names.casefold() + "' > /usr/local/src/ttylog/host_names"
 
     host = os.getenv('HOST_EXTERN_ADDRESS', 'localhost')
     # Make sure the container has a known template
     try:
-        tf = open(c_name + '.tf.json', 'r+')
+        tf = open(c_names[container_index] + '.tf.json', 'r+')
         config = json.load(tf)
     except FileNotFoundError:
         return "Template not found"
@@ -172,10 +172,10 @@ def write_resource(address, name, s_type,
         json.dump(config, f, indent=4)
 
     # Move the temporary file, replacing the template
-    os.rename('tmp.tf.json', c_name + '.tf.json')
+    os.rename('tmp.tf.json', c_names[container_index] + '.tf.json')
 
     # Read our new file as raw text
-    with open(c_name + '.tf.json', 'r') as outfile:
+    with open(c_names[container_index] + '.tf.json', 'r') as outfile:
         data = outfile.read()
 
     # Insert the list of commands that register students in the 'remote-exec' block
@@ -189,5 +189,5 @@ def write_resource(address, name, s_type,
 
     print(data)
 
-    with open(c_name + '.tf.json', 'w') as outfile:
+    with open(c_names[container_index] + '.tf.json', 'w') as outfile:
         outfile.write(data)
