@@ -1,7 +1,4 @@
-
-
 import React from 'react';
-
 import './Account.css';
 
 function Account () {
@@ -11,7 +8,4 @@ function Account () {
         </div>
     );
 }
-
 export default Account;
-
-

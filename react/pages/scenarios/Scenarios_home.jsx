@@ -1,14 +1,8 @@
-import React, {useContext} from 'react';
-
+import React from 'react';
+import ScenarioTable from '@scenarios/ScenarioTable';
 import './Scenarios_home.css'
 
-import ScenarioTable from '@scenarios/ScenarioTable';
-import { HomeRouter_context } from '@home/Home_router';
-
 function Scenarios_home () {
-    
-    const { userData_state } = useContext( HomeRouter_context ); 
-    
     return ( 
             <div className='scenario-home-outer-frame'>
                 <div className='scenario-home-inner-frame'>

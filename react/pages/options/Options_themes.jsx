@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import './Options.css';
 
 function Options_themes() {
-  // Attempt to load user settings from localStorage or use default values
   const defaultSettings = {
     dropdown1: 'option1',
     dropdown2: 'option2',
@@ -25,7 +24,6 @@ function Options_themes() {
     sliderValue: settings.sliderValue,
   };
 
-  // Save to localStorage whenever settings change
   useEffect(() => {
     localStorage.setItem('userSetting', JSON.stringify(userSetting));
   }, [settings]);

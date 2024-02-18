@@ -34,14 +34,6 @@ function Scenarios_router() {
         chapter: 0,
         sectionAnchor: 0,
     });
-    const [guideMeta_state, set_guideMeta_state] = useState({
-        created_at: null,
-        scenario_description: null,
-        scenario_id: null,
-        group_name: null,
-        scenario_owner_id: null,
-        scenario_status: null,
-    });
 
     /////////////////////////////////////////////////
 

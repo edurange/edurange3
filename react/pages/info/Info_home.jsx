@@ -1,14 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 
-function InfoHome (    ) {
-
+function InfoHome () {
     return (
         <div>
-   
             THIS IS INFOHOME
-   
         </div>
     );
 }
-
 export default InfoHome;

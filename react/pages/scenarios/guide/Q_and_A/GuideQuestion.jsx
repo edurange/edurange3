@@ -18,20 +18,14 @@ function GuideQuestion ( {
             </div>
 
             <div className='edu3-response-row'>
-
                 <div className='edu3-response-row-left'>
-                    
                     <div className='edu3-response-row-left-content'>
                         <label className='edu3-response-row-left-content-text' htmlFor='question'>Response:</label>
-                        {/* <input className='edu3-response-row-left-content-field' type='text' id='question' name='question' /> */}
-                        
                         <SubmitButton scenario_id={scenario_id} question_num={itemContentPointer} />
-                        
                     </div>
                 </div>
-
-
             </div>
+            
         </div>
     </div>
     );

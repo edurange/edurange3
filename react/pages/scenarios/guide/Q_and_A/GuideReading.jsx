@@ -3,12 +3,7 @@ import React  from 'react';
 import { nanoid } from 'nanoid';
 import './Q_and_A.css'
 
-function GuideReading ( {
-    itemContentType,
-    itemContentPointer,
-    chapterNumber,
-    itemIndexInChapter,
-    itemContent } ) {
+function GuideReading ({itemContent}) {
         
     return (
         <div className='edu3-reading-frame' key={nanoid(3)}>

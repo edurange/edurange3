@@ -6,15 +6,10 @@ import { navArrays } from '@modules/nav/navItemsData';
 import Options_home from './Options_home';
 import Options_accessibility from './Options_accessibility';
 import Options_themes from './Options_themes';
-// import Frame_side from '@frame/sidenav/Frame_side';
 import Frame_side from '@frame/sidenav/Frame_side';
 
 function Options_controller() {
-  
-  // (add state and session restore logic for options here)
 
-  // these routes extend /edurange3/options
-  // e.g. accessibility is URL /edurange3/options/accessibility
   return (
     
     <div className='newdash-frame'>

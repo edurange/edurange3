@@ -1,5 +1,3 @@
-
-
 import React from 'react';
 import DashNotificationsTable from './NotificationsTable';
 function Notifications () {
@@ -10,7 +8,4 @@ function Notifications () {
         </div>
     );
 }
-
 export default Notifications;
-
-

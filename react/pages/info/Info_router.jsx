@@ -8,11 +8,8 @@ import About from './About';
 import Documents from './Documents';
 import FAQ from './FAQ';
 
-function InfoRouter (    ) {
+function InfoRouter () {
 
-
-// these routes extend /info
-// e.g. about is URL /info/about
     return (
         <div className='edu3-dashpanes-outer-wrap'>
                 <div className='dash-sidebar-pane'>

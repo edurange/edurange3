@@ -7,16 +7,14 @@ import InfoPane from './panes/InfoPane';
 import GuidePane from './panes/GuidePane';
 import FootControls from './controls/FootControls';
 import SSH_web from './ssh/SSH_web';
+import Chat_Router from '../../chat/Chat_Router';
 
 import "@frame/frame.css";
 import './Scenario_controller.css';
-import { HomeRouter_context } from '@home/Home_router';
-import Chat_Router from '../../chat/Chat_Router';
 
 function Scenario_controller() {
   
-  const { scenarioID, pageID } = useParams(); // from URL parameters
-  const { userData_state } = useContext(HomeRouter_context);
+  const { scenarioID, pageID } = useParams();
   const { guideContent_state, set_guideContent_state } = useContext(ScenariosRouter_context);
 
   const [leftPaneName_state, set_leftPaneName_state] = useState("info");
@@ -49,11 +47,7 @@ function Scenario_controller() {
 
   const SSH_username = guideContent_state.credentialsJSON.username;
   const SSH_password = guideContent_state.credentialsJSON.password;
-  const scenarioName_raw = meta.scenario_name;
-  const scenarioName_sani = scenarioName_raw.split('_').join('');
 
-  console.log(guideContent_state)
-  // const SSH_IP = guideContent_state.SSH_IP[`${scenarioName_sani}_nat`];
   const SSH_IP = guideContent_state.SSH_IP;
 
   const panes = {
@@ -114,5 +108,3 @@ function Scenario_controller() {
   );
 };
 export default Scenario_controller;
-
-

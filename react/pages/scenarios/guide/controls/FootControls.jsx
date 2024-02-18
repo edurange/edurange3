@@ -17,11 +17,9 @@ function FootControls({ guideContent, updatePane, paneSide }) {
 
   if ((!meta)) { return (<>Scenario not found</>); }
   
-  const SSH_key = `${guideContent.unique_scenario_name}_StartingLine`
   const SSH_IP = guideContent.SSH_IP
   const SSH_username = guideContent.credentialsJSON.username;
   const SSH_password = guideContent.credentialsJSON.password;
-  const shellData = scenarioShells[`${meta.scenario_description}`];
   const [SSH_ip, SSH_port_str] = SSH_IP.split(':');
 
   const sshCommand = `ssh ${SSH_username}@${SSH_ip} -p ${SSH_port_str}`;
