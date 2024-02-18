@@ -24,8 +24,6 @@ function Chat_Student() {
     const {
         userData_state
       } = useContext(HomeRouter_context);
-
-    console.log(userData_state)
     
     
 
@@ -35,8 +33,6 @@ function Chat_Student() {
     const lastChat_ref = useRef(null);
     const socket = useRef(null);
     const pingInterval = 12000;
-
-    console.log("Test message object: ",testMessage);
 
     useEffect(() => {
         trySocket();
@@ -50,8 +46,6 @@ function Chat_Student() {
     async function trySocket(){
         socket.current = new WebSocket(socketURL);
         socket.current.onopen = () => {
-            console.log('websocket connected!');
-            console.log("doing initial handshake...");
             const handshake_msg = {
                 type: 'chatMessage',
                 data: testMessage
@@ -59,17 +53,14 @@ function Chat_Student() {
             if (socket.current && socket.current.readyState === 1) {
                 socket.current.send(JSON.stringify(handshake_msg));
             };
-            // keep connection alive w/ pings to server
             setInterval(() => {
                 if (socket.current.readyState === 1) {
-                    console.log('sending keepalive ping...');
                     socket.current.send(JSON.stringify({ping:'ping'}));
                 }
             }, pingInterval);
         };
         socket.current.onmessage = (event) => {
             const message = JSON.parse(event.data);
-            console.log("received message from server: ", message);
             
             if (message.type === 'newChatMessage') {
                 set_chatLog_state((prevChatLog) => [...prevChatLog, message.data]);
@@ -83,7 +74,6 @@ function Chat_Student() {
         };
 
         socket.current.onclose = (event) => {
-            console.log('WebSocket connection closed:', event);
             socket.current = new WebSocket(socketURL);
         };
         return () => {
@@ -104,13 +94,11 @@ function Chat_Student() {
             data: chatMsg
         };
         if (socket.current && socket.current.readyState === 1) {
-            console.log('sending new chat...');
             socket.current.send(JSON.stringify(newChat));
         };
     };
     const handleConnectSubmit = (event) => {
         event.preventDefault();
-        console.log("tryConnect")
         trySocket();
     };
 

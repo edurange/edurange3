@@ -16,3 +16,10 @@
     font-size: 12px;
     display:flex;
 }
+
+div.homefoot-frame a.footlink {
+    color: rgb(186, 90, 0);
+  }
+div.homefoot-frame a.footlink:hover {
+    color: rgb(252, 152, 59);
+  }

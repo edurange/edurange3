@@ -45,8 +45,6 @@ function Chat_Instructor() {
     async function trySocket(){
         socket.current = new WebSocket(socketURL);
         socket.current.onopen = () => {
-            console.log('websocket connected!');
-            console.log("doing initial handshake...");
             const newnewChat2 = new ChatMessage(1, messageContent_state);
             const newChat2 = {
                 type: 'chatMessage',
@@ -58,14 +56,12 @@ function Chat_Instructor() {
             // keep connection alive w/ pings to server
             setInterval(() => {
                 if (socket.current.readyState === 1) {
-                    console.log('sending keepalive ping...');
                     socket.current.send(JSON.stringify({ping:'ping'}));
                 }
             }, pingInterval);
         };
         socket.current.onmessage = (event) => {
             const message = JSON.parse(event.data);
-            console.log("received message from server: ", message);
             
             if (message.type === 'newChatMessage') {
                 set_chatLog_state((prevChatLog) => [...prevChatLog, message.data]);
@@ -79,7 +75,6 @@ function Chat_Instructor() {
         };
 
         socket.current.onclose = (event) => {
-            console.log('WebSocket connection closed:', event);
             socket.current = new WebSocket(socketURL);
         };
         return () => {
@@ -100,13 +95,11 @@ function Chat_Instructor() {
             data: chatMsg
         };
         if (socket.current && socket.current.readyState === 1) {
-            console.log('sending new chat...');
             socket.current.send(JSON.stringify(newChat));
         };
     };
     const handleConnectSubmit = (event) => {
         event.preventDefault();
-        console.log("tryConnect")
         trySocket();
     };
 

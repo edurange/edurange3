@@ -29,8 +29,9 @@ function SSH_web(props) {
         newSocket.onopen = () => {
             newSocket.send(JSON.stringify({
                 type: 'set_credentials',
-                SSH_username: SSH_username,
-                SSH_password: SSH_password,
+                scenario_id: props.scenario_id,
+                username: SSH_username,
+                password: SSH_password,
                 SSH_ip: SSH_ip,
                 SSH_port: SSH_port
             }));

@@ -8,8 +8,6 @@ function Register() {
 
     async function sendRegistrationRequest(username_input, password_input, confirm_password_input, code_input) {
         const { updateNav } = useContext(HomeRouter_context);
-        console.log('invoke sendRegistrationRequest()');
-
         try {
             const response = await axios.post('/register',
                 {
@@ -19,17 +17,13 @@ function Register() {
                     code: code_input,
                 }
             );
-            console.log(response)
             const reg_response = response.data;
             const userData = response.data;
 
             if (reg_response) {
-                console.log("Registration Success!");
-                console.log("reg_response: ", reg_response);
                 updateNav('/edurange3/login/', 'home');
             } else {
-                const errData = response.data.error;
-                console.log('Registration failure.', errData);
+                console.log('Registration failure.');
             };
         } catch (error) {
             console.error('Error:', error);

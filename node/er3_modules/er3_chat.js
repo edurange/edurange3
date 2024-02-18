@@ -8,6 +8,7 @@ const pg = require('pg');
 const Joi = require('joi');
 const {generateAlias, generateInt} = require('../utils/chat_utils');
 
+const { Pool } = pg;
 // root project env
 dotenv.config({ path: path.join(__dirname, '..','..', 'py_flask', '.env') });
 
@@ -16,7 +17,6 @@ const chatSession = {
     studentDict : {},
     instructorDict : {}
 }
-const { Pool } = pg;
 
 const chatHttpServer = http.createServer((req, res) => {
     res.writeHead(200, { 'Content-Type': 'text/plain' });
@@ -90,7 +90,7 @@ chatSocketServer.on('connection', (socketConnection, request) => {
     
     // DEV_ONLY
     console.log(
-        `#  User connected w/ jwt id: `,
+        `#  User connected to chat server w/ jwt id: `,
         `\n#    username: ${username}`,
         `\n#    user_role: ${user_role}`,
         `\n#    user_id: ${user_id}`);
@@ -141,10 +141,7 @@ chatSocketServer.on('connection', (socketConnection, request) => {
             // await pool.query(query); // (UNCOMMENT TO USE DB)
             // console.log('Chat message saved to database');
 
-            console.log("session id is: ", chatSession.sessionID)
             console.log(`The user ${thisDictUser.isInstructor ? "IS" : "is NOT"} an instructor!`)
-            console.log(`Trying to send response back to sender: USER ${thisDictUser.userID}...`);
-
 
             const instructorConnectionArr = Object.values(chatSession.instructorDict).map(entry => entry.connection);
 

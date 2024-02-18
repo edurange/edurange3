@@ -20,7 +20,7 @@ import Instructor_router from '../instructor/Instructor_router';
 
 export const HomeRouter_context = React.createContext();
 
-const loginExpiry = (1000 * 60 * 60 * 1); // 1 hr in milliseconds
+const loginExpiry = (1000 * 60 * 60 * 24); // 24 hr in milliseconds
 
 function Home_router() {
 
@@ -38,7 +38,6 @@ function Home_router() {
       return;
     }
     const navNameToUse = newNavName ?? navName_state;
-    // console.log('updating nav...');
     set_navName_state(navNameToUse);
     const newExpiry = (Date.now() + loginExpiry);
     sessionStorage.setItem('navName', JSON.stringify(navNameToUse));

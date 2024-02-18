@@ -1,8 +1,8 @@
 import React, { useContext } from 'react';
-import Instructor_ScenTable from './Instructor_ScenTable';
+import Instructor_ScenTable from './tables/Instructor_ScenTable.jsx';
 import Frame_side from '@frame/sidenav/Frame_side';
 import CreateScenario from './CreateScenario.jsx';
-import Instructor_GroupTable from './Instructor_GroupTable.jsx';
+import Instructor_GroupTable from './tables/Instructor_GroupTable.jsx';
 import CreateGroup from './CreateGroup.jsx';
 import Placard from '@components/Placard'
 import Creation_Instructions from './Creation_Instructions.jsx';

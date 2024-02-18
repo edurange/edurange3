@@ -21,7 +21,7 @@ function ScenarioTable() {
                 set_scenarioList_state(response.data.scenarios_list);
             };
         }
-        catch (error) {console.log('get_scenarios_list error:', error);};
+        catch (error) {console.log('get_group_scenarios:', error);};
     };
     useEffect(() => {fetchScenarioList();}, []);
 

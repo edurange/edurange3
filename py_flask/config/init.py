@@ -24,9 +24,11 @@ def create_app(config_object="py_flask.config.settings"):
 
     :param config_object: The configuration object to use.
     """
-    app = Flask('edurange3') # hard coded value instead of root dir value (was causing problems)
-    # app = Flask(__name__.split(".")[0])
+    app = Flask('edurange3')
     app.config.from_object(config_object)
+    # set security attrs for 'session' cookie
+    app.config['SESSION_COOKIE_SECURE'] = True
+    app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
     register_extensions(app)
     register_blueprints(app)
     register_shellcontext(app)

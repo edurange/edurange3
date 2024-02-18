@@ -47,7 +47,7 @@ function Scenarios_router() {
 
     async function fetchScenarioList() {
         try {
-            const response = await axios.get("/get_scenarios");
+            const response = await axios.get("/get_group_scenarios");
             if (response.data.scenarioTable) {
                 set_scenarioList_state(response.data.scenarioTable);
             };

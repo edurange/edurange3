@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useContext, useState } from 'react';
-import { InstructorRouter_context } from './Instructor_router';
+import { InstructorRouter_context } from '../Instructor_router';
 import '@assets/css/tables.css'
 
 function Instructor_ScenTable() {
@@ -23,7 +23,6 @@ function Instructor_ScenTable() {
         set_instr_scenarioDetail_state(instr_scenarios_state[scenario_index])
     };
     function handleStartClick (scenario) {
-        console.log(scenario)
         axios.post('/scenario_interface',{
             METHOD: 'START',
             scenario_id: scenario.id
@@ -53,7 +52,7 @@ function Instructor_ScenTable() {
                 <div className='table-cell-item col-small'>Status</div>
                 <div className='table-cell-item col-large'>CONTROL PANEL</div>
             </div>
-            {instr_scenarios_state.slice(0).map((scenario, index) => (
+            {instr_scenarios_state.slice(1).map((scenario, index) => (
                 <div key={index+2000} onClick={() => handleInspectClick(index)} >
                     <div className="table-row">
                         <div className='table-cell-item col-xsmall'>{scenario.id}</div>

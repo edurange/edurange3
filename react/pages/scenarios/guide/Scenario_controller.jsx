@@ -55,7 +55,6 @@ function Scenario_controller() {
   console.log(guideContent_state)
   // const SSH_IP = guideContent_state.SSH_IP[`${scenarioName_sani}_nat`];
   const SSH_IP = guideContent_state.SSH_IP;
-  console.log(guideContent_state.SSH_IP);
 
   const panes = {
     info : (
@@ -65,6 +64,7 @@ function Scenario_controller() {
     ),  
     ssh : (
       <SSH_web
+        scenario_id={scenarioID}
         SSH_address={SSH_IP}
         SSH_username={SSH_username}
         SSH_password={SSH_password} 

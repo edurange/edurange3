@@ -3,6 +3,21 @@ const http = require('http');
 const { Client } = require('ssh2');
 const WebSocketServer = require('ws').WebSocketServer;
 const cookie = require('cookie');
+const dotenv = require('dotenv');
+const path = require('path');
+const jwt = require('jsonwebtoken');
+const pg = require('pg');
+const Joi = require('joi');
+
+dotenv.config({ path: path.join(__dirname, '..','..', 'py_flask', '.env') });
+const { Pool } = pg;
+const pool = new Pool({
+    host: 'localhost',
+    port: process.env.NODE_DB_PORT,
+    database: process.env.NODE_DB_NAME,
+    user: process.env.NODE_DB_USERNAME,
+    password: process.env.NODE_DB_PASSWORD,
+});
 
 const sshHttpServer = http.createServer((req, res) => {
     res.writeHead(200, { 'Content-Type': 'text/plain' });
@@ -12,29 +27,41 @@ const sshHttpServer = http.createServer((req, res) => {
 const sshSocketServer = new WebSocketServer({
     server: sshHttpServer,
     verifyClient: (info, done) => {
-
         const cookies = cookie.parse(info.req.headers.cookie || '');
-        const jwt = cookies.edurange3_jwt;
-        const csrf = cookies['X-XSRF-TOKEN'];
-        const flask_session = cookies.session;
-
-        info.jwt = jwt;
-        info.csrf = csrf;
-        info.flask_session = flask_session;
-
-        done(true); // Accept the connection
+        const er3_jwt = cookies.edurange3_jwt;
+        const skey = (process.env.JWT_SECRET_KEY);
+        const verified_jwt = jwt.verify(er3_jwt, skey);
+        const jwt_payload = verified_jwt.sub
+        info.req.get_id = () => jwt_payload;
+        done(true);
     }
 });
-sshSocketServer.on('connection', (socket) => {
-    console.log('New client connected to SSH terminal');
+sshSocketServer.on('connection', async (ssh_socket, request) => {
 
-    socket.send(JSON.stringify({
-        type: 'greeting',
-        greeting: `\x1b[37m Welcome to the \x1b[32medu\x1b[31mRange\x1b[30m pseudo123-terminal! \n \x1b[37mWhile we recommend using official OS terminal shells and ssh connections, this \x1b[35m(limited feature)\x1b[37m emulated terminal can also be handy.\x1b[0m \n\n`
-    }));
+    const {username, user_role, user_id} = request.get_id();
+    if (!username) {return {error: 'username not found in validated jwt'}};
+    
+    // DEV_ONLY
+    console.log(
+        `#  User connected to ssh pseudo-terminal w/ jwt id: `,
+        `\n#    username: ${username}`,
+        `\n#    user_role: ${user_role}`,
+        `\n#    user_id: ${user_id}`);
+        
+        ssh_socket.send(JSON.stringify({
+            type: 'greeting',
+            greeting: `\x1b[37m \x1b[32medu\x1b[31mRange\x1b[37;2m pseudo-terminal\x1b[95m by exoriparian\x1b[0m \n\n`
+        }));
+        
+        ssh_socket.on('message', async (message) => {
 
-    socket.on('message', (message) => {
         const data = JSON.parse(message);
+
+        if (data.hasOwnProperty('ping')){
+            socketConnection.send(JSON.stringify({pong:"pong"}));
+            return;
+        }
+
         if (data.type === 'set_credentials') {
             const sshClient = new Client();
             let sendTimer = null;
@@ -43,7 +70,7 @@ sshSocketServer.on('connection', (socket) => {
 
             function sendDataToFrontend() {
                 if (bufferedData) {
-                    socket.send(JSON.stringify({ type: 'edu3_response', result: bufferedData }));
+                    ssh_socket.send(JSON.stringify({ type: 'edu3_response', result: bufferedData }));
                     bufferedData = "";
                 }
             }
@@ -69,7 +96,7 @@ sshSocketServer.on('connection', (socket) => {
                         }
                     });
 
-                    socket.on('message', (message) => {
+                    ssh_socket.on('message', (message) => {
                         const cmdData = JSON.parse(message);
                         if (cmdData.type === 'edu3_command_data') {
                             shell.write(cmdData.data);
@@ -87,11 +114,11 @@ sshSocketServer.on('connection', (socket) => {
             }).connect({
                 host: data.SSH_host,
                 port: data.SSH_port,
-                username: data.SSH_username,
-                password: data.SSH_password,
+                username: data.username,
+                password: data.password,
             });
 
-            socket.on('close', () => {
+            ssh_socket.on('close', () => {
                 console.log('Client disconnected');
                 sshClient.end();
             });

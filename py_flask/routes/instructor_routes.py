@@ -90,6 +90,7 @@ def create_group():
             'group_obj':group_obj_dict
         })
 
+
 @blueprint_instructor.route("/get_instructor_data", methods=['GET'])
 @jwt_and_csrf_required
 def get_instructor_data():
@@ -200,10 +201,13 @@ def scenario_interface():
 # UNTESTED / WIP ROUTES
 @blueprint_instructor.route("/delete_group", methods=['POST'])
 @jwt_and_csrf_required
-def delete_group(group_name):
+def delete_group():
     instructor_only()
-
+    
     db_ses = db.session
+
+    group_name = request.json.get('group_name')
+
 
     student_group = db_ses.query(StudentGroups).filter(StudentGroups.name == group_name).first()
     group_id = student_group.id
@@ -222,7 +226,10 @@ def delete_group(group_name):
                 if plr.is_static:
                     plr.delete()
         student_group.delete()
-    return jsonify({"message":"Successfully deleted group {0}".format(group_name)})
+    return jsonify({
+        "message":"Successfully deleted group",
+        "group_name": group_name
+        })
 
 
 @blueprint_instructor.route("/delete_user", methods=['POST'])

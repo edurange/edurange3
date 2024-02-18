@@ -22,7 +22,6 @@ function Logout () {
             const responseData = response.data;
 
             if (responseData.message) {
-                console.log("Server Response: ", responseData.message);
                 set_userData_state();
                 set_login_state(false);
                 set_navName_state('logout')
@@ -32,8 +31,6 @@ function Logout () {
             sessionStorage.setItem('navName','logout')
             }
             else {
-                const errData = responseData.error;
-                console.log(errData);
                 console.log('Logout failure.');
             };
         }

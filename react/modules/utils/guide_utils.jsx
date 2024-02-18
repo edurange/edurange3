@@ -1,7 +1,7 @@
 
 export async function fetchScenarioList() {
     try {
-        const response = await axios.get("/get_scenarios");
+        const response = await axios.get("/get_group_scenarios");
         if (response.data.scenarioTable) {
             return response.data.scenarioTable;
         };

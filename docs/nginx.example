@@ -1,0 +1,99 @@
+
+This is an example config for nginx reverse proxy.  
+You WILL need to use some form of reverse proxy 
+to use edurange3 out of the box.
+
+This is only an example, and has not been 'vetted'
+to work universally; please review and revise.
+
+This assumes you have set up certbot.  
+If you have another SSL, adjust accordingly.
+
+You WILL need to use SSL certs to use edurange3
+out of the box.  It is possible to use some of the
+features with an insecure connection, but you will
+need to adjust the connection settings yourself.  
+The edurange org does not provide support for this option.
+
+If you need help with self-signed certs, 
+see further documentation (# DEV_FIX)
+
+This config example assumes you are using a subdomain, 
+but you do not need to.  Just replace the url accordingly.
+
+Each one of these locations IS needed to use all the features.
+
+server {
+    listen 443 ssl;
+    server_name subdomain.myDomain.com;
+
+    ssl_certificate /etc/letsencrypt/live/myDomain.com/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/myDomain.com/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+
+    location / {
+        proxy_pass http://localhost:3663/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        # WebSocket specific settings for Vite
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_cache_bypass $http_upgrade;
+    }
+
+    location /api/ {
+        proxy_pass http://localhost:5000/api/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        # WebSocket settings
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_cache_bypass $http_upgrade;
+    }
+    location /ssh {
+        proxy_pass http://localhost:31337;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        # Get cookies from the initial HTTP handshake req headers,
+        # then attach them as custom headers in the forwarded req.
+        proxy_set_header X-JWT-Token $cookie_edurange3_jwt;
+        proxy_set_header X-CSRF-Token $cookie_X-XSRF-TOKEN;
+
+        # WebSocket settings
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_cache_bypass $http_upgrade;
+    }
+    location /chat {
+        proxy_pass http://localhost:31338;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        # Get cookies from the initial HTTP handshake req headers,
+        # then attach them as custom headers in the forwarded req.
+        proxy_set_header X-JWT-Token $cookie_edurange3_jwt;
+        proxy_set_header X-CSRF-Token $cookie_X-XSRF-TOKEN;
+        
+        # WebSocket settings
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+    

@@ -22,7 +22,6 @@ function Login() {
             const userData = response.data;
 
             if (userData) {
-                console.log("Login success!");
                 set_userData_state(userData);
                 set_login_state(true);
                 const newExpiry = Date.now() + loginExpiry;
@@ -37,7 +36,6 @@ function Login() {
                     updateNav('/scenarios/', `dash`); }
             } else {
                 const errData = response.data.error;
-                console.log(errData);
                 console.log('Login failure.');
             };
         } catch (error) {

@@ -79,6 +79,7 @@ def login_er3(userObj):
         token_return, 
         samesite='Lax', 
         httponly=True,
+        secure=True,
         path='/'
     )
     # mitigate JWT/session related CSRF attacks
@@ -87,6 +88,7 @@ def login_er3(userObj):
         'X-XSRF-TOKEN', 
         session['X-XSRF-TOKEN'], 
         samesite='Lax',
+        secure=True,
         path='/'
     )
     return login_return
