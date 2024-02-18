@@ -47,6 +47,7 @@ function CreateGroup() {
       if (response.data.group_obj) {
         set_instr_studentGroups_state(prevState => [...prevState, response.data.group_obj]);
         set_buttonDisabled_state(true);
+        console.log (response.data)
       }
 
       set_groupName_state(''); 

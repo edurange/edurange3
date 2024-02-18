@@ -74,7 +74,10 @@ function assignGroupsToUsers(firstPassObj, originalObj) {
     for (let assignment of userGroupAssignments) {
         const userId = assignment.user_id;
         const groupId = assignment.group_id;
-        outputObj.users[userId].userGroups_memberOf.push(groupId);
+        if (outputObj.users[userId]) {
+            outputObj.users[userId].userGroups_memberOf.push(groupId);
+        } else { console.warn(`User with id ${userId} not found.`); 
+        };
     };
     return outputObj;
 };
@@ -85,9 +88,13 @@ function assignUsersToGroups(firstPassObj, originalObj) {
     for (let assignment of userGroupAssignments) {
         const userId = assignment.user_id;
         const groupId = assignment.group_id;
-        if (!outputObj.userGroups[groupId].user_members.includes(userId)) {
-            outputObj.userGroups[groupId].user_members.push(userId); 
-        }
+        if (outputObj.userGroups[groupId]) {
+            if (!outputObj.userGroups[groupId].user_members.includes(userId)) {
+                outputObj.userGroups[groupId].user_members.push(userId); 
+            }
+        } else { console.warn(`Group with id ${groupId} not found.`); 
+        };
+        
     };
     return outputObj;
 }

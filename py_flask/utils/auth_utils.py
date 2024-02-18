@@ -5,6 +5,7 @@ from flask import (
     make_response,
     g
 )
+from datetime import timedelta
 
 from functools import wraps
 from py_flask.database.models import GroupUsers, StudentGroups, User
@@ -67,15 +68,18 @@ def login_er3(userObj):
     login_return = make_response(jsonify(userObj))
     # generates JWT and encodes these values. (NOT hidden from user)
     # note: 'identity' is a payload keyword for Flask-JWT-Simple. best to leave it
-    token_return = create_access_token(identity=({  
+    token_return = create_access_token(identity=(
+        {  
         "username": userObj["username"],
         "user_role": userObj["role"],
         "user_id": userObj["id"]
-        }))
+        }
+        
+        ), expires_delta=timedelta(hours=12))
     
     # httponly=True ; this property mitigates XSS attacks by 'blinding' JS to the value
     login_return.set_cookie(
-        'edurange3_jwt', 
+        'edurange3_jwt',
         token_return, 
         samesite='Lax', 
         httponly=True,
