@@ -117,15 +117,16 @@ then
 	echo -e "${YLW}Please enter your root password for all containers:${NC}"
 	read rootPass
 	# Generate secret string for cookie encryption
+  # TODO: Replace JWT_SECRET_KEY as well
 	secretKey=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w ${1:-20} | head -n 1)
 	cp ./.env.example ./.env
-	sed -i "s/namefoo/${dbname}/" .env
-	sed -i "s/passwordfoo/${dbpass}/" .env
-	sed -i "s/Administrator/${flaskUser}/" .env
-	sed -i "s/flaskpass/${flaskPass}/" .env
-	sed -i "s/not-so-secret/${secretKey}/" .env
-	sed -i "s/localhost/${hostAddress}/" .env
-	sed -i "s/change-me/${rootPass}/" .env
+	sed -i "s/DBNAME_REPLACEME/${dbname}/" .env
+	sed -i "s/DB_PASS_REPLACEME/${dbpass}/" .env
+	sed -i "s/someUser/${flaskUser}/" .env
+	sed -i "s/somePass/${flaskPass}/" .env
+	sed -i "s/YOURSECRETKEY/${secretKey}/" .env
+	sed -i "s/YOUR_URL_HERE/${hostAddress}/" .env
+	sed -i "s/someRootPass/${rootPass}/" .env
 
 elif [ $1 = "auto" ];
 then
