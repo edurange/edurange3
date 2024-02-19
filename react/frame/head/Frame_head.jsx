@@ -4,30 +4,21 @@ import { nanoid } from 'nanoid';
 import Notifs_button from './Notifs_button';
 import '../frame.css';
 import edurange_icons from '@modules/ui/edurangeIcons';
-import { HomeRouter_context } from '@home/Home_router';
-import { useNavigate } from 'react-router-dom';
+import { HomeRouter_context } from '@pub/Home_router';
 import Frame_UserBox from './Frame_UserBox';
+import { navArrays } from '../../modules/nav/navItemsData';
 
+function Frame_head({ navArrayToShow }) {
 
-function Frame_head({ navArr_toShow }) {
+    navArrayToShow = navArrayToShow ?? navArrays.logout.home.top
 
-    const navigate = useNavigate()
-    if (!navArr_toShow) return <></>
     const {
-        updateNav,
         sideNav_isVisible_state, set_sideNav_isVisible_state,
-        sideNav_isSmall_state, set_sideNav_isSmall_state, navName_state
+        sideNav_isSmall_state, set_sideNav_isSmall_state,
+        desiredNavMetas_state, set_desiredNavMetas_state
     } = useContext(HomeRouter_context);
 
-    if (!navName_state) return <></>
-
-    // In Frame_head component
-    const [isJwtTestModalOpen, setIsJwtTestModalOpen] = useState(false);
-
-    function handle_jwtTest_click() {
-        setIsJwtTestModalOpen(true);
-    }
-
+    const someNav = navArrays.top_logout
 
     function toggle_sideNav_vis() {
         set_sideNav_isVisible_state(!sideNav_isVisible_state); // toggle to opposite
@@ -54,7 +45,7 @@ function Frame_head({ navArr_toShow }) {
     const pillOrReg = (sideNav_isVisible_state) ? 'er3-homehead-hamburger-item hamburger-pill-left' : 'er3-homehead-hamburger-item';
 
     function Hamburger() {
-        if (navName_state === "home" || navName_state === "logout") { return <></> };
+
         return (
             <div className='er3-homehead-hamburger-frame'>
                 <div
@@ -68,7 +59,7 @@ function Frame_head({ navArr_toShow }) {
 
         );
     };
-
+    // return <></>
     return (
         <div className="er3-homehead">
 
@@ -79,9 +70,9 @@ function Frame_head({ navArr_toShow }) {
 
             <div className='er3-homehead-right'>
                 <span className="er3-homehead-buttonbar">
-                    {navArr_toShow.map((val, key) => {
+                    {navArrayToShow.map((val, key) => {
                         return (
-                            <div className='edu3-nav-link' key={nanoid(3)} onClick={() => updateNav(val.path, val.navStub)} >
+                            <div className='edu3-nav-link' key={nanoid(3)} onClick={() => set_desiredNavMetas_state([val.path, val.navStub])} >
                                 <li className='topnav-button-panes' >
                                     <div className='topnav-icon-box' >{val.icon}</div>
                                     <div className='topnav-label-box' >{val.title}</div>

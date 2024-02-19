@@ -3,6 +3,7 @@ from flask import (
     session,
     jsonify,
     make_response,
+    abort,
     g
 )
 from datetime import timedelta
@@ -25,16 +26,6 @@ def jwt_and_csrf_required(fn):
         server_CSRF = session.get('X-XSRF-TOKEN')
         if not server_CSRF: return jsonify({"error": "no server csrf request denied"}), 418
         if client_CSRF != server_CSRF:  return jsonify({"error": "csrf bad match"}), 418
-        
-        
-        # CSRF check (prod)
-        # client_CSRF = request.headers.get('X-CSRFToken')
-        # edurange3_csrf = session.get('X-XSRF-TOKEN')
-        # if (
-        #     not edurange3_csrf
-        #     or not client_CSRF
-        #     or client_CSRF != edurange3_csrf):
-        #         return jsonify({"error": "csrf request denied"}), 418
         
         # JWT check
         token = request.cookies.get('edurange3_jwt')
@@ -66,8 +57,8 @@ def instructor_only():
 def login_er3(userObj):
 
     login_return = make_response(jsonify(userObj))
-    # generates JWT and encodes these values. (NOT hidden from user)
-    # note: 'identity' is a payload keyword for Flask-JWT-Simple. best to leave it
+    # generate JWT and encode these values. (NOT hidden from user)
+    # note: 'identity' is a payload keyword for Flask-JWT-Extended. best to leave it
     token_return = create_access_token(identity=(
         {  
         "username": userObj["username"],
@@ -77,7 +68,7 @@ def login_er3(userObj):
         
         ), expires_delta=timedelta(hours=12))
     
-    # httponly=True ; this property mitigates XSS attacks by 'blinding' JS to the value
+    # httponly=True - mitigates XSS attacks by 'blinding' client to the JWT
     login_return.set_cookie(
         'edurange3_jwt',
         token_return, 
@@ -86,7 +77,8 @@ def login_er3(userObj):
         secure=True,
         path='/'
     )
-    # mitigate JWT/session related CSRF attacks
+
+    # CSRF token: mitigate JWT/session related CSRF attacks
     # no httponly=True ; JS needs access to value
     login_return.set_cookie(
         'X-XSRF-TOKEN', 
@@ -101,9 +93,14 @@ def login_er3(userObj):
 ####
 # account utils available to student (e.g. non-instructor) routes
 ####
+
 # create student account (add to postgreSQL db)
 def register_user(validated_registration_data):
+    
     data = validated_registration_data
+
+    group = StudentGroups.query.filter_by(code=data["code"]).first()
+
     User.create(
             username=data["username"],
             password=data["password"],
@@ -111,7 +108,9 @@ def register_user(validated_registration_data):
     )
     
     # won't work unless provided code matches the code for an existing group
-    group = StudentGroups.query.filter_by(code=data["code"]).first()
+
+    if group is None: return jsonify({"error": "group matching this code not found"}), 404
+
     user = User.query.filter_by(username=data["username"]).first()
     group_id = group.get_id()
     user_id = user.get_id()

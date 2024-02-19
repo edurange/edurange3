@@ -1,10 +1,10 @@
 import React from 'react';
 import { useContext } from 'react';
 
-import { HomeRouter_context } from '@home/Home_router';
-import Login from '@home/login/Login';
+import { HomeRouter_context } from '@pub/Home_router';
+import Login from '@pub/login/Login';
 
-export const LoggedIn_context = ({ children }) => {
+export const Student_context = ({ children }) => {
 
     const login_session = JSON.parse(sessionStorage.getItem('login'));
     const { login_state } = useContext(HomeRouter_context);

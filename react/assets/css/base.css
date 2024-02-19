@@ -184,7 +184,7 @@ body, html {
     right: 0;
 }
 
-.universal-content-outer {
+.universal-outer {
     width: 100%;
     height: 100%;
     display: flex;
@@ -194,7 +194,7 @@ body, html {
     contain: content;
 }
 
-.universal-content-mid {
+.universal-mid {
     width: 100%;
     height: 100%;
     display: flex;
@@ -203,7 +203,7 @@ body, html {
     align-items: center;
 }
 
-.universal-content-inner {
+.universal-inner {
     position: fixed;
     left: 0;
     right: 0;

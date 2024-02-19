@@ -35,25 +35,29 @@
     background-color: rgba(250, 255, 173, 0.217);
     border-radius: 8px;
 }
+.col-xxsmall{
+    max-width: 10px;
+    min-width: 10px;
+}
 .col-xsmall{
-    max-width: 40px;
-    min-width: 40px;
+    max-width: 30px;
+    min-width: 30px;
 }
 .col-small{
-    max-width: 80px;
-    min-width: 80px;
+    max-width: 60px;
+    min-width: 60px;
 }
 .col-medium{
-    max-width: 120px;
-    min-width: 120px;
+    max-width: 100px;
+    min-width: 100px;
 }
 .col-large{
-    max-width: 160px;
-    min-width: 160px;
+    max-width: 130px;
+    min-width: 130px;
 }
 .col-xlarge {
-    max-width: 200px;
-    min-width: 200px;
+    max-width: 150px;
+    min-width: 160px;
 }
 .status-standby{
     color: orange;

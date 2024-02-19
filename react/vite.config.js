@@ -8,19 +8,15 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './pages'),
-      '@modules': path.resolve(__dirname, './modules'),
       '@public': path.resolve(__dirname, './public'),
       '@assets': path.resolve(__dirname, './assets'),
-      '@home': path.resolve(__dirname, './pages/home'),
+      '@modules': path.resolve(__dirname, './modules'),
+      '@pub': path.resolve(__dirname, './pages/pub'),
       '@instructor': path.resolve(__dirname, './pages/instructor'),
-      '@scenarios': path.resolve(__dirname, './pages/scenarios'),
-      '@chat': path.resolve(__dirname, './pages/chat'),
-      '@account': path.resolve(__dirname, './pages/account'),
+      '@student': path.resolve(__dirname, './pages/student'),
       '@frame': path.resolve(__dirname, './frame'),
-      '@admin': path.resolve(__dirname, './pages/admin'),
       '@config': path.resolve(__dirname, './config'),
       '@components': path.resolve(__dirname, './components'),
-      '@notifications': path.resolve(__dirname, './pages/notifications'),
     },
   },
   server: {

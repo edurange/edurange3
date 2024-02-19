@@ -41,9 +41,6 @@ axios.defaults.baseURL = '/api';
 axios.defaults.headers.common['X-XSRF-TOKEN'] = csrfToken || ""; // provide empty for login
 axios.defaults.withCredentials = true; // very important
 
-const AxiosConfig = ({ children }) => {
-
-    return children;
-};
-
+// allows er3_entry.jsx to wrap itself in config component
+function AxiosConfig ({children}) {return children;}
 export default AxiosConfig; 

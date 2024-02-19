@@ -12,7 +12,8 @@
     "flask-static-digest": "flask digest compile",
     "lint": "eslint \"assets/js/*.js\"",
     "vite-react-dev": "cd react && npm run dev",
-    "node": "cd node && nodemon nodeServer"
+    "node": "cd node && nodemon nodeServer",
+    "build": "something"
   },
   "repository": {
     "type": "git",

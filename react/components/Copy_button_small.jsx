@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import edurange_icons from '@modules/ui/edurangeIcons';
-import { HomeRouter_context } from '@home/Home_router';
-import copyToClipboard from '@modules/utils/copyToClipboard';
+import { HomeRouter_context } from '@pub/Home_router';
+import copyToClipboard from '@modules/utils/util_modules';
 import './Copy_button_small.css';
 
 function Copy_button_small({ thingToCopy }) {

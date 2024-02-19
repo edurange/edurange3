@@ -48,7 +48,7 @@ URL traversal in the webapp beyond the /pages directory (at least for major dire
     
     for example:  /home  will be either `edurange.org:5000/` or, in development, `edurange.org:5000/edurange3/`
             
-            beyond that, /pages/home/examplePage  would be 
+            beyond that, /pages/pub/examplePage  would be 
                 `edurange.org:5000/examplePage` 
                 or 
                 `edurange.org:5000/edurange3/examplePage`

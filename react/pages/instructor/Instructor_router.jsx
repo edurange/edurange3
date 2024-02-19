@@ -1,8 +1,8 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
-import InstructorDash from './InstructorDash';
-import { buildInstructorData } from '@modules/utils/instructor_utils';
+import Instr_Dash from './dashboard/Instr_Dash';
+import { buildInstructorData } from '@modules/utils/instr_modules';
 
 export const InstructorRouter_context = React.createContext();
 
@@ -41,7 +41,7 @@ function Instructor_router() {
             }}>
 
             <Routes>
-                <Route path="/" element={<InstructorDash />}/>
+                <Route path="/*" element={<Instr_Dash />}/>
             </Routes>
 
         </InstructorRouter_context.Provider>

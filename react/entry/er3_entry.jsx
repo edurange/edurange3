@@ -10,7 +10,7 @@
 import React from 'react';
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from 'react-router-dom';
-import Home_router from '@home/Home_router'
+import Home_router from '@pub/Home_router'
 import AxiosConfig from '@config/AxiosConfig';
 import '@assets/css/base.css' 
 

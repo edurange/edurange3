@@ -78,7 +78,7 @@ const logout = {
     title: "Logout",
     icon: edurange_icons.user_x,
     path: `/logout`,
-    navStub: 'logout'
+    navStub: 'home'
 };
 const account = {
     title: "Account",
@@ -104,57 +104,119 @@ const instructor = {
     title: "Dashboard",
     icon: edurange_icons.wizardHat,
     path: `/instructor`,
-    navStub: 'dash_instructor'
+    navStub: 'dash'
 };
 const studentGroups = {
     title: "Student Groups",
     icon: edurange_icons.userGroup,
     path: `/instructor/studentGroups`,
-    navStub: 'dash_instructor'
+    navStub: 'dash'
 };
 const scenarioGroups = {
     title: "Scenario Groups",
     icon: edurange_icons.scenarioGroup,
     path: `/instructor/scenarioGroups`,
-    navStub: 'dash_instructor'
+    navStub: 'dash'
 };
 const students = {
     title: "Students",
     icon: edurange_icons.user,
     path: `/instructor/students`,
-    navStub: 'dash_instructor'
+    navStub: 'dash'
 };
 const instr_scenarios = {
     title: "Scenarios",
     icon: edurange_icons.chess_knight,
     path: `/instructor/scenarios`,
-    navStub: 'dash_instructor'
+    navStub: 'dash'
 };
 
 
 export const navArrays = {
 
-//logged_out
-    side_logout:            [ docs, login, logout ],
-    top_logout:             [ docs, login, logout ],
+    logout: {
+        home: {
+            top: [login, logout],
+            side: [login, logout]
+        },
+    },
 
-//home  
-    side_home:              [ login ],
-    top_home:               [ docs, login, logout ],
+    student: {
+        home: {
+            top: [scenarios, login, logout],
+            side: [scenarios, login, logout]
+        },
+        dash: {
+            top: [home, scenarios, login, logout],
+            side: [scenarios, login, logout]
+        },
+        account: {
+            top: [scenarios, login, logout],
+            side: [scenarios, login, logout]
+        },
+        
+    },
 
-//options
-    side_options:           [ accessibility, themes, home ],
-    top_options:            [ scenarios, home, account, login, logout ],
+    instructor: {
+        home: {
+            top: [home, instructor, login, logout],
+            side: [instructor, login, logout]
+        },
+        dash: {
+            top: [instructor, login, logout],
+            side: [instructor, students, studentGroups, instr_scenarios, scenarioGroups]
+        },
+        account: {
+            top: [instructor, login, logout],
+            side: [instructor, login, logout]
+        },
+        scenarios: {
+            top: [instructor, login, logout],
+            side: [instructor, students, studentGroups, instr_scenarios, scenarioGroups]
+        },
+        students: {
+            top: [instructor, login, logout],
+            side: [instructor, students, studentGroups, instr_scenarios, scenarioGroups]
+        },
+        student_groups: {
+            top: [instructor, login, logout],
+            side: [instructor, students, studentGroups, instr_scenarios, scenarioGroups]
+        },
+        scenario_groups: {
+            top: [instructor, login, logout],
+            side: [instructor, students, studentGroups, instr_scenarios, scenarioGroups]
+        },
+    },
 
-//student scenarios
-    side_dash:              [ scenarios, instructor, account, logout ],
-    top_dash:               [ scenarios, login, logout ],
-
-//guide
-    side_guide:              [ scenarios, logout ],
-    top_guide:               [ login, logout ],
-
-//instructor's dashboard
-    side_dash_instructor:   [ instructor, students, studentGroups, instr_scenarios, scenarioGroups ],
-    top_dash_instructor:    [ instructor, login, logout ],
+    admin: {
+        home: {
+            top: [home, instructor, login, logout],
+            side: [instructor, login, logout]
+        },
+        dash: {
+            top: [instructor, login, logout],
+            side: [instructor, students, studentGroups, instr_scenarios, scenarioGroups]
+        },
+        account: {
+            top: [instructor, login, logout],
+            side: [instructor, login, logout]
+        },
+        scenarios: {
+            top: [instructor, login, logout],
+            side: [instructor, students, studentGroups, instr_scenarios, scenarioGroups]
+        },
+        students: {
+            top: [instructor, login, logout],
+            side: [instructor, students, studentGroups, instr_scenarios, scenarioGroups]
+        },
+        student_groups: {
+            top: [instructor, login, logout],
+            side: [instructor, students, studentGroups, instr_scenarios, scenarioGroups]
+        },
+        scenario_groups: {
+            top: [instructor, login, logout],
+            side: [instructor, students, studentGroups, instr_scenarios, scenarioGroups]
+        },
+    },
 };
+

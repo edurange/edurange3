@@ -250,9 +250,9 @@
 │  │        │  │     └─ Test_controls.js
 │  │        │  ├─ instructor
 │  │        │  │  └─ src
-│  │        │  │     ├─ InstructorDash.js
+│  │        │  │     ├─ Instr_Dash.js
 │  │        │  │     ├─ Instructor_ScenDetail.js
-│  │        │  │     ├─ Instructor_ScenTable.js
+│  │        │  │     ├─ Instr_ScenTable.js
 │  │        │  │     └─ Panopticon.js
 │  │        │  ├─ scenarios
 │  │        │  │  ├─ README.txt
@@ -262,7 +262,7 @@
 │  │        │  │  └─ src
 │  │        │  │     ├─ Scenarios_home.css
 │  │        │  │     ├─ Scenarios_home.js
-│  │        │  │     ├─ Scenarios_router.js
+│  │        │  │     ├─ Student_router.js
 │  │        │  │     ├─ components
 │  │        │  │     │  └─ cards
 │  │        │  │     │     ├─ CategoryCard.js

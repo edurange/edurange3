@@ -2,13 +2,13 @@
 import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '@assets/css/tables.css';
-import { InstructorDashContext } from './InstructorDash';
+import { Instr_DashContext } from './Instr_Dash';
 
 // work in progress
 
 function Table({ columnData, rowData, use_crud }) {
     const navigate = useNavigate();
-    const { instr_scenarios_state, set_instr_scenarioDetail_state } = useContext(InstructorDashContext);
+    const { instr_scenarios_state, set_instr_scenarioDetail_state } = useContext(Instr_DashContext);
 
     function handleDetailClick(scenario_index) {
         const currentMeta = instr_scenarios_state[scenario_index];
@@ -56,7 +56,7 @@ export default Table;
 // import { useNavigate } from 'react-router-dom';
 
 // import '@assets/css/tables.css';;
-// import { InstructorDashContext } from './InstructorDash';
+// import { Instr_DashContext } from './Instr_Dash';
 
 // // This is a generic polymorphic Table component
 // // prop arguments use following format (w/o _dummy):
@@ -103,7 +103,7 @@ export default Table;
 
 //     const navigate = useNavigate();
 
-//     const { instructorData_state, set_instr_scenarioDetail_state } = useContext( InstructorDashContext );
+//     const { instructorData_state, set_instr_scenarioDetail_state } = useContext( Instr_DashContext );
     
 //         function handleDetailClick (scenario_index) {
 //             const currentMeta = instructorData_state.scenarios[scenario_index];

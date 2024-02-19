@@ -2,25 +2,27 @@ import React, {useContext} from 'react';
 import { nanoid } from 'nanoid';
 import '../frame.css';
 import { navArrays } from '@modules/nav/navItemsData';
-import { HomeRouter_context } from '@home/Home_router';
+import { HomeRouter_context } from '@pub/Home_router';
 
-function Frame_side({navArr_toShow}) {
+function Frame_side() {
 
   const {
-    sideNav_isVisible_state, updateNav,
-    sideNav_isSmall_state
+    sideNav_isVisible_state,
+    sideNav_isSmall_state, 
+    navArraysObj_state,
+    set_desiredNavMetas_state
   } = useContext(HomeRouter_context);
 
-  // navArr_toShow = (navArr_toShow) ? navArr_toShow : navArrays.side_logout; 
-  // const myNav =  navArrays.side_dash_instructor
+  const navArrayToShow = navArraysObj_state?.side ?? navArrays.logout.home.side;
+
   if (!sideNav_isVisible_state) {return <></>}
-  if (!navArr_toShow) {return <></>}
+  if (!navArrayToShow) {return <></>}
   return (
         <div className='newdash-sidebar-frame'>
 
-          {navArr_toShow.map((val, key) => {
+          {navArrayToShow.map((val, key) => {
             return (
-              <div className='newdash-sidebar-row' key={nanoid(3)} onClick={() => updateNav(val.path, val.navStub)} >
+              <div className='newdash-sidebar-row' key={nanoid(3)} onClick={() => set_desiredNavMetas_state([val.path, val.navStub])} >
                 <div className='newdash-sidebar-item'>
                   <div className='newdash-sidebar-icon'>{val.icon}</div>
 
