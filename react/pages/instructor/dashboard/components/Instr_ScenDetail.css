@@ -1,0 +1,29 @@
+.scenario-home-outer-frame {
+    min-width: 100%;
+    min-height: 100%;
+    display: flex;
+    contain: content;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+.scenario-home-inner-frame {
+    width: 90%;
+    height: 90%;
+    display: flex;
+    contain: content;
+    flex-direction: column;
+    position: relative;
+    bottom: 0; 
+    left: 5%;
+    right: 0;
+    top: 2%;
+}
+.newdash-content-placard{
+    font-size: 6dvh;
+    color: var(--muted-aqua);
+    min-height: 8%;
+    padding: 4%;
+    box-sizing: border-box;
+    align-items: center;
+    display: flex;
+}

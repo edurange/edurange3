@@ -14,15 +14,15 @@
 // 
 
 import { useState, useRef, useEffect } from 'react';
-import '../ChatApp.css';
+import './ChatApp.css';
 import Messages_pane from '../../student/chat/Messages_pane.jsx';
-import Instructor_UsersList from './Instructor_UsersList.jsx';
+import Instructor_UsersList from './Instr_UsersList.jsx';
 import { ChatMessage } from '../../student/chat/Chat_Student.jsx';
 
 // !important! use 'wss:' for production (reqs SSL certs) // DEV_ONLY
 const socketURL = "wss://riparian.dev/chatSocket"  
 
-function Chat_Instructor() {
+function Instr_Chat() {
 
     const chatUsers = []; // array of user objects, w/ their chats
 
@@ -107,10 +107,10 @@ function Chat_Instructor() {
         <div className='er3chat-frame'>
         <div className='er3chat-panes-container-frame'>
             <div className="er3chat-pane">
+                <Instructor_UsersList/>
                 <Messages_pane chatSessionID='123' chatLog_state={chatLog_state} lastChat_ref={lastChat_ref}/>
             </div>
             <div className="er3chat-pane">
-                <Instructor_UsersList/>
             </div>
         </div>
         <div className='er3chat-input-frame'>
@@ -130,4 +130,4 @@ function Chat_Instructor() {
     );
 };
 
-export default Chat_Instructor;
+export default Instr_Chat;

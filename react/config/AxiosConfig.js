@@ -27,20 +27,17 @@ function getCSRFfromCookie() {
     return null;
 };
 const csrfToken = getCSRFfromCookie();
+if (!csrfToken) { console.log('Axios: CSRF cookie not found'); } // DEV_ONLY
 
-// const baseURL = 'https://URL_TO_BE_REPLACED/api' 
-// notes: 
+// baseURL / request notes:
 // - NO trailing slash on the baseURL
 // - ASSUMES domain, not numeric IP
 // - Do NOT add port if using domain w/ nginx reverse proxy
 // - USE leading slash for axios calls a la 'axios.post('/someRoute')'
-
-if (!csrfToken) { console.log('Axios: CSRF cookie not found'); } // DEV_ONLY
-
 axios.defaults.baseURL = '/api';  
 axios.defaults.headers.common['X-XSRF-TOKEN'] = csrfToken || ""; // provide empty for login
 axios.defaults.withCredentials = true; // very important
 
-// allows er3_entry.jsx to wrap itself in config component
+// allows er3_entry.jsx to wrap itself in AxiosConfig.js
 function AxiosConfig ({children}) {return children;}
-export default AxiosConfig; 
+export default AxiosConfig;

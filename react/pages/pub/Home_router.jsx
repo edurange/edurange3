@@ -12,7 +12,7 @@ import SessionKeeper from './SessionKeeper';
 import Logout from './login/Logout';
 import Instructor_router from '../instructor/Instructor_router';
 import { Instructor_context } from '../../modules/context/Instructor_context';
-import { Student_context } from '../../modules/context/LoggedIn_context';
+import { Student_context } from '../../modules/context/Student_context';
 import Student_router from '../student/Student_router';
 import Options_controller from './options/Options_controller';
 import Frame_head from '../../frame/head/Frame_head';

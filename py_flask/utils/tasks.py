@@ -4,11 +4,12 @@ import os
 import random
 import shutil
 import string
+from time import sleep 
 import subprocess
 from datetime import datetime
 from celery import Celery
 from celery.utils.log import get_task_logger
-from flask import current_app, flash
+from flask import current_app, flash, jsonify
 from py_flask.utils.terraform_utils import adjust_network, find_and_copy_template, write_resource
 from py_flask.config.settings import CELERY_BROKER_URL, CELERY_RESULT_BACKEND
 
@@ -35,6 +36,20 @@ class ContextTask(celery.Task):
             return super(ContextTask, self).__call__(*args, **kwargs)
 
 celery.Task = ContextTask
+
+
+
+@celery.task(bind=True)
+def add_numbers_task(self, arg1, arg2):
+
+ 
+
+    testAdd = arg1 + arg2
+    sleep (25)
+    
+    return testAdd
+
+
 
 @celery.task(bind=True)
 def create_scenario_task(self, scen_name, scen_type, students_list, grp_id, scen_id):
@@ -141,6 +156,55 @@ def create_scenario_task(self, scen_name, scen_type, students_list, grp_id, scen
 
         ScenarioGroups.create(group_id=grp_id, scenario_id=scen_id)
 
+        return {
+            "result": "success", 
+            "new_status": 0,
+            "scenario_id": scen_id
+        }
+
+# @celery.task(bind=True)
+# def start_scenario_task(self, scenario_id):
+#     from py_flask.database.models import Scenarios
+#     from py_flask.utils.scenario_utils import setAttempt
+#     from py_flask.utils.instructor_utils import NotifyCapture
+
+#     app = current_app
+#     logger.info(
+#         "Executing task id {0.id}, args: {0.args!r} kwargs: {0.kwargs!r}".format(
+#             self.request
+#         )
+#     )
+#     with app.test_request_context():
+#         scenario = Scenarios.query.filter_by(id=scenario_id).first()
+#         logger.info("Found Scenario: {}".format(scenario))
+#         name = str(scenario.name)
+#         name = "".join(e for e in name if e.isalnum())
+#         gateway = name + "_gateway"
+#         start = name + "_nat"
+#         start_ip = '10.' + scenario.subnet.split('.')[1] + '.0.2'
+#         if int(scenario.status) != 0:
+#             logger.info("Invalid Status")
+#             NotifyCapture("Failed to start scenario " + name + ": Invalid Status")
+#             return jsonify({"message": "Scenario must be stopped before starting"})
+#             # raise Exception(f"Scenario must be stopped before starting")
+#         elif os.path.isdir(os.path.join("./scenarios/tmp/", name)):
+#             scenario.update(status=3)
+#             logger.info("Folder Found")
+#             os.chdir("./scenarios/tmp/" + name)
+#             os.system("terraform apply network")
+#             os.system("terraform apply --auto-approve")
+#             os.system("../../../shell_scripts/scenario_movekeys.sh {} {} {}".format(gateway, start, start_ip))
+#             os.chdir("../../..")
+#             scenario.update(status=1)
+#             scenario.update(attempt=setAttempt(scenario_id))
+#             NotifyCapture("Scenario " + name + " has started successfully.")
+#             return {"message": "Scenario has been started"}
+
+#         else:
+#             logger.info("Scenario folder could not be found -- " + os.path.join("./scenarios/tmp/", name))
+#             NotifyCapture("Failed to start scenario " + name + ": Scenario folder could not be found. -- " + os.path.join("./scenarios/tmp/", name))
+#             flash("Scenario folder could not be found")
+#             return jsonify({"message": "Scenario start problem"})
 @celery.task(bind=True)
 def start_scenario_task(self, scenario_id):
     from py_flask.database.models import Scenarios
@@ -164,7 +228,12 @@ def start_scenario_task(self, scenario_id):
         if int(scenario.status) != 0:
             logger.info("Invalid Status")
             NotifyCapture("Failed to start scenario " + name + ": Invalid Status")
-            raise Exception(f"Scenario must be stopped before starting")
+            return {
+                "result": "failure",
+                "new_status": 5,
+                "scenario_id": scenario_id,
+                "message": "Scenario must be stopped before starting"
+                }
         elif os.path.isdir(os.path.join("./scenarios/tmp/", name)):
             scenario.update(status=3)
             logger.info("Folder Found")
@@ -176,10 +245,19 @@ def start_scenario_task(self, scenario_id):
             scenario.update(status=1)
             scenario.update(attempt=setAttempt(scenario_id))
             NotifyCapture("Scenario " + name + " has started successfully.")
+            return {
+                "result": "success", 
+                "new_status": 1,
+                "scenario_id": scenario_id
+                }
         else:
             logger.info("Scenario folder could not be found -- " + os.path.join("./scenarios/tmp/", name))
             NotifyCapture("Failed to start scenario " + name + ": Scenario folder could not be found. -- " + os.path.join("./scenarios/tmp/", name))
-            flash("Scenario folder could not be found")
+            return {
+                "result": "failure",
+                "new_status": 5,
+                "scenario_id": scenario_id
+                }
 
 @celery.task(bind=True)
 def stop_scenario_task(self, scenario_id):
@@ -209,10 +287,19 @@ def stop_scenario_task(self, scenario_id):
             os.chdir("../../..")
             scenario.update(status=0)
             NotifyCapture("Scenario " + name + " has successfully stopped.")
+            return {
+                "result": "success", 
+                "new_status": 0,
+                "scenario_id": scenario_id
+                }
         else:
             logger.info("Something went wrong")
             NotifyCapture("Failed to stop scenario " + name + ": Invalid Status")
-            flash("Something went wrong", "warning")
+            return {
+                "result": "failure",
+                "new_status": 5,
+                "scenario_id": scenario_id
+                }
 
 @celery.task(bind=True)
 def update_scenario_task(self, scenario_id):
@@ -282,13 +369,28 @@ def destroy_scenario_task(self, scenario_id):
                     s_group.delete()
                 scenario.delete()
                 NotifyCapture("The Scenario " + name + " is successfully deleted.")
+                return {
+                    "result": "success", 
+                    "new_status": 0,
+                    "scenario_id": scenario_id
+                    }
             else:
                 logger.info("Scenario files not found, assuming broken scenario and deleting")
                 NotifyCapture("Failed to delete scenario " + name + ": Scenario files could not be found.")
                 scenario.delete()
+                return {
+                    "result": "failure",
+                    "new_status": 5,
+                    "scenario_id": scenario_id
+                }
         else:
             NotifyCapture("Failed to delete scenario " + name + ": Scenario could not be found.")
-            raise Exception(f"Could not find scenario")
+            # raise Exception(f"Could not find scenario")
+            return {
+                "result": "failure",
+                "new_status": 5,
+                "scenario_id": scenario_id
+                }
 
 @celery.task(bind=True)
 def scenarioCollectLogs(self, arg):

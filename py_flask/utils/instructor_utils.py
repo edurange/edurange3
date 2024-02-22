@@ -116,10 +116,11 @@ def scenario_create(scenario_type, scenario_name, studentGroup_name):
         print('missing create arg, aborting')
         abort(418)
 
-    create_scenario_task.delay(scenario_name, scenario_type, students_list, group_id, scenario_id)
+    returnObj = create_scenario_task.delay(scenario_name, scenario_type, students_list, group_id, scenario_id).get(timeout=None)
+    returnObj['students_return'] = [{'username': student['username']} for student in students_list]
     
     students_return = [{'username': student['username']} for student in students_list]
-    return jsonify({"student_list": students_return})
+    return returnObj
 
 def list_all_scenarios():
     db_ses = db.session
@@ -145,9 +146,9 @@ def scenario_start(scenario_id):
         abort(418)
 
     print(f'Attempting to START scenario {scenario_id}: ')
-    return_obj = start_scenario_task(scenario_id)
+    return_obj = start_scenario_task.delay(scenario_id).get(timeout=None)
 
-    return jsonify({"message": f"scenario {scenario_id} started!", 'return_obj': return_obj})
+    return (return_obj)
 
 def scenario_stop(scenario_id):
 
@@ -158,7 +159,7 @@ def scenario_stop(scenario_id):
     print(f'Attempting to STOP scenario {scenario_id}: ')
     return_obj = stop_scenario_task(scenario_id)
 
-    return jsonify({"message": f"scenario {scenario_id} stopped!", 'return_obj': return_obj})
+    return (return_obj)
 
 def scenario_update(scenario_id):
 
@@ -166,9 +167,9 @@ def scenario_update(scenario_id):
         print('missing UPDATE scenario_id arg, aborting')
         abort(418)
 
-    return_obj = update_scenario_task(scenario_id)
+    return_obj = update_scenario_task.delay(scenario_id).get(timeout=None)
 
-    return jsonify({"message": f"scenario {scenario_id} updated!", 'return_obj': return_obj})
+    return (return_obj)
 
 def scenario_destroy(scenario_id):
 
@@ -177,9 +178,8 @@ def scenario_destroy(scenario_id):
         abort(418)
 
     print(f'Attempting to DESTROY scenario {scenario_id}: ')
-    return_obj = destroy_scenario_task(scenario_id)
-
-    return jsonify({"message": f"scenario {scenario_id} destroyed!", 'return_obj': return_obj})
+    return_obj = destroy_scenario_task.delay(scenario_id).get(timeout=None)
+    return (return_obj)
 
 
 

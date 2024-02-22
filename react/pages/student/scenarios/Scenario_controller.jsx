@@ -1,7 +1,6 @@
 import axios from 'axios';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useParams } from 'react-router-dom';
-import { useContext } from 'react';
 import FootControls from './controls/FootControls';
 
 import "@frame/frame.css";
@@ -10,12 +9,14 @@ import InfoPane from './panes/info/InfoPane';
 import GuidePane from './panes/guide/GuidePane';
 import SSH_web from './panes/ssh/SSH_web';
 import Chat_Student from '../chat/Chat_Student';
-import { StudentRouter_context } from '../Student_router';
+import { HomeRouter_context } from '../../pub/Home_router';
+import Chat_Instructor from '../../instructor/chat/Instr_Chat';
 
 function Scenario_controller() {
   
   const { scenarioID, pageID } = useParams();
-  const { guideContent_state, set_guideContent_state } = useContext(StudentRouter_context);
+  const { userData_state } = useContext(HomeRouter_context);
+  const [guideContent_state, set_guideContent_state] = useState({});
 
   const [leftPaneName_state, set_leftPaneName_state] = useState("info");
   const [rightPaneName_state, set_rightPaneName_state] = useState("guide");
@@ -26,9 +27,13 @@ function Scenario_controller() {
   const rightWidth = `${100-sliderNum_state}%`;
   const rightOffset = `${sliderNum_state}%`;
 
+  if (!userData_state?.role) return (<>Log in to continue.</>)
+
   function handleSliderChange (event) {
     set_SliderNum_state(event.target.value);
 };
+
+  if (!scenarioID) return (<>Missing Scenario ID</>)
 
   useEffect(() => {
     async function getContent() {
@@ -64,16 +69,10 @@ function Scenario_controller() {
         SSH_password={SSH_password} 
       />
     ), 
-    chat : (
-      <Chat_Student
-        
-      />
-    ), 
-    guide : (
-      <GuidePane
-        guideContent={guideContent_state}
-      />
-    )
+
+    chat : (<Chat_Student/>),
+
+    guide : (<GuidePane guideContent={guideContent_state}/>)
   };
   const leftPaneToShow = panes[leftPaneName_state];
   const rightPaneToShow = panes[rightPaneName_state];

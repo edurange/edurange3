@@ -1,4 +1,4 @@
-function Instructor_UsersList() {
+function Instr_UsersList() {
 
     return (
 
@@ -29,4 +29,4 @@ function Instructor_UsersList() {
         </div>
     );
 
-}; export default Instructor_UsersList;
+}; export default Instr_UsersList;

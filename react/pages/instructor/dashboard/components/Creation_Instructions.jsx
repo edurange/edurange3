@@ -31,8 +31,13 @@ function Creation_Instructions() {
                 </div>
 
                 <div className='instructions-bubble'>
-                    Finally, click CREATE and cross your fingers.  If all goes well, the scenario should be added to the list.  Note: currently, you must refresh the page to see a new scenario or to see a scenario's updated status.
+                    Finally, click CREATE and cross your fingers.  If all goes well, the scenario should be added to the list as 'stopped'.
                 </div>
+                <div className='instructions-bubble'>
+                    From here, you can START, STOP, or DESTROY scenarios.
+                </div>
+
+
 
                 <div className='instructions-bubble'>
                     IMPORTANT:  Currently, students cannot be added after a scenario is created, so it is important

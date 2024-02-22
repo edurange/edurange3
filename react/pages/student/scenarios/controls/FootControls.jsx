@@ -1,18 +1,20 @@
 
 
 
-import React from 'react';
+import React, {useContext} from 'react';
 import { scenarioShells } from '@modules/shells/scenarioType_shells';
 import './FootControls.css';
 import edurange_icons from     '@modules/ui/edurangeIcons';
 import Copy_button from '@components/Copy_button';
 import Copy_button_small from '@components/Copy_button_small';
+import { HomeRouter_context } from '@pub/Home_router';
 
 const zws = `\u200B`;
 
 
 function FootControls({ guideContent, updatePane, paneSide }) {
-
+  
+  const { userData_state } = useContext(HomeRouter_context);
   const meta = guideContent.scenario_meta;
 
   if ((!meta)) { return (<>Scenario not found</>); }
@@ -23,6 +25,8 @@ function FootControls({ guideContent, updatePane, paneSide }) {
   const [SSH_ip, SSH_port_str] = SSH_IP.split(':');
 
   const sshCommand = `ssh ${SSH_username}@${SSH_ip} -p ${SSH_port_str}`;
+
+  if (!userData_state?.role) {return <>You must log in to continue.</>}
 
   const left_controls = (
     <>
@@ -41,7 +45,11 @@ function FootControls({ guideContent, updatePane, paneSide }) {
         </div>
 
         <div className='footcontrol-item footcontrol-chat-button'
-          onClick={() => updatePane("chat")}>
+          onClick={() => updatePane(
+            userData_state.role === "instructor" 
+            || userData_state.role === "admin" 
+            ? ("chat_instructor") 
+            : ("chat_student"))}>
           Chat
         </div>
 

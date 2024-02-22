@@ -70,7 +70,6 @@ def custom_error_handler(error):
 @blueprint_scenarios.route('/get_content/<int:i>', methods=['GET']) # WIP
 @jwt_and_csrf_required
 def get_content(i):
-    current_username = g.current_username
     current_scenario_id = i
     if (
         not isinstance(current_scenario_id, int)
@@ -79,7 +78,7 @@ def get_content(i):
         ):
             return jsonify({'error': 'invalid scenario ID'}), 418 # DEV_ONLY (replace with standard denial msg)
 
-    contentJSON, credentialsJSON, unique_name = getContent(current_scenario_id, current_username)
+    contentJSON, credentialsJSON, unique_name = getContent(g.current_user_role, current_scenario_id, g.current_username)
 
     meta = getScenarioMeta(current_scenario_id)
 

@@ -14,7 +14,7 @@ from py_flask.database.models import Scenarios, User, Responses
 ## TESTED/WORKING 
 
 
-def getContent(scenario_id, username):
+def getContent(user_role, scenario_id, username):
     db_ses = db.session
     statusSwitch = {
         0: "Stopped",
@@ -40,10 +40,15 @@ def getContent(scenario_id, username):
     with open(f'scenarios/tmp/{unique_name}/students.json', 'r') as fp:
         credentialsJSON = json.load(fp)
     
-    saniName = username.replace('-','')
-    user_creds = credentialsJSON[saniName][0]
-    if not user_creds: abort(418)
+    if (user_role == 'student'):
+        saniName = username.replace('-','')
+        user_creds = credentialsJSON[saniName][0]
+        if not user_creds: abort(418)
+    else: 
+        user_creds = credentialsJSON
+
     return contentJSON, user_creds, unique_name
+
 
 def getScenarioMeta(scenario_id):
         db_ses = db.session

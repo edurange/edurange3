@@ -3,6 +3,10 @@ import React, { useState, useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import Instr_Dash from './dashboard/Instr_Dash';
 import { buildInstructorData } from '@modules/utils/instr_modules';
+import Scenario_controller from '../student/scenarios/Scenario_controller';
+import Chat_Instructor from './chat/Instr_Chat';
+import Instr_ScenDetail from './dashboard/components/Instr_ScenDetail';
+import Instr_SetMaster from './dashboard/Instr_SetMaster';
 
 export const InstructorRouter_context = React.createContext();
 
@@ -42,6 +46,10 @@ function Instructor_router() {
 
             <Routes>
                 <Route path="/*" element={<Instr_Dash />}/>
+                <Route path="/scenarios/*" element={<Instr_SetMaster />}/>
+                <Route path="/scenarios/:scenarioID" element={<Instr_SetMaster />} />
+                <Route path="/scenarios/:scenarioID/:pageID" element={<Instr_SetMaster />} />
+                <Route path="/scenarios/:scenarioID/chat" element={<Chat_Instructor />} />
             </Routes>
 
         </InstructorRouter_context.Provider>

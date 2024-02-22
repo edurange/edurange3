@@ -1,16 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { nanoid } from 'nanoid';
 import './GuidePane.css';
 import buildGuide from '@modules/utils/guide_modules';
 import HomeChapter from './Q_and_A/HomeChapter';
+import { HomeRouter_context } from '../../../../pub/Home_router';
 
 function GuidePane({ guideContent, set_leftPane_state }) {
 
   const { scenarioID, pageID } = useParams(); // from URL parameters
   const [guideBook_state, set_guideBook_state] = useState([])
+  const { userData_state } = useContext(HomeRouter_context);
 
   const meta = guideContent.scenario_meta;
+
+console.log(userData_state?.role)
+
 
   useEffect(() => {
     async function beginGuideBuild() {
@@ -44,7 +49,7 @@ function GuidePane({ guideContent, set_leftPane_state }) {
             <div className='guidepane-controlbar-tabs-frame'>
 
               <Link
-                to={`/scenarios/${scenarioID}/0`}
+                to={`${(userData_state?.role === "instructor" || userData_state?.role === "admin") ? `/instructor/scenarios/${scenarioID}/0` : `/scenarios/${scenarioID}/0`}`}
                 className={`guidepane-tab-left ${pageID === "0" ? tabActiveClass : tabInactiveClass}`}>
                 <div >
                   Brief
@@ -54,7 +59,8 @@ function GuidePane({ guideContent, set_leftPane_state }) {
               {guideBook_state.map((val, index) => {
                 return (
                   <Link
-                    to={`/scenarios/${scenarioID}/${index + 1}`} key={index + 3000}
+                    to={`${(userData_state?.role === "instructor" || userData_state?.role === "admin") ? `/instructor/scenarios/${scenarioID}/${index + 1}` : `/scenarios/${scenarioID}/${index + 1}`}`} key={index + 3000}
+                    // to={`/scenarios/${scenarioID}/${index + 1}`} key={index + 3000}
                     className={`guidepane-tab-middles ${pageID === (index + 1).toString() ? tabActiveClass : tabInactiveClass}`}>
                     <div key={index} >
                       Chpt.{index + 1}

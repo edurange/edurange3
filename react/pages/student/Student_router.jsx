@@ -19,7 +19,6 @@ function Student_router() {
 
     const [notifsArray_state, set_notifsArray_state] = useState([fakeNotif]);
     const [guideBook_state, set_guideBook_state] = useState({});
-    const [guideContent_state, set_guideContent_state] = useState({});
     const [scenarioList_state, set_scenarioList_state] = useState([]);
     const [scenarioPage_state, set_scenarioPage_state] = useState({
         chapter: 0,
@@ -53,7 +52,6 @@ function Student_router() {
                             scenarioList_state, set_scenarioList_state,
                             scenarioPage_state, set_scenarioPage_state,
                             guideBook_state, set_guideBook_state,
-                            guideContent_state, set_guideContent_state,
                             notifsArray_state, set_notifsArray_state
                         }}>
                             <Routes>
