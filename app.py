@@ -7,7 +7,7 @@
 import os
 from py_flask.config.init import create_app
 from py_flask.config.extensions import db
-from py_flask.database.models import StudentGroups, User
+from py_flask.database.models import StudentGroups, Users
 
 app = create_app()
 app.app_context().push()
@@ -16,7 +16,7 @@ db.create_all()
 def create_admin():
     username = os.environ["FLASK_USERNAME"]
     password = os.environ["PASSWORD"]
-    User.create(
+    Users.create(
         username=username,
         password=password,
         active=True,
@@ -27,11 +27,11 @@ def create_admin():
 def create_all_group(id):
     StudentGroups.create(name="ALL", owner_id=id, code="", hidden=True)
 
-existing_admin = User.query.limit(1).all()
+existing_admin = Users.query.limit(1).all()
 if not existing_admin: create_admin()
 
 group = StudentGroups.query.limit(1).all()
-admin = User.query.filter_by(username=os.environ["FLASK_USERNAME"]).first()
+admin = Users.query.filter_by(username=os.environ["FLASK_USERNAME"]).first()
 
 if admin: a_id = admin.id
 

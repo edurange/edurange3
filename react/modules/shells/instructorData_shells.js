@@ -1,7 +1,4 @@
-
-// not currently in use and may need updates; keep
-
-import { nanoid } from "nanoid";
+// under construction 
 
 function assignUserRole(inputData) {
     if (inputData.is_admin) { return 'Administrator' }
@@ -20,45 +17,62 @@ const formatDate = (inputDate) => {
     return `${month}/${day}/${year} ${hours}:${minutes}`;
 };
 
-export class UserShell {
+export class UsersShell {
     constructor(input = {}) {
         this.id = input.id ?? 'none';
-        this.uid = nanoid(5);
         this.username = input.username ?? 'none';
-        this.role = (input.username) ? assignUserRole(input) : 'none'; // assigns role if user exists, otherwise 'none'
+        this.role = input.username ? assignUserRole(input) : 'none'; // assigns role if user exists, otherwise 'none'
         this.is_active = input.active || false;
-        this.userGroups_memberOf = input.userGroups_memberOf ?? [];
-        this.scenarios_memberOf = input.scenarios_memberOf ?? [];
+        this.groups_membership = input.membership ?? undefined; // user group membership (single int of group id)
         this.created_at = formatDate (input.created_at) ?? 'none';
     };
 };
-export class UserGroupShell {
+
+// id |     name      | owner_id |   code   | hidden 
+export class UserGroupsShell {
     constructor(input = {}) {
-        this.code = input.code ?? 'none';
-        this.id = input.id ?? 'none';
-        this.is_hidden = input.is_hidden || true;
-        this.name = input.name ?? "none";
-        this.ownerID = input.owner_id ?? "none";
-        this.user_members = input.user_members ?? [];
-        this.scenarios_memberOf = input.scenario_memberOf ?? [];
+        this.id = input.id;
+        this.name = input.name;
+        this.owner_id = input.owner_id;
+        this.code = input.code;
+        this.hidden = input.hidden || true;
+
+        this.users_members = input.users_members ?? [];
+        this.scenarios_members = input.scenarios_members ?? [];
     };
 };
-export class ScenarioShell {
+
+//  id |  name   |  description  |    subnet    | owner_id | status | attempt |         created_at         
+export class ScenariosShell {
     constructor(input = {}) {
-        this.id = input.scenario_id ?? 'none';
-        this.uid = nanoid(5);
-        this.name = input.scenario_name ?? 'none';
-        this.description = input.scenario_description ?? 'none';
-        this.ownerID = input.scenario_owner_id ?? 'none';
-        this.status = input.scenario_status ?? 'none';
-        this.studentGroup_members = input.studentGroup_members ?? [];
-        this.scenarioGroups_memberOf = input.scenarioGroups_memberOf ?? [];
-        this.created_at = formatDate(input.scenario_created_at) ?? 'none';
+        this.id = input.id;
+        this.name = input.name;
+        this.description = input.description;
+        this.subnet = input.subnet;
+        this.owner_id = input.owner_id;
+        this.status = input.status;
+        this.attempt = input.attempt;
+        this.created_at = formatDate(input.created_at);
+        this.groups_membership = input.groups_membership; // single Int for group id
     };
 };
-export class ScenarioGroupShell {
+
+// table for linking scenario_ids to group_ids
+//  id | group_id | scenario_id 
+export class ScenarioGroupsShell {
     constructor(input = {}) {
-        this.id = input.scenario_group_id ?? "none";
-        this.studentGroup_members = input.studentGroup_members ?? [];
+        this.id = input.id;
+        this.group_id = input.group_id;
+        this.scenario_id = input.scenario_id;
+    };
+};
+
+// table for linking user_ids to group_ids
+// id | user_id | group_id 
+export class GroupUsersShell {
+    constructor(input = {}) {
+        this.id = input.id;
+        this.user_id = input.user_id;
+        this.group_id = input.group_id;
     };
 };

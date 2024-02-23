@@ -12,9 +12,24 @@ function Creation_Instructions() {
                 </div>
 
                 <div className='instructions-bubble'>
-                    First, ensure you have a student group with students.  If you don't
-                    have a group, or the group doesn't have students, create a group and/or
-                    populate it with students, then proceed.
+                    <div>
+
+                    First, ensure you have a student group <span className='highlighter'>with students</span>.
+                    </div>
+                    
+                    <div>
+
+                    If you don't
+                    have a group, or the group doesn't have students, create a group with
+                    a <span className='highlighter'>unique</span> name and/or populate your group with students, then proceed.
+                    </div>
+                </div>
+
+                <div className='instructions-bubble'>
+                    <div>
+
+                    Note: It is important that both this name and the scenario name you choose later <span className='highlighter'>are not</span> the same as another in your database.
+                    </div>
                 </div>
 
                 <div className='instructions-bubble'>
@@ -26,8 +41,10 @@ function Creation_Instructions() {
                 </div>
 
                 <div className='instructions-bubble'>
-                    Then, type in a UNIQUE name for your scenario.
-                    It is important that this name is not the same as another in your database.
+                    <div>
+                        Then, type in a <span className='highlighter'>unique</span> name for your scenario.
+                        
+                    </div>
                 </div>
 
                 <div className='instructions-bubble'>
@@ -40,8 +57,11 @@ function Creation_Instructions() {
 
 
                 <div className='instructions-bubble'>
-                    IMPORTANT:  Currently, students cannot be added after a scenario is created, so it is important
-                    to create your group and its students BEFORE you create the scenario, if you want those students to have access.
+                    <div>
+
+                    <span className='highlighter'>IMPORTANT</span>:  Currently, students cannot be added after a scenario is created, so it is important
+                    to create your group and its students <span className='highlighter'>before</span> you create the scenario, if you want those students to have access.
+                    </div>
                 </div>
                 
             </div>

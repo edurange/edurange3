@@ -6,7 +6,7 @@ import docker
 from flask import abort
 
 from py_flask.config.extensions import db
-from py_flask.database.models import Scenarios, User, Responses
+from py_flask.database.models import Scenarios, Users, Responses
 
 # Guide utils are functions that primarily populate and run the 
 # question & answer 'guide' that students see on the eduRange webpage (not the terminal ssh)
@@ -47,7 +47,7 @@ def getContent(user_role, scenario_id, username):
     else: 
         user_creds = credentialsJSON
 
-    return contentJSON, user_creds, unique_name
+    return contentJSON, credentialsJSON, unique_name
 
 
 def getScenarioMeta(scenario_id):
@@ -67,7 +67,7 @@ def getScenarioMeta(scenario_id):
 def bashResponse(sid, uid, ans):
     db_ses = db.session
 
-    uName = db_ses.query(User.username).filter(User.id == uid).first()[0]
+    uName = db_ses.query(Users.username).filter(Users.id == uid).first()[0]
     uName = "".join(e for e in uName if e.isalnum())
 
     sName = db_ses.query(Scenarios.name).filter(Scenarios.id == sid).first()[0]

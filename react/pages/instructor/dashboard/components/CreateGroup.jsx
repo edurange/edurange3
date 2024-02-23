@@ -8,7 +8,10 @@ function CreateGroup() {
   const [groupName_state, set_groupName_state] = useState('');
   const [testUsersBool_state, set_testUsersBool_state] = useState(false);
   const [testUserCt_state, set_testUserCt_state] = useState(1);
-  const { instr_studentGroups_state, set_instr_studentGroups_state } = useContext(InstructorRouter_context);
+  const { 
+    groups_state, set_groups_state, 
+    tempUsers_state, set_tempUsers_state 
+  } = useContext(InstructorRouter_context);
   const [buttonDisabled_state, set_buttonDisabled_state] = useState(true);
 
   const handle_newGroup_name_change = (event) => {
@@ -37,24 +40,45 @@ function CreateGroup() {
       return;
     }
 
-
     try {
       const response = await axios.post('/create_group', {
         group_name: groupName_state,
         should_generate: testUsersBool_state,
         new_user_count: testUserCt_state
       });
+    
       if (response.data.group_obj) {
-        set_instr_studentGroups_state(prevState => [...prevState, response.data.group_obj]);
-        set_buttonDisabled_state(true);
-        console.log (response.data)
-      }
 
-      set_groupName_state(''); 
+        set_groups_state(prevState => {
+          // Check if the group is already in the state, if so, update it, otherwise, add it
+          const groupExists = prevState.some(group => group.id === response.data.group_obj.id);
+          if (groupExists) {
+            return prevState.map(group => {
+              if (group.id === response.data.group_obj.id) {
+                // Update the group with the new users
+                return {
+                  ...group,
+                  users: response.data.group_obj.users
+                };
+              }
+              return group;
+            });
+          } else {
+            // Add the new group
+            return [...prevState, response.data.group_obj];
+          }
+        });
+        set_buttonDisabled_state(true);
+        if (response.data.group_obj.users) {
+          set_tempUsers_state(response.data.group_obj.users);
+        }
+      }
+    
+      set_groupName_state('');
     } catch (error) {
       console.error('Error creating group:', error);
     }
-  };
+  }
 
   return (
     <div className='create-frame'>
@@ -95,7 +119,7 @@ function CreateGroup() {
         </div>
 
         <div className='row-btns'>
-          <button type="submit" className={`${buttonDisabled_state ? 'btn-disabled' : 'submit-btn row-btn'}`} disabled={buttonDisabled_state}>
+          <button type="submit" className={`${buttonDisabled_state ? 'btn-disabled' : 'green-btn submit-btn row-btn'}`} disabled={buttonDisabled_state}>
             CREATE
           </button>
         </div>

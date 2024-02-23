@@ -13,7 +13,7 @@ at the moment, so plz bear with me. - Jonah (exoriparian)
 # Each relates directly to a table in the db
 from py_flask.database.models import (
     In use:
-        User, 
+        Users, 
         GroupUsers, 
         ScenarioGroups,
         Scenarios,

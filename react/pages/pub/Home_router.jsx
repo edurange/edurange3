@@ -97,12 +97,12 @@ function Home_router() {
                   <Route path="/logout" element={<Logout />} />
                   <Route path="/options/*" element={<Options_controller />} />
                   <Route path="/info/*" element={<InfoRouter />} />
+                  <Route path="/account" element={<Account />} />
                   <Route path="/scenarios/*" element={
                     <Student_context>
                       <Student_router />
                     </Student_context>
                   } />
-                  <Route path="/account" element={<Account />} />
                   <Route path="/instructor/*" element={
                     <Instructor_context>
                       <Instructor_router />

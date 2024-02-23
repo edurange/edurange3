@@ -162,49 +162,7 @@ def create_scenario_task(self, scen_name, scen_type, students_list, grp_id, scen
             "scenario_id": scen_id
         }
 
-# @celery.task(bind=True)
-# def start_scenario_task(self, scenario_id):
-#     from py_flask.database.models import Scenarios
-#     from py_flask.utils.scenario_utils import setAttempt
-#     from py_flask.utils.instructor_utils import NotifyCapture
 
-#     app = current_app
-#     logger.info(
-#         "Executing task id {0.id}, args: {0.args!r} kwargs: {0.kwargs!r}".format(
-#             self.request
-#         )
-#     )
-#     with app.test_request_context():
-#         scenario = Scenarios.query.filter_by(id=scenario_id).first()
-#         logger.info("Found Scenario: {}".format(scenario))
-#         name = str(scenario.name)
-#         name = "".join(e for e in name if e.isalnum())
-#         gateway = name + "_gateway"
-#         start = name + "_nat"
-#         start_ip = '10.' + scenario.subnet.split('.')[1] + '.0.2'
-#         if int(scenario.status) != 0:
-#             logger.info("Invalid Status")
-#             NotifyCapture("Failed to start scenario " + name + ": Invalid Status")
-#             return jsonify({"message": "Scenario must be stopped before starting"})
-#             # raise Exception(f"Scenario must be stopped before starting")
-#         elif os.path.isdir(os.path.join("./scenarios/tmp/", name)):
-#             scenario.update(status=3)
-#             logger.info("Folder Found")
-#             os.chdir("./scenarios/tmp/" + name)
-#             os.system("terraform apply network")
-#             os.system("terraform apply --auto-approve")
-#             os.system("../../../shell_scripts/scenario_movekeys.sh {} {} {}".format(gateway, start, start_ip))
-#             os.chdir("../../..")
-#             scenario.update(status=1)
-#             scenario.update(attempt=setAttempt(scenario_id))
-#             NotifyCapture("Scenario " + name + " has started successfully.")
-#             return {"message": "Scenario has been started"}
-
-#         else:
-#             logger.info("Scenario folder could not be found -- " + os.path.join("./scenarios/tmp/", name))
-#             NotifyCapture("Failed to start scenario " + name + ": Scenario folder could not be found. -- " + os.path.join("./scenarios/tmp/", name))
-#             flash("Scenario folder could not be found")
-#             return jsonify({"message": "Scenario start problem"})
 @celery.task(bind=True)
 def start_scenario_task(self, scenario_id):
     from py_flask.database.models import Scenarios
@@ -394,7 +352,7 @@ def destroy_scenario_task(self, scenario_id):
 
 @celery.task(bind=True)
 def scenarioCollectLogs(self, arg):
-    from py_flask.utils.terraform_utils import readCSV
+    from py_flask.utils.csv_utils import readCSV
     from py_flask.config.extensions import db
     from py_flask.database.models import BashHistory
 

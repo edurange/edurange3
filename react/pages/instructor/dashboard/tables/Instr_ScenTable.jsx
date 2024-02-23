@@ -7,9 +7,9 @@ import { HomeRouter_context } from '@pub/Home_router';
 function Instr_ScenTable() {
 
     const { 
-        instr_studentGroups_state, 
-        set_instr_scenarioDetail_state, 
-        instr_scenarios_state, set_instr_scenarios_state
+        groups_state, 
+        set_scenarioDetail_state, 
+        scenarios_state, set_scenarios_state
     } = useContext(InstructorRouter_context);
     const { set_desiredNavMetas_state } = useContext(HomeRouter_context);
 
@@ -24,115 +24,111 @@ function Instr_ScenTable() {
         8: <div className='status-standby'>Destroying</div>
     };
 
-    if (!instr_studentGroups_state) {return <></>}
+    if (!groups_state) {return <></>}
 
 
-    async function handleStartClick(scenario) {
-        const updatedScenariosStarting = instr_scenarios_state.map(s => {
+    async function handleStartClick(event, scenario) {
+        event.stopPropagation();
+        const updatedScenariosStarting = scenarios_state.map(s => {
             if (s.id === scenario.id) {
                 return { ...s, status: 3 }; 
             }
             return s;
         });
-        set_instr_scenarios_state(updatedScenariosStarting);
+        set_scenarios_state(updatedScenariosStarting);
     
         const response = await axios.post('/scenario_interface', {
             METHOD: 'START',
             scenario_id: scenario.id
         });
-        console.log(response);
     
         if (response.data.result === "success") {
-            const updatedScenariosSuccess = instr_scenarios_state.map(s => {
+            const updatedScenariosSuccess = scenarios_state.map(s => {
                 if (s.id === scenario.id) {
                     return { ...s, status: response.data.new_status };
                 }
                 return s;
             });
-            set_instr_scenarios_state(updatedScenariosSuccess);
+            set_scenarios_state(updatedScenariosSuccess);
         }
     };
-    async function handleStopClick(scenario) {
-        const updatedScenariosStopping = instr_scenarios_state.map(s => {
+
+    async function handleStopClick(event, scenario) {
+        event.stopPropagation();
+        const updatedScenariosStopping = scenarios_state.map(s => {
             if (s.id === scenario.id) {
                 return { ...s, status: 4 }; 
             }
             return s;
         });
-        set_instr_scenarios_state(updatedScenariosStopping);
+        set_scenarios_state(updatedScenariosStopping);
     
         const response = await axios.post('/scenario_interface', {
             METHOD: 'STOP',
             scenario_id: scenario.id
         });
-        console.log(response);
     
         if (response.data.result === "success") {
-            const updatedScenariosSuccess = instr_scenarios_state.map(s => {
+            const updatedScenariosSuccess = scenarios_state.map(s => {
                 if (s.id === scenario.id) {
                     return { ...s, status: response.data.new_status };
                 }
                 return s;
             });
-            set_instr_scenarios_state(updatedScenariosSuccess);
+            set_scenarios_state(updatedScenariosSuccess);
         }
     };
-    async function handleDestroyClick(scenario) {
-        const updatedScenariosDestroying = instr_scenarios_state.map(s => {
+    async function handleDestroyClick(event, scenario) {
+        const updatedScenariosDestroying = scenarios_state.map(s => {
             if (s.id === scenario.id) {
                 return { ...s, status: 8 }; 
             }
             return s;
         });
-        set_instr_scenarios_state(updatedScenariosDestroying);
+        set_scenarios_state(updatedScenariosDestroying);
     
         const response = await axios.post('/scenario_interface', {
             METHOD: 'DESTROY',
             scenario_id: scenario.id
         });
-        console.log(response);
     
         if (response.data.result === "success") {
             // remove the scenario from list if success
-            const updatedScenariosAfterDestroy = instr_scenarios_state.filter(s => s.id !== scenario.id);
-            set_instr_scenarios_state(updatedScenariosAfterDestroy);
+            const updatedScenariosAfterDestroy = scenarios_state.filter(s => s.id !== scenario.id);
+            set_scenarios_state(updatedScenariosAfterDestroy);
         }
     };
   
-    
-    function handleDetailClick (scenario) {
+    function handleDetailClick (event, scenario) {
         set_desiredNavMetas_state([`/instructor/scenarios/${scenario.id}/0`, 'dash']);
     };
-    
 
     return (
-
         <div className="table-frame">
             <div className="table-header">
-                
-                <div className='table-cell-item col-xxsmall' >ID</div>
-                <div className='table-cell-item col-medium'>Name</div>
-                <div className='table-cell-item col-large'>Type</div>
-                <div className='table-cell-item col-small'>Status</div>
-                <div className='table-cell-item col-large'>CONTROL PANEL</div>
+                <div className='table-cell-item col-xxsmall'>ID</div>
+                <div className='table-cell-item col-large'>Name</div>
+                <div className='table-cell-item col-xlarge'>Type</div>
+                <div className='table-cell-item col-medium'>Status</div>
+                <div className='table-cell-item col-xlarge control-panel'>CONTROL PANEL</div>
             </div>
-            {instr_scenarios_state.slice(1).map((scenario, index) => (
-                <div key={index+2000} >
-                {/* <div key={index+2000} onClick={() => handleDetailClick(scenario)} > */}
+            {scenarios_state.map((scenario, index) => (
+                <div key={index + 2000} onClick={(event) => handleDetailClick(event, scenario)}>
                     <div className="table-row">
                         <div className='table-cell-item col-xxsmall'>{scenario.id}</div>
-                        <div className='table-cell-item col-medium'>{scenario.name}</div>
-                        <div className='table-cell-item col-large'>{scenario.description}</div>
-                        <div className='table-cell-item col-small'>{statusSwitch[scenario.status]}</div>
-                        <div className='table-cell-item row-btns col-xlarge'>
-                            <button className='row-btn' onClick={() => handleStartClick(scenario)}>START</button>
-                            <button className='row-btn' onClick={() => handleStopClick(scenario)}>STOP</button>
-                            <button className='row-btn' onClick={() => handleDestroyClick(scenario)}>DESTROY</button>
+                        <div className='table-cell-item col-large'>{scenario.name}</div>
+                        <div className='table-cell-item col-xlarge'>{scenario.description}</div>
+                        <div className='table-cell-item col-medium'>{statusSwitch[scenario.status]}</div>
+                        <div className='table-cell-item col-xlarge control-panel'>
+                            <button className='row-btns green-btn' onClick={(event) => handleStartClick(event, scenario)}>START</button>
+                            <button className='row-btns grey-btn' onClick={(event) => handleStopClick(event, scenario)}>STOP</button>
+                            <button className='row-btns red-btn' onClick={(event) => handleDestroyClick(event, scenario)}>DESTROY</button>
                         </div>
                     </div>
                 </div>
             ))}
         </div>
     );
+    
 };
 export default Instr_ScenTable;

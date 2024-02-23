@@ -1,6 +1,7 @@
 from sqlalchemy.exc import SQLAlchemyError
 from py_flask.database.user_schemas import CreateGroupSchema, TestUserListSchema
-from py_flask.database.models import User, StudentGroups, Scenarios, ScenarioGroups, GroupUsers
+from py_flask.database.models import Users, StudentGroups, ScenarioGroups, GroupUsers
+from py_flask.utils.dataBuilder import get_group_data, get_user_data, get_scenario_data
 from py_flask.config.extensions import db
 from flask import (
     Blueprint,
@@ -8,6 +9,14 @@ from flask import (
     jsonify,
     g
 )
+from py_flask.utils.scenario_utils import (
+     identify_state
+)
+from py_flask.utils.guide_utils import (
+    getContent, 
+    getScenarioMeta,
+    evaluateResponse
+    )
 from py_flask.utils.auth_utils import jwt_and_csrf_required, instructor_only
 from py_flask.utils.instructor_utils import generateTestAccts, addGroupUsers
 from py_flask.database.models import generate_registration_code as grc
@@ -73,30 +82,75 @@ def create_group():
     new_code = grc()
 
     group_obj = StudentGroups.create(name=group_name, owner_id=g.current_user_id, code=new_code)
-    group_obj_dict = group_obj.to_dict()
+    # group_obj_dict = group_obj.to_dict()
 
     if (validatedJSON['should_generate']):
 
         newUsers_list = generateTestAccts(group_obj, validatedJSON['new_user_count'], new_code)
-        return_userList = addGroupUsers(group_obj, newUsers_list)
+        return_groupDict = addGroupUsers(group_obj, newUsers_list)
+        return_groupDict['users'] = newUsers_list
 
-        return jsonify ({
-            "message": f"userGroup {group_name} created and {len(return_userList)} test accts created",
-            'group_obj': group_obj_dict,
-            'test_accts': return_userList
-        })
-    return jsonify ({
+        print("RETDICT: ",return_groupDict)
+        return {
+            "message": f"userGroup {group_name} created and {len(newUsers_list)} test accts created",
+            'group_obj': return_groupDict,
+        }
+    return {
             "message":f"userGroup {group_name} created", 
-            'group_obj':group_obj_dict
-        })
+            'group_obj':return_groupDict
+        }
 
 
 @blueprint_instructor.route("/get_instructor_data", methods=['GET'])
 @jwt_and_csrf_required
 def get_instructor_data():
     instructor_only()
-    instructor_data = get_instructorData()
-    return jsonify(instructor_data)
+
+    retObj = {
+        'groups': get_group_data(),
+        'users': get_user_data(),
+        'scenarios': get_scenario_data(),
+    }
+        # 'instructor_data': get_instructorData()
+    return jsonify(retObj)
+
+
+@blueprint_instructor.route('/get_instr_content/<int:i>', methods=['GET']) # WIP
+@jwt_and_csrf_required
+def get_content(i):
+    current_scenario_id = i
+    if (
+        not isinstance(current_scenario_id, int)
+        or i < 0 
+        or i > 999
+        ):
+            return jsonify({'error': 'invalid scenario ID'}) # DEV_ONLY (replace with standard denial msg)
+
+    contentJSON, credentialsJSON, unique_name = getContent(g.current_user_role, current_scenario_id, g.current_username)
+
+    meta = getScenarioMeta(current_scenario_id)
+
+    # if not credentialsJSON or not unique_name:
+    #     return jsonify({"error": f"scenario with id {i} is found, build failed"})
+    
+    SSH_connections = identify_state(unique_name, "Started")
+    SSH_IP = ""
+
+    # IMPORTANT
+    # we are assuming every scenario has only ONE port that does not include the string 'HIDDEN',
+    # and that this is the port users should connect to w/ SSH to start scenario
+    for (key,val) in SSH_connections.items():
+        if "HIDDEN" not in val:
+            SSH_IP = val
+
+    return jsonify({
+        "scenario_meta": meta,
+        "contentJSON":contentJSON, 
+        "credentialsJSON":credentialsJSON,
+        "unique_scenario_name":unique_name,
+        "SSH_IP": SSH_IP
+        })
+
 
 @blueprint_instructor.route("/scenario_interface", methods=["POST"])
 @jwt_and_csrf_required
@@ -219,7 +273,7 @@ def delete_group():
     else:
         players = []
         for user in group_users:
-            players.append(db_ses.query(User).filter(User.id == user.id).first())
+            players.append(db_ses.query(Users).filter(Users.id == user.id).first())
             user.delete()
         for plr in players:
             if plr is not None:
@@ -245,7 +299,7 @@ def delete_user():
             return jsonify({"message": "Missing required argument 'user_to_delete', delete aborted"}), 400
 
         db_ses = db.session
-        user = db_ses.query(User).filter(User.name == user_to_delete).first()
+        user = db_ses.query(Users).filter(Users.name == user_to_delete).first()
         
         if not user:
             return jsonify({"message": f"Cannot delete user - does username {user_to_delete} exist?"}), 404

@@ -11,43 +11,30 @@ import buildGuide from '../../../modules/utils/guide_modules';
 function Instr_SetMaster() {
 
   const {
-    instr_scenarios_state,
-    scenarioDetail_state,
-    set_instr_scenarioDetail_state } = useContext(InstructorRouter_context);
-    const [guideContent_state, set_guideContent_state] = useState({});
+    
+    users_state, set_users_state,
+    groups_state, set_groups_state,
+    scenarios_state, set_scenarios_state,
+    scenario_groups_state, set_scenario_groups_state,
+    scenarioDetail_state, set_scenarioDetail_state} = useContext(InstructorRouter_context);
 
     const { scenarioID, pageID } = useParams();
-    const [guideBook_state, set_guideBook_state] = useState([])
-
-    // if ((guideBook_state.length < 1) || (!meta)) { return (<>Scenario not found</>); } // GUARD
 
     const tabActiveClass = 'setmaster-controlbar-tab setmaster-tab-active';
     const tabInactiveClass = 'setmaster-controlbar-tab setmaster-tab-inactive';
   
-    useEffect(() => {
-      async function getContent() {
-        try {
-          const contentReturn = await axios.get(`get_content/${scenarioID}`);
-          const contentData = contentReturn.data;
-          set_guideContent_state(contentData);
-        } catch (error) {
-          console.error('Error fetching data:', error);
-        };
-      };
-      getContent();
-    }, [scenarioID]);
-  
-    // const chapterToShow = () => {
-    //   if (Number(pageID) === 0){ return <HomeChapter/>; }
-    //   else if (Number(pageID) === 1337){ return <HomeChapter/>; }
-    //   else { return guideBook_state[Number(pageID) - 1]; }
-    // };
-
   const { userData_state } = useContext(HomeRouter_context);
 
-  if (!guideContent_state) { return <></> }
+  console.log("users_state: ",users_state);
+  console.log("groups_state: ", groups_state);
+  console.log("scenario_groups_state", scenario_groups_state);
+  console.log("scenarios_state: ", scenarios_state);
+  console.log("DEETS: ",scenarioDetail_state)
+  if (!scenarioDetail_state) { return <></> }
 
-  console.log(guideContent_state)
+
+
+  console.log('tgroup: ', groups_state)
 
   return (
 
@@ -98,26 +85,26 @@ function Instr_SetMaster() {
                 <div className='setmaster-set-frame'>
                   <div className='setmaster-info-frame'>
                     <div className='setmaster-info-item'>
-                      Scenario ID: 12345
+                      {/* Scenario ID: {guideContent_state?.scenario_meta?.scenario_id} */}
                     </div>
                     <div className='setmaster-info-item'>
-                      Scenario Name: getsta123
+                      {/* Scenario Name: {guideContent_state?.unique_scenario_name} */}
                     </div>
                     <div className='setmaster-info-item'>
-                      Scenario Type: Getting_Started
+                      {/* Scenario Type: {guideContent_state?.scenario_meta?.scenario_description} */}
                     </div>
                     <div className='setmaster-info-item'>
-                      Current Group: Group123
+                      Current Group: Group123? (fix)
                     </div>
                     <div className='setmaster-info-item'>
-                      Students: 12
+                      Students: 12 (fix)
                     </div>
                     <div className='setmaster-info-item'>
-                      Scenario Status: Started
+                      {/* Scenario Status: {guideContent_state?.scenario_meta?.scenario_status} */}
                     </div>
                   </div>
                   <div>
-                    Student Table
+                    
                   </div>
                 </div>
                 CONTENT AREA

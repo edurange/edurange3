@@ -16,7 +16,7 @@
     cursor: pointer;
     justify-content: flex-start;
     display: flex;
-    align-items: flex-start;
+    align-items: center;
 }
 .table-row {
     text-align: left;
@@ -27,17 +27,37 @@
 .table-cell-item{
     contain: content;
     width: 100%;
-    overflow-x: auto;
-    padding: 10px 10px;
+    /* overflow-x: auto; */
+    padding: 6px 10px;
+
     cursor: pointer;
+    border-right: 1px solid rgba(218, 165, 32, 0.247);
+    border-top: 1px solid rgba(218, 165, 32, 0.247);
+    box-sizing: border-box;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    gap: 4px;
+}
+.table-userlist {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+}
+.table-useritem {
+    display: flex;
+    flex-direction: row;
+}
+.table-useritem:hover{
+    color: goldenrod;
 }
 .table-row:hover{
-    background-color: rgba(250, 255, 173, 0.217);
+    background-color: rgba(250, 255, 173, 0.089);
     border-radius: 8px;
 }
 .col-xxsmall{
-    max-width: 10px;
-    min-width: 10px;
+    max-width: 35px;
+    min-width: 35px;
 }
 .col-xsmall{
     max-width: 30px;
@@ -78,13 +98,69 @@
     display: flex;
     gap: 2px;
     overflow: hidden;
-}
-.row-btn{
+    height: 100%;
     cursor: pointer;
-    max-width: 80px;
+    /* max-width: 80px; */
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    min-height: 18px;
 }
-.row-btn:hover{
+.red-btn{
+    display: flex;
+
+    color: rgb(97, 22, 22);
+    background-color: rgb(238, 205, 205);
+    border-radius: 4px;
+    border: 1px solid rgb(97, 22, 22);;
+}
+.red-btn:hover{
+    color: rgb(255, 181, 181);
+    background-color: rgb(97, 22, 22);;
+    border: 1px solid rgb(255, 181, 181);
+}
+.green-btn{
+    display: flex;
+    height: 100%;
+    color: rgb(22, 97, 22);
+    background-color: rgb(209, 246, 209);
+    border-radius: 4px;
+    border: 1px solid rgb(22, 97, 22);;
+}
+.green-btn:hover{
+    color: rgb(181, 255, 181);
+    background-color: rgb(22, 97, 22);;
+    border: 1px solid rgb(181, 255, 181);
+}
+.grey-btn{
+    display: flex;
+
+    color: rgb(45, 45, 45);
+    background-color: rgb(254, 254, 254);
+    border-radius: 4px;
+    border: 1px solid rgb(50, 50, 50);;
+}
+.grey-btn:hover{
+    color: rgb(255, 255, 255);
+    background-color: rgb(61, 61, 61);;
+    border: 1px solid rgb(251, 251, 251);
+}
+
+/* .row-btns:hover{
     background: rgb(85, 85, 85);
     border-radius: 4px;
     color: white;
+} */
+.control-panel{
+    display: flex;
+    width: 100%;
+    max-width: none;
+    border-right: none;
+    align-items: center;
+    justify-content: center;
+    background-color: rgb(42, 60, 84);
+    border-bottom: 1px solid black;
+    cursor: default;
+    gap: 2px;
 }

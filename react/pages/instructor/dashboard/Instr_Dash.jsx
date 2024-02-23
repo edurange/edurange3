@@ -8,15 +8,16 @@ import Placard from '@components/Placard'
 import Creation_Instructions from './components/Creation_Instructions.jsx';
 import { InstructorRouter_context } from '../Instructor_router.jsx';
 import './Instr_Dash.css';
+import TestUsers from './TestUsers.jsx';
 
 function Instr_Dash() {
 
   const { 
-    instr_scenarios_state, 
+    scenarios_state, 
     scenarioDetail_state, 
-    set_instr_scenarioDetail_state } = useContext(InstructorRouter_context);
-  
-  if (!instr_scenarios_state) { return <></> }
+    set_scenarioDetail_state, tempUsers_state, set_tempUsers_state  } = useContext(InstructorRouter_context);
+
+  if (!scenarios_state) { return <></> }
 
   return (
 
@@ -36,11 +37,13 @@ function Instr_Dash() {
             <div className='instructor-dash-section'>
               <Placard placard_text='SCENARIOS' />
               <CreateScenario />
-              <Instr_ScenTable set_instr_scenarioDetail_state={set_instr_scenarioDetail_state} />
+              <Instr_ScenTable set_scenarioDetail_state={set_scenarioDetail_state} />
             </div>
           </div>
 
           <div className='instructor-dash-column-alt'>
+
+            <TestUsers userList={tempUsers_state}/>
             <Creation_Instructions />
           </div>
         </div>

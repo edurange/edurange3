@@ -5,7 +5,7 @@ from flask import (
     jsonify,
     g
 )
-from py_flask.database.models import User, StudentGroups, Scenarios, ScenarioGroups, GroupUsers
+from py_flask.database.models import Users
 from py_flask.utils.auth_utils import login_er3
 from py_flask.utils.auth_utils import register_user
 from py_flask.database.user_schemas import LoginSchema, RegistrationSchema
@@ -43,7 +43,7 @@ def login_edurange3():
     validation_schema = LoginSchema()  # instantiate validation schema
     validated_data = validation_schema.load(request.json) # validate login. reject if bad.
     
-    validated_user_obj = User.query.filter_by(username=validated_data["username"]).first()
+    validated_user_obj = Users.query.filter_by(username=validated_data["username"]).first()
 
     if 'X-XSRF-TOKEN' not in session:
         session['X-XSRF-TOKEN'] = secrets.token_hex(32)
@@ -72,7 +72,7 @@ def registration():
     validation_schema = RegistrationSchema()  # instantiate validation schema
     validated_data = validation_schema.load(request.json) # validate registration. reject if bad.
     
-    existing_db_user = User.query.filter_by(username=validated_data["username"]).first()
+    existing_db_user = Users.query.filter_by(username=validated_data["username"]).first()
     
     if existing_db_user is None:
         print("existing db user was not found, trying to create with: ", validated_data)

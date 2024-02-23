@@ -1,6 +1,6 @@
 
 from py_flask.config.extensions import db
-from py_flask.database.models import User
+from py_flask.database.models import Users
 from flask import (
     Blueprint,
     request,

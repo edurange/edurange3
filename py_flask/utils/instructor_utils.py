@@ -6,7 +6,7 @@ from py_flask.utils.chat_utils import gen_chat_names
 
 from py_flask.config.extensions import db
 from py_flask.database.models import (
-    Scenarios, User, 
+    Scenarios, Users, 
     Responses, Notification, 
     StudentGroups, GroupUsers, 
     generate_registration_code)
@@ -44,19 +44,58 @@ def generateTestAccts(group_db_obj, new_user_count, group_code):
     return generatedUsers
 
 def addGroupUsers(group_obj, userDict_list):
-
     db_ses = db.session
-    group_id = group_obj.id
+
+    print("ADDGROUPING: ", group_obj, len(userDict_list))
+
+
+    # Ensure group_obj.users is initialized
+    if group_obj.users is None:
+        group_obj.users = []
 
     for user_dict in userDict_list:
         user_id = user_dict['id']
-
-        existing_relation = db_ses.query(GroupUsers).filter_by(user_id=user_id, group_id=group_id).first()
+        existing_relation = db_ses.query(GroupUsers).filter_by(user_id=user_id, group_id=group_obj.id).first()
         if existing_relation is None:
-            new_relation = GroupUsers(user_id=user_id, group_id=group_id)
+            new_relation = GroupUsers(user_id=user_id, group_id=group_obj.id)
             db_ses.add(new_relation)
+            # Append the user dictionary to the group's users
+            group_obj.users.append(user_id)
+
     db_ses.commit()
-    return userDict_list
+
+    group_obj_dict = group_obj.to_dict()
+
+    # Construct the group dictionary with user dictionaries
+    group_dict = {
+        'id': group_obj.id,
+        'name': group_obj.name,
+        'code': group_obj.code,
+        'hidden': group_obj.hidden,
+        'users': group_obj.users
+    }
+
+    return group_obj_dict
+
+# def addGroupUsers(group_obj, userDict_list):
+
+#     db_ses = db.session
+#     group_id = group_obj.id
+
+#     for user_dict in userDict_list:
+#         user_id = user_dict['id']
+
+#         if group_obj['users'] is None: group_obj['users'] = []
+
+#         existing_relation = db_ses.query(GroupUsers).filter_by(user_id=user_id, group_id=group_id).first()
+#         if existing_relation is None:
+#             new_relation = GroupUsers(user_id=user_id, group_id=group_id)
+#             db_ses.add(new_relation)
+#             group_obj['users'].append(new_relation.id)
+#     db_ses.commit()
+
+    
+#     return group_obj
 
 
 # - ASSIGN USERS/GROUPS TO SCENARIO
@@ -82,10 +121,10 @@ def scenario_create(scenario_type, scenario_name, studentGroup_name):
     db_ses = db.session
     owner_user_id = g.current_user_id
     students_list = (
-        db_ses.query(User.username)
+        db_ses.query(Users.username)
         .filter(StudentGroups.name == studentGroup_name)
         .filter(StudentGroups.id == GroupUsers.group_id)
-        .filter(GroupUsers.user_id == User.id)
+        .filter(GroupUsers.user_id == Users.id)
         .all()
     )
     for i, s in enumerate(students_list):

@@ -25,7 +25,7 @@ class StudentGroups(Edu3Mixin, SurrogatePK, Model):
     __tablename__ = "groups"
     name = Column(db.String(40), unique=True, nullable=False)
     owner_id = reference_col("users", nullable=False)
-    owner = relationship("User", backref="groups")
+    owner = relationship("Users", backref="groups")
     code = Column(
         db.String(8), unique=True, nullable=True, default=generate_registration_code()
     )
@@ -40,12 +40,12 @@ class GroupUsers(Edu3Mixin, SurrogatePK, Model):
     """Users belong to groups"""
     ___tablename___ = "group_users"
     user_id = reference_col("users", nullable=False)
-    user = relationship("User", backref="group_users")
+    user = relationship("Users", backref="group_users")
     group_id = reference_col("groups", nullable=False)
     group = relationship("StudentGroups", backref="group_users", viewonly=True)
 
 
-class User(Edu3Mixin, SurrogatePK, Model):
+class Users(Edu3Mixin, SurrogatePK, Model):
     """A user of the app."""
     __tablename__ = "users"
     username = Column(db.String(80), unique=True, nullable=False)
@@ -70,7 +70,7 @@ class User(Edu3Mixin, SurrogatePK, Model):
         return bcrypt.check_password_hash(self.password, value)
     def __repr__(self):
         """Represent instance as a unique string."""
-        return f"<User({self.username!r})>"
+        return f"<Users({self.username!r})>"
 
 
 class Scenarios(Edu3Mixin, SurrogatePK, Model):
@@ -80,7 +80,7 @@ class Scenarios(Edu3Mixin, SurrogatePK, Model):
     description = Column(db.String(80), unique=False, nullable=True)
     subnet = Column(db.String(18), unique=True, nullable=True)
     owner_id = reference_col("users", nullable=False)
-    owner = relationship("User", backref="scenarios", lazy="subquery")
+    owner = relationship("Users", backref="scenarios", lazy="subquery")
     status = Column(db.Integer, default=0, nullable=False)
     attempt = Column(db.Integer, default=0, nullable=False, server_default="0")
     created_at = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
@@ -109,7 +109,7 @@ class Responses(Edu3Mixin, SurrogatePK, Model):
     """Student responses to scenario questions"""
     __tablename__ = "responses"
     user_id = reference_col("users", nullable=False)
-    user = relationship("User", backref="responses")
+    user = relationship("Users", backref="responses")
     scenario_id = reference_col("scenarios", nullable=False)
     scenario = relationship("Scenarios", backref="responses", viewonly=True)
     question = Column(db.Integer, default=0, nullable=False)

@@ -4,9 +4,8 @@ from py_flask.config.extensions import db
 from py_flask.database.models import (
     GroupUsers, 
     ScenarioGroups, 
-    Scenarios, 
-    Responses, 
-    User,
+    Scenarios,
+    Users,
     StudentGroups,  
 )
 import json
@@ -60,7 +59,7 @@ blueprint_scenarios = Blueprint(
 
 @blueprint_scenarios.errorhandler(418)
 def custom_error_handler(error):
-    response = jsonify({"error": "request denied"})
+    response = jsonify({"error": error})
     response.status_code = 418
     response.content_type = "application/json"
     return response
@@ -76,14 +75,14 @@ def get_content(i):
         or i < 0 
         or i > 99
         ):
-            return jsonify({'error': 'invalid scenario ID'}), 418 # DEV_ONLY (replace with standard denial msg)
+            return jsonify({'error': 'invalid scenario ID'}) # DEV_ONLY (replace with standard denial msg)
 
     contentJSON, credentialsJSON, unique_name = getContent(g.current_user_role, current_scenario_id, g.current_username)
 
     meta = getScenarioMeta(current_scenario_id)
 
     if not credentialsJSON or not unique_name:
-        return jsonify({"error": f"scenario with id {i} is found, build failed"}), 418 # DEV_ONLY
+        return jsonify({"error": f"scenario with id {i} is found, build failed"})
     
     SSH_connections = identify_state(unique_name, "Started")
     SSH_IP = ""
@@ -129,10 +128,10 @@ def get_scenarios():
             StudentGroups.name.label("gname"),
             Scenarios.created_at.label("created_at"),
             Scenarios.owner_id.label("owner_id"),
-            User.username.label("iname"),)
+            Users.username.label("iname"),)
                 .filter(GroupUsers.user_id == g.current_user_id)
                 .filter(StudentGroups.id == GroupUsers.group_id)
-                .filter(User.id == StudentGroups.owner_id)
+                .filter(Users.id == StudentGroups.owner_id)
                 .filter(ScenarioGroups.group_id == StudentGroups.id)
                 .filter(Scenarios.id == ScenarioGroups.scenario_id))
     

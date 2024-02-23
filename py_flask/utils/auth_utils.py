@@ -9,7 +9,7 @@ from flask import (
 from datetime import timedelta
 
 from functools import wraps
-from py_flask.database.models import GroupUsers, StudentGroups, User
+from py_flask.database.models import GroupUsers, StudentGroups, Users
 from flask_jwt_extended import create_access_token, decode_token
 
 ###########
@@ -101,7 +101,7 @@ def register_user(validated_registration_data):
 
     group = StudentGroups.query.filter_by(code=data["code"]).first()
 
-    User.create(
+    Users.create(
             username=data["username"],
             password=data["password"],
             active=True,
@@ -111,7 +111,7 @@ def register_user(validated_registration_data):
 
     if group is None: return jsonify({"error": "group matching this code not found"}), 404
 
-    user = User.query.filter_by(username=data["username"]).first()
+    user = Users.query.filter_by(username=data["username"]).first()
     group_id = group.get_id()
     user_id = user.get_id()
     GroupUsers.create(user_id=user_id, group_id=group_id)

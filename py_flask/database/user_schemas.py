@@ -6,7 +6,7 @@ from py_flask.database.models import (
     ScenarioGroups, 
     Scenarios, 
     StudentGroups, 
-    User, 
+    Users, 
     )
 from flask_marshmallow import Marshmallow
 from marshmallow import (
@@ -38,7 +38,7 @@ class LoginSchema(ma.SQLAlchemyAutoSchema):
 
         username_input = data.get("username")
         password_plain_input = data.get("password")
-        user = db_ses.query(User).filter_by(username=username_input).first()
+        user = db_ses.query(Users).filter_by(username=username_input).first()
 
         if (
             not user 
@@ -47,7 +47,7 @@ class LoginSchema(ma.SQLAlchemyAutoSchema):
                 abort(418)  
 
     class Meta:
-        model = User
+        model = Users
         # exclude = ["id"]
 
 class RegistrationSchema(ma.SQLAlchemyAutoSchema):
@@ -73,13 +73,13 @@ class RegistrationSchema(ma.SQLAlchemyAutoSchema):
             raise ValidationError("Passwords do not match")
 
 
-        user = db_ses.query(User).filter_by(username=username_input).first()
+        user = db_ses.query(Users).filter_by(username=username_input).first()
         if user != None:
             print("user already exists! aborting...")
             abort(418)
 
     class Meta:
-        model = User
+        model = Users
         
 
 class CreateGroupSchema(Schema):

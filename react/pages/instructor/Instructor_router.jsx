@@ -12,36 +12,37 @@ export const InstructorRouter_context = React.createContext();
 
 function Instructor_router() {
 
-    const [instr_students_state, set_instr_students_state] = useState([])
-    const [instr_studentGroups_state, set_instr_studentGroups_state] = useState([])
-    const [instr_scenarios_state, set_instr_scenarios_state] = useState([])
-    const [instr_scenarioGroups_state, set_instr_scenarioGroups_state] = useState([])
-    const [instr_scenarioDetail_state, set_instr_scenarioDetail_state] = useState({})
+    const [users_state, set_users_state] = useState([])
+    const [groups_state, set_groups_state] = useState([])
+    const [scenarios_state, set_scenarios_state] = useState([])
+    const [scenarioDetail_state, set_scenarioDetail_state] = useState({})
+    const [userDetail_state, set_userDetail_state] = useState({})
+    const [tempUsers_state, set_tempUsers_state] = useState([]);
 
     async function get_instructorData() {
         try {
             const response = await axios.get("/get_instructor_data");
             const responseData = response.data;
-            const instr_data = buildInstructorData(responseData);
-            console.log("Instructor Data: ",instr_data)
-            set_instr_students_state(instr_data.users);
-            set_instr_studentGroups_state(instr_data.userGroups);
-            set_instr_scenarios_state(instr_data.scenarios);
-            set_instr_scenarioGroups_state(instr_data.scenarioGroups);
+            set_users_state(responseData?.users);
+            set_groups_state(responseData?.groups);
+            set_scenarios_state(responseData?.scenarios);
         }
         catch (error) { console.log('get_instructorData error:', error); };
     };
     useEffect(() => { get_instructorData(); }, []);
 
-    if (!instr_scenarios_state) {return <></>}
+    if (!scenarios_state) {return <></>}
 
     return (
         <InstructorRouter_context.Provider value={{
-            instr_students_state, set_instr_students_state,
-            instr_studentGroups_state, set_instr_studentGroups_state,
-            instr_scenarios_state, set_instr_scenarios_state,
-            instr_scenarioGroups_state, set_instr_scenarioGroups_state,
-            instr_scenarioDetail_state, set_instr_scenarioDetail_state
+
+            users_state, set_users_state,
+            groups_state, set_groups_state,
+            scenarios_state, set_scenarios_state,
+
+            scenarioDetail_state, set_scenarioDetail_state,
+            userDetail_state, set_userDetail_state,
+            tempUsers_state, set_tempUsers_state
             }}>
 
             <Routes>

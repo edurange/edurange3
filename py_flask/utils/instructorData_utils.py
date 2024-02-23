@@ -12,7 +12,7 @@ from py_flask.database.models import (
     ScenarioGroups, 
     Scenarios, 
     StudentGroups, 
-    User, 
+    Users, 
     Responses
 )
 
@@ -21,7 +21,7 @@ db_ses = db.session
     
 def get_user(input_name):
 
-    user = User.query.filter_by(username=input_name).first()
+    user = Users.query.filter_by(username=input_name).first()
 
     user_info = {
         "id": user.id,
@@ -34,7 +34,7 @@ def get_user(input_name):
     return user_info
 def get_users():
 
-    all_users = db_ses.query(User).all()
+    all_users = db_ses.query(Users).all()
     all_users_list = []
 
     for user in all_users:

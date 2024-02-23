@@ -1,84 +1,5 @@
 
-// import { UsersShell, UserGroupsShell, ScenarioGroupsShell, ScenariosShell, GroupUsersShell } from '@modules/shells/instructorData_shells';
-
-// under construction 
-
-function assignUserRole(inputData) {
-    if (inputData.is_admin) { return 'Administrator' }
-    else if (inputData.is_instructor) { return 'Instructor' }
-    else { return 'Student' }
-};
-
-const formatDate = (inputDate) => {
-    const dateToprocess = new Date(inputDate) ?? new Date('Dec 25, -0001');
-    const month = String(dateToprocess.getMonth() + 1).padStart(2, '0'); // Months are 0-based
-    const day = String(dateToprocess.getDate()).padStart(2, '0');
-    const year = String(dateToprocess.getFullYear()).slice(-2); // Get the last 2 characters of the year
-    const hours = String(dateToprocess.getHours()).padStart(2, '0');
-    const minutes = String(dateToprocess.getMinutes()).padStart(2, '0');
-    
-    return `${month}/${day}/${year} ${hours}:${minutes}`;
-};
-
-export class UsersShell {
-    constructor(input = {}) {
-        this.id = input.id ?? 'none';
-        this.username = input.username ?? 'none';
-        this.role = input.username ? assignUserRole(input) : 'none'; // assigns role if user exists, otherwise 'none'
-        this.is_active = input.active || false;
-        this.groups_membership = input.membership ?? undefined; // user group membership (single int of group id)
-        this.created_at = formatDate (input.created_at) ?? 'none';
-    };
-};
-
-// id |     name      | owner_id |   code   | hidden 
-export class UserGroupsShell {
-    constructor(input = {}) {
-        this.id = input.id;
-        this.name = input.name;
-        this.owner_id = input.owner_id;
-        this.code = input.code;
-        this.hidden = input.hidden || true;
-
-        this.users_members = input.users_members ?? [];
-        this.scenarios_members = input.scenarios_members ?? [];
-    };
-};
-
-//  id |  name   |  description  |    subnet    | owner_id | status | attempt |         created_at         
-export class ScenariosShell {
-    constructor(input = {}) {
-        this.id = input.id;
-        this.name = input.name;
-        this.description = input.description;
-        this.subnet = input.subnet;
-        this.owner_id = input.owner_id;
-        this.status = input.status;
-        this.attempt = input.attempt;
-        this.created_at = formatDate(input.created_at);
-        this.groups_membership = input.groups_membership; // single Int for group id
-    };
-};
-
-// table for linking scenario_ids to group_ids
-//  id | group_id | scenario_id 
-export class ScenarioGroupsShell {
-    constructor(input = {}) {
-        this.id = input.id;
-        this.group_id = input.group_id;
-        this.scenario_id = input.scenario_id;
-    };
-};
-
-// table for linking user_ids to group_ids
-// id | user_id | group_id 
-export class GroupUsersShell {
-    constructor(input = {}) {
-        this.id = input.id;
-        this.user_id = input.user_id;
-        this.group_id = input.group_id;
-    };
-};
+import { UserShell, UserGroupShell, ScenarioGroupShell, ScenarioShell } from '@modules/shells/instructorData_shells';
 
 function initializeData(input_groups, input_users, input_group_users, input_scenarios, input_scenario_groups) {
 
@@ -87,9 +8,9 @@ function initializeData(input_groups, input_users, input_group_users, input_scen
 
     function init_groups(input_groups) {
         const outputArray = [];
-        // outputArray.push(new UserGroupsShell());
+        // outputArray.push(new UserGroupShell());
         input_groups.forEach((group) => {
-            outputArray.push(new UserGroupsShell(group));
+            outputArray.push(new UserGroupShell(group));
         });
 
         console.log ("Output from initUserGroups: ", outputArray)
@@ -100,10 +21,10 @@ function initializeData(input_groups, input_users, input_group_users, input_scen
     // id |       username       |
     function init_users(input_users) {
         const tempUserArray = [];
-        tempUserArray.push(new UsersShell());
+        tempUserArray.push(new UserShell());
         if (input_users) {
             input_users.forEach(user => {
-                tempUserArray.push(new UsersShell(user));
+                tempUserArray.push(new UserShell(user));
             });
         };
         return tempUserArray;
@@ -118,7 +39,7 @@ function initializeData(input_groups, input_users, input_group_users, input_scen
 
     function init_group_users(input_group_users) {
         const tempUserArray = [];
-        tempUserArray.push(new UsersShell());
+        tempUserArray.push(new UserShell());
         if (input_group_users) {
             input_group_users.forEach(user => {
                 tempUserArray.push(new GroupUsersShell(user));
@@ -131,10 +52,10 @@ function initializeData(input_groups, input_users, input_group_users, input_scen
     //  id |  name   |  description  |    subnet    | owner_id | status | attempt |         created_at         
     function init_scenarios(input_scenarios) {
         const tempScenarioArray = [];
-        tempScenarioArray.push(new ScenariosShell());
+        tempScenarioArray.push(new ScenarioShell());
         if (input_scenarios) {
             input_scenarios.forEach(scenario => {
-                tempScenarioArray.push(new ScenariosShell(scenario));
+                tempScenarioArray.push(new ScenarioShell(scenario));
             });
         };
         return tempScenarioArray;
@@ -149,10 +70,10 @@ function initializeData(input_groups, input_users, input_group_users, input_scen
     //  id | group_id | scenario_id 
     function init_scenario_groups(input_scenario_groups) {
         const tempScenarioGroupArray = [];
-        tempScenarioGroupArray.push(new ScenarioGroupsShell());
+        tempScenarioGroupArray.push(new ScenarioGroupShell());
         if (input_scenario_groups) {
             input_scenario_groups.forEach((scenarioGroup) => {
-                tempScenarioGroupArray.push(new ScenarioGroupsShell(scenarioGroup));
+                tempScenarioGroupArray.push(new ScenarioGroupShell(scenarioGroup));
             });
         };
         return tempScenarioGroupArray;
@@ -176,52 +97,86 @@ function initializeData(input_groups, input_users, input_group_users, input_scen
 };
 
 
-function link_UsersAndGroups(users, groups, group_users) {
-    // Initialize 'members' array for each group
-    groups.forEach(group => {
-        group.members = [];
-    });
+function link_UsersAndGroups (users, user_groups, group_users) {
 
-    // Initialize 'membership' for each user
-    users.forEach(user => {
-        user.membership = null;
-    });
+    // should go through and look at all of the user ids for each group, and each user
+    // as well as the group_users to find the link between them.
+    
+    // populate each user_group with a new array of 'members' property that are the userID
 
-    // Populate 'members' in groups and 'membership' in users
-    group_users.forEach(group_user => {
-        const group = groups.find(group => group.id === group_user.group_id);
-        const user = users.find(user => user.id === group_user.user_id);
+    // in addition, add the ID of the group to each student with the property 'membership' (single int)
 
-        if (group && user) {
-            group.members.push(user.id);
-            user.membership = group.id;
-        }
-    });
 }
 
-function link_GroupsAndScenarios(scenarios, groups, scenario_groups) {
-    // Initialize 'scenarios' array for each group
-    groups.forEach(group => {
-        group.scenarios = [];
-    });
+function link_GroupsAndScenarios (scenarios, user_groups, scenario_groups) {
 
-    // Initialize 'membership' for each scenario
-    scenarios.forEach(scenario => {
-        scenario.membership = null;
-    });
+    // similar to the other link function, this looks at the 3 arrays, then:
+    // - populate each user_group with a list of 'members' that are the IDs of the scenarios assigned...
+    //   indicated by the scenario_groups (use the id of the scenario and the user_groups supplied by scenario_groups)
 
-    // Populate 'scenarios' in groups and 'membership' in scenarios
-    scenario_groups.forEach(scenario_group => {
-        const group = groups.find(group => group.id === scenario_group.group_id);
-        const scenario = scenarios.find(scenario => scenario.id === scenario_group.scenario_id);
+    // additionally, add 'membership' property to the scenario, which is the ID of the group indicated by the scenario_groups
 
-        if (group && scenario) {
-            group.scenarios.push(scenario.id);
-            scenario.membership = group.id;
-        }
-    });
 }
 
+function assignGroupsToUsers(firstPassObj, originalObj) {
+    const users = originalObj[0];
+    const userGroupAssignments = originalObj[2];
+    const outputObj = { ...firstPassObj };
+    for (let user of outputObj.users) {
+        user.userGroups_memberOf = [];
+    };
+    for (let assignment of userGroupAssignments) {
+        const userId = assignment.user_id;
+        const groupId = assignment.group_id;
+        if (outputObj.users[userId]) {
+            outputObj.users[userId].userGroups_memberOf.push(groupId);
+        } else { console.warn(`User with id ${userId} not found.`); 
+        };
+    };
+    return outputObj;
+};
+
+function assignUsersToGroups(firstPassObj, originalObj) {
+    const outputObj = { ...firstPassObj };
+    const userGroupAssignments = originalObj[2];
+    for (let assignment of userGroupAssignments) {
+        const userId = assignment.user_id;
+        const groupId = assignment.group_id;
+        if (outputObj.userGroups[groupId]) {
+            if (!outputObj.userGroups[groupId].user_members.includes(userId)) {
+                outputObj.userGroups[groupId].user_members.push(userId); 
+            }
+        } else { console.warn(`Group with id ${groupId} not found.`); 
+        };
+        
+    };
+    return outputObj;
+}
+
+function assignScenariosToGroups(newObject, inputObj) {
+    const scenarioGroupAssignments = inputObj[4];
+    const outputObj = { ...newObject };
+    for (let assignment of scenarioGroupAssignments) {
+        const studentGroupId = assignment.student_group_id;
+        const scenarioGroupId = assignment.scenario_group_id;
+        if (outputObj.userGroups[studentGroupId]) {
+            outputObj.userGroups[studentGroupId].scenarios_memberOf.push(scenarioGroupId);
+        } else { console.warn(`UserGroup with id ${studentGroupId} not found.`); 
+        }
+        if (outputObj.scenarioGroups[scenarioGroupId]) {
+            outputObj.scenarioGroups[scenarioGroupId].studentGroup_members.push(studentGroupId)
+        } else { console.warn(`ScenarioGroups with id ${scenarioGroupId} not found.`); 
+        };
+    };
+    return outputObj;
+};
+
+function makeSecondPass(firstPassObj, originalObj) {
+    const groupsAssignedToUsersObj = assignGroupsToUsers(firstPassObj, originalObj);
+    const usersAssignedtoGroupsObj = assignUsersToGroups(groupsAssignedToUsersObj, originalObj);
+    const scenariosAssignedToGroups = assignScenariosToGroups(usersAssignedtoGroupsObj, originalObj);
+    return scenariosAssignedToGroups;
+};
 
 export function buildInstructorData(inputObj) {
 
@@ -230,15 +185,17 @@ export function buildInstructorData(inputObj) {
     const userGroupUsers_arr = inputObj[2];
     const scenarios_arr = inputObj[3];
     const scenarioStudentGroups_arr = inputObj[4];
+
+    const {users, userGroups, scenarios, scenarioGroups} = initializeData(userGroups_arr, users_arr, userGroupUsers_arr, scenarios_arr, scenarioStudentGroups_arr)
     
-    const initData = initializeData(userGroups_arr, users_arr, userGroupUsers_arr, scenarios_arr, scenarioStudentGroups_arr);
-
-    link_UsersAndGroups(initData.users, initData.groups, initData.group_users);
-    link_GroupsAndScenarios(initData.scenarios, initData.groups, initData.scenario_groups);
-
-    console.log ('NEW DATA OUTPUT: ', initData)
-
-    return initData;
+    console.log ('NEW DATA OUTPUT: ', users, userGroups, scenarios, scenarioGroups)
+    
+    // if (inputObj) {
+    //     console.log('buildInstData pre-first inputObj: ', inputObj)
+    //     const firstPassOutput = makeFirstPass(inputObj);
+    //     const secondPassOutput = makeSecondPass(firstPassOutput, inputObj);
+    //     return secondPassOutput;
+    // }
 };
 
 
@@ -256,23 +213,23 @@ export function buildInstructorData(inputObj) {
 
 
 
-// import { UsersShell, UserGroupsShell, ScenarioGroupsShell, ScenariosShell } from '@modules/shells/instructorData_shells';
+// import { UserShell, UserGroupShell, ScenarioGroupShell, ScenarioShell } from '@modules/shells/instructorData_shells';
 
 // function makeFirstPass(inputObj) {
 //     function processUsers(inputData) {
-//         return inputData.map(user => new UsersShell(user));
+//         return inputData.map(user => new UserShell(user));
 //     }
 
 //     function processUserGroups(inputData) {
-//         return inputData.map(group => new UserGroupsShell(group));
+//         return inputData.map(group => new UserGroupShell(group));
 //     }
 
 //     function processScenarios(inputData) {
-//         return inputData.map(scenario => new ScenariosShell(scenario));
+//         return inputData.map(scenario => new ScenarioShell(scenario));
 //     }
 
 //     function processScenarioGroups(inputData) {
-//         return inputData.map(scenarioGroup => new ScenarioGroupsShell(scenarioGroup));
+//         return inputData.map(scenarioGroup => new ScenarioGroupShell(scenarioGroup));
 //     }
 
 //     return {

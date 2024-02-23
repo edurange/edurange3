@@ -6,7 +6,7 @@ from py_flask.config.extensions import db
 from py_flask.utils.guide_utils import readQuestions
 from py_flask.database.models import (
     Scenarios, 
-    User, 
+    Users, 
     Responses
     )
 # Import the scenario string, and set to 'known_types' as a list
@@ -270,7 +270,7 @@ def responseProcessing(data):
     '''Response info getter.'''
     db_ses = db.session
     uid, sid = data.user_id, data.scenario_id
-    uname = db_ses.query(User.username).filter(User.id == uid).first()[0]
+    uname = db_ses.query(Users.username).filter(Users.id == uid).first()[0]
     sname = db_ses.query(Scenarios.name).filter(Scenarios.id == sid).first()[0]
     return uid, uname, sid, sname, data.attempt
 
