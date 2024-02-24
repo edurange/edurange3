@@ -1,7 +1,7 @@
 import React, {useContext} from 'react';
 import './SSH_card.css';
 import Copy_button from '@components/Copy_button';
-import { HomeRouter_context } from '../../../../pub/Home_router';
+import { HomeRouter_context } from '@pub/Home_router';
 const zws = `\u200B`;
 
 function SSH_card({ guideContent }) {

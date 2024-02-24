@@ -4,7 +4,6 @@ import os
 import random
 import shutil
 import string
-from time import sleep 
 import subprocess
 from datetime import datetime
 from celery import Celery
@@ -12,7 +11,6 @@ from celery.utils.log import get_task_logger
 from flask import current_app, flash, jsonify
 from py_flask.utils.terraform_utils import adjust_network, find_and_copy_template, write_resource
 from py_flask.config.settings import CELERY_BROKER_URL, CELERY_RESULT_BACKEND
-
 
 logger = get_task_logger(__name__)
 path_to_directory = os.path.dirname(os.path.abspath(__file__))
@@ -36,19 +34,6 @@ class ContextTask(celery.Task):
             return super(ContextTask, self).__call__(*args, **kwargs)
 
 celery.Task = ContextTask
-
-
-
-@celery.task(bind=True)
-def add_numbers_task(self, arg1, arg2):
-
- 
-
-    testAdd = arg1 + arg2
-    sleep (25)
-    
-    return testAdd
-
 
 
 @celery.task(bind=True)
@@ -343,7 +328,6 @@ def destroy_scenario_task(self, scenario_id):
                 }
         else:
             NotifyCapture("Failed to delete scenario " + name + ": Scenario could not be found.")
-            # raise Exception(f"Could not find scenario")
             return {
                 "result": "failure",
                 "new_status": 5,

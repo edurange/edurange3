@@ -9,8 +9,7 @@ import InfoPane from './panes/info/InfoPane';
 import GuidePane from './panes/guide/GuidePane';
 import SSH_web from './panes/ssh/SSH_web';
 import Chat_Student from '../chat/Chat_Student';
-import { HomeRouter_context } from '../../pub/Home_router';
-import Chat_Instructor from '../../instructor/chat/Instr_Chat';
+import { HomeRouter_context } from '@pub/Home_router';
 
 function Scenario_controller() {
   

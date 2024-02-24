@@ -15,9 +15,9 @@
 
 import { useState, useRef, useEffect } from 'react';
 import './ChatApp.css';
-import Messages_pane from '../../student/chat/Messages_pane.jsx';
+import Messages_pane from '@student/chat/Messages_pane.jsx';
 import Instructor_UsersList from './Instr_UsersList.jsx';
-import { ChatMessage } from '../../student/chat/Chat_Student.jsx';
+import { ChatMessage } from '@student/chat/Chat_Student.jsx';
 
 // !important! use 'wss:' for production (reqs SSL certs) // DEV_ONLY
 const socketURL = "wss://riparian.dev/chatSocket"  

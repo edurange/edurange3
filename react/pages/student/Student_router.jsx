@@ -16,7 +16,6 @@ function Student_router() {
         timeStamp: Date.now(),
         message: "something"
     }
-
     const [notifsArray_state, set_notifsArray_state] = useState([fakeNotif]);
     const [guideBook_state, set_guideBook_state] = useState({});
     const [scenarioList_state, set_scenarioList_state] = useState([]);
@@ -24,8 +23,6 @@ function Student_router() {
         chapter: 0,
         sectionAnchor: 0,
     });
-
-    /////////////////////////////////////////////////
 
     async function fetchScenarioList() {
         try {

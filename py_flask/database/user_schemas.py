@@ -68,6 +68,7 @@ class RegistrationSchema(ma.SQLAlchemyAutoSchema):
         username_input = data.get("username")
         password_input = data.get("password")
         confirm_password_input = data.get("confirm_password")
+        code_input = data.get("code")
 
         if password_input != confirm_password_input:
             raise ValidationError("Passwords do not match")
@@ -76,6 +77,12 @@ class RegistrationSchema(ma.SQLAlchemyAutoSchema):
         user = db_ses.query(Users).filter_by(username=username_input).first()
         if user != None:
             print("user already exists! aborting...")
+            abort(418)
+
+        group = db_ses.query(StudentGroups).filter_by(code=code_input).first()
+
+        if group is None:
+            print('student group w/ this code not found, aborting.')
             abort(418)
 
     class Meta:

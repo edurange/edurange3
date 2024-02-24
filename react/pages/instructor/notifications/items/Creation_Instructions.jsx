@@ -1,6 +1,6 @@
 import React from 'react';
 
-import '../../dashboard/Instr_Dash.css';
+import '@instructor/dashboard/Instr_Dash.css';
 function Creation_Instructions() {
 
     return (

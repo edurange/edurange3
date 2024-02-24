@@ -4,11 +4,11 @@ import { useParams } from 'react-router-dom';
 
 import "@frame/frame.css";
 import './Instr_ScenDetail.css';
-import InfoPane from '../../student/scenarios/panes/info/InfoPane';
-import SSH_web from '../../student/scenarios/panes/ssh/SSH_web';
-import { HomeRouter_context } from '../../pub/Home_router';
+import InfoPane from '@student/scenarios/panes/info/InfoPane';
+import SSH_web from '@student/scenarios/panes/ssh/SSH_web';
+import { HomeRouter_context } from '@pub/Home_router';
 import Chat_Instructor from '../chat/Instr_Chat';
-import GuidePane from '../../student/scenarios/panes/guide/GuidePane';
+import GuidePane from '@student/scenarios/panes/guide/GuidePane';
 
 function Instr_ScenDetail() {
   

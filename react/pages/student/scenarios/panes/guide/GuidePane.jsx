@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { nanoid } from 'nanoid';
 import './GuidePane.css';
 import buildGuide from '@modules/utils/guide_modules';
 import HomeChapter from './Q_and_A/HomeChapter';
-import { HomeRouter_context } from '../../../../pub/Home_router';
+import { HomeRouter_context } from '@pub/Home_router';
 
 function GuidePane({ guideContent, set_leftPane_state }) {
 

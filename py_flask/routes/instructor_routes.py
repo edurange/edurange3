@@ -1,8 +1,9 @@
 from sqlalchemy.exc import SQLAlchemyError
 from py_flask.database.user_schemas import CreateGroupSchema, TestUserListSchema
-from py_flask.database.models import Users, StudentGroups, ScenarioGroups, GroupUsers
+from py_flask.database.models import Users, StudentGroups, ScenarioGroups, GroupUsers, Scenarios
 from py_flask.utils.dataBuilder import get_group_data, get_user_data, get_scenario_data
 from py_flask.config.extensions import db
+from py_flask.utils.chat_utils import gen_chat_names
 from flask import (
     Blueprint,
     request,
@@ -21,13 +22,17 @@ from py_flask.utils.auth_utils import jwt_and_csrf_required, instructor_only
 from py_flask.utils.instructor_utils import generateTestAccts, addGroupUsers
 from py_flask.database.models import generate_registration_code as grc
 from py_flask.utils.instructor_utils import (
-    list_all_scenarios, 
-    scenario_create, 
-    scenario_start,
-    scenario_stop,
-    scenario_update,
-    scenario_destroy
+    clearGroups,
+    deleteUsers,
+    NotifyCapture
     )
+from py_flask.utils.tasks import (
+    create_scenario_task, 
+    start_scenario_task, 
+    stop_scenario_task, 
+    update_scenario_task,
+    destroy_scenario_task,
+)
 from werkzeug.exceptions import abort
 
 from py_flask.utils.instructorData_utils import get_instructorData
@@ -115,6 +120,7 @@ def get_instructor_data():
 @blueprint_instructor.route('/get_instr_content/<int:i>', methods=['GET']) # WIP
 @jwt_and_csrf_required
 def get_content(i):
+    instructor_only()
     current_scenario_id = i
     if (
         not isinstance(current_scenario_id, int)
@@ -160,31 +166,93 @@ def scenario_interface():
     if method not in ('LIST','CREATE', 'START', 'STOP', 'UPDATE', 'DESTROY'):
         return jsonify({'message':'wrong method given'}), 418
 
-    def list_scenarios(requestJSON):
-        scenario_list = list_all_scenarios(requestJSON)
-        return scenario_list
 
-    def create_scenario(requestJSON):   
-        if ("type" not in requestJSON or "name" not in requestJSON):
-            return jsonify({'message':'missing type or name arg'}), 418
+    def list_scenarios():
+
+        db_ses = db.session
+        all_scenarios = db_ses.query(Scenarios).all()
+        all_scenarios_list = []
+        for scenario in all_scenarios:
+            scenario_info = {
+                "scenario_id": scenario.id,
+                "scenario_name": scenario.name,
+                "scenario_description": scenario.description,
+                "scenario_owner_id": scenario.owner_id,
+                "scenario_created_at": scenario.created_at,
+                "scenario_status": scenario.status,
+            }
+            all_scenarios_list.append(scenario_info)
+        return jsonify({"result": "success","scenarios_list":all_scenarios_list})
+
+    def create_scenario(requestJSON):
+
+        if (
+            "type" not in requestJSON 
+            or "name" not in requestJSON
+            or "group_name" not in requestJSON
+            ):
+            return jsonify({'message':'missing create_scenario arg'}), 418
         scenario_type = requestJSON["type"]
         scenario_name = requestJSON["name"]
         scenario_group_name = requestJSON["group_name"]
-        scenario_users = scenario_create(scenario_type, scenario_name, scenario_group_name)
-        if (scenario_users != None):
-            return scenario_users
+
+        db_ses = db.session
+        owner_user_id = g.current_user_id
+        students_list = (
+            db_ses.query(Users.username)
+            .filter(StudentGroups.name == scenario_group_name)
+            .filter(StudentGroups.id == GroupUsers.group_id)
+            .filter(GroupUsers.user_id == Users.id)
+            .all()
+        )
+        for i, s in enumerate(students_list):
+            students_list[i] = s._asdict()
+
+        Scenarios.create(name=scenario_name, description=scenario_type, owner_id=owner_user_id)
+        NotifyCapture(f"Scenario {scenario_name} has been created.")
+    
+        scen_id_dbList = db_ses.query(Scenarios.id).filter(Scenarios.name == scenario_name).first()
+        scenario_id = list(scen_id_dbList._asdict().values())[0]
+        scenario = Scenarios.query.filter_by(id=scenario_id).first()
+        scenario.update(status=7)
+        
+        group_id = db_ses.query(StudentGroups.id).filter(StudentGroups.name == scenario_group_name).first()
+        group_id = group_id._asdict()
+        
+        student_ids = db_ses.query(GroupUsers.id).filter(GroupUsers.group_id == group_id['id']).all()
+        namedict = gen_chat_names(student_ids, scenario_id)
+
+        if ( scenario_name is None \
+            or scenario_type is None\
+            or owner_user_id is None\
+            or students_list is None\
+            or group_id is None\
+            or scenario_id is None\
+            or namedict is None
+        ):
+            print('missing create arg, aborting')
+            abort(418)
+
+        returnObj = create_scenario_task.delay(scenario_name, scenario_type, students_list, group_id, scenario_id).get(timeout=None)
+        returnObj['students_return'] = [{'username': student['username']} for student in students_list]
+
+        if (returnObj != None): return returnObj
+
         else: 
             print ("Scenario CREATE failed")
             return None
 
 
     def start_scenario(requestJSON):
-        if ("scenario_id" not in requestJSON):
-            return jsonify({'message':'missing scenario_id'}), 418
+
         scenario_id = requestJSON["scenario_id"]
-        returnObj = scenario_start(scenario_id)
-        if (returnObj != None):
-            return returnObj
+        if not scenario_id:
+            return jsonify({'message':'missing scenario_id'}), 418
+
+        return_obj = start_scenario_task.delay(scenario_id).get(timeout=None)
+
+        if (return_obj != None):
+            return return_obj
         else: 
             print ("Scenario START failed")
             return None
@@ -193,9 +261,9 @@ def scenario_interface():
         if ("scenario_id" not in requestJSON):
             return jsonify({'message':'missing scenario_id'}), 418
         scenario_id = requestJSON["scenario_id"]
-        returnObj = scenario_stop(scenario_id)
-        if (returnObj != None):
-            return returnObj
+        return_obj = stop_scenario_task(scenario_id)
+        if (return_obj != None):
+            return return_obj
         else: 
             print ("Scenario STOP failed")
             return None
@@ -204,9 +272,10 @@ def scenario_interface():
         if ("scenario_id" not in requestJSON):
             return jsonify({'message':'missing scenario_id'}), 418
         scenario_id = requestJSON["scenario_id"]
-        returnObj = scenario_update(scenario_id)
-        if (returnObj != None):
-            return returnObj
+        
+        return_obj = update_scenario_task.delay(scenario_id).get(timeout=None)
+        if (return_obj != None):
+            return return_obj
         else: 
             print ("Scenario UPDATE failed")
             return None
@@ -215,9 +284,9 @@ def scenario_interface():
         if ("scenario_id" not in requestJSON):
             return jsonify({'message':'missing scenario_id'}), 418
         scenario_id = requestJSON["scenario_id"]
-        returnObj = scenario_destroy(scenario_id)
-        if (returnObj != None):
-            return returnObj
+        return_obj = destroy_scenario_task.delay(scenario_id).get(timeout=None)
+        if (return_obj != None):
+            return return_obj
         else: 
             print ("Scenario DESTROY failed")
             return None
@@ -272,32 +341,22 @@ def delete_group():
 def delete_users():
     instructor_only()
 
-    try:
-        requestJSON = request.json
-        users_to_delete = requestJSON.get('users_to_delete')
+    requestJSON = request.json
+    users_to_delete = requestJSON.get('users_to_delete')
+    if not users_to_delete:
+        return jsonify({"message": "Missing required argument 'users_to_delete', delete aborted"}), 400
+    
+    # deleteUsers() clears user's group association before deleting
+    deleted_users = deleteUsers(users_to_delete)
 
-        if not users_to_delete:
-            return jsonify({"message": "Missing required argument 'users_to_delete', delete aborted"}), 400
-
-        db_ses = db.session
-        deleted_users = []
-        for user_id in users_to_delete:
-            user = db_ses.query(Users).filter(Users.id == user_id).first()
-            if user:
-                db_ses.delete(user)
-                deleted_users.append(user_id)
-
-        db_ses.commit()
-        if deleted_users:
-            return jsonify({
-                'deleted_users': deleted_users,
-                "result": 'success'})
-        else:
-            return jsonify({"message": "No users were deleted. Check if the provided IDs exist."}), 404
-
-    except SQLAlchemyError as e:
-        db_ses.rollback()
-        return jsonify({"message": f"An error occurred: {str(e)}"}), 500
+    if deleted_users:
+        return jsonify({
+            'deleted_users': deleted_users,
+            "result": 'success'})
+    else:
+        return jsonify({
+            'deleted_users': [],
+            "result": 'failure'})
 
 @blueprint_instructor.route("/assign_group_users", methods=['POST'])
 @jwt_and_csrf_required
@@ -314,7 +373,7 @@ def assign_group_users():
         return jsonify({'result': 'error', 'message': 'Group not found'}), 404
 
     assigned_user_ids = addGroupUsers(group_obj, userDict_list)
-
+    
     return jsonify({'result': 'success', 'assigned_user_ids': assigned_user_ids})
 
 
@@ -323,19 +382,8 @@ def assign_group_users():
 def clear_groups():
     instructor_only()
 
-    requestJSON = request.json
-    users_to_clear = requestJSON['users_to_clear']
+    users_to_clear = request.json['users_to_clear']
+    clearedUserIDs = clearGroups(users_to_clear)
+    cleared_user_ids = [int(user_id) for user_id in clearedUserIDs]
 
-    cleared_user_ids = []
-    for user_id in users_to_clear:
-        user = Users.query.get(user_id)
-        if user:
-            existing_relations = db.session.query(GroupUsers).filter_by(user_id=user_id).all()
-            for relation in existing_relations:
-                db.session.delete(relation)
-                cleared_user_ids.append(user_id)
-
-    db.session.commit()
-
-    cleared_user_ids = [int(user_id) for user_id in cleared_user_ids]
     return jsonify({'result': 'success', 'cleared_user_ids': cleared_user_ids})
