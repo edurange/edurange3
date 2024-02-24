@@ -23,7 +23,7 @@ function Creation_Instructions() {
                         a <span className='highlighter-green'>unique</span> name.
                     </div>
                     <div>
-                      The 'code' generated can be used by students to create a new account, which will be linked to the group. 
+                      The 'code' generated can be used by students to create a new account, which will be automatically linked to the group. 
                     </div>
 
                     <div>
@@ -73,7 +73,7 @@ function Creation_Instructions() {
                         may not be able to access the scenario, so it is important to add users to the group associated w/ the scenario <span className='highlighter-green'>before</span> you create the scenario.
                     </div>
                     <div>
-                        If you want to add students to a group, <span className='highlighter-green'> and the scenario is already created</span>, it is recommended to stop, then destroy the old scenario, and create a new scenario for your updated group.
+                        If you want to add students to a group, <span className='highlighter-green'> and the scenario is already created</span>, it is recommended to stop, then destroy the old scenario, update your group, and create a new scenario for your updated group.
                     </div>
                 </div>
                 

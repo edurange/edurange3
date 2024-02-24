@@ -84,9 +84,9 @@ def deleteUsers(users_to_delete):
     try:
         db_ses = db.session
         
-        clearedUsers = clearGroups(users_to_delete)
+        clearGroups(users_to_delete)
         deleted_users = []
-        for user_id in clearedUsers:
+        for user_id in users_to_delete:
             user = db_ses.query(Users).filter(Users.id == user_id).first()
             if user:
                 db_ses.delete(user)
