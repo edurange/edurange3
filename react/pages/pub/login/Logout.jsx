@@ -7,12 +7,12 @@ function Logout () {
     const { 
         userData_state, set_userData_state, 
         login_state, 
-        set_login_state ,
+        set_login_state , set_desiredNavMetas_state
 
     } = useContext(HomeRouter_context);
 
     if (!userData_state) {
-        return <h4>You are logged out.</h4>
+        return <h1>You are currently logged out.</h1>
     }
 
     async function sendLogoutRequest() {
@@ -23,6 +23,7 @@ function Logout () {
             if (responseData.message) {
                 set_userData_state();
                 set_login_state(false);
+                set_desiredNavMetas_state(['/logout','home'])
             sessionStorage.setItem('login', false);
             sessionStorage.setItem('loginExpiry', 0);
             sessionStorage.setItem('userData', '{}');
@@ -39,8 +40,8 @@ function Logout () {
 
     useEffect(() => {sendLogoutRequest();}, []);
 
-    if (login_state) {return (<h1>You are NOT logged out!</h1>)}
-    return (<h1>You have been logged out.</h1>);
+    if (login_state) {return (<h1>Logout not successful (login_state === true)!</h1>)}
+    return (<h1>You are currently logged out.</h1>);
 }
 
 export default Logout;

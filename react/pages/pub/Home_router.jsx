@@ -52,7 +52,6 @@ function Home_router() {
 
     if (!(desiredNavStub in navArrays[roleToUse])) {
       console.error('navStub not found in role navItemData as key');
-      console.log (desiredNavPath,' ', desiredNavStub);
       return;
     }
 

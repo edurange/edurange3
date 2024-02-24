@@ -82,22 +82,25 @@ def create_group():
     new_code = grc()
 
     group_obj = StudentGroups.create(name=group_name, owner_id=g.current_user_id, code=new_code)
-    # group_obj_dict = group_obj.to_dict()
 
     if (validatedJSON['should_generate']):
 
         newUsers_list = generateTestAccts(group_obj, validatedJSON['new_user_count'], new_code)
-        return_groupDict = addGroupUsers(group_obj, newUsers_list)
-        return_groupDict['users'] = newUsers_list
 
-        print("RETDICT: ",return_groupDict)
+        print("new users list",newUsers_list)
+
+        return_groupDict = addGroupUsers(group_obj, newUsers_list)
+        print("return group dict ",return_groupDict)
+
+
         return {
-            "message": f"userGroup {group_name} created and {len(newUsers_list)} test accts created",
-            'group_obj': return_groupDict,
+            "result": "success",
+            "group_obj": group_obj.to_dict(),
+            'new_users': return_groupDict,
         }
     return {
-            "message":f"userGroup {group_name} created", 
-            'group_obj':return_groupDict
+            "result": "success",
+            "group_obj": group_obj.to_dict(),
         }
 
 
@@ -106,13 +109,12 @@ def create_group():
 def get_instructor_data():
     instructor_only()
 
-    retObj = {
+    return_obj = {
         'groups': get_group_data(),
         'users': get_user_data(),
         'scenarios': get_scenario_data(),
     }
-        # 'instructor_data': get_instructorData()
-    return jsonify(retObj)
+    return jsonify(return_obj)
 
 
 @blueprint_instructor.route('/get_instr_content/<int:i>', methods=['GET']) # WIP
@@ -130,8 +132,6 @@ def get_content(i):
 
     meta = getScenarioMeta(current_scenario_id)
 
-    # if not credentialsJSON or not unique_name:
-    #     return jsonify({"error": f"scenario with id {i} is found, build failed"})
     
     SSH_connections = identify_state(unique_name, "Started")
     SSH_IP = ""
@@ -252,7 +252,7 @@ def scenario_interface():
 
     return (returnJSON)
 
-# UNTESTED / WIP ROUTES
+
 @blueprint_instructor.route("/delete_group", methods=['POST'])
 @jwt_and_csrf_required
 def delete_group():
@@ -286,28 +286,76 @@ def delete_group():
         })
 
 
-@blueprint_instructor.route("/delete_user", methods=['POST'])
+
+@blueprint_instructor.route("/delete_users", methods=['POST'])
 @jwt_and_csrf_required
-def delete_user():
+def delete_users():
     instructor_only()
 
     try:
-        requestJSON = request.json 
-        user_to_delete = requestJSON.get('user_to_delete')
+        requestJSON = request.json
+        users_to_delete = requestJSON.get('users_to_delete')
 
-        if not user_to_delete:
-            return jsonify({"message": "Missing required argument 'user_to_delete', delete aborted"}), 400
+        if not users_to_delete:
+            return jsonify({"message": "Missing required argument 'users_to_delete', delete aborted"}), 400
 
         db_ses = db.session
-        user = db_ses.query(Users).filter(Users.name == user_to_delete).first()
-        
-        if not user:
-            return jsonify({"message": f"Cannot delete user - does username {user_to_delete} exist?"}), 404
+        deleted_users = []
+        for user_id in users_to_delete:
+            user = db_ses.query(Users).filter(Users.id == user_id).first()
+            if user:
+                db_ses.delete(user)
+                deleted_users.append(user_id)
+
+        db_ses.commit()
+        if deleted_users:
+            return jsonify({
+                'deleted_users': deleted_users,
+                "result": 'success'})
         else:
-            db_ses.delete(user)
-            db_ses.commit()
-            return jsonify({"message": f"Successfully deleted user {user_to_delete}"})
+            return jsonify({"message": "No users were deleted. Check if the provided IDs exist."}), 404
 
     except SQLAlchemyError as e:
         db_ses.rollback()
         return jsonify({"message": f"An error occurred: {str(e)}"}), 500
+
+@blueprint_instructor.route("/assign_group_users", methods=['POST'])
+@jwt_and_csrf_required
+def assign_group_users():
+    instructor_only()
+
+    requestJSON = request.json
+
+    group_id = requestJSON['group_id']
+    userDict_list = requestJSON['users_to_assign']
+
+    group_obj = StudentGroups.query.get(group_id)
+    if not group_obj:
+        return jsonify({'result': 'error', 'message': 'Group not found'}), 404
+
+    assigned_user_ids = addGroupUsers(group_obj, userDict_list)
+
+    return jsonify({'result': 'success', 'assigned_user_ids': assigned_user_ids})
+
+
+@blueprint_instructor.route("/clear_groups", methods=['POST'])
+@jwt_and_csrf_required
+def clear_groups():
+    instructor_only()
+
+    requestJSON = request.json
+    users_to_clear = requestJSON['users_to_clear']
+
+    cleared_user_ids = []
+    for user_id in users_to_clear:
+        user = Users.query.get(user_id)
+        if user:
+            existing_relations = db.session.query(GroupUsers).filter_by(user_id=user_id).all()
+            for relation in existing_relations:
+                db.session.delete(relation)
+                cleared_user_ids.append(user_id)
+
+    db.session.commit()
+
+    cleared_user_ids = [int(user_id) for user_id in cleared_user_ids]
+    return jsonify({'result': 'success', 'cleared_user_ids': cleared_user_ids})

@@ -31,10 +31,6 @@ class StudentGroups(Edu3Mixin, SurrogatePK, Model):
     )
     hidden = Column(db.Boolean(), nullable=False, default=False)
     users = relationship("GroupUsers", backref="groups", cascade="all, delete-orphan")
-    # def to_dict(self):
-    #     """Return a dictionary representation of the StudentGroups instance."""
-    #     return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
-
 
 class GroupUsers(Edu3Mixin, SurrogatePK, Model):
     """Users belong to groups"""

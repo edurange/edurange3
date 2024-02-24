@@ -1,6 +1,7 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import './SSH_card.css';
 import Copy_button from '@components/Copy_button';
+import { HomeRouter_context } from '../../../../pub/Home_router';
 const zws = `\u200B`;
 
 function SSH_card({ guideContent }) {
@@ -9,10 +10,15 @@ function SSH_card({ guideContent }) {
 
     if ((!meta)) { return (<>Scenario not found</>); }; // GUARD
 
-    const SSH_key = `${guideContent.unique_scenario_name}_StartingLine`;
+    const { 
+        userData_state,
+      } = useContext(HomeRouter_context);
+
+    const saniname = userData_state?.username.replace(/-/g, '');
     const SSH_IP = guideContent.SSH_IP;
-    const SSH_username = guideContent.credentialsJSON.username;
-    const SSH_password = guideContent.credentialsJSON.password;
+    const SSH_username = guideContent.credentialsJSON?.[saniname]?.[0]?.username;
+    const SSH_password = guideContent.credentialsJSON?.[saniname]?.[0]?.password;
+    console.log ('creds?', SSH_username, SSH_password)
     const [SSH_ip, SSH_port_str] = SSH_IP.split(':');
 
     const sshCommand = `ssh ${SSH_username}@${SSH_ip} -p ${SSH_port_str}`;

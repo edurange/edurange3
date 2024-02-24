@@ -24,15 +24,17 @@ function SessionKeeper () {
         
         const userDataString = sessionStorage?.getItem('userData');
         const navMetasString = sessionStorage?.getItem('navMetas');
-        
+        const login_str = sessionStorage?.getItem('login');
+
         if ((!userDataString) || (!navMetasString)) { return <Login/>; };
         
         const userData = JSON.parse(userDataString);
         const navMetas = JSON.parse(navMetasString);
-        
+        const login = JSON.parse(login_str);
+
         set_desiredNavMetas_state(navMetas);
         set_userData_state(userData);
-        set_login_state(true);
+        set_login_state(login ?? false);
       };
       useEffect(() => {restoreSession();}, []);
   };

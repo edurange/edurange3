@@ -13,18 +13,27 @@ const zws = `\u200B`;
 
 
 function FootControls({ guideContent, updatePane, paneSide }) {
+
   
   const { userData_state } = useContext(HomeRouter_context);
   const meta = guideContent.scenario_meta;
-
+  
   if ((!meta)) { return (<>Scenario not found</>); }
   
+  console.log(guideContent);
+  console.log(guideContent.credentialsJSON);
+  console.log(userData_state.username.replace(/-/g, ''));
+  const tempName = userData_state.username.replace(/-/g, '')
+  const creds = guideContent.credentialsJSON[tempName]
+  console.log (creds)
   const SSH_IP = guideContent.SSH_IP
-  const SSH_username = guideContent.credentialsJSON.username;
-  const SSH_password = guideContent.credentialsJSON.password;
+  const SSH_username = creds[0].username;
+  const SSH_password = creds[0].password;
   const [SSH_ip, SSH_port_str] = SSH_IP.split(':');
 
   const sshCommand = `ssh ${SSH_username}@${SSH_ip} -p ${SSH_port_str}`;
+
+  console.log(sshCommand)
 
   if (!userData_state?.role) {return <>You must log in to continue.</>}
 

@@ -2,8 +2,8 @@
 import { scenarioShells } from '@modules/shells/scenarioType_shells';
 import axios from 'axios';
 import React, { useState, useContext } from 'react';
-import '../Instr_Dash.css';
-import { InstructorRouter_context } from '../../Instructor_router';
+import '../dashboard/Instr_Dash.css';
+import { InstructorRouter_context } from '../Instructor_router';
 
 function CreateScenario() {
   const [newScenType_state, set_newScenType_state] = useState('');
@@ -107,10 +107,10 @@ function CreateScenario() {
             );
           })}
         </select>
-        <input
-          className='create-input-fields'
+        <input 
+          className='create-input-fields col-xlarge'
           type="text"
-          placeholder="Enter a unique name"
+          placeholder="Enter unique scenario name"
           value={newScenName_state}
           onChange={handle_scenName_change}
         />

@@ -1,12 +1,16 @@
 import axios from 'axios';
 import React, { useState, useContext } from 'react';
-import '../Instr_Dash.css';
+import '../dashboard/Instr_Dash.css';
 import '@assets/css/tables.css';
-import { InstructorRouter_context } from '../../Instructor_router';
+import { InstructorRouter_context } from '../Instructor_router';
+
+
 
 function CreateGroup() {
   const [groupName_state, set_groupName_state] = useState('');
   const [testUsersBool_state, set_testUsersBool_state] = useState(false);
+  const [isButtonDisabled, setIsButtonDisabled] = useState(true);
+
   const [testUserCt_state, set_testUserCt_state] = useState(1);
   const { 
     groups_state, set_groups_state, 
@@ -31,7 +35,6 @@ function CreateGroup() {
       set_buttonDisabled_state(!groupName_state || !testUsersBool_state || !value);
     }
   };
-
   const handle_createGroup_submit = async (event) => {
     event.preventDefault();
     if (!groupName_state) { return; }
@@ -39,47 +42,38 @@ function CreateGroup() {
       alert('Group name length must be between 3 and 25');
       return;
     }
-
+  
     try {
       const response = await axios.post('/create_group', {
         group_name: groupName_state,
         should_generate: testUsersBool_state,
         new_user_count: testUserCt_state
       });
-    
-      if (response.data.group_obj) {
-
+  
+      if (response.data.result === "success") {
+        const newGroup = response.data.group_obj;
+  
         set_groups_state(prevState => {
-          // Check if the group is already in the state, if so, update it, otherwise, add it
-          const groupExists = prevState.some(group => group.id === response.data.group_obj.id);
+          const groupExists = prevState.some(group => group.id === newGroup.id);
           if (groupExists) {
-            return prevState.map(group => {
-              if (group.id === response.data.group_obj.id) {
-                // Update the group with the new users
-                return {
-                  ...group,
-                  users: response.data.group_obj.users
-                };
-              }
-              return group;
-            });
+            return prevState.map(group => group.id === newGroup.id ? newGroup : group);
           } else {
-            // Add the new group
-            return [...prevState, response.data.group_obj];
+            return [...prevState, newGroup];
           }
         });
-        set_buttonDisabled_state(true);
-        if (response.data.group_obj.users) {
-          set_tempUsers_state(response.data.group_obj.users);
+  
+        if (response.data.new_users) {
+          set_tempUsers_state(response.data.new_users);
         }
+  
+        set_groupName_state('');
+        set_buttonDisabled_state(true);
       }
-    
-      set_groupName_state('');
     } catch (error) {
       console.error('Error creating group:', error);
     }
-  }
-
+  };
+  
   return (
     <div className='create-frame'>
       CREATE GROUP
@@ -87,7 +81,7 @@ function CreateGroup() {
         <input
           type="text"
           className="create-group-input"
-          placeholder="Enter new group name"
+          placeholder="Enter unique group name"
           value={groupName_state}
           onChange={handle_newGroup_name_change}
         />

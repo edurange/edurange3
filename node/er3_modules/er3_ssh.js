@@ -39,12 +39,14 @@ const sshSocketServer = new WebSocketServer({
 sshSocketServer.on('connection', async (ssh_socket, request) => {
 
     const {username, user_role, user_id} = request.get_id();
-    if (!username) {return {error: 'username not found in validated jwt'}};
     
+    if (!username) {return {error: 'username not found in validated jwt'}};
+    const saniname = username.replace(/-/g, '');
+
     // DEV_ONLY
     console.log(
         `#  User connected to ssh pseudo-terminal w/ jwt id: `,
-        `\n#    username: ${username}`,
+        `\n#    username: ${saniname}`,
         `\n#    user_role: ${user_role}`,
         `\n#    user_id: ${user_id}`);
         
@@ -74,7 +76,7 @@ sshSocketServer.on('connection', async (ssh_socket, request) => {
                     bufferedData = "";
                 }
             }
-
+            console.log('printing data: ', data)
             sshClient.on('ready', () => {
                 console.log('SSH Client Ready');
 
@@ -112,9 +114,9 @@ sshSocketServer.on('connection', async (ssh_socket, request) => {
                     });
                 });
             }).connect({
-                host: data.SSH_host,
+                host: 'localhost',
                 port: data.SSH_port,
-                username: data.username,
+                username: saniname,
                 password: data.password,
             });
 

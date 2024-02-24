@@ -50,8 +50,10 @@ function Scenario_controller() {
 
   if ((!meta)) { return (<>Scenario not found</>); }; // GUARD
 
-  const SSH_username = guideContent_state.credentialsJSON.username;
-  const SSH_password = guideContent_state.credentialsJSON.password;
+  console.log ('get the creds right!', )
+  const saniname = userData_state?.username.replace(/-/g, '');
+  const SSH_username = guideContent_state.credentialsJSON?.[saniname]?.[0]?.username;
+  const SSH_password = guideContent_state.credentialsJSON?.[saniname]?.[0]?.password;
 
   const SSH_IP = guideContent_state.SSH_IP;
 

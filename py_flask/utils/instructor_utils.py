@@ -48,61 +48,25 @@ def addGroupUsers(group_obj, userDict_list):
 
     print("ADDGROUPING: ", group_obj, len(userDict_list))
 
-
-    # Ensure group_obj.users is initialized
-    if group_obj.users is None:
-        group_obj.users = []
+    assigned_user_ids = []
 
     for user_dict in userDict_list:
         user_id = user_dict['id']
-        existing_relation = db_ses.query(GroupUsers).filter_by(user_id=user_id, group_id=group_obj.id).first()
-        if existing_relation is None:
-            new_relation = GroupUsers(user_id=user_id, group_id=group_obj.id)
+        user = Users.query.get(user_id)
+        if user:
+            existing_relations = db_ses.query(GroupUsers).filter_by(user_id=user_id).all()
+            for relation in existing_relations:
+                db_ses.delete(relation)
+
+            new_relation = GroupUsers(user=user, group=group_obj, group_id=group_obj.id)
             db_ses.add(new_relation)
-            # Append the user dictionary to the group's users
-            group_obj.users.append(user_id)
+
+            assigned_user_ids.append(user_id)
 
     db_ses.commit()
 
-    group_obj_dict = group_obj.to_dict()
+    return assigned_user_ids
 
-    # Construct the group dictionary with user dictionaries
-    group_dict = {
-        'id': group_obj.id,
-        'name': group_obj.name,
-        'code': group_obj.code,
-        'hidden': group_obj.hidden,
-        'users': group_obj.users
-    }
-
-    return group_obj_dict
-
-# def addGroupUsers(group_obj, userDict_list):
-
-#     db_ses = db.session
-#     group_id = group_obj.id
-
-#     for user_dict in userDict_list:
-#         user_id = user_dict['id']
-
-#         if group_obj['users'] is None: group_obj['users'] = []
-
-#         existing_relation = db_ses.query(GroupUsers).filter_by(user_id=user_id, group_id=group_id).first()
-#         if existing_relation is None:
-#             new_relation = GroupUsers(user_id=user_id, group_id=group_id)
-#             db_ses.add(new_relation)
-#             group_obj['users'].append(new_relation.id)
-#     db_ses.commit()
-
-    
-#     return group_obj
-
-
-# - ASSIGN USERS/GROUPS TO SCENARIO
-def assignUserToGroup(user_id, group_id):
-    return 0
-def removeUserFromGroup(user_id, group_id):
-    return 0
 
 def NotifyCapture(description):
     Notification.create(detail=description)
@@ -111,8 +75,6 @@ def NotifyClear():
     notification = Notification.query.all()
     for i in notification:
         i.delete()
-
-    #   - CREATE USER INFO FOR SCENARIO (ALLOW FOR UPDATING IN CASE STUDENT ACCT CREATED AFTER SCENARIO)
 
 
 @jwt_and_csrf_required

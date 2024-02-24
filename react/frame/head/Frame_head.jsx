@@ -10,14 +10,15 @@ import { navArrays } from '../../modules/nav/navItemsData';
 
 function Frame_head({ navArrayToShow }) {
 
-    navArrayToShow = navArrayToShow ?? navArrays.logout.home.top
-
+    
     const {
         sideNav_isVisible_state, set_sideNav_isVisible_state,
         sideNav_isSmall_state, set_sideNav_isSmall_state,
-        desiredNavMetas_state, set_desiredNavMetas_state
+        desiredNavMetas_state, set_desiredNavMetas_state,
+        navArraysObj_state
     } = useContext(HomeRouter_context);
-
+    
+    navArrayToShow = navArraysObj_state?.top ?? navArrays.logout.home.top
     const someNav = navArrays.top_logout
 
     function toggle_sideNav_vis() {
@@ -64,7 +65,7 @@ function Frame_head({ navArrayToShow }) {
         <div className="er3-homehead">
 
             <div className="er3-homehead-left"><Hamburger /></div>
-            <div className='homehead-notifs-section'><Notifs_button /></div>
+            {/* <div className='homehead-notifs-section'><Notifs_button /></div> #DEV_FIX */}
 
             <Frame_UserBox/>
 

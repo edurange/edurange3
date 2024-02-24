@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useContext, useState } from 'react';
-import { InstructorRouter_context } from '../../Instructor_router';
+import { InstructorRouter_context } from '../Instructor_router';
 import '@assets/css/tables.css'
 import { HomeRouter_context } from '@pub/Home_router';
 
@@ -103,23 +103,30 @@ function Instr_ScenTable() {
         set_desiredNavMetas_state([`/instructor/scenarios/${scenario.id}/0`, 'dash']);
     };
 
+    const getGroupNameById = (groupId) => {
+        const group = groups_state.find(group => group.id === groupId);
+        return group ? group.name : 'none';
+    };
+
     return (
         <div className="table-frame">
             <div className="table-header">
                 <div className='table-cell-item col-xxsmall'>ID</div>
-                <div className='table-cell-item col-large'>Name</div>
-                <div className='table-cell-item col-xlarge'>Type</div>
+                <div className='table-cell-item col-large'>Scenario Name</div>
+                <div className='table-cell-item col-large'>Type</div>
+                <div className='table-cell-item col-medium'>St.Group</div>
                 <div className='table-cell-item col-medium'>Status</div>
-                <div className='table-cell-item col-xlarge control-panel'>CONTROL PANEL</div>
+                <div className='table-cell-item control-panel'>CONTROL PANEL</div>
             </div>
             {scenarios_state.map((scenario, index) => (
                 <div key={index + 2000} onClick={(event) => handleDetailClick(event, scenario)}>
                     <div className="table-row">
                         <div className='table-cell-item col-xxsmall'>{scenario.id}</div>
                         <div className='table-cell-item col-large'>{scenario.name}</div>
-                        <div className='table-cell-item col-xlarge'>{scenario.description}</div>
+                        <div className='table-cell-item col-large'>{scenario.description}</div>
+                        <div className='table-cell-item col-medium'>{getGroupNameById(scenario.membership)}</div>
                         <div className='table-cell-item col-medium'>{statusSwitch[scenario.status]}</div>
-                        <div className='table-cell-item col-xlarge control-panel'>
+                        <div className='table-cell-item control-panel'>
                             <button className='row-btns green-btn' onClick={(event) => handleStartClick(event, scenario)}>START</button>
                             <button className='row-btns grey-btn' onClick={(event) => handleStopClick(event, scenario)}>STOP</button>
                             <button className='row-btns red-btn' onClick={(event) => handleDestroyClick(event, scenario)}>DESTROY</button>

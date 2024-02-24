@@ -7,6 +7,12 @@
     width: 100%;
     height: auto;
     box-sizing: border-box;
+    cursor: pointer;
+    border-radius: 4px;
+}
+.placard-frame:hover{
+    background-color: rgba(255, 255, 255, 0.196);
+    color: aqua;
 }
 .placard-text{
     display: flex;

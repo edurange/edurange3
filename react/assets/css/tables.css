@@ -4,6 +4,8 @@
     border-radius: 8px;
     box-sizing: border-box;
     cursor: default;
+    display: flex;
+    flex-direction: column;
 }
 
 .table-header {
@@ -17,19 +19,19 @@
     justify-content: flex-start;
     display: flex;
     align-items: center;
+    width: 100%;
 }
 .table-row {
     text-align: left;
     white-space: nowrap;
     display: flex;
     grid-auto-flow: column;
+    width: 100%;
 }
 .table-cell-item{
     contain: content;
     width: 100%;
-    /* overflow-x: auto; */
     padding: 6px 10px;
-
     cursor: pointer;
     border-right: 1px solid rgba(218, 165, 32, 0.247);
     border-top: 1px solid rgba(218, 165, 32, 0.247);
@@ -37,7 +39,6 @@
     justify-content: center;
     align-items: center;
     display: flex;
-    gap: 4px;
 }
 .table-userlist {
     display: flex;
@@ -55,45 +56,7 @@
     background-color: rgba(250, 255, 173, 0.089);
     border-radius: 8px;
 }
-.col-xxsmall{
-    max-width: 35px;
-    min-width: 35px;
-}
-.col-xsmall{
-    max-width: 30px;
-    min-width: 30px;
-}
-.col-small{
-    max-width: 60px;
-    min-width: 60px;
-}
-.col-medium{
-    max-width: 100px;
-    min-width: 100px;
-}
-.col-large{
-    max-width: 130px;
-    min-width: 130px;
-}
-.col-xlarge {
-    max-width: 150px;
-    min-width: 160px;
-}
-.status-standby{
-    color: orange;
-}
-.status-success{
-    color: var(--success);
-}
-.status-neutral{
-    color: var(--green-light);
-}
-.status-failure{
-    color: red;
-}
-.status-disabled{
-    color: grey;
-}
+
 .row-btns{
     display: flex;
     gap: 2px;
@@ -106,6 +69,10 @@
     align-items: center;
     display: flex;
     min-height: 18px;
+    font-size: x-small;
+    font-weight: 600;
+    letter-spacing: .8px ;
+    min-width: 60px;
 }
 .red-btn{
     display: flex;
@@ -147,15 +114,11 @@
     border: 1px solid rgb(251, 251, 251);
 }
 
-/* .row-btns:hover{
-    background: rgb(85, 85, 85);
-    border-radius: 4px;
-    color: white;
-} */
 .control-panel{
     display: flex;
     width: 100%;
-    max-width: none;
+    min-width: 220px;
+    max-width: 220px;
     border-right: none;
     align-items: center;
     justify-content: center;
@@ -163,4 +126,7 @@
     border-bottom: 1px solid black;
     cursor: default;
     gap: 2px;
+    align-self: flex-end;
+    justify-self: flex-end;
 }
+

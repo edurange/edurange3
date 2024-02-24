@@ -173,7 +173,14 @@ body, html {
 .pucs-table-cell{
     padding: 5px 15px;
 }
-
+.highlighter-green{
+    color: var(--green-strong);
+    font-weight: 800;
+}
+.highlighter-orange{
+    color: var(--orange-extreme);
+    font-weight: 800;
+}
 #edurange-appframe {
     background-color: rgb(7, 0, 17);
     color: var(--blue-muted);
@@ -226,4 +233,76 @@ body, html {
     left: 1.6dvh;
     right: 1.6dvh;
     bottom: 3.5dvh;
+}
+
+.col-xxsmall{
+    max-width: 35px;
+    width: 100%;
+    /* min-width: 35px; */
+}
+.col-xsmall{
+    min-width: 30px;
+    width: 100%;
+    /* min-width: 30px; */
+}
+.col-small{
+    min-width: 60px;
+    width: 100%;
+    /* min-width: 60px; */
+}
+.col-medium{
+    min-width: 100px;
+    width: 100%;
+    /* min-width: 100px; */
+}
+.col-large{
+    min-width: 130px;
+    width: 100%;
+    /* min-width: 130px; */
+}
+.col-xlarge {
+    min-width: 160px;
+    width: 100%;
+    /* min-width: 160px; */
+}
+.col-xxlarge {
+    min-width: 200px;
+    width: 100%;;
+    /* min-width: 200px; */
+}
+.status-standby{
+    color: orange;
+}
+.status-success{
+    color: var(--success);
+}
+.status-neutral{
+    color: var(--green-light);
+}
+.status-failure{
+    color: red;
+}
+.status-disabled{
+    color: grey;
+}
+.gap-xxsmall{
+    gap: 2px;
+}
+.gap-xsmall{
+    gap: 4px;
+}
+.gap-small{
+    gap: 6px;
+}
+.gap-medium{
+    gap: 8px;
+}
+.gap-large{
+    gap: 10px;
+}
+.gap-xlarge{
+    gap: 12px;
+}
+.gap-xxlarge{
+    gap: 14px;
 }

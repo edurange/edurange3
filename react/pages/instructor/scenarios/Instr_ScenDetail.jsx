@@ -4,12 +4,11 @@ import { useParams } from 'react-router-dom';
 
 import "@frame/frame.css";
 import './Instr_ScenDetail.css';
-import InfoPane from '../../../student/scenarios/panes/info/InfoPane';
-import SSH_web from '../../../student/scenarios/panes/ssh/SSH_web';
-import { HomeRouter_context } from '../../../pub/Home_router';
-import Chat_Instructor from '../../chat/Instr_Chat';
-import GuidePane from '../../../student/scenarios/panes/guide/GuidePane';
-import FootControls from '../../../student/scenarios/controls/FootControls';
+import InfoPane from '../../student/scenarios/panes/info/InfoPane';
+import SSH_web from '../../student/scenarios/panes/ssh/SSH_web';
+import { HomeRouter_context } from '../../pub/Home_router';
+import Chat_Instructor from '../chat/Instr_Chat';
+import GuidePane from '../../student/scenarios/panes/guide/GuidePane';
 
 function Instr_ScenDetail() {
   
@@ -48,8 +47,9 @@ function Instr_ScenDetail() {
 
 
   if ((!meta)) { return (<>Scenario not found</>); }; // GUARD
-  if ((!guideContent)) { return (<>Scenario not found</>); }; // GUARD
+  if ((!guideContent_state)) { return (<>Scenario not found</>); }; // GUARD
 
+  console.log(guideContent_state?.credentialsJSON?.username)
   const SSH_username = guideContent_state.credentialsJSON.username;
   const SSH_password = guideContent_state.credentialsJSON.password;
 
@@ -86,20 +86,20 @@ function Instr_ScenDetail() {
         <div className='scenario-frame-carpet'>
           <div className="scenario-leftpane-frame" style={{ minWidth: leftWidth, maxWidth: leftWidth }}>
             {leftPaneToShow}
-            <FootControls 
+            {/* <FootControls 
               guideContent={guideContent_state} 
               updatePane={set_leftPaneName_state}
               paneSide={"left"}
-            />
+            /> */}
           </div>
 
           <div className='scenario-rightpane-frame' style={{ minWidth: rightWidth, maxWidth: rightWidth, left: rightOffset }}>
             {rightPaneToShow}
-            <FootControls  
+            {/* <FootControls  
               guideContent={guideContent_state} 
               updatePane={set_rightPaneName_state}
               paneSide={"right"}
-            />
+            /> */}
           </div>
         </div>
       </div>

@@ -20,9 +20,10 @@ function Login() {
                 }
             );
             const userData = response.data;
+            
+            console.log('login userdata: ',userData)
 
             if (userData) {
-                console.log(userData)
                 set_userData_state(userData);
                 set_login_state(true);
                 const newExpiry = Date.now() + loginExpiry;
@@ -31,10 +32,10 @@ function Login() {
                 sessionStorage.setItem('loginExpiry', newExpiry);
                 if ((userData?.role === 'instructor') || (userData?.role === 'admin')) {
                     
-                    set_desiredNavMetas_state(['/instructor/', 'dash']);
+                    set_desiredNavMetas_state(['/instructor', 'dash']);
                 }
                 else { 
-                    set_desiredNavMetas_state(['/scenarios/', 'dash']); }
+                    set_desiredNavMetas_state(['/scenarios', 'dash']); }
             } else {
                 const errData = response.data.error;
                 console.log('Login failure.');
