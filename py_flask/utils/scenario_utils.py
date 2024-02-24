@@ -118,7 +118,7 @@ def identify_state(name, state):
     c_names = []
     name = "".join(e for e in name if e.isalnum())
     if os.path.isdir(os.path.join("./scenarios/tmp/", name)):
-        # print ("PATH TEST ",os.path.join("./scenarios/tmp/", name)) #DEV_ONLY (this seems to show correct relative path)
+
         try:
             state_file = open("./scenarios/tmp/" + name + "/terraform.tfstate", "r")
             data = json.load(state_file)

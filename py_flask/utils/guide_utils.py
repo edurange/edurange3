@@ -111,8 +111,6 @@ def evaluateResponse(user_id, scenario_id, question_num, student_response):
 
     responseData = []
 
-    print("evaluateResponse says student_response: ", student_response)
-
     for i in question['Answers']:
 
         correctResponse = str(i['Value'])

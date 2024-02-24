@@ -1,9 +1,8 @@
-
-import { scenarioShells } from '@modules/shells/scenarioType_shells';
 import axios from 'axios';
 import React, { useState, useContext } from 'react';
-import '../dashboard/Instr_Dash.css';
+import { scenarioShells } from '@modules/shells/scenarioType_shells';
 import { InstructorRouter_context } from '../Instructor_router';
+import '../dashboard/Instr_Dash.css';
 
 function CreateScenario() {
   const [newScenType_state, set_newScenType_state] = useState('');

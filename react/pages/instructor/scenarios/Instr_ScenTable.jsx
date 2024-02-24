@@ -79,6 +79,7 @@ function Instr_ScenTable() {
         }
     };
     async function handleDestroyClick(event, scenario) {
+        event.stopPropagation();
         const updatedScenariosDestroying = scenarios_state.map(s => {
             if (s.id === scenario.id) {
                 return { ...s, status: 8 }; 

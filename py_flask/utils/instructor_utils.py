@@ -22,8 +22,8 @@ path_to_key = os.path.dirname(os.path.abspath(__file__))
 
 # - INSTRUCTOR: GENERATE GENERIC USER ACCTS FOR EXISTING GROUP
 def generateTestAccts(group_db_obj, new_user_count, group_code):
-    # group_db_obj is pre-validated direct sqlalchemy db object, not dict
 
+    # group_db_obj is pre-validated direct sqlalchemy db object, not dict
     group_obj_dict = group_db_obj.to_dict()
 
     generatedUsers = []
@@ -45,8 +45,6 @@ def generateTestAccts(group_db_obj, new_user_count, group_code):
 
 def addGroupUsers(group_obj, userDict_list):
     db_ses = db.session
-
-    print("ADDGROUPING: ", group_obj, len(userDict_list))
 
     assigned_user_ids = []
 
@@ -145,8 +143,6 @@ def scenario_start(scenario_id):
     if ( scenario_id is None ):
         print('missing START scenario_id arg, aborting')
         abort(418)
-
-    print(f'Attempting to START scenario {scenario_id}: ')
     return_obj = start_scenario_task.delay(scenario_id).get(timeout=None)
 
     return (return_obj)
@@ -156,8 +152,6 @@ def scenario_stop(scenario_id):
     if ( scenario_id is None ):
         print('missing STOP scenario_id arg, aborting')
         abort(418)
-
-    print(f'Attempting to STOP scenario {scenario_id}: ')
     return_obj = stop_scenario_task(scenario_id)
 
     return (return_obj)
@@ -167,7 +161,6 @@ def scenario_update(scenario_id):
     if ( scenario_id is None ):
         print('missing UPDATE scenario_id arg, aborting')
         abort(418)
-
     return_obj = update_scenario_task.delay(scenario_id).get(timeout=None)
 
     return (return_obj)
@@ -177,8 +170,6 @@ def scenario_destroy(scenario_id):
     if ( scenario_id is None ):
         print('missing DESTROY scenario_id arg, aborting')
         abort(418)
-
-    print(f'Attempting to DESTROY scenario {scenario_id}: ')
     return_obj = destroy_scenario_task.delay(scenario_id).get(timeout=None)
     return (return_obj)
 

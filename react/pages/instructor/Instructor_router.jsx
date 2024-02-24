@@ -8,9 +8,7 @@ import Instr_Groups from './groups/Instr_Groups';
 import Group_detail from './groups/Group_detail';
 import Frame_side from '../../frame/sidenav/Frame_side';
 import Instr_Scenarios from './scenarios/Instr_Scenarios';
-import Instr_ScenDetail from './scenarios/Instr_ScenDetail';
 import Instr_Students from './users/Instr_Students';
-import Instr_ScenTable from './scenarios/Instr_ScenTable';
 
 export const InstructorRouter_context = React.createContext();
 
@@ -27,7 +25,7 @@ function Instructor_router() {
         try {
             const response = await axios.get("/get_instructor_data");
             const responseData = response.data;
-            console.log('respy:', responseData);
+            console.log('Loading Instructor Data:', responseData);
             set_users_state(responseData?.users);
             set_groups_state(responseData?.groups);
             set_scenarios_state(responseData?.scenarios);

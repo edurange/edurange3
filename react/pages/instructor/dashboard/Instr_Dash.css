@@ -74,10 +74,8 @@
     width: 100%;
     justify-content: center;
     align-items: center;
-    /* height: 26px; */
-    /* width: 60px; */
-    /* max-width: 60px; */
     font-size: small;
+    cursor: pointer;
 }
 .create-dropdown{
     display: flex;
@@ -89,8 +87,6 @@
     justify-content: center;
     align-items: center;
     height: 100%;
-    /* width: 60px; */
-    /* max-width: 60px; */
     cursor: default;
     font-size: 11px;
 }
@@ -134,6 +130,7 @@
     border: 1px solid rgba(218, 165, 32, 0.471);
     border-radius: 8px;
     padding: 5px;
+    background-color: rgba(144, 2, 2, 0.114);
 }
 .create-row{
     display: flex;

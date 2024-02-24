@@ -68,14 +68,12 @@ def login_edurange3():
 @blueprint_public.route("/register", methods=["POST"])
 def registration():
     
-    print("PRINT REQUEST JSON: ",request.json)
     validation_schema = RegistrationSchema()  # instantiate validation schema
     validated_data = validation_schema.load(request.json) # validate registration. reject if bad.
     
     existing_db_user = Users.query.filter_by(username=validated_data["username"]).first()
     
     if existing_db_user is None:
-        print("existing db user was not found, trying to create with: ", validated_data)
-        register_user(validated_data) # register user in the database
+        register_user(validated_data)
         return jsonify({"response":"account successfully registered"})
     else: return jsonify({"response":"user already exists. account NOT registered"})

@@ -1,12 +1,8 @@
 
-import React, { useContext } from 'react';
-import axios from 'axios';
-
-import '@assets/css/tables.css';
-import { InstructorRouter_context } from '../Instructor_router';
-import Copy_button_small from '../../../components/Copy_button_small';
+import React from 'react';
 import Instr_ScenTable from './Instr_ScenTable';
 import CreateScenario from './CreateScenario';
+import '@assets/css/tables.css';
 
 function Instr_Scenarios() {
 

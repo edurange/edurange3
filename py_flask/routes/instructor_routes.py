@@ -86,17 +86,12 @@ def create_group():
     if (validatedJSON['should_generate']):
 
         newUsers_list = generateTestAccts(group_obj, validatedJSON['new_user_count'], new_code)
-
-        print("new users list",newUsers_list)
-
         return_groupDict = addGroupUsers(group_obj, newUsers_list)
-        print("return group dict ",return_groupDict)
-
 
         return {
             "result": "success",
             "group_obj": group_obj.to_dict(),
-            'new_users': return_groupDict,
+            'new_users': newUsers_list,
         }
     return {
             "result": "success",
@@ -166,12 +161,10 @@ def scenario_interface():
         return jsonify({'message':'wrong method given'}), 418
 
     def list_scenarios(requestJSON):
-        print("Performing LIST method")
         scenario_list = list_all_scenarios(requestJSON)
         return scenario_list
 
     def create_scenario(requestJSON):   
-        print("Performing CREATE method")
         if ("type" not in requestJSON or "name" not in requestJSON):
             return jsonify({'message':'missing type or name arg'}), 418
         scenario_type = requestJSON["type"]
@@ -179,7 +172,6 @@ def scenario_interface():
         scenario_group_name = requestJSON["group_name"]
         scenario_users = scenario_create(scenario_type, scenario_name, scenario_group_name)
         if (scenario_users != None):
-            print("CREATE method success")
             return scenario_users
         else: 
             print ("Scenario CREATE failed")
@@ -187,52 +179,44 @@ def scenario_interface():
 
 
     def start_scenario(requestJSON):
-        print("Performing START method")
         if ("scenario_id" not in requestJSON):
             return jsonify({'message':'missing scenario_id'}), 418
         scenario_id = requestJSON["scenario_id"]
         returnObj = scenario_start(scenario_id)
         if (returnObj != None):
-            print("START method success")
             return returnObj
         else: 
             print ("Scenario START failed")
             return None
         
     def stop_scenario(requestJSON):
-        print("Performing STOP method")
         if ("scenario_id" not in requestJSON):
             return jsonify({'message':'missing scenario_id'}), 418
         scenario_id = requestJSON["scenario_id"]
         returnObj = scenario_stop(scenario_id)
         if (returnObj != None):
-            print("STOP method success")
             return returnObj
         else: 
             print ("Scenario STOP failed")
             return None
 
     def update_scenario(requestJSON):
-        print("Performing UPDATE method")
         if ("scenario_id" not in requestJSON):
             return jsonify({'message':'missing scenario_id'}), 418
         scenario_id = requestJSON["scenario_id"]
         returnObj = scenario_update(scenario_id)
         if (returnObj != None):
-            print("UPDATE method success")
             return returnObj
         else: 
             print ("Scenario UPDATE failed")
             return None
 
     def destroy_scenario(requestJSON):
-        print("Performing DESTROY method")
         if ("scenario_id" not in requestJSON):
             return jsonify({'message':'missing scenario_id'}), 418
         scenario_id = requestJSON["scenario_id"]
         returnObj = scenario_destroy(scenario_id)
         if (returnObj != None):
-            print("DESTROY method success")
             return returnObj
         else: 
             print ("Scenario DESTROY failed")
@@ -259,10 +243,7 @@ def delete_group():
     instructor_only()
     
     db_ses = db.session
-
     group_name = request.json.get('group_name')
-
-
     student_group = db_ses.query(StudentGroups).filter(StudentGroups.name == group_name).first()
     group_id = student_group.id
     group_scenarios = db_ses.query(ScenarioGroups).filter(ScenarioGroups.group_id == group_id).first()
@@ -284,7 +265,6 @@ def delete_group():
         "message":"Successfully deleted group",
         "group_name": group_name
         })
-
 
 
 @blueprint_instructor.route("/delete_users", methods=['POST'])

@@ -60,7 +60,7 @@ function Frame_head({ navArrayToShow }) {
 
         );
     };
-    // return <></>
+
     return (
         <div className="er3-homehead">
 

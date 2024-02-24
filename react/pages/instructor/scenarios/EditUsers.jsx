@@ -33,7 +33,6 @@ function EditUsers() {
   };
 
   const handleUpdateDatabase = async () => {
-    // Perform the update based on the selected action and group
     console.log('Updating database...');
   };
 
@@ -69,5 +68,4 @@ function EditUsers() {
     </div>
   );
 }
-
 export default EditUsers;
