@@ -46,7 +46,8 @@ function Instr_StudentsTable() {
         setSelectedGroupId(event.target.value);
     }
 
-    async function handleUpdateDatabase() {
+    async function handleUpdateDatabase(event) {
+        event.stopPropagation();
         switch (actionSelection) {
             case 'DeleteUser':
                 await deleteUsers();
@@ -78,44 +79,7 @@ function Instr_StudentsTable() {
             console.error('Error deleting users:', error);
         }
     }
-    async function assignToGroup() {
-        const usersToAssign = Object.keys(selectedUsers)
-            .filter((userId) => selectedUsers[userId])
-            .map((userId) => ({ id: parseInt(userId, 10) }));
-    
-        try {
-            const response = await axios.post('/assign_group_users', {
-                group_id: parseInt(selectedGroupId, 10),
-                users_to_assign: usersToAssign,
-            });
-    
-            if (response.data.result === 'success') {
-                console.log('Users assigned to group:', response.data.assigned_user_ids);
-    
-                const updatedUsersState = users_state.map(user => {
-                    if (response.data.assigned_user_ids.includes(user.id)) {
-                        return { ...user, membership: parseInt(selectedGroupId, 10) };
-                    }
-                    return user;
-                });
-                set_users_state(updatedUsersState);
-    
-                const updatedGroupsState = groups_state.map(group => {
-                    if (group.id === parseInt(selectedGroupId, 10)) {
 
-                        const updatedUserIds = new Set([...group.users, ...response.data.assigned_user_ids]);
-                        return { ...group, users: Array.from(updatedUserIds) };
-                    }
-                    return group;
-                });
-                set_groups_state(updatedGroupsState);
-            } else {
-                console.error('Error assigning users to group:', response.data.message);
-            }
-        } catch (error) {
-            console.error('Error assigning users to group:', error);
-        }
-    }
 
     async function assignToGroup() {
         const usersToAssignIds = Object.keys(selectedUsers)
@@ -141,13 +105,12 @@ function Instr_StudentsTable() {
     
                 const updatedGroupsState = groups_state.map(group => {
                     if (group.id === parseInt(selectedGroupId, 10)) {
-                        const assignedUserObjects = updatedUsersState.filter(user => response.data.assigned_user_ids.includes(user.id));
-                        const updatedUsers = [...group.users, ...assignedUserObjects];
-                        return { ...group, users: updatedUsers };
-                    } else {
-                        const updatedUsers = group.users.filter(user => !response.data.assigned_user_ids.includes(user.id));
+                        const currentGroupUserIds = new Set(group.users.map(user => user.id));
+                        response.data.assigned_user_ids.forEach(id => currentGroupUserIds.add(id));
+                        const updatedUsers = Array.from(currentGroupUserIds).map(id => updatedUsersState.find(user => user.id === id));
                         return { ...group, users: updatedUsers };
                     }
+                    return group;
                 });
                 set_groups_state(updatedGroupsState);
             } else {
@@ -157,6 +120,56 @@ function Instr_StudentsTable() {
             console.error('Error assigning users to group:', error);
         }
     }
+  
+    async function assignToGroup() {
+        const usersToAssignIds = Object.keys(selectedUsers)
+            .filter((userId) => selectedUsers[userId])
+            .map((userId) => parseInt(userId, 10));
+    
+        try {
+            const response = await axios.post('/assign_group_users', {
+                group_id: parseInt(selectedGroupId, 10),
+                users_to_assign: usersToAssignIds.map(id => ({ id })),
+            });
+    
+            if (response.data.result === 'success') {
+                console.log('Users assigned to group:', response.data.assigned_user_ids);
+    
+                const updatedUsersState = users_state.map(user => {
+                    if (response.data.assigned_user_ids.includes(user.id)) {
+                        return { ...user, membership: parseInt(selectedGroupId, 10) };
+                    }
+                    return user;
+                });
+                set_users_state(updatedUsersState);
+                const updatedGroupsState = groups_state.map(group => {
+
+                    // make Set obj of user IDs for the current group to prevent duplicates
+                    const groupUserIds = new Set(group.users.map(user => user.id));
+                
+                    if (group.id === parseInt(selectedGroupId, 10)) {
+                        // add IDs to new group
+                        response.data.assigned_user_ids.forEach(id => groupUserIds.add(id));
+                    } else {
+                        // del IDs from prev group
+                        response.data.assigned_user_ids.forEach(id => groupUserIds.delete(id));
+                    }
+                
+                    const updatedUsers = Array.from(groupUserIds).map(id => users_state.find(user => user.id === id));
+                
+                    return { ...group, users: updatedUsers };
+                });
+                set_groups_state(updatedGroupsState);
+                    
+
+            } else {
+                console.error('Error assigning users to group:', response.data.message);
+            }
+        } catch (error) {
+            console.error('Error assigning users to group:', error);
+        }
+    }
+    
     
     async function clearGroups() {
         const usersToClear = Object.keys(selectedUsers).filter((userId) => selectedUsers[userId]);
@@ -209,7 +222,9 @@ function Instr_StudentsTable() {
                     {actionSelection === 'AssignToGroup' && (
                         <select className="create-dropdown" value={selectedGroupId} onChange={handleGroupSelectionChange}>
                             <option value="">Select Group</option>
-                            {groups_state.map((group) => (
+                            {groups_state
+                            .filter(group => group.name !== 'ALL')
+                            .map((group) => (
                                 <option key={group.id} value={group.id}>
                                     {group.name}
                                 </option>
@@ -238,7 +253,7 @@ function Instr_StudentsTable() {
                     <div key={index + 2000} className="table-row">
                         <input
                             type="checkbox"
-                            checked={!!selectedUsers[user.id]}
+                            checked={selectedUsers[user.id] || false}
                             onChange={() => handleUserCheckboxChange(user.id)}
                         />
                         <div className="table-cell-item col-xxsmall">{user.id}</div>

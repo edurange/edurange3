@@ -12,7 +12,9 @@ function Instr_GroupTable() {
     const { groups_state, set_groups_state } = useContext(InstructorRouter_context);
     const { set_desiredNavMetas_state } = useContext(HomeRouter_context);
 
-    async function handle_deleteGroup_click(groupName) {
+    async function handle_deleteGroup_click(event, groupName) {
+        event.stopPropagation();
+
         try {
             const response = await axios.post(`/delete_group`, {
                 group_name: groupName
@@ -25,6 +27,7 @@ function Instr_GroupTable() {
         }
     }
     function handleDetailClick (event, group) {
+        event.stopPropagation();
         set_desiredNavMetas_state([`/instructor/groups/${group.id}`, 'dash']);
     };
 
@@ -52,7 +55,7 @@ function Instr_GroupTable() {
                                 <div className='table-cell-item col-medium gap-small'>{group.code} <Copy_button_small thingToCopy={group.code}/></div>
                                 <div className='table-cell-item col-medium table-userlist'>{group.users?.length ?? 0}</div>
                                 <div className='table-cell-item control-panel'>
-                                    <button className='row-btns red-btn' onClick={() => handle_deleteGroup_click(group.name)}>DELETE</button>
+                                    <button className='row-btns red-btn' onClick={(event) => handle_deleteGroup_click(event, group.name)}>DELETE</button>
                                 </div>
                             </div>
                         </div>
