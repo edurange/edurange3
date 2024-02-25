@@ -12,6 +12,7 @@ flaskPass="flaskpass"
 secretKey="not-so-secret"
 hostAddress="localhost"
 rootPass="change-me"
+curDir=$(pwd)
 
 
 # Add pip-executables to the path if they aren't already
@@ -22,9 +23,14 @@ echo -e "${GRN}Installing python3-pip, npm, redis-server,  unzip, postgresql, li
 
 sudo apt update
 sudo apt install -y python3-pip npm redis-server unzip wget postgresql libpq-dev
-pip3 install -r py-flask/config/requirements_prod.txt
+pip3 install -r py_flask/config/requirements_prod.txt
 
 npm install
+cd $curDir/node
+npm install
+cd $curDir/react
+npm install
+cd $curDir
 mkdir scenarios
 mkdir scenarios/tmp
 mkdir logs
@@ -104,13 +110,17 @@ done
 
 #exit
 
+# TODO: Copy an nginx template and replace network address values (domain)
+# Self signing a cert for developer installations
+
+
 if [ $# -eq 0 ];
 then
 	echo -e "${YLW}Please enter your database password:${NC}"
 	read dbpass
-	echo -e "${YLW}Please enter your database name:${NC}"
+	echo -e "${YLW}Please enter your database name ALL LOWERCASE:${NC}"
 	read dbname
-	echo -e "${YLW}Please enter your Flask (web interface) username:${NC}"
+	echo -e "${YLW}Please enter your Flask (web interface) username NO SYMBOLS:${NC}"
 	read flaskUser
 	echo -e "${YLW}Please enter your Flask (web interface) password:${NC}"
 	read flaskPass
@@ -119,8 +129,10 @@ then
 	# Generate secret string for cookie encryption
   # TODO: Replace JWT_SECRET_KEY as well
 	secretKey=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w ${1:-20} | head -n 1)
+  secretKeyJWT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w ${1:-20} | head -n 1)
 	cp ./.env.example ./.env
-	sed -i "s/DBNAME_REPLACEME/${dbname}/" .env
+	sed -i "s/DBNAME_REPLACEME/${dbname}/g" .env
+  sed -i "s/DIFFERENT_SECRETKEY/${secretKeyJWT}/" .env
 	sed -i "s/DB_PASS_REPLACEME/${dbpass}/" .env
 	sed -i "s/someUser/${flaskUser}/" .env
 	sed -i "s/somePass/${flaskPass}/" .env
@@ -128,6 +140,7 @@ then
 	sed -i "s/YOUR_URL_HERE/${hostAddress}/" .env
 	sed -i "s/someRootPass/${rootPass}/" .env
 
+# NOTE: This was for vagrant installations, investigate removing  
 elif [ $1 = "auto" ];
 then
 	cp ./.env.example ./.env
@@ -175,3 +188,4 @@ echo -e "${GRN}If the ${NC} flask ${GRN} or ${NC} celery ${GRN} commands are not
 echo -e "${NC}source ~/.bashrc ${GRN} or ${NC} export PATH=/home/$username/.local/bin:\$PATH ${NC}"
 
 sudo su $USER --login
+cd $curDir

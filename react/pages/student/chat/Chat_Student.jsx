@@ -5,7 +5,7 @@ import { HomeRouter_context } from '@pub/Home_router.jsx';
 
 // !important! use 'wss:' for production (reqs SSL certs) // DEV_ONLY
 
-const socketURL = "wss://er3.riparian.dev/chat"  // routed through nginx reverse proxy to port 5008
+const socketURL = "dev.local/chat"  // routed through nginx reverse proxy to port 5008
 
 export class ChatMessage {
     constructor(scenarioID, content) {
