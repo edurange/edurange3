@@ -1,4 +1,4 @@
-
+/*
 This is an example config for nginx reverse proxy.  
 You WILL need to use some form of reverse proxy 
 to use edurange3 out of the box.
@@ -22,7 +22,7 @@ This config example assumes you are using a subdomain,
 but you do not need to.  Just replace the url accordingly.
 
 Each one of these locations IS needed to use all the features.
-
+*/
 server {
     listen 443 ssl;
     server_name subdomain.myDomain.com;
