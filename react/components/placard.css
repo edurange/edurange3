@@ -14,6 +14,17 @@
     background-color: rgba(255, 255, 255, 0.196);
     color: aqua;
 }
+.placard-frame-static{
+    display: flex;
+    font-size: x-large;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: auto;
+    box-sizing: border-box;
+    cursor: default;
+    border-radius: 4px;
+}
 .placard-text{
     display: flex;
     font-size: x-large;

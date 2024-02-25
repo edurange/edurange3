@@ -6,6 +6,7 @@ import '@assets/css/tables.css';
 import { InstructorRouter_context } from '../Instructor_router';
 import Copy_button_small from '@components/Copy_button_small';
 import { HomeRouter_context } from '@pub/Home_router';
+import Copy_button_flex from '../../../components/Copy_button_flex';
 
 function Instr_GroupTable() {
 
@@ -52,7 +53,7 @@ function Instr_GroupTable() {
                             <div className="table-row">
                                 <div className='table-cell-item col-xxsmall'>{group.id}</div>
                                 <div className='table-cell-item col-xlarge'>{group.name}</div>
-                                <div className='table-cell-item col-medium gap-small'>{group.code} <Copy_button_small thingToCopy={group.code}/></div>
+                                <div className='table-cell-item col-medium gap-small nopad'><Copy_button_flex textLabel={group.code} thingToCopy={group.code}/></div>
                                 <div className='table-cell-item col-medium table-userlist'>{group.users?.length ?? 0}</div>
                                 <div className='table-cell-item control-panel'>
                                     <button className='row-btns red-btn' onClick={(event) => handle_deleteGroup_click(event, group.name)}>DELETE</button>

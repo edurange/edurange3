@@ -1,14 +1,13 @@
 import axios from 'axios';
-import React, { useContext, useState } from 'react';
+import React, { useContext } from 'react';
 import { InstructorRouter_context } from '../Instructor_router';
-import '@assets/css/tables.css'
 import { HomeRouter_context } from '@pub/Home_router';
+import '@assets/css/tables.css'
 
 function Instr_ScenTable() {
 
     const { 
-        groups_state, 
-        set_scenarioDetail_state, 
+        groups_state,
         scenarios_state, set_scenarios_state
     } = useContext(InstructorRouter_context);
     const { set_desiredNavMetas_state } = useContext(HomeRouter_context);
@@ -101,7 +100,7 @@ function Instr_ScenTable() {
     };
   
     function handleDetailClick (event, scenario) {
-        set_desiredNavMetas_state([`/instructor/scenarios/${scenario.id}/0`, 'dash']);
+        set_desiredNavMetas_state([`/instructor/scenarios/${scenario.id}`, 'dash']);
     };
 
     const getGroupNameById = (groupId) => {

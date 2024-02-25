@@ -107,7 +107,7 @@ const instructor = {
     navStub: 'dash'
 };
 const studentGroups = {
-    title: "Student Groups",
+    title: "Groups",
     icon: edurange_icons.userGroup,
     path: `/instructor/groups`,
     navStub: 'dash'
@@ -154,7 +154,7 @@ export const navArrays = {
             top: [scenarios, logout],
             side: [scenarios, logout]
         },
-        
+
     },
 
     instructor: {
@@ -164,7 +164,7 @@ export const navArrays = {
         },
         dash: {
             top: [instructor, logout],
-            side: [instructor, students, studentGroups, instr_scenarios]
+            side: [instructor, studentGroups, instr_scenarios, students]
         },
         account: {
             top: [instructor, logout],
@@ -172,19 +172,19 @@ export const navArrays = {
         },
         scenarios: {
             top: [instructor, logout],
-            side: [instructor, students, studentGroups, instr_scenarios]
+            side: [instructor, studentGroups, instr_scenarios, students]
         },
         students: {
             top: [instructor, logout],
-            side: [instructor, students, studentGroups, instr_scenarios]
+            side: [instructor, studentGroups, instr_scenarios, students]
         },
         student_groups: {
             top: [instructor, logout],
-            side: [instructor, students, studentGroups, instr_scenarios]
+            side: [instructor, studentGroups, instr_scenarios, students]
         },
         scenario_groups: {
             top: [instructor, logout],
-            side: [instructor, students, studentGroups, instr_scenarios]
+            side: [instructor, studentGroups, instr_scenarios, students]
         },
     },
 
@@ -195,7 +195,8 @@ export const navArrays = {
         },
         dash: {
             top: [instructor, logout],
-            side: [instructor, students, studentGroups, instr_scenarios]
+            side: [instructor, studentGroups, instr_scenarios, students]
+
         },
         account: {
             top: [instructor, logout],
@@ -203,19 +204,23 @@ export const navArrays = {
         },
         scenarios: {
             top: [instructor, logout],
-            side: [instructor, students, studentGroups, instr_scenarios]
+            side: [instructor, studentGroups, instr_scenarios, students]
+
         },
         students: {
             top: [instructor, logout],
-            side: [instructor, students, studentGroups, instr_scenarios]
+            side: [instructor, studentGroups, instr_scenarios, students]
+
         },
         student_groups: {
             top: [instructor, logout],
-            side: [instructor, students, studentGroups, instr_scenarios]
+            side: [instructor, studentGroups, instr_scenarios, students]
+
         },
         scenario_groups: {
             top: [instructor, logout],
-            side: [instructor, students, studentGroups, instr_scenarios]
+            side: [instructor, studentGroups, instr_scenarios, students]
+
         },
     },
 };

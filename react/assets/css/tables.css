@@ -27,18 +27,32 @@
     display: flex;
     grid-auto-flow: column;
     width: 100%;
+    align-items: center;
+    height: 100%;
+    display: flex;
 }
 .table-cell-item{
-    contain: content;
-    width: 100%;
-    padding: 6px 10px;
-    cursor: pointer;
+    display: flex;
+    width: 100%;    
+    min-height: 28px;
+    max-height: 28px;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
     border-right: 1px solid rgba(218, 165, 32, 0.247);
     border-top: 1px solid rgba(218, 165, 32, 0.247);
     box-sizing: border-box;
-    justify-content: center;
-    align-items: center;
-    display: flex;
+    contain: content;
+    font-size: .88em;
+    cursor: pointer;
+}
+.nopad{
+    padding: unset;
+}
+.table-cell-item:hover{
+    color: rgb(255, 209, 172);
+    background-color: rgba(110, 226, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.362);
 }
 .table-userlist {
     display: flex;
@@ -49,12 +63,8 @@
     display: flex;
     flex-direction: row;
 }
-.table-useritem:hover{
-    color: goldenrod;
-}
 .table-row:hover{
-    background-color: rgba(250, 255, 173, 0.089);
-    border-radius: 8px;
+    background-color: rgba(255, 227, 156, 0.127);
 }
 
 .row-btns{
@@ -63,7 +73,6 @@
     overflow: hidden;
     height: 100%;
     cursor: pointer;
-    /* max-width: 80px; */
     width: 100%;
     justify-content: center;
     align-items: center;
@@ -72,14 +81,13 @@
     font-size: x-small;
     font-weight: 600;
     letter-spacing: .8px ;
-    /* min-width: 60px; */
 }
 
 .control-panel{
     display: flex;
     width: 100%;
     min-width: 180px;
-    max-width: 220px;
+    max-width: 180px;
     border-right: none;
     align-items: center;
     justify-content: center;
@@ -90,4 +98,3 @@
     align-self: flex-end;
     justify-self: flex-end;
 }
-

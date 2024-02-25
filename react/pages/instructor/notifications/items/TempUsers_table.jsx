@@ -46,9 +46,12 @@ function TempUsers_table({ userList }) {
                     </div>
                 );
             })}
+            <div className='copyflex-fix'>
+
             <Copy_button_flex thingToCopy={userList.map((user) => {
                 return [user.username, user.password]
-            })} textLabel={'Copy All'} checkedLabel={'Copied!'} />
+            })} textLabel={'Copy All'} />
+            </div>
         </div>
     );
 }
