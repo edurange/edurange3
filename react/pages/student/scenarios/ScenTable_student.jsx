@@ -33,18 +33,18 @@ function ScenTable_student() {
     return (
         <div className="table-frame">
             <div className="table-header">
-                <div className='table-cell-item table-int' >ID</div>
-                <div className='table-cell-item col-small'>Name</div>
-                <div className='table-cell-item col-xlarge'>Type</div>
-                <div className='table-cell-item col-small'>Gr.Name</div>
+                <div className='table-cell-item highlightable-cell table-int' >ID</div>
+                <div className='table-cell-item highlightable-cell col-small'>Name</div>
+                <div className='table-cell-item highlightable-cell col-xlarge'>Type</div>
+                <div className='table-cell-item highlightable-cell col-small'>Gr.Name</div>
             </div>
             {scenarioList_state.slice(0).map((scenario, index) => (
                 <div key={nanoid(3)} onClick={() => handleNavClick(index)} >
                     <div className="table-row">
-                        <div className='table-cell-item table-int'>{scenario.scenario_id}</div>
-                        <div className='table-cell-item col-small'>{scenario.scenario_name}</div>
-                        <div className='table-cell-item col-xlarge'>{scenario.scenario_type}</div>
-                        <div className='table-cell-item col-small'>{scenario.group_name}</div>
+                        <div className='table-cell-item highlightable-cell table-int'>{scenario.scenario_id}</div>
+                        <div className='table-cell-item highlightable-cell col-small'>{scenario.scenario_name}</div>
+                        <div className='table-cell-item highlightable-cell col-xlarge'>{scenario.scenario_type}</div>
+                        <div className='table-cell-item highlightable-cell col-small'>{scenario.group_name}</div>
                     </div>
                 </div>
             ))}

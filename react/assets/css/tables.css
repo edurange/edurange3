@@ -15,7 +15,7 @@
     background-color: rgb(12, 20, 44);
     contain: content;
     border-radius: 8px 8px 0 0;
-    cursor: pointer;
+    cursor: default;
     justify-content: flex-start;
     display: flex;
     align-items: center;
@@ -31,6 +31,9 @@
     height: 100%;
     display: flex;
 }
+.cursor-default{
+    cursor: default;
+}
 .table-cell-item{
     display: flex;
     width: 100%;    
@@ -44,16 +47,38 @@
     box-sizing: border-box;
     contain: content;
     font-size: .88em;
+}
+.highlightable-cell{
     cursor: pointer;
+}
+.highlightable-cell:hover{
+    color: rgb(255, 209, 172);
+    background-color: rgba(110, 226, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.362);
+
+}
+.table-header-item{
+    display: flex;
+    width: 100%;    
+    min-height: 28px;
+    max-height: 28px;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+    border-right: 1px solid rgba(218, 165, 32, 0.247);
+    border-top: 1px solid rgba(218, 165, 32, 0.247);
+    box-sizing: border-box;
+    contain: content;
+    font-size: .88em;
 }
 .nopad{
     padding: unset;
 }
-.table-cell-item:hover{
+/* .table-cell-item:hover{
     color: rgb(255, 209, 172);
     background-color: rgba(110, 226, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.362);
-}
+} */
 .table-userlist {
     display: flex;
     flex-direction: row;

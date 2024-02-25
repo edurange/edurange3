@@ -111,20 +111,20 @@ function Instr_ScenTable() {
     return (
         <div className="table-frame">
             <div className="table-header">
-                <div className='table-cell-item col-xxsmall'>ID</div>
-                <div className='table-cell-item col-large'>Scenario Name</div>
-                <div className='table-cell-item col-large'>Type</div>
-                <div className='table-cell-item col-medium'>St.Group</div>
-                <div className='table-cell-item col-medium'>Status</div>
-                <div className='table-cell-item control-panel'>CONTROL PANEL</div>
+                <div className='table-header-item col-xxsmall'>ID</div>
+                <div className='table-header-item col-large'>Scenario Name</div>
+                <div className='table-header-item col-large'>Type</div>
+                <div className='table-header-item col-medium'>St.Group</div>
+                <div className='table-header-item col-medium'>Status</div>
+                <div className='table-header-item control-panel'>CONTROL PANEL</div>
             </div>
             {scenarios_state.map((scenario, index) => (
                 <div key={index + 2000} onClick={(event) => handleDetailClick(event, scenario)}>
                     <div className="table-row">
-                        <div className='table-cell-item col-xxsmall'>{scenario.id}</div>
-                        <div className='table-cell-item col-large'>{scenario.name}</div>
-                        <div className='table-cell-item col-large'>{scenario.description}</div>
-                        <div className='table-cell-item col-medium'>{getGroupNameById(scenario.membership)}</div>
+                        <div className='table-cell-item highlightable-cell col-xxsmall'>{scenario.id}</div>
+                        <div className='table-cell-item highlightable-cell col-large'>{scenario.name}</div>
+                        <div className='table-cell-item highlightable-cell col-large'>{scenario.description}</div>
+                        <div className='table-cell-item highlightable-cell col-medium'>{getGroupNameById(scenario.membership)}</div>
                         <div className='table-cell-item col-medium'>{statusSwitch[scenario.status]}</div>
                         <div className='table-cell-item control-panel'>
                             <button className='row-btns green-btn' onClick={(event) => handleStartClick(event, scenario)}>START</button>

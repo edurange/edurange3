@@ -38,11 +38,11 @@ function Instr_GroupTable() {
         <div className="table-frame">
 
             <div className="table-header">
-                <div className='table-cell-item col-xxsmall' >ID</div>
-                <div className='table-cell-item col-xlarge'>Group Name</div>
-                <div className='table-cell-item col-medium'>Code</div>
-                <div className='table-cell-item col-medium'>UserCt</div>
-                <div className='table-cell-item control-panel'>CONTROL PANEL</div>
+                <div className='table-header-item col-xxsmall' >ID</div>
+                <div className='table-header-item col-xlarge'>Group Name</div>
+                <div className='table-header-item col-medium'>Code</div>
+                <div className='table-header-item col-medium'>UserCt</div>
+                <div className='table-header-item control-panel'>CONTROL PANEL</div>
             </div>
             {
                 groups_state.length > 0 ? (
@@ -51,11 +51,11 @@ function Instr_GroupTable() {
                     .map((group, index) => (
                         <div key={index + 432} onClick={(event) => handleDetailClick(event, group)}>
                             <div className="table-row">
-                                <div className='table-cell-item col-xxsmall'>{group.id}</div>
-                                <div className='table-cell-item col-xlarge'>{group.name}</div>
-                                <div className='table-cell-item col-medium gap-small nopad'><Copy_button_flex textLabel={group.code} thingToCopy={group.code}/></div>
+                                <div className='table-cell-item highlightable-cell col-xxsmall'>{group.id}</div>
+                                <div className='table-cell-item highlightable-cell col-xlarge'>{group.name}</div>
+                                <div className='table-cell-item highlightable-cell col-medium gap-small nopad'><Copy_button_flex textLabel={group.code} thingToCopy={group.code}/></div>
                                 <div className='table-cell-item col-medium table-userlist'>{group.users?.length ?? 0}</div>
-                                <div className='table-cell-item control-panel'>
+                                <div className='table-cell-item highlightable-cell control-panel'>
                                     <button className='row-btns red-btn' onClick={(event) => handle_deleteGroup_click(event, group.name)}>DELETE</button>
                                 </div>
                             </div>

@@ -40,7 +40,7 @@ function Logout () {
 
     useEffect(() => {sendLogoutRequest();}, []);
 
-    if (login_state) {return (<h1>Logout not successful (login_state === true)!</h1>)}
+    if (login_state) {return (<h1>Logout not successful!</h1>)}
     return (<h1>You are currently logged out.</h1>);
 }
 

@@ -9,6 +9,8 @@ import Group_detail from './groups/Group_detail';
 import Frame_side from '../../frame/sidenav/Frame_side';
 import Instr_Scenarios from './scenarios/Instr_Scenarios';
 import Instr_Students from './users/Instr_Students';
+import Instr_ScenDetail from './scenarios/Instr_ScenDetail';
+import Instr_UserDetail from './users/Instr_UserDetail';
 
 export const InstructorRouter_context = React.createContext();
 
@@ -57,13 +59,12 @@ function Instructor_router() {
                     <Routes>
                         <Route path="/*" element={<Instr_Dash />} />
                         <Route path="/scenarios/*" element={<Instr_Scenarios />} />
-                        <Route path="/scenarios/:scenarioID" element={<Instr_SetMaster />} />
-                        <Route path="/scenarios/:scenarioID/:pageID" element={<Instr_SetMaster />} />
+                        <Route path="/scenarios/:scenarioID" element={<Instr_ScenDetail />} />
                         <Route path="/scenarios/:scenarioID/chat" element={<Chat_Instructor />} />
                         <Route path="/groups/*" element={<Instr_Groups />} />
                         <Route path="/groups/:groupID/*" element={<Group_detail />} />
                         <Route path="/students/*" element={<Instr_Students />} />
-                        <Route path="/students/:studentID/*" element={<Instr_SetMaster />} />
+                        <Route path="/students/:studentID/*" element={<Instr_UserDetail />} />
                     </Routes>
 
                 </InstructorRouter_context.Provider>

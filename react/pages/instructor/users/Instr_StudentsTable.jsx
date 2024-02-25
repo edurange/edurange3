@@ -255,18 +255,18 @@ function Instr_StudentsTable() {
             </div>
             <div className="table-frame">
                 <div className="table-header">
-                    <div onClick={handleSelectAllUsers} className="table-cell-item col-xxsmall">
+                    <div onClick={handleSelectAllUsers} className="table-cell-item highlightable-cell col-xxsmall">
                         ID
                         <input type="checkbox" checked={areAllUsersSelected} readOnly />
                     </div>
-                    <div className="table-cell-item col-large">Username</div>
-                    <div className="table-cell-item col-large">Group</div>
-                    <div className="table-cell-item col-small">Cmds</div>
-                    <div className="table-cell-item col-small">Chats</div>
+                    <div className="table-header-item col-large">Username</div>
+                    <div className="table-header-item col-large">Group</div>
+                    <div className="table-cell-item highlightable-cell col-small">Cmds</div>
+                    <div className="table-cell-item highlightable-cell col-small">Chats</div>
                 </div>
                 {users_state.map((user, index) => (
     <div key={index + 2000} className="table-row">
-        <div className="table-cell-item col-xxsmall">
+        <div className="table-cell-item highlightable-cell col-xxsmall">
             <div onClick={(event) => handleUserCheckboxChange(event, user.id)}>
                 {user.id}
                 <input
@@ -277,10 +277,10 @@ function Instr_StudentsTable() {
                 />
             </div>
         </div>
-        <div className="table-cell-item col-large" onClick={(event) => handleDetailClick(event, user)}>{user.username}</div>
-        <div className="table-cell-item col-large" onClick={(event) => handleDetailClick(event, user)}>{getGroupNameById(user.membership)}</div>
-        <div className="table-cell-item col-small" onClick={(event) => handleDetailClick(event, user)}>41(<span className='highlighter-orange'>24</span>)</div>
-        <div className="table-cell-item col-small" onClick={(event) => handleDetailClick(event, user)}>10(<span className='highlighter-orange'>4</span>)</div>
+        <div className="table-cell-item highlightable-cell col-large" onClick={(event) => handleDetailClick(event, user)}>{user.username}</div>
+        <div className="table-cell-item highlightable-cell col-large" onClick={(event) => handleDetailClick(event, user)}>{getGroupNameById(user.membership)}</div>
+        <div className="table-cell-item highlightable-cell col-small" onClick={(event) => handleDetailClick(event, user)}>41(<span className='highlighter-orange'>24</span>)</div>
+        <div className="table-cell-item highlightable-cell col-small" onClick={(event) => handleDetailClick(event, user)}>10(<span className='highlighter-orange'>4</span>)</div>
     </div>
 ))}
 
