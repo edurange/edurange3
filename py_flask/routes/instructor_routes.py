@@ -36,6 +36,9 @@ from py_flask.utils.tasks import (
 from werkzeug.exceptions import abort
 
 from py_flask.utils.instructorData_utils import get_instructorData
+
+import os
+import subprocess
 #######
 # The `g` object is a global flask object that lasts ONLY for the life of a single request.
 #
@@ -387,3 +390,25 @@ def clear_groups():
     cleared_user_ids = [int(user_id) for user_id in clearedUserIDs]
 
     return jsonify({'result': 'success', 'cleared_user_ids': cleared_user_ids})
+
+
+#TODO: A lot
+@blueprint_instructor.route("/add_user_to_container", methods=['POST'])
+def add_user_to_container():
+    requestJSON = request.json
+
+    username = requestJSON['username']
+    scenario_name = requestJSON['scenario']
+
+    docker_query = f"docker ps -q --filter={scenario_name}"
+    container_list = subprocess.run(docker_query.split(' '))
+    
+    containers = container_list.split("\n")
+
+    for i, c in enumerate(containers):
+        os.system("useradd --home-dir /home/USERNAME --create-home --shell /bin/bash --password $(echo xpsxaP | openssl passwd -1 -stdin) USERNAME")
+
+    
+
+
+
