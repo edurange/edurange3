@@ -406,9 +406,6 @@ def add_user_to_container():
     containers = container_list.split("\n")
 
     for i, c in enumerate(containers):
-        os.system("useradd --home-dir /home/USERNAME --create-home --shell /bin/bash --password $(echo xpsxaP | openssl passwd -1 -stdin) USERNAME")
-
-    
-
-
-
+        # do not use - pseudocode
+        # internal_command = f"useradd --home-dir /home/USERNAME --create-home --shell /bin/bash --password $(echo PASSWORD | openssl passwd -1 -stdin) USERNAME"
+        # os.system(f"docker exec {internal_command} {c}")
