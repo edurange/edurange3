@@ -4,24 +4,24 @@ import { InstructorRouter_context } from '../Instructor_router';
 import '@assets/css/tables.css';
 import { HomeRouter_context } from '@pub/Home_router';
 
-function Instr_StudentsTable() {
+function Instr_UsersTable() {
 
     const { set_desiredNavMetas_state } = useContext(HomeRouter_context);
     const { users_state, set_users_state, groups_state, set_groups_state } = useContext(InstructorRouter_context);
-    const [selectedUsers, setSelectedUsers] = useState({});
-    const [actionSelection, setActionSelection] = useState('');
-    const [selectedGroupId, setSelectedGroupId] = useState('');
-    const [isButtonDisabled, setIsButtonDisabled] = useState(true);
+    const [selectedUsers_state, set_selectedUsers_state] = useState({});
+    const [actionSelection_state, set_actionSelection_state] = useState('');
+    const [selectedGroupId_state, set_selectedGroupId_state] = useState('');
+    const [buttonIsDisabled_state, set_buttonIsDisabled_state] = useState(true);
 
     useEffect(() => {
-        const isAnyUserSelected = Object.values(selectedUsers).some((isSelected) => isSelected);
-        const isGroupSelected = actionSelection === 'AssignToGroup' ? selectedGroupId !== '' : true;
-        setIsButtonDisabled(!isAnyUserSelected || !isGroupSelected);
-    }, [selectedUsers, actionSelection, selectedGroupId]);
+        const isAnyUserSelected = Object.values(selectedUsers_state).some((isSelected) => isSelected);
+        const isGroupSelected = actionSelection_state === 'AssignToGroup' ? selectedGroupId_state !== '' : true;
+        set_buttonIsDisabled_state(!isAnyUserSelected || !isGroupSelected);
+    }, [selectedUsers_state, actionSelection_state, selectedGroupId_state]);
 
     function handleUserCheckboxChange(event, userId) {
         event.stopPropagation();
-        setSelectedUsers(prevSelectedUsers => ({
+        set_selectedUsers_state(prevSelectedUsers => ({
             ...prevSelectedUsers,
             [userId]: !prevSelectedUsers[userId],
         }));
@@ -34,28 +34,28 @@ function Instr_StudentsTable() {
         users_state.forEach((user) => {
             newSelectedUsers[user.id] = newAreAllUsersSelected;
         });
-        setSelectedUsers(newSelectedUsers);
+        set_selectedUsers_state(newSelectedUsers);
     }
 
 
     const areAllUsersSelected =
         users_state.length > 0 &&
-        Object.keys(selectedUsers).length === users_state.length &&
-        Object.values(selectedUsers).every((value) => value);
+        Object.keys(selectedUsers_state).length === users_state.length &&
+        Object.values(selectedUsers_state).every((value) => value);
 
     function handleActionChange(event) {
         event.stopPropagation();
-        setActionSelection(event.target.value);
+        set_actionSelection_state(event.target.value);
     }
 
     function handleGroupSelectionChange(event) {
         event.stopPropagation();
-        setSelectedGroupId(event.target.value);
+        set_selectedGroupId_state(event.target.value);
     }
 
     async function handleUpdateDatabase(event) {
         event.stopPropagation();
-        switch (actionSelection) {
+        switch (actionSelection_state) {
             case 'DeleteUser':
                 await deleteUsers();
                 break;
@@ -71,7 +71,7 @@ function Instr_StudentsTable() {
     }
 
     async function deleteUsers() {
-        const usersToDelete = Object.keys(selectedUsers).filter((userId) => selectedUsers[userId]);
+        const usersToDelete = Object.keys(selectedUsers_state).filter((userId) => selectedUsers_state[userId]);
         try {
             const response = await axios.post('/delete_users', {
                 users_to_delete: usersToDelete,
@@ -89,13 +89,13 @@ function Instr_StudentsTable() {
 
 
     async function assignToGroup() {
-        const usersToAssignIds = Object.keys(selectedUsers)
-            .filter((userId) => selectedUsers[userId])
+        const usersToAssignIds = Object.keys(selectedUsers_state)
+            .filter((userId) => selectedUsers_state[userId])
             .map((userId) => parseInt(userId, 10));
 
         try {
             const response = await axios.post('/assign_group_users', {
-                group_id: parseInt(selectedGroupId, 10),
+                group_id: parseInt(selectedGroupId_state, 10),
                 users_to_assign: usersToAssignIds.map(id => ({ id })),
             });
 
@@ -104,14 +104,14 @@ function Instr_StudentsTable() {
 
                 const updatedUsersState = users_state.map(user => {
                     if (response.data.assigned_user_ids.includes(user.id)) {
-                        return { ...user, membership: parseInt(selectedGroupId, 10) };
+                        return { ...user, membership: parseInt(selectedGroupId_state, 10) };
                     }
                     return user;
                 });
                 set_users_state(updatedUsersState);
 
                 const updatedGroupsState = groups_state.map(group => {
-                    if (group.id === parseInt(selectedGroupId, 10)) {
+                    if (group.id === parseInt(selectedGroupId_state, 10)) {
                         const currentGroupUserIds = new Set(group.users.map(user => user.id));
                         response.data.assigned_user_ids.forEach(id => currentGroupUserIds.add(id));
                         const updatedUsers = Array.from(currentGroupUserIds).map(id => updatedUsersState.find(user => user.id === id));
@@ -129,13 +129,13 @@ function Instr_StudentsTable() {
     }
 
     async function assignToGroup() {
-        const usersToAssignIds = Object.keys(selectedUsers)
-            .filter((userId) => selectedUsers[userId])
+        const usersToAssignIds = Object.keys(selectedUsers_state)
+            .filter((userId) => selectedUsers_state[userId])
             .map((userId) => parseInt(userId, 10));
 
         try {
             const response = await axios.post('/assign_group_users', {
-                group_id: parseInt(selectedGroupId, 10),
+                group_id: parseInt(selectedGroupId_state, 10),
                 users_to_assign: usersToAssignIds.map(id => ({ id })),
             });
 
@@ -144,7 +144,7 @@ function Instr_StudentsTable() {
 
                 const updatedUsersState = users_state.map(user => {
                     if (response.data.assigned_user_ids.includes(user.id)) {
-                        return { ...user, membership: parseInt(selectedGroupId, 10) };
+                        return { ...user, membership: parseInt(selectedGroupId_state, 10) };
                     }
                     return user;
                 });
@@ -154,7 +154,7 @@ function Instr_StudentsTable() {
                     // make Set obj of user IDs for the current group to prevent duplicates
                     const groupUserIds = new Set(group.users.map(user => user.id));
 
-                    if (group.id === parseInt(selectedGroupId, 10)) {
+                    if (group.id === parseInt(selectedGroupId_state, 10)) {
                         // add IDs to new group
                         response.data.assigned_user_ids.forEach(id => groupUserIds.add(id));
                     } else {
@@ -179,7 +179,7 @@ function Instr_StudentsTable() {
 
 
     async function clearGroups() {
-        const usersToClear = Object.keys(selectedUsers).filter((userId) => selectedUsers[userId]);
+        const usersToClear = Object.keys(selectedUsers_state).filter((userId) => selectedUsers_state[userId]);
 
         try {
             const response = await axios.post('/clear_groups', {
@@ -216,22 +216,25 @@ function Instr_StudentsTable() {
         return group ? group.name : 'none';
     }
 
-    function handleDetailClick(event, student) {
+    function handle_userDetail_click(event, student) {
         set_desiredNavMetas_state([`/instructor/students/${student.id}`, 'dash']);
+    };
+    function handle_groupDetail_click(event, student) {
+        set_desiredNavMetas_state([`/instructor/groups/${student.membership}`, 'dash']);
     };
 
     return (
         <>
             <div className="create-frame">
                 <div className="create-group-row">
-                    <select className="create-dropdown" value={actionSelection} onChange={handleActionChange}>
+                    <select className="create-dropdown" value={actionSelection_state} onChange={handleActionChange}>
                         <option value="">Select Action</option>
                         <option value="AssignToGroup">Assign to Group</option>
                         <option value="ClearGroup">Clear Group</option>
                         <option value="DeleteUser">Delete User</option>
                     </select>
-                    {actionSelection === 'AssignToGroup' && (
-                        <select className="create-dropdown" value={selectedGroupId} onChange={handleGroupSelectionChange}>
+                    {actionSelection_state === 'AssignToGroup' && (
+                        <select className="create-dropdown" value={selectedGroupId_state} onChange={handleGroupSelectionChange}>
                             <option value="">Select Group</option>
                             {groups_state
                                 .filter(group => group.name !== 'ALL')
@@ -245,8 +248,8 @@ function Instr_StudentsTable() {
                     <div className="row-btns">
                         <button
                             onClick={handleUpdateDatabase}
-                            className={`row-btn ${isButtonDisabled ? 'btn-disabled' : 'green-btn submit-btn'}`}
-                            disabled={isButtonDisabled}
+                            className={`row-btn ${buttonIsDisabled_state ? 'btn-disabled' : 'green-btn submit-btn'}`}
+                            disabled={buttonIsDisabled_state}
                         >
                             Update Database
                         </button>
@@ -271,16 +274,16 @@ function Instr_StudentsTable() {
                 {user.id}
                 <input
                     type="checkbox"
-                    checked={selectedUsers[user.id] || false}
+                    checked={selectedUsers_state[user.id] || false}
                     onChange={(event) => handleUserCheckboxChange(event, user.id)}
                     onClick={(event) => event.stopPropagation()} // Prevent checkbox click from triggering ID cell click
                 />
             </div>
         </div>
-        <div className="table-cell-item highlightable-cell col-large" onClick={(event) => handleDetailClick(event, user)}>{user.username}</div>
-        <div className="table-cell-item highlightable-cell col-large" onClick={(event) => handleDetailClick(event, user)}>{getGroupNameById(user.membership)}</div>
-        <div className="table-cell-item highlightable-cell col-small" onClick={(event) => handleDetailClick(event, user)}>41(<span className='highlighter-orange'>24</span>)</div>
-        <div className="table-cell-item highlightable-cell col-small" onClick={(event) => handleDetailClick(event, user)}>10(<span className='highlighter-orange'>4</span>)</div>
+        <div className="table-cell-item highlightable-cell col-large" onClick={(event) => handle_userDetail_click(event, user)}>{user.username}</div>
+        <div className="table-cell-item highlightable-cell col-large" onClick={(event) => handle_groupDetail_click(event, user)}>{getGroupNameById(user.membership)}</div>
+        <div className="table-cell-item highlightable-cell col-small" onClick={(event) => handle_userDetail_click(event, user)}>41(<span className='highlighter-orange'>24</span>)</div>
+        <div className="table-cell-item highlightable-cell col-small" onClick={(event) => handle_userDetail_click(event, user)}>10(<span className='highlighter-orange'>4</span>)</div>
     </div>
 ))}
 
@@ -290,4 +293,4 @@ function Instr_StudentsTable() {
     );
 }
 
-export default Instr_StudentsTable;
+export default Instr_UsersTable;

@@ -8,7 +8,7 @@ import Copy_button_small from '@components/Copy_button_small';
 import { HomeRouter_context } from '@pub/Home_router';
 import Copy_button_flex from '../../../components/Copy_button_flex';
 
-function Instr_GroupTable() {
+function Instr_GroupsTable() {
 
     const { groups_state, set_groups_state } = useContext(InstructorRouter_context);
     const { set_desiredNavMetas_state } = useContext(HomeRouter_context);
@@ -68,4 +68,4 @@ function Instr_GroupTable() {
     );
 };
 
-export default Instr_GroupTable;
+export default Instr_GroupsTable;

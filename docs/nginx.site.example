@@ -1,5 +1,13 @@
 /*
 This is an example config for nginx reverse proxy.  
+
+
+
+***IMPORTANT***
+This is only the 'site' config file for nginx.  you also need to update
+the main config file, which by default is /etc/nginx/nginx.conf
+****
+
 You WILL need to use some form of reverse proxy 
 to use edurange3 out of the box.
 

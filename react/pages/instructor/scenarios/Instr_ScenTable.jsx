@@ -4,6 +4,17 @@ import { InstructorRouter_context } from '../Instructor_router';
 import { HomeRouter_context } from '@pub/Home_router';
 import '@assets/css/tables.css'
 
+export const statusSwitch = {
+    0: <span className='status-disabled'>Stopped</span>,
+    1: <span className='status-success'>Started</span>,
+    2: <span className='status-error'>Unknown</span>,
+    3: <span className='status-neutral'>Starting</span>,
+    4: <span className='status-neutral'>Stopping</span>,
+    5: <span className='status-error'>ERROR</span>,
+    7: <span className='status-standby'>Building</span>,
+    8: <span className='status-standby'>Destroying</span>
+};
+
 function Instr_ScenTable() {
 
     const { 
@@ -12,16 +23,7 @@ function Instr_ScenTable() {
     } = useContext(InstructorRouter_context);
     const { set_desiredNavMetas_state } = useContext(HomeRouter_context);
 
-    const statusSwitch = {
-        0: <div className='status-disabled'>Stopped</div>,
-        1: <div className='status-success'>Started</div>,
-        2: <div className='status-error'>Unknown</div>,
-        3: <div className='status-neutral'>Starting</div>,
-        4: <div className='status-neutral'>Stopping</div>,
-        5: <div className='status-error'>ERROR</div>,
-        7: <div className='status-standby'>Building</div>,
-        8: <div className='status-standby'>Destroying</div>
-    };
+
 
     if (!groups_state) {return <></>}
 
@@ -121,9 +123,9 @@ function Instr_ScenTable() {
             {scenarios_state.map((scenario, index) => (
                 <div key={index + 2000} onClick={(event) => handleDetailClick(event, scenario)}>
                     <div className="table-row">
-                        <div className='table-cell-item highlightable-cell col-xxsmall'>{scenario.id}</div>
-                        <div className='table-cell-item highlightable-cell col-large'>{scenario.name}</div>
-                        <div className='table-cell-item highlightable-cell col-large'>{scenario.description}</div>
+                        <div className='table-cell-item col-xxsmall'>{scenario.id}</div>
+                        <div className='table-cell-item col-large'>{scenario.name}</div>
+                        <div className='table-cell-item col-large'>{scenario.description}</div>
                         <div className='table-cell-item highlightable-cell col-medium'>{getGroupNameById(scenario.membership)}</div>
                         <div className='table-cell-item col-medium'>{statusSwitch[scenario.status]}</div>
                         <div className='table-cell-item control-panel'>

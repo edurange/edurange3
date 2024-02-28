@@ -1,12 +1,12 @@
 import React, { useContext } from 'react';
 import Instr_ScenTable from '../scenarios/Instr_ScenTable.jsx';
 import CreateScenario from '../scenarios/CreateScenario.jsx';
-import Instr_GroupTable from '../groups/Instr_GroupTable.jsx';
+import Instr_GroupsTable from '../groups/Instr_GroupsTable.jsx';
 import CreateGroup from '../groups/CreateGroup.jsx';
 import Placard from '@components/Placard'
 import TempUsers_table from '../notifications/items/TempUsers_table.jsx';
 import Creation_Instructions from '../notifications/items/Creation_Instructions.jsx';
-import Instr_StudentsTable from '../users/Instr_StudentsTable.jsx';
+import Instr_UsersTable from '../users/Instr_UsersTable.jsx';
 import { InstructorRouter_context } from '../Instructor_router.jsx';
 import './Instr_Dash.css';
 
@@ -26,7 +26,7 @@ function Instr_Dash() {
                 <div className='instructor-dash-section'>
                     <Placard placard_text='STUDENT GROUPS' navMetas={['/instructor/groups', 'dash']} is_button={true} />
                     <CreateGroup />
-                    <Instr_GroupTable />
+                    <Instr_GroupsTable />
                 </div>
 
                 <div className='instructor-dash-section'>
@@ -37,7 +37,7 @@ function Instr_Dash() {
 
                 <div className='instructor-dash-section'>
                     <Placard placard_text='STUDENTS' navMetas={['/instructor/students', 'dash']} is_button={true} />
-                    <Instr_StudentsTable set_scenarioDetail_state={set_scenarioDetail_state} />
+                    <Instr_UsersTable set_scenarioDetail_state={set_scenarioDetail_state} />
                 </div>
 
             </div>

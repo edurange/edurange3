@@ -30,6 +30,10 @@
     align-items: center;
     height: 100%;
     display: flex;
+    cursor: pointer;
+}
+.table-row:hover{
+    background-color: rgba(255, 227, 156, 0.127);
 }
 .cursor-default{
     cursor: default;
@@ -88,9 +92,7 @@
     display: flex;
     flex-direction: row;
 }
-.table-row:hover{
-    background-color: rgba(255, 227, 156, 0.127);
-}
+
 
 .row-btns{
     display: flex;

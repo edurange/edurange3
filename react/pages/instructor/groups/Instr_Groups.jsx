@@ -1,10 +1,9 @@
 
-import React, { useContext } from 'react';
-
-import '@assets/css/tables.css';
+import React from 'react';
 import CreateGroup from './CreateGroup';
-import Instr_GroupTable from './Instr_GroupTable';
+import Instr_GroupsTable from './Instr_GroupsTable';
 import Placard from '@components/Placard';
+import '@assets/css/tables.css';
 
 function Instr_Groups() {
 
@@ -16,7 +15,7 @@ function Instr_Groups() {
                     <Placard placard_text={"Student Groups"} />
                         <CreateGroup />
                     <div className="table-frame">
-                        <Instr_GroupTable />                
+                        <Instr_GroupsTable />                
                     </div>
                 </div>
             </div>
@@ -28,6 +27,4 @@ function Instr_Groups() {
         </div>
     );
 };
-
 export default Instr_Groups;
-

@@ -11,29 +11,51 @@ import Placard from '../../../components/Placard';
 function Instr_UserDetail() {
 
     const { userID } = useParams();
-    const { scenarios_state, users_state } = useContext(InstructorRouter_context);
+    const { scenarios_state, users_state, groups_state } = useContext(InstructorRouter_context);
 
     console.log(users_state)
-    let thisUser = users_state
-                        .filter(user => user.id === parseInt(userID))
-                        .map((user) => user);
+    console.log('param user id: ', userID);
+    const thisUser = users_state.filter(user => user.id === parseInt(userID))?.[0]
 
     console.log(thisUser)
-    thisUser = thisUser[0];
+    // thisUser = thisUser[0];
                         
     if (!thisUser) { return <>User not found.</> } 
 
-    const thisScenarioID = (thisUser?.id);
 
+    function getMembershipGroup(){
+
+        const membershipGroup = groups_state?.
+        filter((group) => group.id === thisUser.membership)
+        
+        return membershipGroup?.[0]
+    }
+
+    const membershipGroup = getMembershipGroup();
 
     return (
         <div className="table-frame">
             
             <div>
-                Name:  {thisUser.name}
+                Username:  {thisUser.username}
             </div>
             <div>
-                ID:  {thisUser.id}
+                User ID:  {thisUser.id}
+            </div>
+            <div>
+                <br></br>
+            </div>
+            <div>
+                User Belongs to Group:
+                <div>
+                    Group Name: {membershipGroup?.name}
+                </div>
+                <div>
+                    Group ID: {membershipGroup?.id}
+                </div>
+                <div>
+                    Group Users Ct: {membershipGroup?.users?.length}
+                </div>
             </div>
 
         </div>

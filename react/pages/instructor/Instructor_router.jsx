@@ -5,10 +5,10 @@ import Instr_Dash from './dashboard/Instr_Dash';
 import Chat_Instructor from './chat/Instr_Chat';
 import Instr_SetMaster from './dashboard/Instr_SetMaster';
 import Instr_Groups from './groups/Instr_Groups';
-import Group_detail from './groups/Group_detail';
+import Instr_GroupDetail from './groups/Instr_GroupDetail';
 import Frame_side from '../../frame/sidenav/Frame_side';
 import Instr_Scenarios from './scenarios/Instr_Scenarios';
-import Instr_Students from './users/Instr_Students';
+import Instr_Users from './users/Instr_Users';
 import Instr_ScenDetail from './scenarios/Instr_ScenDetail';
 import Instr_UserDetail from './users/Instr_UserDetail';
 
@@ -62,9 +62,9 @@ function Instructor_router() {
                         <Route path="/scenarios/:scenarioID" element={<Instr_ScenDetail />} />
                         <Route path="/scenarios/:scenarioID/chat" element={<Chat_Instructor />} />
                         <Route path="/groups/*" element={<Instr_Groups />} />
-                        <Route path="/groups/:groupID/*" element={<Group_detail />} />
-                        <Route path="/students/*" element={<Instr_Students />} />
-                        <Route path="/students/:studentID/*" element={<Instr_UserDetail />} />
+                        <Route path="/groups/:groupID/*" element={<Instr_GroupDetail />} />
+                        <Route path="/students/*" element={<Instr_Users />} />
+                        <Route path="/students/:userID/*" element={<Instr_UserDetail />} />
                     </Routes>
 
                 </InstructorRouter_context.Provider>

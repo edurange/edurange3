@@ -1,15 +1,14 @@
 import axios from 'axios';
 import React, { useState, useEffect, useContext } from 'react';
-import { useParams } from 'react-router-dom';
 import FootControls from './controls/FootControls';
-
-import "@frame/frame.css";
-import './Scenario_controller.css';
 import InfoPane from './panes/info/InfoPane';
 import GuidePane from './panes/guide/GuidePane';
 import SSH_web from './panes/ssh/SSH_web';
 import Chat_Student from '../chat/Chat_Student';
+import { useParams } from 'react-router-dom';
 import { HomeRouter_context } from '@pub/Home_router';
+import './Scenario_controller.css';
+import "@frame/frame.css";
 
 function Scenario_controller() {
 
@@ -49,19 +48,15 @@ function Scenario_controller() {
 
     if ((!meta)) { return (<>Scenario not found</>); }; // GUARD
 
-    console.log('get the creds right!',)
     const saniname = userData_state?.username.replace(/-/g, '');
     const SSH_username = guideContent_state.credentialsJSON?.[saniname]?.[0]?.username;
     const SSH_password = guideContent_state.credentialsJSON?.[saniname]?.[0]?.password;
-
     const SSH_IP = guideContent_state.SSH_IP;
 
     const panes = {
-        info: (
-            <InfoPane
-                guideContent={guideContent_state}
-            />
-        ),
+        info: (<InfoPane guideContent={guideContent_state}/>),
+        guide: (<GuidePane guideContent={guideContent_state} />),
+        chat: (<Chat_Student />),
         ssh: (
             <SSH_web
                 scenario_id={scenarioID}
@@ -69,12 +64,9 @@ function Scenario_controller() {
                 SSH_username={SSH_username}
                 SSH_password={SSH_password}
             />
-        ),
-
-        chat: (<Chat_Student />),
-
-        guide: (<GuidePane guideContent={guideContent_state} />)
+        )
     };
+
     const leftPaneToShow = panes[leftPaneName_state];
     const rightPaneToShow = panes[rightPaneName_state];
 

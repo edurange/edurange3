@@ -1,10 +1,10 @@
 import React, { useContext } from 'react';
 import '@assets/css/tables.css';
 import { InstructorRouter_context } from '../Instructor_router';
-import Instr_StudentsTable from './Instr_StudentsTable';
+import Instr_UsersTable from './Instr_UsersTable';
 import Placard from '@components/Placard';
 
-function Instr_Students() {
+function Instr_Users() {
 
     const { groups_state } = useContext(InstructorRouter_context);
     if (!groups_state) { return <></> }
@@ -16,7 +16,7 @@ function Instr_Students() {
                 <div className='instructor-dash-section'>
                     <Placard placard_text={"Students"} />
                     <div className="table-frame">
-                        <Instr_StudentsTable />
+                        <Instr_UsersTable />
                     </div>
                 </div>
             </div>
@@ -29,4 +29,4 @@ function Instr_Students() {
     );
 };
 
-export default Instr_Students;
+export default Instr_Users;

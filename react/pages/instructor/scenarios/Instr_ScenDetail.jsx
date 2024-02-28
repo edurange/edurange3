@@ -5,26 +5,20 @@ import { useParams } from 'react-router-dom';
 
 
 import '@assets/css/tables.css';
+import './Instr_ScenDetail.css';
+
 import { InstructorRouter_context } from '../Instructor_router';
 import Placard from '../../../components/Placard';
+import { statusSwitch } from './Instr_ScenTable';
 
 function Instr_ScenDetail() {
 
     const { scenarioID } = useParams();
-    const { scenarios_state, set_scenarios_state } = useContext(InstructorRouter_context);
+    const { scenarios_state, set_scenarios_state, groups_state } = useContext(InstructorRouter_context);
 
-    console.log(typeof(scenarioID))
-    console.log(typeof(scenarios_state?.[0]?.id));
-
-    let thisScenario = scenarios_state
-                        .filter(scenario => scenario.id === parseInt(scenarioID))
-                        .map((scenario) => scenario);
-
-    thisScenario = thisScenario[0];
+    const thisScenario = scenarios_state.filter(scenario => scenario.id === parseInt(scenarioID))?.[0]
                         
     if (!thisScenario) { return <>Group not found.</> } 
-
-    const thisScenarioID = (thisScenario?.id);
 
     async function handle_deleteGroup_click(groupName) {
         try {
@@ -39,19 +33,43 @@ function Instr_ScenDetail() {
         }
     }
 
+    function getOwnerGroup(){
+
+        const matchingGroup = groups_state?.filter((group) => thisScenario.membership === group.id)?.[0]
+        return matchingGroup ?? false;
+    }
+
+    const membershipGroup = groups_state?.filter((group) => thisScenario.membership === group.id)?.[0] ?? false
 
     return (
         <div className="table-frame">
-            {/* <Placard placard_text={`Group: ${thisScenario.name}`}/> */}
             
             <div>
-                Name:  {thisScenario.name}
+                Scenario Name:  {thisScenario.name}
             </div>
             <div>
-                ID:  {thisScenario.id}
+                Scenario ID:  {thisScenario.id}
             </div>
             <div>
-                Group membership:  {thisScenario.membership}
+                Scenario Type:  {thisScenario.description}
+            </div>
+            <div>
+                <span> Scenario Status:  {statusSwitch[thisScenario.status]} </span>
+            </div>
+            <div>
+                <br></br>
+            </div>
+            <div>
+                Scenario Belongs to Group:
+                <div>
+                    Group Name: {membershipGroup?.name}
+                </div>
+                <div>
+                    Group ID: {membershipGroup?.id}
+                </div>
+                <div>
+                    Group Users Ct: {membershipGroup?.users?.length}
+                </div>
             </div>
 
         </div>
