@@ -31,7 +31,14 @@ If any of these fail, simply log out and back in, and they should work then.
 Once installed, start the app using
 ```bash
 cd edurange3 (if not in edurange3 root dir)
+npm run build
 npm start
+```
+
+Or, for a live-reload dev version run with Vite (without a build), start the app using
+```bash
+cd edurange3 (if not in edurange3 root dir)
+npm run dev
 ```
 
 Or each service can be run separately 
