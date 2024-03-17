@@ -1,9 +1,9 @@
 import axios from 'axios';
 import React, { useContext, useState, useEffect } from 'react';
-import './Instr_Dash.css';
-import './Instr_SetMaster.css';
 import { InstructorRouter_context } from '../Instructor_router';
 import { Link, useParams } from 'react-router-dom';
+import './Instr_SetMaster.css';
+import './Instr_Dash.css';
 
 function Instr_SetMaster() {
 

@@ -19,7 +19,6 @@ from py_flask.config.extensions import bcrypt
 def generate_registration_code(size=8, chars=string.ascii_lowercase + string.digits):
     return "".join(random.choice(chars) for _ in range(size))
 
-
 class StudentGroups(Edu3Mixin, SurrogatePK, Model):
     """"Groups of Users"""
     __tablename__ = "groups"
@@ -32,6 +31,16 @@ class StudentGroups(Edu3Mixin, SurrogatePK, Model):
     hidden = Column(db.Boolean(), nullable=False, default=False)
     users = relationship("GroupUsers", backref="groups", cascade="all, delete-orphan")
 
+class ChatMessages(Edu3Mixin, SurrogatePK, Model):
+    """Individual chat message"""
+    ___tablename___ = "messages"
+    sender = reference_col("users",nullable=False)
+    channel = reference_col("channels", nullable=False)
+    timestamp = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
+    content = Column(db.String(5000), nullable=False, unique=False)
+    scenario_id = reference_col('scenarios', nullable=False, unique=False)
+    
+
 class GroupUsers(Edu3Mixin, SurrogatePK, Model):
     """Users belong to groups"""
     ___tablename___ = "group_users"
@@ -39,6 +48,23 @@ class GroupUsers(Edu3Mixin, SurrogatePK, Model):
     user = relationship("Users", backref="group_users")
     group_id = reference_col("groups", nullable=False)
     group = relationship("StudentGroups", backref="group_users", viewonly=True)
+
+#
+class Channels(Edu3Mixin, SurrogatePK, Model):
+    """"Chat Channels"""
+    __tablename__ = "channels"
+    # name = Column(db.String(40), unique=True, nullable=False)  # DEV_FIX (do we want this?)
+    owner_id = reference_col("users", nullable=False)
+    owner = relationship("Users", backref="channels")
+    users = relationship("ChannelUsers", backref="channels", cascade="all, delete-orphan")
+
+class ChannelUsers(Edu3Mixin, SurrogatePK, Model):
+    """Users belong to channels"""
+    ___tablename___ = "channel_users"
+    user_id = reference_col("users", nullable=False)
+    channel_id = reference_col("channels", nullable=False)
+    user = relationship("Users", backref="channel_users")
+    channel = relationship("Channels", backref="channel_users", viewonly=True)
 
 
 class Users(Edu3Mixin, SurrogatePK, Model):
@@ -74,7 +100,7 @@ class Scenarios(Edu3Mixin, SurrogatePK, Model):
     __tablename__ = "scenarios"
     name = Column(db.String(40), unique=False, nullable=False)
     description = Column(db.String(80), unique=False, nullable=True)
-    subnet = Column(db.String(18), unique=True, nullable=True)
+    octet = Column(db.Integer(2), unique=True, nullable=True)
     owner_id = reference_col("users", nullable=False)
     owner = relationship("Users", backref="scenarios", lazy="subquery")
     status = Column(db.Integer, default=0, nullable=False)

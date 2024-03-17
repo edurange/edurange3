@@ -12,7 +12,9 @@ export const statusSwitch = {
     4: <span className='status-neutral'>Stopping</span>,
     5: <span className='status-error'>ERROR</span>,
     7: <span className='status-standby'>Building</span>,
-    8: <span className='status-standby'>Destroying</span>
+    8: <span className='status-standby'>Destroying</span>,
+    9: <span className='status-neutral'>Archiving</span>,
+    10: <span className='status-disabled'>Archived</span>
 };
 
 function Instr_ScenTable() {

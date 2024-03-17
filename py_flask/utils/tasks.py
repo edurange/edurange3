@@ -115,11 +115,11 @@ def create_scenario_task(self, scen_name, scen_type, students_list, grp_id, scen
         starting_octet = int(os.getenv("SUBNET_STARTING_OCTET", 10))
 
         # Local addresses begin at the subnet 10.0.0.0/24
-        address = str(starting_octet + active_scenarios)
+        octet_int = starting_octet + active_scenarios  # DEV_FIX
 
         # Write provider and networks
         find_and_copy_template(scen_type, "network")
-        adjust_network(address, scen_name)
+        adjust_network(str(octet_int), scen_name)
         os.system("terraform init")
         os.system("terraform plan -out network")
 
@@ -129,13 +129,13 @@ def create_scenario_task(self, scen_name, scen_type, students_list, grp_id, scen
         for i, c in enumerate(c_names):
             find_and_copy_template(scen_type, c)
             write_resource(
-                address, scen_name, scen_type, i, usernames, passwords,
+                str(octet_int), scen_name, scen_type, i, usernames, passwords,
                 s_files[i], g_files[i], u_files[i], flags, c_names
             )
 
         scenario.update(
             status=0,
-            subnet=f"10.{address}.0.0/27"
+            octet=octet_int
         )
         os.chdir("../../..")
 

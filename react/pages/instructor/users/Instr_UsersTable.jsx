@@ -1,8 +1,8 @@
-import React, { useContext, useState, useEffect } from 'react';
 import axios from 'axios';
+import React, { useContext, useState, useEffect } from 'react';
 import { InstructorRouter_context } from '../Instructor_router';
-import '@assets/css/tables.css';
 import { HomeRouter_context } from '@pub/Home_router';
+import '@assets/css/tables.css';
 
 function Instr_UsersTable() {
 
@@ -268,24 +268,24 @@ function Instr_UsersTable() {
                     <div className="table-cell-item highlightable-cell col-small">Chats</div>
                 </div>
                 {users_state.map((user, index) => (
-    <div key={index + 2000} className="table-row">
-        <div className="table-cell-item highlightable-cell col-xxsmall">
-            <div onClick={(event) => handleUserCheckboxChange(event, user.id)}>
-                {user.id}
-                <input
-                    type="checkbox"
-                    checked={selectedUsers_state[user.id] || false}
-                    onChange={(event) => handleUserCheckboxChange(event, user.id)}
-                    onClick={(event) => event.stopPropagation()} // Prevent checkbox click from triggering ID cell click
-                />
-            </div>
-        </div>
-        <div className="table-cell-item highlightable-cell col-large" onClick={(event) => handle_userDetail_click(event, user)}>{user.username}</div>
-        <div className="table-cell-item highlightable-cell col-large" onClick={(event) => handle_groupDetail_click(event, user)}>{getGroupNameById(user.membership)}</div>
-        <div className="table-cell-item highlightable-cell col-small" onClick={(event) => handle_userDetail_click(event, user)}>41(<span className='highlighter-orange'>24</span>)</div>
-        <div className="table-cell-item highlightable-cell col-small" onClick={(event) => handle_userDetail_click(event, user)}>10(<span className='highlighter-orange'>4</span>)</div>
-    </div>
-))}
+                    <div key={index + 2000} className="table-row">
+                        <div className="table-cell-item highlightable-cell col-xxsmall">
+                            <div onClick={(event) => handleUserCheckboxChange(event, user.id)}>
+                                {user.id}
+                                <input
+                                    type="checkbox"
+                                    checked={selectedUsers_state[user.id] || false}
+                                    onChange={(event) => handleUserCheckboxChange(event, user.id)}
+                                    onClick={(event) => event.stopPropagation()} // Prevent checkbox click from triggering ID cell click
+                                />
+                            </div>
+                        </div>
+                        <div className="table-cell-item highlightable-cell col-large" onClick={(event) => handle_userDetail_click(event, user)}>{user.username}</div>
+                        <div className="table-cell-item highlightable-cell col-large" onClick={(event) => handle_groupDetail_click(event, user)}>{getGroupNameById(user.membership)}</div>
+                        <div className="table-cell-item highlightable-cell col-small" onClick={(event) => handle_userDetail_click(event, user)}>41(<span className='highlighter-orange'>24</span>)</div>
+                        <div className="table-cell-item highlightable-cell col-small" onClick={(event) => handle_userDetail_click(event, user)}>10(<span className='highlighter-orange'>4</span>)</div>
+                    </div>
+                ))}
 
 
             </div>

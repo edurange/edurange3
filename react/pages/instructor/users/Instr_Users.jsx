@@ -1,8 +1,8 @@
 import React, { useContext } from 'react';
-import '@assets/css/tables.css';
-import { InstructorRouter_context } from '../Instructor_router';
 import Instr_UsersTable from './Instr_UsersTable';
 import Placard from '@components/Placard';
+import { InstructorRouter_context } from '../Instructor_router';
+import '@assets/css/tables.css';
 
 function Instr_Users() {
 

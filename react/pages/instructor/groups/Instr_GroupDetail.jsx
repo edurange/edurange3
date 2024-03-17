@@ -1,13 +1,11 @@
-
-import React, { useContext } from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
-
-
-import '@assets/css/tables.css';
+import React, { useContext } from 'react';
 import { InstructorRouter_context } from '../Instructor_router';
-import Placard from '../../../components/Placard';
-import Table from '../../../components/Table';
+import { useParams } from 'react-router-dom';
+import Placard from '@components/Placard';
+import Table from '@components/Table';
+import '@assets/css/tables.css';
+
 
 function Instr_GroupDetail() {
 

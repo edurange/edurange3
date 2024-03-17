@@ -1,12 +1,11 @@
 
 import React, { useContext } from 'react';
 import axios from 'axios';
-
-import '@assets/css/tables.css';
+import Copy_button_flex from '@components/Copy_button_flex';
 import { InstructorRouter_context } from '../Instructor_router';
-import Copy_button_small from '@components/Copy_button_small';
 import { HomeRouter_context } from '@pub/Home_router';
-import Copy_button_flex from '../../../components/Copy_button_flex';
+import '@assets/css/tables.css';
+
 
 function Instr_GroupsTable() {
 

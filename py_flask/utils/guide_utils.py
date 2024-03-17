@@ -23,7 +23,8 @@ def getContent(user_role, scenario_id, username):
         3: "Starting",
         4: "Stopping",
         5: "ERROR",
-        7: "Building"
+        7: "Building",
+        8: "Archived"
     }
     status = db_ses.query(Scenarios.status).filter(Scenarios.id == scenario_id).first()
     status = statusSwitch[status[0]]

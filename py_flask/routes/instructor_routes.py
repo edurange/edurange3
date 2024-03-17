@@ -397,8 +397,8 @@ def clear_groups():
 def add_user_to_container():
     requestJSON = request.json
 
-    username = requestJSON['username']
-    scenario_name = requestJSON['scenario']
+    username = g.current_username
+    scenario_name = requestJSON['scenario_name']
 
     docker_query = f"docker ps -q --filter={scenario_name}"
     container_list = subprocess.run(docker_query.split(' '))
