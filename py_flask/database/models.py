@@ -38,7 +38,7 @@ class ChatMessages(Edu3Mixin, SurrogatePK, Model):
     channel = reference_col("channels", nullable=False)
     timestamp = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
     content = Column(db.String(5000), nullable=False, unique=False)
-    scenario_id = reference_col('scenarios', nullable=False, unique=False)
+    scenario_id = reference_col('scenarios', nullable=False)
     
 
 class GroupUsers(Edu3Mixin, SurrogatePK, Model):
@@ -100,7 +100,7 @@ class Scenarios(Edu3Mixin, SurrogatePK, Model):
     __tablename__ = "scenarios"
     name = Column(db.String(40), unique=False, nullable=False)
     description = Column(db.String(80), unique=False, nullable=True)
-    octet = Column(db.Integer(2), unique=True, nullable=True)
+    octet = Column(db.Integer, unique=True, nullable=True)
     owner_id = reference_col("users", nullable=False)
     owner = relationship("Users", backref="scenarios", lazy="subquery")
     status = Column(db.Integer, default=0, nullable=False)
