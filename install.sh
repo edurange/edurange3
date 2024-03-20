@@ -24,10 +24,12 @@ echo -e "${GRN}Installing python3-pip, npm, redis-server,  unzip, postgresql, li
 sudo apt update
 sudo apt install -y python3-pip redis-server unzip wget postgresql libpq-dev
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-sudo su $(whoami) --login
+source ~/.nvm/nvm.sh
 cd $curDir
 
 pip3 install -r py_flask/config/requirements_prod.txt
+pip3 uninstall pyjwt
+pip3 install pyjwt==2.8.0
 
 nvm install 21
 nvm use 21
