@@ -22,9 +22,15 @@ source ~/.bashrc
 echo -e "${GRN}Installing python3-pip, npm, redis-server,  unzip, postgresql, lib-pq-dev, and wget${NC}"
 
 sudo apt update
-sudo apt install -y python3-pip npm redis-server unzip wget postgresql libpq-dev
+sudo apt install -y python3-pip redis-server unzip wget postgresql libpq-dev
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+sudo su $(whoami) --login
+cd $curDir
+
 pip3 install -r py_flask/config/requirements_prod.txt
 
+nvm install 21
+nvm use 21
 npm install
 cd $curDir/node
 npm install
