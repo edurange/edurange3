@@ -20,7 +20,8 @@ import Instructor_UsersList from './Instr_UsersList.jsx';
 import { ChatMessage } from '@student/chat/Chat_Student.jsx';
 
 // !important! use 'wss:' for production (reqs SSL certs) // DEV_ONLY
-const socketURL = "wss://riparian.dev/chatSocket"  
+const proto = (window.location.protocol == "https") ? "wss" : "ws";
+const socketURL = `${proto}://${window.location.host}/chat`;
 
 function Instr_Chat() {
 

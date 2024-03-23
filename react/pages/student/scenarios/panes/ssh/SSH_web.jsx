@@ -5,7 +5,8 @@ import { FitAddon } from 'xterm-addon-fit';
 import 'xterm/css/xterm.css';
 import './SSH_web.css';
 
-const NODEJS_WEBSSH_URL = "wss://er3.riparian.dev/ssh";
+const proto = (window.location.protocol == "https:") ? "wss" : "ws";
+const NODEJS_WEBSSH_URL = `${proto}://${window.location.host}/ssh`;
 
 function SSH_web(props) {
 

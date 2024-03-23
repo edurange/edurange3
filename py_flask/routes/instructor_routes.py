@@ -243,7 +243,7 @@ def scenario_interface():
 
         else: 
             print ("Scenario CREATE failed")
-            return None
+            return jsonify({"message": "error"}), 418
 
 
     def start_scenario(requestJSON):

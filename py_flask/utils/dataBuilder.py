@@ -74,7 +74,7 @@ def get_scenario_data():
             "id": scenario.id,
             "name": scenario.name,
             "description": scenario.description,
-            "subnet": scenario.subnet,
+            "octet": scenario.octet,
             "owner_id": scenario.owner_id,
             "status": scenario.status,
             "attempt": scenario.attempt,

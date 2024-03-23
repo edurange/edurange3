@@ -9,7 +9,7 @@ const jwt = require('jsonwebtoken');
 const pg = require('pg');
 const Joi = require('joi');
 
-dotenv.config({ path: path.join(__dirname, '..','..', 'py_flask', '.env') });
+dotenv.config({ path: path.join(__dirname, '..', '..', '.env') });
 const { Pool } = pg;
 const pool = new Pool({
     host: 'localhost',
@@ -24,6 +24,7 @@ const sshHttpServer = http.createServer((req, res) => {
     res.end('HTTP server for SSH WebSocket upgrade.\n');
 });
 
+console.log(process.env.JWT_SECRET_KEY);
 const sshSocketServer = new WebSocketServer({
     server: sshHttpServer,
     verifyClient: (info, done) => {
@@ -37,7 +38,6 @@ const sshSocketServer = new WebSocketServer({
     }
 });
 sshSocketServer.on('connection', async (ssh_socket, request) => {
-
     const {username, user_role, user_id} = request.get_id();
     
     if (!username) {return {error: 'username not found in validated jwt'}};
