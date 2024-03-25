@@ -24,7 +24,6 @@ const sshHttpServer = http.createServer((req, res) => {
     res.end('HTTP server for SSH WebSocket upgrade.\n');
 });
 
-console.log(process.env.JWT_SECRET_KEY);
 const sshSocketServer = new WebSocketServer({
     server: sshHttpServer,
     verifyClient: (info, done) => {
