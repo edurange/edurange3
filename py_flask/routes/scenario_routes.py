@@ -5,6 +5,7 @@ from py_flask.database.models import (
     GroupUsers, 
     ScenarioGroups, 
     Scenarios,
+    Responses,
     Users,
     StudentGroups,  
 )
@@ -154,15 +155,27 @@ def get_scenarios():
 @blueprint_scenarios.route('/check_response', methods=['POST'])
 @jwt_and_csrf_required
 def checkResponse():
-
     requestJSON = request.json
     current_user_id = g.current_user_id
     question_num = int(requestJSON['question_num'])
-    scenario_id = int(requestJSON['scenario_id'])
-    student_response = requestJSON['student_response']
+    this_scenario_id = int(requestJSON['scenario_id'])
+    this_student_response = requestJSON['student_response']
+    
+    gradedResponse = evaluateResponse (current_user_id, this_scenario_id, question_num, this_student_response )
 
-    pointsAwarded = evaluateResponse (current_user_id, scenario_id, question_num, student_response )
-    return jsonify({"points_gained" : pointsAwarded})
+    pointsScored = 0
+
+    for i, response in enumerate(gradedResponse):
+        pointsScored += response["points_awarded"]
+
+    Responses.create(user_id=current_user_id, 
+                    scenario_id=this_scenario_id, 
+                    question=question_num,
+                    student_response=this_student_response,
+                    points=pointsScored)
+
+
+    return jsonify({"points_gained" : gradedResponse})
 
 ### UNReviewed Routes Below ##############
 

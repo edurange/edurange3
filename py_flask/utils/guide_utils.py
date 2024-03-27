@@ -112,6 +112,10 @@ def evaluateResponse(user_id, scenario_id, question_num, student_response):
 
     responseData = []
 
+    # TODO: Tell students how they should delimit their answers
+    # Then parse the string ala:
+    # parsed_response_list = student_response.split(", ")
+
     for i in question['Answers']:
 
         correctResponse = str(i['Value'])

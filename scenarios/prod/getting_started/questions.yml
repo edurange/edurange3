@@ -35,7 +35,7 @@
   - Value: ESSAY
     Points: 15
   Points: 15
-- Text: What are the filenames (with extensions) of the six image files hidden in your home directory that contain edurange in the name? Please enter each filename separately.
+- Text: What are the filenames (with extensions) of the six image files hidden in your home directory that contain edurange in the name? Please enter the filesnames as a comma separated list, e.g. ("file1.jpg, file2.png, file3.gif").
   Type: Multi String
   Options: []
   Answers:

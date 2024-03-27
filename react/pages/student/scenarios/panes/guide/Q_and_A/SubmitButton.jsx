@@ -12,7 +12,7 @@ function SubmitButton({ scenario_id, question_num }) {
     async function handleSubmit() {
 
         try {
-            const evaluated = await axios.post('/api/check_response', {
+            const evaluated = await axios.post('/check_response', {
                 scenario_id: scenario_id,
                 question_num: question_num,
                 student_response: inputText_state

@@ -139,7 +139,6 @@ class Responses(Edu3Mixin, SurrogatePK, Model):
     #correct = Column(db.Boolean(), default=False)
     points = Column(db.Integer, default=0, nullable=False)
     response_time = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
-    attempt = Column(db.Integer, default=0, nullable=False)
     # learning objective field?
 
 
