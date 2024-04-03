@@ -44,14 +44,14 @@ function regUser(user_id, username, user_role, socketConnection) {
 }
 
 function regInstructor(user_id, username, user_role, socketConnection) {
-    if (!chatSession.instructorDict.hasOwnProperty(userToCheck.userID)) {
+    if (!chatSession.instructorDict.hasOwnProperty(user_id)) {
         chatSession.instructorDict[user_id] = {
             userID: user_id,
             user_role: user_role,
             username: username,
             connection: socketConnection,
         };
-        console.log(`Registered new instructor: ${userToCheck.userID}`);
+        console.log(`Registered new instructor: ${user_id}`);
     }
     else {
         chatSession.instructorDict[user_id].connection = socketConnection;
@@ -88,7 +88,21 @@ const chatSocketServer = new WebSocketServer({
     }
 });
 
+const interval = setInterval(function ping() {
+    wss.clients.forEach(function each(ws) {
+
+      if (ws.isAlive === false) return ws.terminate();
+  
+      ws.isAlive = false;
+      ws.ping();
+
+    });
+  }, 5_000);
+
+
+
 chatSocketServer.on('connection', (socketConnection, request) => {
+
 
     const {username, user_role, user_id} = request.get_id();
 

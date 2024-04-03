@@ -45,22 +45,22 @@ function Instructor_router() {
         <div className='newdash-frame'>
             <div className='newdash-frame-carpet'>
 
-            <SocketKeeper/>
 
             <Frame_side />
 
                 <InstructorRouter_context.Provider value={{
-
+                    
                     users_state, set_users_state,
                     groups_state, set_groups_state,
                     scenarios_state, set_scenarios_state,
-
+                    
                     scenarioDetail_state, set_scenarioDetail_state,
                     userDetail_state, set_userDetail_state,
                     tempUsers_state, set_tempUsers_state,
-
+                    
                     socketConnection_state, set_socketConnection_state
                 }}>
+                    <SocketKeeper />
 
                     <Routes>
                         <Route path="/*" element={<Instr_Dash />} />
