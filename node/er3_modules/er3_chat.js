@@ -38,7 +38,9 @@ function regUser(user_id, username, user_role, socketConnection) {
         };
         console.log(`Registered new user: ${username}`);
     }
-    else {console.log(`User ${username} already exists in dict. Continuing...`);};
+    else {
+        chatSession.studentDict[user_id].connection = socketConnection;
+        console.log(`User ${username} already exists in dict. Refreshing connection info and continuing...`);};
 }
 
 function regInstructor(user_id, username, user_role, socketConnection) {
@@ -51,7 +53,9 @@ function regInstructor(user_id, username, user_role, socketConnection) {
         };
         console.log(`Registered new instructor: ${userToCheck.userID}`);
     }
-    else {console.log(`Instructor ${userToCheck} already exists in dict. Continuing...`);};
+    else {
+        chatSession.instructorDict[user_id].connection = socketConnection;
+        console.log(`Instructor ${userToCheck} already exists in dict. Continuing...`);};
 }
 
 // postgreSQL connection settings
@@ -63,9 +67,11 @@ const pool = new Pool({
     password: process.env.NODE_DB_PASSWORD,
 });
 
+// DEV_FIX replace w/ new schema
 const chatSchema = Joi.object({
     scenarioID: Joi.number().integer().required(),
     content: Joi.string().trim().required(),
+    sender_id: Joi.number().integer()
 });
 
 
@@ -145,6 +151,7 @@ chatSocketServer.on('connection', (socketConnection, request) => {
 
             const instructorConnectionArr = Object.values(chatSession.instructorDict).map(entry => entry.connection);
 
+            // instr
             instructorConnectionArr.forEach(connection => {
                 if (connection.readyState === 1) {
                     connection.send(JSON.stringify({ type: 'newChatMessage', data: value }));
@@ -152,11 +159,15 @@ chatSocketServer.on('connection', (socketConnection, request) => {
 
             })
 
+            // student
             if (!chatSession?.instructorDict.hasOwnProperty(user_id)) {
                 const responseMsg = {
                     scenarioID: value.scenarioID,
                     content: value.content,
+                    sender_id: user_id
                 };
+                console.log ('thisDictUser connection info: ', thisDictUser.connection.readyState)
+                console.log ('socketConnection info: ', socketConnection.readyState)
                 thisDictUser.connection.send(JSON.stringify({ type: 'newChatMessage', data: responseMsg }));
             }
             
@@ -169,7 +180,9 @@ chatSocketServer.on('connection', (socketConnection, request) => {
     });
 
     // disconnection and cleanup
-    socketConnection.on('close', () => {    
+    socketConnection.on('close', () => {
+        // const thisDictUser =  chatSession?.studentDict[user_id];
+        // thisDictUser.connection = null;
         console.log('User disconnected');
     });
 

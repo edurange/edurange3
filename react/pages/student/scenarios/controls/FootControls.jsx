@@ -42,11 +42,7 @@ function FootControls({ guideContent, updatePane, paneSide }) {
                 </div>
 
                 <div className='footcontrol-item footcontrol-chat-button'
-                    onClick={() => updatePane(
-                        userData_state.role === "instructor"
-                            || userData_state.role === "admin"
-                            ? ("chat_instructor")
-                            : ("chat_student"))}>
+                    onClick={() => updatePane("chat")}>
                     Chat
                 </div>
 

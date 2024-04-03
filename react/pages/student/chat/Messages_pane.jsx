@@ -8,6 +8,8 @@ function Messages_pane({chatSessionID, chatLog_state, lastChat_ref}) {
                 
                 {chatLog_state.map((chat, index) => (
                     <div key={index} ref={index === chatLog_state.length - 1 ? lastChat_ref : null} className="er3chat-message-frame">
+                        
+                        {/* Msg_Bubble is the individual chat message component */}
                         <Msg_Bubble message_obj={chat} chatSessionID={chatSessionID}/>
                     </div>
                 ))}

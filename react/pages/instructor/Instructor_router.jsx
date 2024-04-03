@@ -10,6 +10,7 @@ import Instr_Scenarios from './scenarios/Instr_Scenarios';
 import Instr_Users from './users/Instr_Users';
 import Instr_ScenDetail from './scenarios/Instr_ScenDetail';
 import Instr_UserDetail from './users/Instr_UserDetail';
+import SocketKeeper from '../pub/SocketKeeper';
 
 export const InstructorRouter_context = React.createContext();
 
@@ -21,6 +22,8 @@ function Instructor_router() {
     const [scenarioDetail_state, set_scenarioDetail_state] = useState({})
     const [userDetail_state, set_userDetail_state] = useState({})
     const [tempUsers_state, set_tempUsers_state] = useState([]);
+    const [socketConnection_state, set_socketConnection_state] = useState();
+
 
     async function get_instructorData() {
         try {
@@ -42,6 +45,8 @@ function Instructor_router() {
         <div className='newdash-frame'>
             <div className='newdash-frame-carpet'>
 
+            <SocketKeeper/>
+
             <Frame_side />
 
                 <InstructorRouter_context.Provider value={{
@@ -52,7 +57,9 @@ function Instructor_router() {
 
                     scenarioDetail_state, set_scenarioDetail_state,
                     userDetail_state, set_userDetail_state,
-                    tempUsers_state, set_tempUsers_state
+                    tempUsers_state, set_tempUsers_state,
+
+                    socketConnection_state, set_socketConnection_state
                 }}>
 
                     <Routes>

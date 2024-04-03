@@ -30,6 +30,12 @@ function Instr_Chat() {
     const testMessage = new ChatMessage(1, "hello students!");
     const [messageContent_state, set_messageContent_state] = useState('');
     const [chatLog_state, set_chatLog_state] = useState([]);
+    useEffect(() => {
+        if (lastChat_ref.current) {
+            lastChat_ref.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [chatLog_state]);
+
     const lastChat_ref = useRef(null);
     const socket = useRef(null);
     const pingInterval = 12000;
@@ -37,11 +43,6 @@ function Instr_Chat() {
     useEffect(() => {
         trySocket();
     }, []); 
-    useEffect(() => {
-        if (lastChat_ref.current) {
-            lastChat_ref.current.scrollIntoView({ behavior: 'smooth' });
-        }
-    }, [chatLog_state]);
 
     async function trySocket(){
         socket.current = new WebSocket(socketURL);
