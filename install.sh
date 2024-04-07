@@ -22,7 +22,7 @@ source ~/.bashrc
 echo -e "${GRN}Installing python3-pip, npm, redis-server,  unzip, postgresql, lib-pq-dev, and wget${NC}"
 
 sudo apt update
-# VOLATILE: CHECK NGINX INSTALL
+# VOLATILE: CHECK NGINX INSTALL - CHECK CERTBOT TOO
 sudo apt install -y python3-pip redis-server unzip wget postgresql libpq-dev nginx
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
 source ~/.nvm/nvm.sh
