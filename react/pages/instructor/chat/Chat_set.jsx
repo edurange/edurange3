@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import './ChatApp.css';
-import Chat_Instructor from './Instr_Chat';
+import Chat_Instructor from './Chat_Instructor';
 import Instr_UsersList from './Instr_UsersList';
 
 function Chat_set() {

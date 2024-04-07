@@ -1,10 +1,10 @@
-import './ChatApp.css';
+import './Chat_HistoryBox.css';
 import Msg_Bubble from './Msg_Bubble';
 
-function Messages_pane({chatSessionID, chatLog_state, lastChat_ref}) {
+function Chat_HistoryBox({chatSessionID, chatLog_state, lastChat_ref}) {
     return (
-        <div className="er3chat-pane">
-            <div className='er3chat-chat-carpet'>
+        <div className="chat-historybox-frame">
+            <div className='chat-historybox-carpet'>
                 
                 {chatLog_state.map((chat, index) => (
                     <div key={index} ref={index === chatLog_state.length - 1 ? lastChat_ref : null} className="er3chat-message-frame">
@@ -17,4 +17,4 @@ function Messages_pane({chatSessionID, chatLog_state, lastChat_ref}) {
         </div>
     );
 
-}; export default Messages_pane;
+}; export default Chat_HistoryBox;

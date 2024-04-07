@@ -2,7 +2,7 @@ import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import Instr_Dash from './dashboard/Instr_Dash';
-import Chat_Instructor from './chat/Instr_Chat';
+import Chat_Instructor from './chat/Chat_Instructor';
 import Instr_Groups from './groups/Instr_Groups';
 import Instr_GroupDetail from './groups/Instr_GroupDetail';
 import Frame_side from '../../frame/sidenav/Frame_side';
@@ -60,7 +60,7 @@ function Instructor_router() {
                     
                     socketConnection_state, set_socketConnection_state
                 }}>
-                    <SocketKeeper />
+                    {/* <SocketKeeper /> */}
 
                     <Routes>
                         <Route path="/*" element={<Instr_Dash />} />

@@ -6,13 +6,13 @@ html, body{
   margin: 0;
 }
 
-.er3chat-frame{
+.chatInstr-frame{
   display: flex;
   flex-direction: column;
   width: 100%;
   height: 100%;
 }
-.er3chat-pane{
+.chatInstr-pane{
   background-color: rgb(211, 176, 130);
   width: 100%;
   height: 100%;
@@ -20,7 +20,7 @@ html, body{
   flex-direction: column;
   background-color: grey;
 }
-.er3chat-chat-carpet{
+.chatInstr-chat-carpet{
   background-color: rgb(130, 154, 211);
   width: 99%;
   height: 98%;
@@ -32,8 +32,9 @@ html, body{
   position: relative;
   left: 1%;
   top: 1%;
+  background-color: pink;
 }
-.er3chat-message-frame{
+.chatInstr-message-frame{
   width: 100%;
   height: auto;
   display: flex;
@@ -46,7 +47,7 @@ html, body{
   background-color: paleturquoise;
   color: black;
 }
-.er3chat-message-item{
+.chatInstr-message-item{
   width: 100%;
   height: 100%;
   display: flex;
@@ -54,20 +55,20 @@ html, body{
   justify-content: flex-start;
   color: black;
 }
-.er3chat-panes-container-frame{
+.chatInstr-panes-container-frame{
   width: 100%;
   height: 100%;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
 }
-.er3chat-panes-container-carpet{
+.chatInstr-panes-container-carpet{
   min-width: 100%;
   height: inherit;
   display: flex;
-  flex-direction: row;
+  /* flex-direction: row; */
   background-color: inherit;
 }
-.er3chat-input-frame{
+.chatInstr-input-frame{
   width: 100%;
   max-height: 40px;
   min-height: 40px;
@@ -104,60 +105,8 @@ html, body{
 .connect-button{
   width: 55px;
 }
-.er3chat-input-item{
+.chatInstr-input-item{
   display: flex;
   align-items: center;
   justify-content: center;
-}
-.er3chat-instr-frame{
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-.er3chat-instr-carpet{
-  width: 98%;
-  height: 98%;
-  display: flex;
-  flex-direction: column;
-  border-top: 1px solid black;
-  position: relative;
-  left: 1%;
-  top: 1%;
-  border: 1px solid black;
-  background-color: rgb(160, 85, 58);
-}
-.er3chat-instr-heading{
-  width: 100%;
-  height: 10%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  /* box-sizing: border-box; */
-  border-bottom: 1px solid black;
-  background-color: rgb(168, 228, 193);
-  color: black;
-}
-.er3chat-instr-studentInspect{
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
-  border-bottom: 1px solid black;
-  background-color: rgb(116, 159, 134);
-  color: black;
-}
-.er3chat-instr-queue{
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
-  background-color: rgb(80, 110, 92);
 }

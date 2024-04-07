@@ -1,14 +1,19 @@
 
 .bubble-frame{
     display:flex;
-    color: black;
-    border: 1px solid black;
+    color: aquamarine;
+    border: 1px solid rgb(123, 151, 142);
+    border-radius: 4px;
+    padding: 5px;
+    background-color: rgba(127, 255, 212, 0.139);
 }
 .bubble-carpet{
     display:flex;
 }
 .bubble-items-container{
     display:flex;
+    flex-direction: column;
+    gap: 1px;
 }
 .bubble-item{
     display:flex;

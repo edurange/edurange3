@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useContext } from 'react';
-import Messages_pane from './Messages_pane.jsx';
-import './ChatApp.css';
+import Chat_HistoryBox from './Chat_HistoryBox.jsx';
+import './Chat_Student.css';
 import { HomeRouter_context } from '@pub/Home_router.jsx';
 
 // !important! use 'wss:' for production (reqs SSL certs) // DEV_ONLY
@@ -22,27 +22,25 @@ function Chat_Student() {
     //   } = useContext(ChatRouter_context);
     const {
         userData_state
-      } = useContext(HomeRouter_context);
-    
-    
+    } = useContext(HomeRouter_context);
 
     const testMessage = new ChatMessage(1, "hello eduRange!");
     const [messageContent_state, set_messageContent_state] = useState('');
     const [chatLog_state, set_chatLog_state] = useState([]);
     const lastChat_ref = useRef(null);
     const socket = useRef(null);
-    const pingInterval = 12000;
+    const pingInterval = 5000;
 
     useEffect(() => {
         trySocket();
-    }, []); 
+    }, []);
     useEffect(() => {
         if (lastChat_ref.current) {
             lastChat_ref.current.scrollIntoView({ behavior: 'smooth' });
         }
     }, [chatLog_state]);
 
-    async function trySocket(){
+    async function trySocket() {
         socket.current = new WebSocket(socketURL);
         socket.current.onopen = () => {
             const handshake_msg = {
@@ -53,14 +51,17 @@ function Chat_Student() {
                 socket.current.send(JSON.stringify(handshake_msg));
             };
             setInterval(() => {
+                console.log(socket.current.readyState);
+                console.log(socket.current.readyState === 1);
                 if (socket.current.readyState === 1) {
-                    socket.current.send(JSON.stringify({ping:'ping'}));
+                    console.log('trying to ping');
+                    socket.current.send(JSON.stringify({ ping: 'ping' }));
                 }
             }, pingInterval);
         };
         socket.current.onmessage = (event) => {
             const message = JSON.parse(event.data);
-            
+            console.log(message);
             if (message.type === 'newChatMessage') {
                 set_chatLog_state((prevChatLog) => [...prevChatLog, message.data]);
             } else if (message.type === 'chatError') {
@@ -84,7 +85,7 @@ function Chat_Student() {
     const handleInputChange = (event, setState) => {
         setState(event.target.value);
     };
-    
+
     const handleSubmit = (event) => {
         event.preventDefault();
         const chatMsg = new ChatMessage(1, messageContent_state);
@@ -102,26 +103,24 @@ function Chat_Student() {
     };
 
     return (
-        <div className='er3chat-frame'>
-        <div className='er3chat-panes-container-frame'>
-            <div className="er3chat-pane">
-                <Messages_pane chatSessionID='someSessionID' chatLog_state={chatLog_state} lastChat_ref={lastChat_ref}/>
+        <div className='chatStu-frame'>
+            <div className="chatStu-historyBox">
+                <Chat_HistoryBox chatSessionID='someSessionID' chatLog_state={chatLog_state} lastChat_ref={lastChat_ref} />
             </div>
-        </div>
-        <div className='er3chat-input-frame'>
-            <form className='er3chat-input-frame' onSubmit={handleSubmit}>
-                <div className='er3chat-input-item'>ID: someID</div>
-                <div className='er3chat-input-item'>Alias: someAlias</div>
-                <div className='er3chat-input-item sender-frame'>
-                    <textarea className='sender-text' value={messageContent_state} onChange={(e) => handleInputChange(e, set_messageContent_state)} placeholder="Enter your message"></textarea>
-                    <button className='sender-button connect-button' type="submit">Send</button>
+            <div className='chatStu-input-frame'>
+                <form className='chatStu-input-frame' onSubmit={handleSubmit}>
+                    <div className='chatStu-input-item'>ID: someID</div>
+                    <div className='chatStu-input-item'>Alias: someAlias</div>
+                    <div className='chatStu-input-item sender-frame'>
+                        <textarea className='sender-text' value={messageContent_state} onChange={(e) => handleInputChange(e, set_messageContent_state)} placeholder="Enter your message"></textarea>
+                        <button className='sender-button connect-button' type="submit">Send</button>
+                    </div>
+                </form>
+                <div onClick={handleConnectSubmit}>
+                    <button className='sender-button connect-button' type="submit">Connect</button>
                 </div>
-            </form>
-            <div onClick={handleConnectSubmit}>
-                <button className='sender-button connect-button' type="submit">Connect</button>
             </div>
         </div>
-    </div>
     );
 };
 

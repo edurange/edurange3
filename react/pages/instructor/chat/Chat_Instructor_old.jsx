@@ -1,6 +1,6 @@
 
 import { customAlphabet } from 'nanoid';
-import './ChatApp.css'
+import './Chat_Instructor.css'
 import { useState, useRef, useEffect } from 'react';
 
 // note: this component is currently using dummy values, but in the future it will need

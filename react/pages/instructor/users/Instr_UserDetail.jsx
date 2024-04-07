@@ -7,7 +7,7 @@ import { useParams } from 'react-router-dom';
 import '@assets/css/tables.css';
 import { InstructorRouter_context } from '../Instructor_router';
 import Placard from '../../../components/Placard';
-import Instr_Chat from '../chat/Instr_Chat';
+import Chat_Instructor from '../chat/Chat_Instructor';
 
 function Instr_UserDetail() {
 
@@ -38,7 +38,7 @@ function Instr_UserDetail() {
         <div className="table-frame">
 
             Chat should be here
-            <Instr_Chat />
+            <Chat_Instructor />
             
             <div>
                 Username:  {thisUser.username}

@@ -14,8 +14,8 @@
 // 
 
 import { useState, useRef, useEffect } from 'react';
-import './ChatApp.css';
-import Messages_pane from '@student/chat/Messages_pane.jsx';
+import './Chat_Instructor.css';
+import Chat_HistoryBox from '@student/chat/Chat_HistoryBox.jsx';
 import Instructor_UsersList from './Instr_UsersList.jsx';
 import { ChatMessage } from '@student/chat/Chat_Student.jsx';
 
@@ -23,7 +23,7 @@ import { ChatMessage } from '@student/chat/Chat_Student.jsx';
 const proto = (window.location.protocol == "https") ? "wss" : "ws";
 const socketURL = `${proto}://${window.location.host}/chat`;
 
-function Instr_Chat() {
+function Chat_Instructor() {
 
     const chatUsers = []; // array of user objects, w/ their chats
 
@@ -106,20 +106,20 @@ function Instr_Chat() {
     };
 
     return (
-        <div className='er3chat-frame'>
-        <div className='er3chat-panes-container-frame'>
-            <div className="er3chat-pane">
+        <div className='chatInstr-frame'>
+        <div className='chatInstr-panes-container-frame'>
+            <div className="chatInstr-pane">
                 <Instructor_UsersList/>
-                <Messages_pane chatSessionID='123' chatLog_state={chatLog_state} lastChat_ref={lastChat_ref}/>
+                <Chat_HistoryBox chatSessionID='123' chatLog_state={chatLog_state} lastChat_ref={lastChat_ref}/>
             </div>
-            <div className="er3chat-pane">
+            <div className="chatInstr-pane">
             </div>
         </div>
-        <div className='er3chat-input-frame'>
-            <form className='er3chat-input-frame' onSubmit={handleSubmit}>
-                <div className='er3chat-input-item'>ID: someID</div>
-                <div className='er3chat-input-item'>Alias: someAlias</div>
-                <div className='er3chat-input-item sender-frame'>
+        <div className='chatInstr-input-frame'>
+            <form className='chatInstr-input-frame' onSubmit={handleSubmit}>
+                <div className='chatInstr-input-item'>ID: someID</div>
+                <div className='chatInstr-input-item'>Alias: someAlias</div>
+                <div className='chatInstr-input-item sender-frame'>
                     <textarea className='sender-text' value={messageContent_state} onChange={(e) => handleInputChange(e, set_messageContent_state)} placeholder="Enter your message"></textarea>
                     <button className='sender-button connect-button' type="submit">Send</button>
                 </div>
@@ -132,4 +132,4 @@ function Instr_Chat() {
     );
 };
 
-export default Instr_Chat;
+export default Chat_Instructor;

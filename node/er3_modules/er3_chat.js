@@ -89,7 +89,8 @@ const chatSocketServer = new WebSocketServer({
 });
 
 const interval = setInterval(function ping() {
-    wss.clients.forEach(function each(ws) {
+    
+    chatSocketServer.clients.forEach(function each(ws) {
 
       if (ws.isAlive === false) return ws.terminate();
   
@@ -117,7 +118,10 @@ chatSocketServer.on('connection', (socketConnection, request) => {
 
     socketConnection.on('message', async (message) => {
         const data = JSON.parse(message);
+        console.log('something received');
+        console.log ('data received:', data)
         if (data.hasOwnProperty('ping')){
+            console.log ('does data have ping?: ', data.hasOwnProperty('ping'));
             socketConnection.send(JSON.stringify({pong:"pong"}));
             return;
         }
