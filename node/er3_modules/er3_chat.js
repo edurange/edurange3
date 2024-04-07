@@ -88,6 +88,8 @@ const chatSocketServer = new WebSocketServer({
     }
 });
 
+
+/*
 const interval = setInterval(function ping() {
     
     chatSocketServer.clients.forEach(function each(ws) {
@@ -99,7 +101,7 @@ const interval = setInterval(function ping() {
 
     });
   }, 5_000);
-
+*/
 
 
 chatSocketServer.on('connection', (socketConnection, request) => {
