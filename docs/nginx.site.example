@@ -1,42 +1,9 @@
-/*
-This is an example config for nginx reverse proxy.  
-
-
-
-***IMPORTANT***
-This is only the 'site' config file for nginx.  you also need to update
-the main config file, which by default is /etc/nginx/nginx.conf
-****
-
-You WILL need to use some form of reverse proxy 
-to use edurange3 out of the box.
-
-This is only an example, and has not been 'vetted'
-to work universally; please review and revise.
-
-This assumes you have set up certbot.  
-If you have another SSL, adjust accordingly.
-
-You WILL need to use SSL certs to use edurange3
-out of the box.  It is possible to use some of the
-features with an insecure connection, but you will
-need to adjust the connection settings yourself.  
-The edurange org does not provide support for this option.
-
-If you need help with self-signed certs, 
-see further documentation (# DEV_FIX)
-
-This config example assumes you are using a subdomain, 
-but you do not need to.  Just replace the url accordingly.
-
-Each one of these locations IS needed to use all the features.
-*/
 server {
     listen 443 ssl;
-    server_name subdomain.myDomain.com;
+    server_name DOMAIN_TO_BE_REPLACED;
 
-    ssl_certificate /etc/letsencrypt/live/myDomain.com/fullchain.pem; # managed by Certbot
-    ssl_certificate_key /etc/letsencrypt/live/myDomain.com/privkey.pem; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/DOMAIN_TO_BE_REPLACED/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/DOMAIN_TO_BE_REPLACED/privkey.pem; # managed by Certbot
     include /etc/letsencrypt/options-ssl-nginx.conf;
     ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
 
