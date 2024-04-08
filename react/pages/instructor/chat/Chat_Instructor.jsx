@@ -117,8 +117,6 @@ function Chat_Instructor() {
         </div>
         <div className='chatInstr-input-frame'>
             <form className='chatInstr-input-frame' onSubmit={handleSubmit}>
-                <div className='chatInstr-input-item'>ID: someID</div>
-                <div className='chatInstr-input-item'>Alias: someAlias</div>
                 <div className='chatInstr-input-item sender-frame'>
                     <textarea className='sender-text' value={messageContent_state} onChange={(e) => handleInputChange(e, set_messageContent_state)} placeholder="Enter your message"></textarea>
                     <button className='sender-button connect-button' type="submit">Send</button>

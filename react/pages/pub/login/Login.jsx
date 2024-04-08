@@ -3,12 +3,14 @@ import axios from 'axios';
 import { HomeRouter_context } from '@pub/Home_router';
 import edurange_icons from '@modules/ui/edurangeIcons';
 import './Login.css'
+import { genAlias } from '../../../modules/utils/chat_modules';
 
 function Login() {
 
     const {
         set_userData_state, set_login_state,
-        loginExpiry, set_desiredNavMetas_state
+        loginExpiry, set_desiredNavMetas_state,
+        set_userAlias_state
     } = useContext(HomeRouter_context);
 
     async function sendLoginRequest(username_input, password_input) {
@@ -26,6 +28,9 @@ function Login() {
             if (userData) {
                 set_userData_state(userData);
                 set_login_state(true);
+                const newAlias = genAlias();
+                console.log(newAlias);
+                set_userAlias_state(newAlias);
                 const newExpiry = Date.now() + loginExpiry;
                 sessionStorage.setItem('userData', JSON.stringify(userData));
                 sessionStorage.setItem('login', true);

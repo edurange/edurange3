@@ -22,7 +22,6 @@ function Instructor_router() {
     const [scenarioDetail_state, set_scenarioDetail_state] = useState({})
     const [userDetail_state, set_userDetail_state] = useState({})
     const [tempUsers_state, set_tempUsers_state] = useState([]);
-    const [socketConnection_state, set_socketConnection_state] = useState();
 
 
     async function get_instructorData() {
@@ -58,9 +57,9 @@ function Instructor_router() {
                     userDetail_state, set_userDetail_state,
                     tempUsers_state, set_tempUsers_state,
                     
-                    socketConnection_state, set_socketConnection_state
+                    
                 }}>
-                    {/* <SocketKeeper /> */}
+                    <SocketKeeper/>
 
                     <Routes>
                         <Route path="/*" element={<Instr_Dash />} />

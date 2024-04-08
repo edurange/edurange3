@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Route, Routes, useNavigate } from 'react-router-dom';
 
 
@@ -35,6 +35,11 @@ function Home_router() {
   const [userData_state, set_userData_state] = useState();
   const [desiredNavMetas_state, set_desiredNavMetas_state] = useState(['/', 'home'])
   const [login_state, set_login_state] = useState(false);
+  const [chatSocket_state, set_chatSocket_state] = useState();
+  const [userAlias_state, set_userAlias_state] = useState('none');
+  const socket_ref = useRef(null);
+
+
   const navigate = useNavigate();
 
 
@@ -77,10 +82,11 @@ function Home_router() {
         sideNav_isSmall_state, set_sideNav_isSmall_state,
         clipboard_state, set_clipboard_state,
         navArraysObj_state,
-        desiredNavMetas_state, set_desiredNavMetas_state
+        desiredNavMetas_state, set_desiredNavMetas_state,
+        chatSocket_state, set_chatSocket_state,
+        userAlias_state, set_userAlias_state,
+        socket_ref
       }}>
-
-        <SessionKeeper />
 
         <Frame_head />
 

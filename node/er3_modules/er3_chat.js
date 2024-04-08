@@ -6,7 +6,7 @@ const cookie = require('cookie');
 const jwt = require('jsonwebtoken');
 const pg = require('pg');
 const Joi = require('joi');
-const {generateAlias, generateInt} = require('../utils/chat_utils');
+const {generateInt} = require('../utils/chat_utils');
 
 const { Pool } = pg;
 // root project env
@@ -33,8 +33,8 @@ function regUser(user_id, username, user_role, socketConnection) {
             muted: false,  // silences notifications from user
             slowed: false, // set automatic timeout until next notif will show
             timeout: 0,
-            alias: generateAlias(),
             connection: socketConnection,
+            chatChannel_id : user_id
         };
         console.log(`Registered new user: ${username}`);
     }
@@ -58,22 +58,11 @@ function regInstructor(user_id, username, user_role, socketConnection) {
         console.log(`Instructor ${userToCheck} already exists in dict. Continuing...`);};
 }
 
-// postgreSQL connection settings
-const pool = new Pool({
-    host: 'localhost',
-    port: process.env.NODE_DB_PORT,
-    database: process.env.NODE_DB_NAME,
-    user: process.env.NODE_DB_USERNAME,
-    password: process.env.NODE_DB_PASSWORD,
-});
-
 // DEV_FIX replace w/ new schema
 const chatSchema = Joi.object({
-    scenarioID: Joi.number().integer().required(),
+    scenarioID: Joi.number().integer(),
     content: Joi.string().trim().required(),
-    sender_id: Joi.number().integer()
 });
-
 
 const chatSocketServer = new WebSocketServer({
     server: chatHttpServer,
@@ -88,19 +77,6 @@ const chatSocketServer = new WebSocketServer({
     }
 });
 
-const interval = setInterval(function ping() {
-    
-    chatSocketServer.clients.forEach(function each(ws) {
-
-      if (ws.isAlive === false) return ws.terminate();
-  
-      ws.isAlive = false;
-      ws.ping();
-
-    });
-  }, 5_000);
-
-
 
 chatSocketServer.on('connection', (socketConnection, request) => {
 
@@ -109,6 +85,9 @@ chatSocketServer.on('connection', (socketConnection, request) => {
 
     if (!username) {return {error: 'username not found in validated jwt'}}
     
+    // DEV_FIX check here that user exists in db
+
+
     // DEV_ONLY
     console.log(
         `#  User connected to chat server w/ jwt id: `,
@@ -118,83 +97,108 @@ chatSocketServer.on('connection', (socketConnection, request) => {
 
     socketConnection.on('message', async (message) => {
         const data = JSON.parse(message);
-        console.log('something received');
-        console.log ('data received:', data)
-        if (data.hasOwnProperty('ping')){
-            console.log ('does data have ping?: ', data.hasOwnProperty('ping'));
-            socketConnection.send(JSON.stringify({pong:"pong"}));
+        // console.log ('Rcvd socket connection of type: ', data?.type);
+
+        if (data?.type === 'handshake'){
+            socketConnection.send(JSON.stringify({
+                type:'handshake',
+                ok: true,
+            }));
             return;
         }
-        const messageData = data.data;
+        if (data?.type === 'keepalive'){
+            socketConnection.send(JSON.stringify({
+                type:'keepalive',
+                message: 'pong',
+                ok: true
+            }));
+            return;
+        }
+        if (data?.type === 'get_chat_history'){
 
-        // DEV_ONLY
-        console.log(
-            `#  Chat message received:`,
-            `\n#    scenario_id: ${messageData?.scenarioID}`,
-            `\n#    username: ${username}`,
-            `\n#    content: ${messageData?.content}`);
+            // get user's chat history for past 24 hrs
+
+            const arrayOfChatObjs = 'getChatHistoryFromDb' // filter by date
+
+            const chatHistoryArray = [arrayOfChatObjs] ?? [];
+
+            chatSession.studentDict.chat_history = chatHistoryArray
+
+            socketConnection.send(JSON.stringify({
+                type:'chat_history',
+                message: chatHistoryArray,
+                ok: true
+            }));
+            return;
+        }
+
         
-        const { error, value } = chatSchema.validate(messageData);
+    // DEV_FIX get chat message log for last 24 hrs from db
 
-        if (error) {
-            console.log(error.details[0].message);
-            socketConnection.send(JSON.stringify({ error: error.details[0].message }));
-            return;
-        }
+    // 
 
-        // add user & connection info to chatSession.studentDict if not present. add user to groupsDict array(s).
-        regUser(user_id, username, user_role, socketConnection);
+        if (data?.type === 'chatMessage'){
 
-        // check 'messageData' for user role and add user to instructorArray if appropriate 
-        if (user_role === "instructor" || user_role === "admin") {
-            regInstructor(user_id, username, user_role, socketConnection);
-        }
-        const thisDictUser =  chatSession?.studentDict[user_id];
-
-        // DEV_FIX (db is disabled)
-        // const query = `INSERT INTO chats (messageID, userID, userAlias, content, scenarioID, timeStamp)
-        //                VALUES (
-        //                 ${value.messageID}, 
-        //                 ${value.userID},
-        //                 ${value.scenarioID}, 
-        //                 '${value.userAlias}', (remove from db)
-        //                 '${value.content}', 
-        //                 '${value.timeStamp}')`;
-
-        try {
-            // await pool.query(query); // (UNCOMMENT TO USE DB)
-            // console.log('Chat message saved to database');
-
-            console.log(`The user ${thisDictUser.isInstructor ? "IS" : "is NOT"} an instructor!`)
-
-            const instructorConnectionArr = Object.values(chatSession.instructorDict).map(entry => entry.connection);
-
-            // instr
-            instructorConnectionArr.forEach(connection => {
-                if (connection.readyState === 1) {
-                    connection.send(JSON.stringify({ type: 'newChatMessage', data: value }));
-                }
-
-            })
-
-            // student
-            if (!chatSession?.instructorDict.hasOwnProperty(user_id)) {
-                const responseMsg = {
-                    scenarioID: value.scenarioID,
-                    content: value.content,
-                    sender_id: user_id
-                };
-                console.log ('thisDictUser connection info: ', thisDictUser.connection.readyState)
-                console.log ('socketConnection info: ', socketConnection.readyState)
-                thisDictUser.connection.send(JSON.stringify({ type: 'newChatMessage', data: responseMsg }));
-            }
+            console.log ('printing data.type: ', data?.type);
+            console.log ('printing data.message: ', data?.message);
+            console.log('')
             
+                    // DEV_ONLY
+            const { error, value } = chatSchema.validate(data?.message);
+            
+            if (error) {
+                console.log(error.details[0].message);
+                socketConnection.send(JSON.stringify({ error: error.details[0].message }));
+                return;
+            }
 
-
-        } catch (err) {
-            console.error('Database error:', err);
-            socketConnection.send(JSON.stringify({ error: 'Internal Server Error' }));
-        }
+            console.log (value);
+            
+            // add user & connection info to chatSession.studentDict if not present. add user to groupsDict array(s).
+            regUser(user_id, username, user_role, socketConnection);
+            
+            // check 'messageData' for user role and add user to instructorArray if appropriate 
+            if (user_role === "instructor" || user_role === "admin") {
+                regInstructor(user_id, username, user_role, socketConnection);
+            }
+            const thisDictUser =  chatSession?.studentDict[user_id];
+ 
+                
+                try {
+                    
+                    console.log(`The user ${thisDictUser.isInstructor ? "IS" : "is NOT"} an instructor!`)
+                    
+                    const instructorConnectionArr = Object.values(chatSession.instructorDict).map(entry => entry.connection);
+                    
+                    // instr
+                    instructorConnectionArr.forEach(connection => {
+                        if (connection.readyState === 1) {
+                            connection.send(JSON.stringify({ type: 'newChatMessage', data: value }));
+                        }
+                        
+                    })
+                    
+                    // student
+                    if (!chatSession?.instructorDict.hasOwnProperty(user_id)) {
+                        const responseMsg = {
+                            scenarioID: value.scenarioID ?? 'none',
+                            type: 'chatReceipt',
+                            content: value.content,
+                            sender_id: user_id,
+                            ok: true
+                        };
+                        console.log ('thisDictUser connection readyState: ', thisDictUser.connection.readyState)
+                        console.log ('socketConnection info: ', socketConnection.readyState)
+                        thisDictUser.connection.send(JSON.stringify(responseMsg));
+                    }
+                    
+                    
+                    
+                } catch (err) {
+                    console.error('Database error:', err);
+                    socketConnection.send(JSON.stringify({ error: 'Internal Server Error' }));
+                }
+            }
     });
 
     // disconnection and cleanup
@@ -206,3 +210,25 @@ chatSocketServer.on('connection', (socketConnection, request) => {
 
 });
 module.exports = { chatHttpServer, chatSocketServer };
+
+// postgreSQL connection settings
+// const pool = new Pool({
+//     host: 'localhost',
+//     port: process.env.NODE_DB_PORT,
+//     database: process.env.NODE_DB_NAME,
+//     user: process.env.NODE_DB_USERNAME,
+//     password: process.env.NODE_DB_PASSWORD,
+// });
+
+                    // await pool.query(query); // (UNCOMMENT TO USE DB)
+                    // console.log('Chat message saved to database');
+           
+            // DEV_FIX (db is disabled)
+            // const query = `INSERT INTO chats (messageID, userID, userAlias, content, scenarioID, timeStamp)
+            //                VALUES (
+                //                 ${value.messageID}, 
+                //                 ${value.userID},
+                //                 ${value.scenarioID}, 
+                //                 '${value.userAlias}', (remove from db)
+                //                 '${value.content}', 
+                //                 '${value.timeStamp}')`;

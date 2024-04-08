@@ -7,10 +7,10 @@ import edurange_icons from '@modules/ui/edurangeIcons';
 import { HomeRouter_context } from '@pub/Home_router';
 import Frame_UserBox from './Frame_UserBox';
 import { navArrays } from '../../modules/nav/navItemsData';
+import SocketKeeper from '../../pages/pub/SocketKeeper';
 
-function Frame_head({ navArrayToShow }) {
+function Frame_head() {
 
-    
     const {
         sideNav_isVisible_state, set_sideNav_isVisible_state,
         sideNav_isSmall_state, set_sideNav_isSmall_state,
@@ -18,7 +18,7 @@ function Frame_head({ navArrayToShow }) {
         navArraysObj_state
     } = useContext(HomeRouter_context);
     
-    navArrayToShow = navArraysObj_state?.top ?? navArrays.logout.home.top
+    const navArrayToShow = navArraysObj_state?.top ?? navArrays.logout.home.top
     const someNav = navArrays.top_logout
 
     function toggle_sideNav_vis() {
@@ -60,7 +60,6 @@ function Frame_head({ navArrayToShow }) {
 
         );
     };
-
     return (
         <div className="er3-homehead">
 
@@ -68,6 +67,7 @@ function Frame_head({ navArrayToShow }) {
             {/* <div className='homehead-notifs-section'><Notifs_button /></div> #DEV_FIX */}
 
             <Frame_UserBox/>
+            <SocketKeeper />
 
             <div className='er3-homehead-right'>
                 <span className="er3-homehead-buttonbar">

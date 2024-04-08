@@ -217,6 +217,21 @@ body, html{
     height: 24px;
     border-radius: 8px;
 }
+.socketBox-frame{
+    display: flex;
+    position: absolute;
+    left: 385px;
+    top: 6px;
+    color: var(--green-light);
+    background-color: rgba(0, 130, 113, 0.331);
+    border: 1px solid rgba(0, 130, 113, 0.758);
+    box-sizing: border-box;
+    padding: 5px;
+    align-items: center;
+    justify-content: center;
+    height: 24px;
+    border-radius: 8px;
+}
 .userBox-name{
     color: rgb(255, 162, 31);
 }

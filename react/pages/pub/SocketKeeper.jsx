@@ -1,64 +1,142 @@
 
-import React, { useContext, useRef, useEffect } from 'react';
-import Login from './login/Login';
+import React, { useContext, useEffect, useRef } from 'react';
 import { HomeRouter_context } from "./Home_router";
-import { InstructorRouter_context } from '../instructor/Instructor_router';
-import { ChatMessage } from '../student/chat/Chat_Student';
 
 function SocketKeeper() {
-
-    const { socketConnection_state, set_socketConnection_state } = useContext(InstructorRouter_context)
-
-    const proto = (window.location.protocol == "https:") ? "wss" : "ws";
+    const { userData_state, socket_ref } = useContext(HomeRouter_context);
+    const proto = (window.location.protocol === "https:") ? "wss" : "ws";
     const socketURL = `${proto}://${window.location.host}/chat`;
-    const testMessage = new ChatMessage(1, "hello students!");
-
-    const socket = useRef(null);
     const pingInterval = 12000;
+    const reconnectInterval = 5000; // Interval to check and reconnect if needed
+    const reconnectRef = useRef(null);
 
-    async function trySocket() {
-        socket.current = new WebSocket(socketURL);
-        socket.current.onopen = () => {
-            const handshake_msg = {
-                type: 'chatMessage',
-                data: testMessage
-            };
-            if (socket.current && socket.current.readyState === 1) {
-                socket.current.send(JSON.stringify(handshake_msg));
-            };
-            setInterval(() => {
-                if (socket.current.readyState === 1) {
-                    socket.current.send(JSON.stringify({ ping: 'ping' }));
+    useEffect(() => {
+        if (!userData_state) return;
+
+        const connectWebSocket = () => {
+            socket_ref.current = new WebSocket(socketURL);
+
+            socket_ref.current.onopen = () => {
+                if (socket_ref.current && socket_ref.current.readyState === 1) {
+                    console.log('sending socket handshake...');
+                    socket_ref.current.send(JSON.stringify({
+                        type: 'handshake',
+                        message: `${userData_state?.username}'s websocket has connected` 
+                    }));
                 }
-            }, pingInterval);
-        };
-        socket.current.onmessage = (event) => {
-            const message = JSON.parse(event.data);
+                setInterval(() => {
+                    if (socket_ref.current.readyState === 1) {
+                        console.log('sending socket keepalive ping...');
+                        socket_ref.current.send(JSON.stringify({
+                            type: 'keepalive',
+                            message: 'ping'
+                        }));
+                    }
+                }, pingInterval);
+            };
 
-            if (message.type === 'newChatMessage') {
-                console.log('new chat message received')
-            } else if (message.type === 'chatError') {
-                console.error('Chat error:', message.data);
+            socket_ref.current.onmessage = (event) => {
+                const message = JSON.parse(event.data);
+                console.log('socket message received: ', message);
+            };
+
+            socket_ref.current.onerror = (event) => {
+                console.error('WebSocket error:', event);
+            };
+
+            socket_ref.current.onclose = () => {
+                socket_ref.current = null;
             };
         };
 
-        socket.current.onerror = (event) => {
-            console.error('WebSocket error:', event);
-        };
+        connectWebSocket();
 
-        socket.current.onclose = (event) => {
-            socket.current = new WebSocket(socketURL);
-        };
+        // Set up an interval to check and reconnect if the WebSocket is closed
+        reconnectRef.current = setInterval(() => {
+            if (!socket_ref.current || socket_ref.current.readyState === WebSocket.CLOSED) {
+                console.log('Attempting to reconnect WebSocket...');
+                connectWebSocket();
+            }
+        }, reconnectInterval);
+
         return () => {
-            if (socket.current) {
-                socket.current.close();
-            };
+            if (socket_ref.current) {
+                socket_ref.current.close();
+            }
+            clearInterval(reconnectRef.current);
         };
-    };
+    }, [userData_state, socket_ref]);
 
-    useEffect(() => { trySocket(); }, []);
-    set_socketConnection_state(false);
-};
+    if (!socket_ref?.current) {
+        return <div className='socketBox-frame logged-out'>Socket ❌</div>;
+    }
 
+    return <div className='socketBox-frame logged-in'>Socket ✅</div>;
+}
 
 export default SocketKeeper;
+
+
+
+// import React, { useContext, useEffect } from 'react';
+// import { HomeRouter_context } from "./Home_router";
+
+// function SocketKeeper() {
+
+//     const { userData_state, socket_ref } = useContext(HomeRouter_context);
+//     const proto = (window.location.protocol === "https:") ? "wss" : "ws";
+//     const socketURL = `${proto}://${window.location.host}/chat`;
+//     const pingInterval = 12000;
+
+//     useEffect(() => {
+//         if (!userData_state) return;
+
+//         socket_ref.current = new WebSocket(socketURL);
+
+
+//         socket_ref.current.onopen = () => {
+//             if (socket_ref.current && socket_ref.current.readyState === 1) {
+//                 console.log('sending socket handshake...')
+//                 socket_ref.current.send(JSON.stringify({
+//                     type: 'handshake',
+//                     data: { message: `${userData_state?.username}'s websocket has connected` }
+//                 }));
+//             }
+//             setInterval(() => {
+//                 if (socket_ref.current.readyState === 1) {
+//                     console.log ('sending socket keepalive ping...')
+//                     socket_ref.current.send(JSON.stringify({
+//                         type: 'keepalive',
+//                         message: 'ping' }));
+//                 }
+//             }, pingInterval);
+//         };
+
+//         socket_ref.current.onmessage = (event) => {
+//             const message = JSON.parse(event.data);
+//             console.log('socket message received: ', message)
+//         };
+
+//         socket_ref.current.onerror = (event) => {
+//             console.error('WebSocket error:', event);
+//         };
+
+//         socket_ref.current.onclose = () => {
+//             socket_ref.current = null;
+//         };
+
+//         return () => {
+//             if (socket_ref.current) {
+//                 socket_ref.current.close();
+//             }
+//         };
+//     }, [userData_state, socket_ref]);
+
+//     if (!socket_ref?.current) {
+//         return <div className='socketBox-frame logged-out'>Socket ❌</div>;
+//     }
+
+//     return <div className='socketBox-frame logged-in'>Socket ✅</div>;
+// }
+
+// export default SocketKeeper;

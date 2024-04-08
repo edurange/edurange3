@@ -1,9 +1,10 @@
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useContext } from 'react';
 import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
 import 'xterm/css/xterm.css';
 import './SSH_web.css';
+import { HomeRouter_context } from '../../../../pub/Home_router';
 
 const proto = (window.location.protocol == "https:") ? "wss" : "ws";
 const NODEJS_WEBSSH_URL = `${proto}://${window.location.host}/ssh`;
@@ -13,7 +14,7 @@ function SSH_web(props) {
     const terminalRef = useRef(null);
     const term = useRef(new Terminal());
     const fitAddon = useRef(new FitAddon());
-    const socketRef = useRef(null);
+    const { userData_state, socket_ref } = useContext(HomeRouter_context);
 
     const [SSH_ip, SSH_port_str] = props.SSH_address.split(':');
     const SSH_port = parseInt(SSH_port_str, 10);
@@ -26,7 +27,7 @@ function SSH_web(props) {
         fitAddon.current.fit();
 
         const newSocket = new WebSocket(NODEJS_WEBSSH_URL);
-        socketRef.current = newSocket;
+        socket_ref.current = newSocket;
 
         newSocket.onopen = () => {
             newSocket.send(JSON.stringify({
@@ -46,8 +47,8 @@ function SSH_web(props) {
         };
 
         term.current.onData(data => {
-            if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
-                socketRef.current.send(JSON.stringify({ type: 'edu3_command_data', data: data }));
+            if (socket_ref.current && socket_ref.current.readyState === WebSocket.OPEN) {
+                socket_ref.current.send(JSON.stringify({ type: 'edu3_command_data', data: data }));
             } else {console.error('Socket is not connected.');}
         });
 
