@@ -22,7 +22,8 @@ source ~/.bashrc
 echo -e "${GRN}Installing python3-pip, npm, redis-server,  unzip, postgresql, lib-pq-dev, and wget${NC}"
 
 sudo apt update
-sudo apt install -y python3-pip redis-server unzip wget postgresql libpq-dev
+# VOLATILE: CHECK NGINX INSTALL - CHECK CERTBOT TOO
+sudo apt install -y python3-pip redis-server unzip wget postgresql libpq-dev nginx
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
 source ~/.nvm/nvm.sh
 cd $curDir
@@ -100,7 +101,17 @@ do
       elif [ $optnumber -eq 2 ]; then
         hostAddress="$option2"
       fi
+    localDomain=''
+
+    while [ -z "$localDomain" ]
+    do
+    	echo " Please enter the domain you would like to use for your local installation "
+    	read domainSelection
+     	localDomain="$domainSelection"
     done
+
+    # Add localDomain to /etc/hosts (permission?)
+    # replace DOMAIN_TO_BE_REPLACED in /etc/nginx/sites-available/default
     
   elif [ $promptnumber -eq 2 ]; then
     #echo $external_ip
@@ -111,6 +122,10 @@ do
     echo "Enter domain name: "
     read hostAddress
     #echo "$hostAddress CHANGED"
+
+    # Ask if they have certs already
+    # Verify that they're using certbot?
+    # replace DOMAIN_TO_BE_REPLACED in /etc/nginx/sites-available/default
   fi
 done
 

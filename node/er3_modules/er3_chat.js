@@ -77,6 +77,19 @@ const chatSocketServer = new WebSocketServer({
     }
 });
 
+const interval = setInterval(function ping() {
+    
+    chatSocketServer.clients.forEach(function each(ws) {
+
+      if (ws.isAlive === false) return ws.terminate();
+  
+      ws.isAlive = false;
+      ws.ping();
+
+    });
+  }, 5_000);
+
+
 
 chatSocketServer.on('connection', (socketConnection, request) => {
 
