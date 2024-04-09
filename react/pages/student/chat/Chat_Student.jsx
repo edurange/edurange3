@@ -5,9 +5,11 @@ import './Chat_Student.css';
 import { HomeRouter_context } from '@pub/Home_router.jsx';
 
 export class ChatMessage {
-    constructor(scenarioID, content) {
-        this.scenarioID = scenarioID;
-        this.content = content || "I love edurange";
+    constructor(scenario_id, message) {
+        this.type = 'chat_message'
+        this.scenario_id = scenario_id;
+        this.message = message || "I love edurange";
+        this.timestamp = Date.now()
     }
 }
 
@@ -20,6 +22,7 @@ function Chat_Student({scenario_id}) {
     useEffect(() => {
         const handleMessage = (event) => {
             const message = JSON.parse(event.data);
+            console.log('wassmessagetype: ', message.type)
             if (message.type === 'chatReceipt') {
                 set_chatLog_state((prevChatLog) => [...prevChatLog, message]);
             } else if (message.type === 'chatError') {
@@ -62,7 +65,7 @@ function Chat_Student({scenario_id}) {
 
     const sendMessage = () => {
         const chatMsg = new ChatMessage(scenario_id, messageContent_state.trim());
-        if (chatMsg.content) {
+        if (chatMsg.message) {
             const newChat = {
                 type: 'chatMessage',
                 message: chatMsg
@@ -76,9 +79,11 @@ function Chat_Student({scenario_id}) {
 
     return (
         <div className='chatStu-frame'>
+            
             <div className="chatStu-historyBox">
                 <Chat_HistoryBox chatSessionID='someSessionID' chatLog_state={chatLog_state} lastChat_ref={lastChat_ref} />
             </div>
+
             <div className='chatStu-input-frame'>
                 <form className='chatStu-input-frame' onSubmit={handleSubmit}>
                     <div className='chatStu-input-item sender-frame'>
@@ -87,6 +92,7 @@ function Chat_Student({scenario_id}) {
                     </div>
                 </form>
             </div>
+
         </div>
     );
 }

@@ -74,7 +74,7 @@ def get_content(i):
     if (
         not isinstance(current_scenario_id, int)
         or i < 0 
-        or i > 99
+        or i > 999
         ):
             return jsonify({'error': 'invalid scenario ID'}) # DEV_ONLY (replace with standard denial msg)
 

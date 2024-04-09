@@ -1,4 +1,4 @@
-
+import csv
 import json
 import os
 import random
@@ -11,6 +11,7 @@ from celery.utils.log import get_task_logger
 from flask import current_app, flash, jsonify
 from py_flask.utils.terraform_utils import adjust_network, find_and_copy_template, write_resource
 from py_flask.config.settings import CELERY_BROKER_URL, CELERY_RESULT_BACKEND
+from py_flask.utils.csv_utils import claimOctet, discardOctet
 
 logger = get_task_logger(__name__)
 path_to_directory = os.path.dirname(os.path.abspath(__file__))
@@ -111,15 +112,11 @@ def create_scenario_task(self, scen_name, scen_type, students_list, grp_id, scen
             else:
                 outfile.write(content.read())
 
-        active_scenarios = Scenarios.query.count()
-        starting_octet = int(os.getenv("SUBNET_STARTING_OCTET", 10))
-
-        # Local addresses begin at the subnet 10.0.0.0/24
-        octet_int = starting_octet + active_scenarios  # DEV_FIX
+        claimedOctet = claimOctet()
 
         # Write provider and networks
         find_and_copy_template(scen_type, "network")
-        adjust_network(str(octet_int), scen_name)
+        adjust_network(str(claimedOctet), scen_name)
         os.system("terraform init")
         os.system("terraform plan -out network")
 
@@ -129,13 +126,13 @@ def create_scenario_task(self, scen_name, scen_type, students_list, grp_id, scen
         for i, c in enumerate(c_names):
             find_and_copy_template(scen_type, c)
             write_resource(
-                str(octet_int), scen_name, scen_type, i, usernames, passwords,
+                str(claimedOctet), scen_name, scen_type, i, usernames, passwords,
                 s_files[i], g_files[i], u_files[i], flags, c_names
             )
 
         scenario.update(
             status=0,
-            octet=octet_int
+            octet=claimedOctet
         )
         os.chdir("../../..")
 
@@ -288,6 +285,12 @@ def destroy_scenario_task(self, scenario_id):
             self.request
         )
     )
+    scenario = Scenarios.query.filter_by(id=scenario_id).first()
+
+    print('printing scenario.octet: ', scenario.octet)
+    discarded_octet = discardOctet(scenario.octet)
+    print('printing discarded octet: ', discarded_octet)
+
     with app.test_request_context():
         scenario = Scenarios.query.filter_by(id=scenario_id).first()
         if scenario is not None:

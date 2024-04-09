@@ -60,8 +60,10 @@ function regInstructor(user_id, username, user_role, socketConnection) {
 
 // DEV_FIX replace w/ new schema
 const chatSchema = Joi.object({
-    scenarioID: Joi.number().integer(),
-    content: Joi.string().trim().required(),
+    scenario_id: Joi.number().integer(),
+    message: Joi.string().trim().required(),
+    type: Joi.string().required(),
+    timestamp: Joi.number().integer().required()
 });
 
 const chatSocketServer = new WebSocketServer({
@@ -110,7 +112,6 @@ chatSocketServer.on('connection', (socketConnection, request) => {
 
     socketConnection.on('message', async (message) => {
         const data = JSON.parse(message);
-        // console.log ('Rcvd socket connection of type: ', data?.type);
 
         if (data?.type === 'handshake'){
             socketConnection.send(JSON.stringify({
@@ -145,18 +146,11 @@ chatSocketServer.on('connection', (socketConnection, request) => {
             return;
         }
 
-        
-    // DEV_FIX get chat message log for last 24 hrs from db
-
-    // 
-
         if (data?.type === 'chatMessage'){
 
             console.log ('printing data.type: ', data?.type);
             console.log ('printing data.message: ', data?.message);
-            console.log('')
             
-                    // DEV_ONLY
             const { error, value } = chatSchema.validate(data?.message);
             
             if (error) {
@@ -184,20 +178,21 @@ chatSocketServer.on('connection', (socketConnection, request) => {
                     const instructorConnectionArr = Object.values(chatSession.instructorDict).map(entry => entry.connection);
                     
                     // instr
-                    instructorConnectionArr.forEach(connection => {
-                        if (connection.readyState === 1) {
-                            connection.send(JSON.stringify({ type: 'newChatMessage', data: value }));
+                    instructorConnectionArr.forEach(instructor_connection => {
+                        if (instructor_connection.readyState === 1) {
+                            instructor_connection.send(JSON.stringify({ type: 'newChatMessage', data: value }));
                         }
-                        
+                        // DEV_FIX handle bad ready state
                     })
                     
                     // student
                     if (!chatSession?.instructorDict.hasOwnProperty(user_id)) {
                         const responseMsg = {
-                            scenarioID: value.scenarioID ?? 'none',
                             type: 'chatReceipt',
-                            content: value.content,
+                            scenario_id: value.scenario_id,
+                            message: value.message,
                             sender_id: user_id,
+                            timestamp: value.timestamp,
                             ok: true
                         };
                         console.log ('thisDictUser connection readyState: ', thisDictUser.connection.readyState)
@@ -237,11 +232,11 @@ module.exports = { chatHttpServer, chatSocketServer };
                     // console.log('Chat message saved to database');
            
             // DEV_FIX (db is disabled)
-            // const query = `INSERT INTO chats (messageID, userID, userAlias, content, scenarioID, timeStamp)
+            // const query = `INSERT INTO chats (messageID, userID, userAlias, content, scenario_id, timeStamp)
             //                VALUES (
                 //                 ${value.messageID}, 
                 //                 ${value.userID},
-                //                 ${value.scenarioID}, 
+                //                 ${value.scenario_id}, 
                 //                 '${value.userAlias}', (remove from db)
                 //                 '${value.content}', 
                 //                 '${value.timeStamp}')`;

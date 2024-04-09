@@ -1,3 +1,4 @@
+import csv
 from sqlalchemy.exc import SQLAlchemyError
 from py_flask.database.user_schemas import CreateGroupSchema, TestUserListSchema
 from py_flask.database.models import Users, StudentGroups, ScenarioGroups, GroupUsers, Scenarios
@@ -8,7 +9,8 @@ from flask import (
     Blueprint,
     request,
     jsonify,
-    g
+    g,
+    current_app
 )
 from py_flask.utils.scenario_utils import (
      identify_state
@@ -106,7 +108,6 @@ def create_group():
             "group_obj": group_obj.to_dict(),
         }
 
-
 @blueprint_instructor.route("/get_instructor_data", methods=['GET'])
 @jwt_and_csrf_required
 def get_instructor_data():
@@ -122,9 +123,12 @@ def get_instructor_data():
 
 @blueprint_instructor.route('/get_instr_content/<int:i>', methods=['GET']) # WIP
 @jwt_and_csrf_required
-def get_content(i):
+def get_instr_content(i):
     instructor_only()
     current_scenario_id = i
+
+    print('scenario ID provided to get_content: ')
+
     if (
         not isinstance(current_scenario_id, int)
         or i < 0 
