@@ -127,8 +127,6 @@ def get_instr_content(i):
     instructor_only()
     current_scenario_id = i
 
-    print('scenario ID provided to get_content: ')
-
     if (
         not isinstance(current_scenario_id, int)
         or i < 0 

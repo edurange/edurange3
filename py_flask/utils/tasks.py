@@ -287,9 +287,7 @@ def destroy_scenario_task(self, scenario_id):
     )
     scenario = Scenarios.query.filter_by(id=scenario_id).first()
 
-    print('printing scenario.octet: ', scenario.octet)
     discarded_octet = discardOctet(scenario.octet)
-    print('printing discarded octet: ', discarded_octet)
 
     with app.test_request_context():
         scenario = Scenarios.query.filter_by(id=scenario_id).first()

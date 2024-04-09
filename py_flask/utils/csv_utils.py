@@ -41,7 +41,6 @@ def claimOctet():
     with open(csv_file_path, 'r') as file:
         reader = csv.DictReader(file)
         OCTET_SET = {int(row['octet']) for row in reader}
-        print('printing OCTET_SET: ', OCTET_SET)
 
     # Find the lowest available octet
     octet_int = lowest_octet

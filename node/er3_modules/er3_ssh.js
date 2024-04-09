@@ -38,8 +38,6 @@ const sshSocketServer = new WebSocketServer({
 });
 sshSocketServer.on('connection', async (ssh_socket, request) => {
     const {username, user_role, user_id} = request.get_id();
-
-    console.log(request)
     
     if (!username) {return {error: 'username not found in validated jwt'}};
     const saniname = username.replace(/-/g, '');
@@ -77,7 +75,7 @@ sshSocketServer.on('connection', async (ssh_socket, request) => {
                     bufferedData = "";
                 }
             }
-            console.log('printing data: ', data)
+
             sshClient.on('ready', () => {
                 console.log('SSH Client Ready');
 

@@ -22,7 +22,6 @@ function Chat_Student({scenario_id}) {
     useEffect(() => {
         const handleMessage = (event) => {
             const message = JSON.parse(event.data);
-            console.log('wassmessagetype: ', message.type)
             if (message.type === 'chatReceipt') {
                 set_chatLog_state((prevChatLog) => [...prevChatLog, message]);
             } else if (message.type === 'chatError') {

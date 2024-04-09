@@ -27,7 +27,6 @@ function SSH_web(props) {
         socketRef.current = new WebSocket(socketURL);
 
         socketRef.current.onopen = () => {
-            console.log('WebSocket is open');
             socketRef.current.send(JSON.stringify({
                 type: 'set_credentials',
                 scenario_id: props.scenario_id,
@@ -36,14 +35,12 @@ function SSH_web(props) {
                 SSH_port: SSH_port
             }));
 
-            // Start sending pings every 30 seconds
             const pingInterval = setInterval(() => {
                 if (socketRef.current.readyState === WebSocket.OPEN) {
                     socketRef.current.send(JSON.stringify({ ping: 'ping' }));
                 }
-            }, 30000);
+            }, 10_000);
 
-            // Clear the interval on WebSocket close
             socketRef.current.onclose = () => {
                 clearInterval(pingInterval);
             };
@@ -58,7 +55,6 @@ function SSH_web(props) {
             } else if (message.type === 'edu3_response') {
                 term.current.write(message.result);
             }
-            // Add more message handling as needed...
         };
 
         term.current.onData(data => {
@@ -69,13 +65,11 @@ function SSH_web(props) {
             }
         });
 
-        // Resize the terminal on window resize
         const handleResize = () => {
             fitAddon.current.fit();
         };
         window.addEventListener('resize', handleResize);
 
-        // Cleanup function
         return () => {
             if (socketRef.current) {
                 socketRef.current.close();

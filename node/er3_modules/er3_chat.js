@@ -79,19 +79,6 @@ const chatSocketServer = new WebSocketServer({
     }
 });
 
-// const interval = setInterval(function ping() {
-    
-//     chatSocketServer.clients.forEach(function each(ws) {
-
-//       if (ws.isAlive === false) return ws.terminate();
-  
-//       ws.isAlive = false;
-//       ws.ping();
-
-//     });
-//   }, 5_000);
-
-
 
 chatSocketServer.on('connection', (socketConnection, request) => {
 
@@ -130,6 +117,7 @@ chatSocketServer.on('connection', (socketConnection, request) => {
         }
         if (data?.type === 'get_chat_history'){
 
+            // DEV_FIX this whole area
             // get user's chat history for past 24 hrs
 
             const arrayOfChatObjs = 'getChatHistoryFromDb' // filter by date
@@ -148,18 +136,13 @@ chatSocketServer.on('connection', (socketConnection, request) => {
 
         if (data?.type === 'chatMessage'){
 
-            console.log ('printing data.type: ', data?.type);
-            console.log ('printing data.message: ', data?.message);
-            
             const { error, value } = chatSchema.validate(data?.message);
-            
+
             if (error) {
                 console.log(error.details[0].message);
                 socketConnection.send(JSON.stringify({ error: error.details[0].message }));
                 return;
             }
-
-            console.log (value);
             
             // add user & connection info to chatSession.studentDict if not present. add user to groupsDict array(s).
             regUser(user_id, username, user_role, socketConnection);
@@ -172,9 +155,7 @@ chatSocketServer.on('connection', (socketConnection, request) => {
  
                 
                 try {
-                    
-                    console.log(`The user ${thisDictUser.isInstructor ? "IS" : "is NOT"} an instructor!`)
-                    
+                                        
                     const instructorConnectionArr = Object.values(chatSession.instructorDict).map(entry => entry.connection);
                     
                     // instr
@@ -195,8 +176,6 @@ chatSocketServer.on('connection', (socketConnection, request) => {
                             timestamp: value.timestamp,
                             ok: true
                         };
-                        console.log ('thisDictUser connection readyState: ', thisDictUser.connection.readyState)
-                        console.log ('socketConnection info: ', socketConnection.readyState)
                         thisDictUser.connection.send(JSON.stringify(responseMsg));
                     }
                     
@@ -209,7 +188,6 @@ chatSocketServer.on('connection', (socketConnection, request) => {
             }
     });
 
-    // disconnection and cleanup
     socketConnection.on('close', () => {
         // const thisDictUser =  chatSession?.studentDict[user_id];
         // thisDictUser.connection = null;
