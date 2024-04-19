@@ -1,28 +1,26 @@
 
-import React, { useContext } from "react";
+import React from "react";
 import './Msg_Bubble.css';
-import { HomeRouter_context } from "../../pub/Home_router";
 
-function Msg_Bubble({ message_obj, chatSessionID }) {
+function Msg_Bubble({ message_obj }) {
 
-    const { userAlias_state } = useContext(HomeRouter_context);
-    console.log(message_obj);
+    console.log(message_obj)
 
     return (
         <div className="bubble-frame">
             <div className="bubble-carpet">
                 <div className="bubble-items-container">
                     <div className="bubble-item">
-                        <div className='er3chat-message-item'>Session ID: {chatSessionID}</div>
+                        <div className='er3chat-message-item'>Channel ID: {message_obj?.data?.channel ?? 'missing'}</div>
                     </div>
                     <div className="bubble-item">
-                        <div className='er3chat-message-item'>Scenario ID: {message_obj?.scenario_id}</div>
+                        <div className='er3chat-message-item'>Scenario ID: {message_obj?.data?.scenario_id}</div>
                     </div>
                     <div>
-                        <div className='er3chat-message-item'>Sender ID: {message_obj.sender_id}</div>
+                        <div className='er3chat-message-item'>Sender ID: {message_obj?.data?.user_id}</div>
                     </div>
                     <div>
-                        <div className='er3chat-message-item'>Sender Alias: {userAlias_state}</div>
+                        <div className='er3chat-message-item'>Sender Alias: {message_obj?.data?.user_alias}</div>
                     </div>
                     <div>
                         <div className='er3chat-message-item'>
@@ -34,7 +32,7 @@ function Msg_Bubble({ message_obj, chatSessionID }) {
                         </div>
                     </div>
                     <div>
-                        <div className='er3chat-message-item'>Message: {message_obj.message}</div>
+                        <div className='er3chat-message-item'>Message: {message_obj?.data?.message}</div>
                     </div>
 
                 </div>

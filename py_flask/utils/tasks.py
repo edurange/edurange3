@@ -1,4 +1,3 @@
-import csv
 import json
 import os
 import random
@@ -287,7 +286,6 @@ def destroy_scenario_task(self, scenario_id):
     )
     scenario = Scenarios.query.filter_by(id=scenario_id).first()
 
-    discarded_octet = discardOctet(scenario.octet)
 
     with app.test_request_context():
         scenario = Scenarios.query.filter_by(id=scenario_id).first()
@@ -311,12 +309,14 @@ def destroy_scenario_task(self, scenario_id):
                 os.chdir("../..")
                 if s_group:
                     s_group.delete()
+                discarded_octet = discardOctet(scenario.octet)
                 scenario.delete()
                 NotifyCapture("The Scenario " + name + " is successfully deleted.")
                 return {
                     "result": "success", 
                     "new_status": 0,
-                    "scenario_id": scenario_id
+                    "scenario_id": scenario_id,
+                    "discarded_octet": discarded_octet
                     }
             else:
                 logger.info("Scenario files not found, assuming broken scenario and deleting")

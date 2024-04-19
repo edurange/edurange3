@@ -15,7 +15,7 @@ function Instr_Groups() {
                     <Placard placard_text={"Student Groups"} />
                         <CreateGroup />
                     <div className="table-frame">
-                        <Instr_GroupsTable />                
+                        <Instr_GroupsTable />
                     </div>
                 </div>
             </div>

@@ -7,7 +7,6 @@ import edurange_icons from '@modules/ui/edurangeIcons';
 import { HomeRouter_context } from '@pub/Home_router';
 import Frame_UserBox from './Frame_UserBox';
 import { navArrays } from '../../modules/nav/navItemsData';
-import SocketKeeper from '../../pages/pub/SocketKeeper';
 
 function Frame_head() {
 
@@ -64,10 +63,8 @@ function Frame_head() {
         <div className="er3-homehead">
 
             <div className="er3-homehead-left"><Hamburger /></div>
-            {/* <div className='homehead-notifs-section'><Notifs_button /></div> #DEV_FIX */}
 
-            <Frame_UserBox/>
-            <SocketKeeper />
+            <Frame_UserBox />
 
             <div className='er3-homehead-right'>
                 <span className="er3-homehead-buttonbar">

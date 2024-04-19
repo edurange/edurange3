@@ -1,3 +1,5 @@
+from py_flask.config.extensions import db
+
 from flask import (
     request,
     session,
@@ -96,6 +98,8 @@ def login_er3(userObj):
 
 # create student account (add to postgreSQL db)
 def register_user(validated_registration_data):
+
+    db_ses = db.session
     
     data = validated_registration_data
 
@@ -111,12 +115,17 @@ def register_user(validated_registration_data):
 
     if group is None: return jsonify({"error": "group matching this code not found"}), 404
 
-    user = Users.query.filter_by(username=data["username"]).first()
+    this_user = Users.query.filter_by(username=data["username"]).first()
     group_id = group.get_id()
-    user_id = user.get_id()
-    GroupUsers.create(user_id=user_id, group_id=group_id)
+    this_user_id = this_user.get_id()
 
-    return user_id
+    # assign channel with this_user_id here 
+    this_user.channel = this_user_id
+    db_ses.commit()  # Commit the change
+
+    GroupUsers.create(user_id=this_user_id, group_id=group_id)
+
+    return this_user_id
 
     
 # delete account (Add here)

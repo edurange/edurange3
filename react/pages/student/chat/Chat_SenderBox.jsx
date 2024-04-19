@@ -1,45 +1,18 @@
 
 import { useState, useRef, useEffect, useContext } from 'react';
-import Chat_HistoryBox from './Chat_HistoryBox.jsx';
 import './Chat_Student.css';
-import { StudentRouter_context } from '../Student_router.jsx';
 import { ChatMessage } from '@modules/utils/chat_modules.jsx';
 import { HomeRouter_context } from '../../pub/Home_router.jsx';
+import { InstructorRouter_context } from '../../instructor/Instructor_router.jsx';
 
-function Chat_Student({scenario_id}) {
-    const { userData_state, userAlias_state } = useContext (HomeRouter_context);
-    const { socket_ref } = useContext (StudentRouter_context);
+function Chat_SenderBox({user_to_message}) {
+    const { userAlias_state } = useContext (HomeRouter_context);
+    const { socket_ref } = useContext (InstructorRouter_context);
     const [messageContent_state, set_messageContent_state] = useState('');
     const [chatHistory_state, set_chatHistory_state] = useState([]);
     const lastChat_ref = useRef(null);
 
-    useEffect(() => {
-        const handleMessage = (event) => {
-            const message = JSON.parse(event.data);
-            console.log ('got a message! ', message)
-            if (message.type === 'student_message_receipt' || message.type === 'instructor_message_receipt') {
-                set_chatHistory_state((prevChatLog) => [...prevChatLog, message]);
-            } else if (message.type === 'chatError') {
-                console.error('Chat error:', message);
-            }
-        };
-
-        if (socket_ref.current) {
-            socket_ref.current.addEventListener('message', handleMessage);
-        }
-
-        return () => {
-            if (socket_ref.current) {
-                socket_ref.current.removeEventListener('message', handleMessage);
-            }
-        };
-    }, [socket_ref]);
-
-    useEffect(() => {
-        if (lastChat_ref.current) {
-            lastChat_ref.current.scrollIntoView({ behavior: 'smooth' });
-        }
-    }, [chatHistory_state]);
+    console.log ('user_to_message: ', user_to_message)
 
     const handleInputChange = (event) => {
         set_messageContent_state(event.target.value);
@@ -60,7 +33,8 @@ function Chat_Student({scenario_id}) {
 
     const sendMessage = () => {
 
-        const chatMsg = new ChatMessage(userData_state?.channel, userAlias_state, scenario_id, messageContent_state.trim());
+        // DEV_FIX need real scenario id not 113
+        const chatMsg = new ChatMessage(user_to_message?.id, userAlias_state, 113, messageContent_state.trim()); // DEV_FIX user_to_message?.id should be user_to_message?.channel
 
         if (chatMsg.message) {
             const newChat = {
@@ -76,12 +50,6 @@ function Chat_Student({scenario_id}) {
     };
 
     return (
-        <div className='chatStu-frame'>
-            
-            <div className="chatStu-historyBox">
-                <Chat_HistoryBox chatSessionID='someSessionID' chatHistory_state={chatHistory_state} lastChat_ref={lastChat_ref} />
-            </div>
-
             <div className='chatStu-input-frame'>
                 <form className='chatStu-input-frame' onSubmit={handleSubmit}>
                     <div className='chatStu-input-item sender-frame'>
@@ -90,9 +58,7 @@ function Chat_Student({scenario_id}) {
                     </div>
                 </form>
             </div>
-
-        </div>
     );
 }
 
-export default Chat_Student;
+export default Chat_SenderBox;

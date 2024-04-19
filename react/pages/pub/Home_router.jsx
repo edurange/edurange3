@@ -37,7 +37,6 @@ function Home_router() {
   const [login_state, set_login_state] = useState(false);
   const [chatSocket_state, set_chatSocket_state] = useState();
   const [userAlias_state, set_userAlias_state] = useState('none');
-  const socket_ref = useRef(null);
 
 
   const navigate = useNavigate();
@@ -85,7 +84,6 @@ function Home_router() {
         desiredNavMetas_state, set_desiredNavMetas_state,
         chatSocket_state, set_chatSocket_state,
         userAlias_state, set_userAlias_state,
-        socket_ref
       }}>
 
         <Frame_head />

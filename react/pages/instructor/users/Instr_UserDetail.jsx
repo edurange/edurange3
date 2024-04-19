@@ -8,11 +8,13 @@ import '@assets/css/tables.css';
 import { InstructorRouter_context } from '../Instructor_router';
 import Placard from '../../../components/Placard';
 import Chat_Instructor from '../chat/Chat_Instructor';
+import Chat_HistoryBox from '../../student/chat/Chat_HistoryBox';
+import Chat_SenderBox from '../../student/chat/Chat_SenderBox';
 
 function Instr_UserDetail() {
 
     const { userID } = useParams();
-    const { scenarios_state, users_state, groups_state } = useContext(InstructorRouter_context);
+    const { scenarios_state, users_state, groups_state, set_chatHistory_state, chatHistory_state, lastChat_ref } = useContext(InstructorRouter_context);
 
     console.log(users_state)
     console.log('param user id: ', userID);
@@ -37,15 +39,6 @@ function Instr_UserDetail() {
     return (
         <div className="table-frame">
 
-            Chat should be here
-            <Chat_Instructor />
-            
-            <div>
-                Username:  {thisUser.username}
-            </div>
-            <div>
-                User ID:  {thisUser.id}
-            </div>
             <div>
                 <br></br>
             </div>
@@ -61,6 +54,10 @@ function Instr_UserDetail() {
                     Group Users Ct: {membershipGroup?.users?.length}
                 </div>
             </div>
+            <div className="chatStu-historyBox">
+                <Chat_HistoryBox chatSessionID='someSessionID' chatHistory_state={chatHistory_state} lastChat_ref={lastChat_ref} />
+            </div>
+            <Chat_SenderBox user_to_message={thisUser}/>
 
         </div>
     );

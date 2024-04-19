@@ -7,11 +7,13 @@ import '@assets/css/tables.css';
 function Instr_UsersTable() {
 
     const { set_desiredNavMetas_state } = useContext(HomeRouter_context);
-    const { users_state, set_users_state, groups_state, set_groups_state } = useContext(InstructorRouter_context);
+    const { users_state, set_users_state, groups_state, set_groups_state, chatHistory_state, set_chatHistory_state } = useContext(InstructorRouter_context);
     const [selectedUsers_state, set_selectedUsers_state] = useState({});
     const [actionSelection_state, set_actionSelection_state] = useState('');
     const [selectedGroupId_state, set_selectedGroupId_state] = useState('');
     const [buttonIsDisabled_state, set_buttonIsDisabled_state] = useState(true);
+
+    console.log('users_state: ', users_state)
 
     useEffect(() => {
         const isAnyUserSelected = Object.values(selectedUsers_state).some((isSelected) => isSelected);
@@ -223,6 +225,11 @@ function Instr_UsersTable() {
         set_desiredNavMetas_state([`/instructor/groups/${student.membership}`, 'dash']);
     };
 
+    console.log('chatHistory_state from usersTable: ', chatHistory_state)
+    console.log (chatHistory_state?.length ?? 0)
+
+
+
     return (
         <>
             <div className="create-frame">
@@ -282,8 +289,14 @@ function Instr_UsersTable() {
                         </div>
                         <div className="table-cell-item highlightable-cell col-large" onClick={(event) => handle_userDetail_click(event, user)}>{user.username}</div>
                         <div className="table-cell-item highlightable-cell col-large" onClick={(event) => handle_groupDetail_click(event, user)}>{getGroupNameById(user.membership)}</div>
-                        <div className="table-cell-item highlightable-cell col-small" onClick={(event) => handle_userDetail_click(event, user)}>41(<span className='highlighter-orange'>24</span>)</div>
-                        <div className="table-cell-item highlightable-cell col-small" onClick={(event) => handle_userDetail_click(event, user)}>10(<span className='highlighter-orange'>4</span>)</div>
+                        <div className="table-cell-item highlightable-cell col-small" onClick={(event) => handle_userDetail_click(event, user)}>5(<span className='highlighter-orange'>24</span>)</div>
+                        <div className="table-cell-item highlightable-cell col-small" onClick={(event) => handle_userDetail_click(event, user)}>
+
+                            {
+                            chatHistory_state?.filter((msg)=> msg?.data?.user_id === user.id).length
+                            }
+
+                        (<span className='highlighter-orange'>{chatHistory_state?.filter((msg)=> msg?.data?.user_id === user.id).length}</span>)</div>
                     </div>
                 ))}
 

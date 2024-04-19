@@ -17,7 +17,7 @@ import { useState, useRef, useEffect } from 'react';
 import './Chat_Instructor.css';
 import Chat_HistoryBox from '@student/chat/Chat_HistoryBox.jsx';
 import Instructor_UsersList from './Instr_UsersList.jsx';
-import { ChatMessage } from '@student/chat/Chat_Student.jsx';
+import { ChatMessage } from '@modules/utils/chat_modules.jsx';
 
 // !important! use 'wss:' for production (reqs SSL certs) // DEV_ONLY
 const proto = (window.location.protocol == "https") ? "wss" : "ws";
@@ -29,12 +29,12 @@ function Chat_Instructor() {
 
     const testMessage = new ChatMessage(1, "hello students!");
     const [messageContent_state, set_messageContent_state] = useState('');
-    const [chatLog_state, set_chatLog_state] = useState([]);
+    const [chatHistory_state, set_chatHistory_state] = useState([]);
     useEffect(() => {
         if (lastChat_ref.current) {
             lastChat_ref.current.scrollIntoView({ behavior: 'smooth' });
         }
-    }, [chatLog_state]);
+    }, [chatHistory_state]);
 
     const lastChat_ref = useRef(null);
     const socket = useRef(null);
@@ -49,7 +49,7 @@ function Chat_Instructor() {
         socket.current.onopen = () => {
             const newnewChat2 = new ChatMessage(1, messageContent_state);
             const newChat2 = {
-                type: 'chatMessage',
+                type: 'instructor_message',
                 data: newnewChat2
             };
             if (socket.current && socket.current.readyState === 1) {
@@ -66,7 +66,7 @@ function Chat_Instructor() {
             const message = JSON.parse(event.data);
             
             if (message.type === 'newChatMessage') {
-                set_chatLog_state((prevChatLog) => [...prevChatLog, message.data]);
+                set_chatHistory_state((prevChatLog) => [...prevChatLog, message.data]);
             } else if (message.type === 'chatError') {
                 console.error('Chat error:', message.data);
             };
@@ -110,7 +110,7 @@ function Chat_Instructor() {
         <div className='chatInstr-panes-container-frame'>
             <div className="chatInstr-pane">
                 <Instructor_UsersList/>
-                <Chat_HistoryBox chatSessionID='123' chatLog_state={chatLog_state} lastChat_ref={lastChat_ref}/>
+                <Chat_HistoryBox chatSessionID='123' chatHistory_state={chatHistory_state} lastChat_ref={lastChat_ref}/>
             </div>
             <div className="chatInstr-pane">
             </div>

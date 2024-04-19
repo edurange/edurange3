@@ -73,6 +73,7 @@ class Users(Edu3Mixin, SurrogatePK, Model):
     username = Column(db.String(80), unique=True, nullable=False)
     password = Column(db.LargeBinary(128), nullable=True)   # hashed
     created_at = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
+    channel = Column(db.Integer, nullable=False, default=0)
     active = Column(db.Boolean(), default=False)
     is_admin = Column(db.Boolean(), default=False)
     is_instructor = Column(db.Boolean(), default=False)

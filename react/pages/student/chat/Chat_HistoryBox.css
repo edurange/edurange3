@@ -9,11 +9,20 @@ html, body{
 .chat-historybox-frame{
   display: flex;
   flex-direction: column;
-  position: absolute;
+  position: relative;
   top: 0;
   left: 0;
   right: 0;
-  height: 79dvh;
+  height: 70dvh;
+}
+.chat-responsebox-frame{
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 44dvh;
 }
 .chat-historybox-carpet{
   /* background-color: rgb(130, 154, 211); */
