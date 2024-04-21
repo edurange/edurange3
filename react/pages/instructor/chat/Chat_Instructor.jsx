@@ -14,7 +14,7 @@
 // 
 
 import { useState, useRef, useEffect } from 'react';
-import './Chat_Instructor.css';
+import '../../student/chat/Chat_Student.css';
 import Chat_HistoryBox from '@student/chat/Chat_HistoryBox.jsx';
 import Instructor_UsersList from './Instr_UsersList.jsx';
 import { ChatMessage } from '@modules/utils/chat_modules.jsx';
@@ -106,18 +106,18 @@ function Chat_Instructor() {
     };
 
     return (
-        <div className='chatInstr-frame'>
-        <div className='chatInstr-panes-container-frame'>
-            <div className="chatInstr-pane">
+        <div className='chatStu-frame'>
+        <div className='chatStu-panes-container-frame'>
+            <div className="chatStu-pane">
                 <Instructor_UsersList/>
                 <Chat_HistoryBox chatSessionID='123' chatHistory_state={chatHistory_state} lastChat_ref={lastChat_ref}/>
             </div>
-            <div className="chatInstr-pane">
+            <div className="chatStu-pane">
             </div>
         </div>
         <div className='chatInstr-input-frame'>
             <form className='chatInstr-input-frame' onSubmit={handleSubmit}>
-                <div className='chatInstr-input-item sender-frame'>
+                <div className='chatStu-input-item sender-frame'>
                     <textarea className='sender-text' value={messageContent_state} onChange={(e) => handleInputChange(e, set_messageContent_state)} placeholder="Enter your message"></textarea>
                     <button className='sender-button connect-button' type="submit">Send</button>
                 </div>

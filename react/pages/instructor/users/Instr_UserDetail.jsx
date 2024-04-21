@@ -2,6 +2,8 @@
 import React, { useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import '@assets/css/tables.css';
+import '../../student/chat/Chat_Student.css'
+import '../../student/chat/Chat_HistoryBox.css'
 import { InstructorRouter_context } from '../Instructor_router';
 import Instr_SenderBox from '../../student/chat/Instr_SenderBox';
 import Instr_Chat_HistoryBox from '../../student/chat/Instr_Chat_HistoryBox';
@@ -42,7 +44,7 @@ function Instr_UserDetail() {
                     Group Users Ct: {membershipGroup?.users?.length}
                 </div>
             </div>
-            <div className="chatStu-historyBox">
+            <div className="chatInstr-historyBox">
                 <Instr_Chat_HistoryBox user_obj={thisUser} lastChat_ref={lastChat_ref} />
             </div>
             <Instr_SenderBox user_to_message={thisUser}/>

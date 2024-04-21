@@ -25,7 +25,7 @@ function Instr_Chat_HistoryBox({user_obj, lastChat_ref}) {
 
     console.log('instr_chat_historybox chatHistory_State: ', chatHistory_state)
     return (
-        <div className="chat-historybox-frame">
+        <div className="instr-historybox-frame">
             <div className='chat-historybox-carpet'>
                 {chatHistory_state.filter(chat => user_available_channels.includes(chat.data?.channel)).map((chat, index) => (
                     <div key={index} ref={index === chatHistory_state.length - 1 ? lastChat_ref : null} className="er3chat-message-frame">

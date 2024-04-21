@@ -61,9 +61,9 @@ function Chat_SenderBox() {
     };
 
     return (
-            <div className='chatStu-input-frame'>
-                <form className='chatStu-input-frame' onSubmit={handleSubmit}>
-                    <div className='chatStu-input-item sender-frame'>
+            <div className='chatInstr-input-frame'>
+                <form className='chatInstr-input-frame' onSubmit={handleSubmit}>
+                    <div className='chatInstr-input-item sender-frame'>
                         <textarea className='sender-text' value={messageContent_state} onChange={handleInputChange} onKeyPress={handleKeyPress} placeholder="Enter your message"></textarea>
                         <button className='sender-button connect-button' type="submit">Send</button>
                     </div>

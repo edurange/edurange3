@@ -5,7 +5,11 @@ html, body{
   padding: 0;
   margin: 0;
 }
-
+.chatInstr-historybox{
+  display: flex;
+  height: 100%;
+  width: 100%;
+}
 .chat-historybox-frame{
   display: flex;
   flex-direction: column;
@@ -13,7 +17,17 @@ html, body{
   top: 0;
   left: 0;
   right: 0;
-  height: 70dvh;
+  height: 99%;
+}
+.instr-historybox-frame{
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  position: relative;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 99%;
 }
 .chat-responsebox-frame{
   display: flex;

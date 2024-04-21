@@ -10,11 +10,19 @@ html, body{
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: 95%;
+  height: 93.2%;
 }
 .chatStu-historyBox{
   width: 100%;
-  height: 100%;
+  height: 95.5%;
+  display: flex;
+  flex-direction: column;
+}
+.chatInstr-historyBox{
+  width: 100%;
+  position: relative;
+  top: 2px;
+  height: 81%;
   display: flex;
   flex-direction: column;
 }
@@ -39,7 +47,7 @@ html, body{
   justify-content: center;
   flex-direction: column;
   border-bottom: 1px solid black;
-  padding: 10px;
+  /* padding: 10px; */
   box-sizing: border-box;
   background-color: paleturquoise;
   color: black;
@@ -67,12 +75,27 @@ html, body{
 }
 .chatStu-input-frame{
   width: 100%;
-  max-height: 40px;
-  min-height: 40px;
+  height: 100%;
+  max-height: 22px;
+  min-height: 22px;
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
-  box-sizing: border-box;
+  /* position: relative;
+  bottom: 0px; */
+  /* box-sizing: border-box; */
+}
+.chatInstr-input-frame{
+  width: 100%;
+  height: 100%;
+  max-height: 22px;
+  min-height: 22px;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  position: absolute;
+  bottom: 2px;
+  /* box-sizing: border-box; */
 }
 .sender-frame{
   width: 100%;
@@ -85,21 +108,30 @@ html, body{
 }
 .sender-text{
   width: 100%;
-  height: auto;
+  /* height: auto; */
   display: flex;
   align-items: center;
   align-content: center;
   justify-items: center;
   justify-content: center;
+  max-height: 22px;
+  min-height: 22px;
 }
 .sender-button{
   width: 55px;
   display: flex;
+  min-height: 27px; 
+  max-height: 27px;
   height: 100%;
+  align-items: center;
   text-align: center;
   justify-content: center;
 }
 .connect-button{
+  height: 100%;
+  display: flex;  
+  /* min-height: 22px;
+  max-height: 22px; */
   width: 55px;
 }
 .chatStu-input-item{

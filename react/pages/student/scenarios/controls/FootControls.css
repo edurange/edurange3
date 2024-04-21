@@ -1,6 +1,6 @@
 .footcontrol-frame {
-    min-height: 8%;
-    max-height: 8%;
+    min-height: 6%;
+    max-height: 6%;
     display: flex;
     min-width: 100%;
     max-width: 100%;
@@ -11,7 +11,7 @@
     bottom: 0%;
     left: 0;
     right: 0;
-    top: 92.2%;
+    top: 94%;
     box-sizing: border-box;
     align-self: bottom;
     justify-self: bottom;
@@ -85,8 +85,8 @@
 }
 
 .footcontrol-chat-button {
-    max-width: 8%;
-    min-width: 8%;
+    max-width: 35px;
+    min-width: 35px;
     text-align: center;
     font-size: small;
     display: flex;
