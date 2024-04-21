@@ -2,14 +2,13 @@
 import { useState, useRef, useEffect, useContext } from 'react';
 import '@student/chat/Chat_Student.css';
 import { HomeRouter_context } from '@pub/Home_router.jsx';
-import Chat_HistoryBox from '@student/chat/Chat_HistoryBox';
 import { InstructorRouter_context } from './Instructor_router';
 import { ChatMessage } from '@modules/utils/chat_modules.jsx';
+import Instr_Chat_HistoryBox from '../student/chat/Instr_Chat_HistoryBox';
 
 function Panopticon() {
     const {
-        userData_state, userAlias_state
-    } = useContext(HomeRouter_context);
+        userData_state } = useContext(HomeRouter_context);
 
     const { socket_ref, set_chatHistory_state, chatHistory_state, lastChat_ref } = useContext(InstructorRouter_context);
     const [messageContent_state, set_messageContent_state] = useState('');
@@ -32,10 +31,10 @@ function Panopticon() {
 
     const sendMessage = () => {
 
-        const chatMsg = new ChatMessage(userData_state?.channel, userAlias_state, 112, messageContent_state.trim());
+        const chatMsg = new ChatMessage(userData_state?.channel, userData_state?.user_alias, 112, messageContent_state.trim());
         if (chatMsg.message) {
             const newChat = {
-                type: 'instructor_message',
+                type: 'chat_message',
                 timestamp: Date.now(),
                 data: chatMsg
             };
@@ -51,7 +50,7 @@ function Panopticon() {
         <div className='chatStu-frame'>
             
             <div className="chatStu-historyBox">
-                <Chat_HistoryBox chatSessionID='someSessionID' chatHistory_state={chatHistory_state} lastChat_ref={lastChat_ref} />
+                <Instr_Chat_HistoryBox chatSessionID='someSessionID' chatHistory_state={chatHistory_state} lastChat_ref={lastChat_ref} />
             </div>
 
             <div className='chatStu-input-frame'>

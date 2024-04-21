@@ -8,23 +8,20 @@ import Chat_Student from '@student/chat/Chat_Student';
 import Frame_side from '@frame/sidenav/Frame_side';
 export const StudentRouter_context = React.createContext();
 import '@assets/css/dashboard.css';
-import SocketKeeper from '../pub/SocketKeeper';
 import { HomeRouter_context } from '../pub/Home_router';
 
 function Student_router() {
 
-    const fakeNotif = {
+    const fakeNotifs = [{
         id: 123,
         timeStamp: Date.now(),
         message: "something"
-    }
-    const { login_state, userData_state, userAlias_state } = useContext(HomeRouter_context);
+    }]
+    const { login_state, userData_state } = useContext(HomeRouter_context);
     const [chatHistory_state, set_chatHistory_state] = useState({});
-
-    const [notifsArray_state, set_notifsArray_state] = useState([fakeNotif]);
+    const [notifsArray_state, set_notifsArray_state] = useState(fakeNotifs);
     const [guideBook_state, set_guideBook_state] = useState({});
     const [scenarioList_state, set_scenarioList_state] = useState([]);
-    // const [socketRef_state, set_socketRef_state] = useState()
     const [scenarioPage_state, set_scenarioPage_state] = useState({
         chapter: 0,
         sectionAnchor: 0,
@@ -38,8 +35,6 @@ function Student_router() {
     if (!scenarioList_state) { return <></> }
     if (!login_state) { return <></> }
 
-
-
     async function fetchScenarioList() {
         try {
             const response = await axios.get("/get_group_scenarios");
@@ -52,12 +47,12 @@ function Student_router() {
     useEffect(() => { fetchScenarioList(); }, []);
 
     useEffect(() => {
-        // Initialize WebSocket only once after the component mounts
+        // only place websocket inits for student connection ; passed via context after
         socket_ref.current = new WebSocket(socketURL);
 
-        // WebSocket ping functionality
-        const pingInterval = 11000; // Adjust the interval as needed (e.g., 30000 for 30 seconds)
-        const intervalId = setInterval(() => {
+        const pingInterval = 11000;
+
+        const pingInterval_id = setInterval(() => {
             if (socket_ref.current.readyState === 1) {
                 socket_ref.current.send(JSON.stringify({
                     type: 'keepalive',
@@ -66,7 +61,7 @@ function Student_router() {
             }
         }, pingInterval);
 
-        // Function to clean up the WebSocket when the component unmounts
+        // clean up
         return () => {
             if (socket_ref.current) {
                 socket_ref.current.close();
@@ -88,15 +83,8 @@ function Student_router() {
         const handleMessage = (event) => {
             const message = JSON.parse(event.data);
 
-            if (message.type === 'student_receipt') {
-
-
-                updateChatHistory(message?.message?.user_id, message)
-
-                // need to track the metadata for every user's chatlog in piece of state
-                // add to the record here
-
-                // set_chatHistory_state((prevChatLog) => [...prevChatLog, message]);
+            if (message.type === 'chat_receipt') {
+                updateChatHistory(message?.data?.user_id, message)
 
             } else if (message.type === 'chatError') {
                 console.error('Chat error:', message.data);
@@ -128,9 +116,6 @@ function Student_router() {
 
                 <Frame_side smallMode={true} hiddenMode={false} />
 
-                {/* <SocketKeeper /> */}
-
-
                 <div className="newdash-infopane-frame">
                     <div className='newdash-infopane-content'>
 
@@ -139,7 +124,7 @@ function Student_router() {
                             scenarioPage_state, set_scenarioPage_state,
                             guideBook_state, set_guideBook_state,
                             notifsArray_state, set_notifsArray_state,
-                            socket_ref
+                            socket_ref,
                         }}>
                             <Routes>
                                 <Route path="/" element={<Scenarios_home />} />
@@ -154,5 +139,4 @@ function Student_router() {
         </div>
     );
 };
-
 export default Student_router;

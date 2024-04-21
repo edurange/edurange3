@@ -31,7 +31,8 @@ import {
     FaChevronRight,
     FaRegCopy,
     FaCheck,
-    FaHatWizard
+    FaHatWizard,
+    FaTrashCan 
 } from "react-icons/fa6";
 
 import { 
@@ -43,10 +44,16 @@ import {
     LuPanelLeftOpen,
     LuPanelLeftClose 
 } from "react-icons/lu";
+
 import { 
     MdNotifications, 
     MdNotificationsActive,
   } from "react-icons/md";
+
+import { 
+    FaStopCircle,
+    FaPlayCircle 
+ } from "react-icons/fa";
 
  const edurange_icons = {
     accessibility : <FaUniversalAccess/>,
@@ -83,7 +90,10 @@ import {
     menuClose_up: <HiMiniBarsArrowUp/>,
     panelOpen_left: <LuPanelLeftOpen/>,
     panelClose_left: <LuPanelLeftClose/>,
-    wizardHat: <FaHatWizard/>
+    wizardHat: <FaHatWizard/>,
+    stopSign: <FaStopCircle/>,
+    playSign: <FaPlayCircle />,
+    trash: <FaTrashCan/>
 }
 export default edurange_icons
 

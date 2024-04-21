@@ -2,21 +2,19 @@
 import { useState, useRef, useEffect, useContext } from 'react';
 import './Chat_Student.css';
 import { ChatMessage } from '@modules/utils/chat_modules.jsx';
-import { HomeRouter_context } from '../../pub/Home_router.jsx';
 import { InstructorRouter_context } from '../../instructor/Instructor_router.jsx';
+import { HomeRouter_context } from '../../pub/Home_router.jsx';
 
-function Chat_SenderBox({user_to_message}) {
+function Chat_SenderBox() {
     const { userData_state } = useContext (HomeRouter_context);
-    const { socket_ref } = useContext (InstructorRouter_context);
+    const { socket_ref, selectedMessage_state, set_selectedMessage_state, users_state, set_users_state } = useContext (InstructorRouter_context);
     const [messageContent_state, set_messageContent_state] = useState('');
-    const lastChat_ref = useRef(null);
 
     const handleInputChange = (event) => {
         set_messageContent_state(event.target.value);
     };
 
     const handleSubmit = (event) => {
-        console.log('handleSubmit pressed')
         event.preventDefault();
         sendMessage();
     };
@@ -30,9 +28,16 @@ function Chat_SenderBox({user_to_message}) {
 
     const sendMessage = () => {
 
-        // DEV_FIX need real scenario id not 113
-        const chatMsg = new ChatMessage(userData_state?.channel_data?.home_channel, userData_state?.user_alias, 113, messageContent_state.trim()); // DEV_FIX user_to_message?.id should be user_to_message?.channel
-
+        if (!selectedMessage_state) {
+            console.log('no selectedMessage_state obj found')
+            return
+        }
+        const chatMsg = new ChatMessage(
+            selectedMessage_state?.data?.channel, 
+            userData_state?.user_alias, 
+            selectedMessage_state?.data?.scenario_id, 
+            messageContent_state.trim()
+        );
         if (chatMsg.message) {
             const newChat = {
                 type: 'chat_message',
@@ -44,6 +49,15 @@ function Chat_SenderBox({user_to_message}) {
                 set_messageContent_state('');
             }
         }
+
+        const response_target_user_id = selectedMessage_state?.data?.user_id;
+        const updated_users_state = users_state.map(user => {
+            if (user.id === response_target_user_id) {
+                return { ...user, recent_response: Date.now() };
+            }
+            return user;
+        });
+        set_users_state(updated_users_state);
     };
 
     return (

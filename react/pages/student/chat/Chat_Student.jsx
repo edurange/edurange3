@@ -7,7 +7,7 @@ import { ChatMessage } from '@modules/utils/chat_modules.jsx';
 import { HomeRouter_context } from '../../pub/Home_router.jsx';
 
 function Chat_Student({scenario_id}) {
-    const { userData_state, userAlias_state } = useContext (HomeRouter_context);
+    const { userData_state } = useContext (HomeRouter_context);
     const { socket_ref } = useContext (StudentRouter_context);
     const [messageContent_state, set_messageContent_state] = useState('');
     const [chatHistory_state, set_chatHistory_state] = useState([]);
@@ -17,7 +17,7 @@ function Chat_Student({scenario_id}) {
         const handleMessage = (event) => {
             const message = JSON.parse(event.data);
             console.log ('got a message! ', message)
-            if (message.type === 'student_message_receipt' || message.type === 'instructor_message_receipt') {
+            if (message.type === 'chat_message_receipt') {
                 set_chatHistory_state((prevChatLog) => [...prevChatLog, message]);
             } else if (message.type === 'chatError') {
                 console.error('Chat error:', message);
@@ -46,7 +46,6 @@ function Chat_Student({scenario_id}) {
     };
 
     const handleSubmit = (event) => {
-        console.log('handleSubmit pressed')
         event.preventDefault();
         sendMessage();
     };
@@ -60,11 +59,11 @@ function Chat_Student({scenario_id}) {
 
     const sendMessage = () => {
 
-        const chatMsg = new ChatMessage(userData_state?.channel, userAlias_state, scenario_id, messageContent_state.trim());
+        const chatMsg = new ChatMessage(userData_state?.channel_data?.home_channel, userData_state?.user_alias, scenario_id, messageContent_state.trim());
 
         if (chatMsg.message) {
             const newChat = {
-                type: 'student_message',
+                type: 'chat_message',
                 timestamp: Date.now(),
                 data: chatMsg
             };

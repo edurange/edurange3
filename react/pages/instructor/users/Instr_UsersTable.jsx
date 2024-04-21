@@ -13,8 +13,6 @@ function Instr_UsersTable() {
     const [selectedGroupId_state, set_selectedGroupId_state] = useState('');
     const [buttonIsDisabled_state, set_buttonIsDisabled_state] = useState(true);
 
-    console.log('users_state: ', users_state)
-
     useEffect(() => {
         const isAnyUserSelected = Object.values(selectedUsers_state).some((isSelected) => isSelected);
         const isGroupSelected = actionSelection_state === 'AssignToGroup' ? selectedGroupId_state !== '' : true;
@@ -153,14 +151,11 @@ function Instr_UsersTable() {
                 set_users_state(updatedUsersState);
                 const updatedGroupsState = groups_state.map(group => {
 
-                    // make Set obj of user IDs for the current group to prevent duplicates
                     const groupUserIds = new Set(group.users.map(user => user.id));
 
                     if (group.id === parseInt(selectedGroupId_state, 10)) {
-                        // add IDs to new group
                         response.data.assigned_user_ids.forEach(id => groupUserIds.add(id));
                     } else {
-                        // del IDs from prev group
                         response.data.assigned_user_ids.forEach(id => groupUserIds.delete(id));
                     }
 
@@ -225,11 +220,6 @@ function Instr_UsersTable() {
         set_desiredNavMetas_state([`/instructor/groups/${student.membership}`, 'dash']);
     };
 
-    console.log('chatHistory_state from usersTable: ', chatHistory_state)
-    console.log (chatHistory_state?.length ?? 0)
-
-
-
     return (
         <>
             <div className="create-frame">
@@ -274,33 +264,34 @@ function Instr_UsersTable() {
                     <div className="table-cell-item highlightable-cell col-small">Cmds</div>
                     <div className="table-cell-item highlightable-cell col-small">Chats</div>
                 </div>
-                {users_state.map((user, index) => (
-                    <div key={index + 2000} className="table-row">
-                        <div className="table-cell-item highlightable-cell col-xxsmall">
-                            <div onClick={(event) => handleUserCheckboxChange(event, user.id)}>
-                                {user.id}
-                                <input
-                                    type="checkbox"
-                                    checked={selectedUsers_state[user.id] || false}
-                                    onChange={(event) => handleUserCheckboxChange(event, user.id)}
-                                    onClick={(event) => event.stopPropagation()} // Prevent checkbox click from triggering ID cell click
-                                />
+                {users_state.map((user, index) => {
+
+                    const userMessages = chatHistory_state?.filter(msg => msg?.data?.user_id === user.id);
+                    const totalMessages = userMessages?.length;
+                    const newMessagesCount = userMessages?.filter(msg => ((user.recent_response ?? 0) < msg.timestamp)).length;
+
+                    return (
+                        <div key={index + 2000} className="table-row">
+                            <div className="table-cell-item highlightable-cell col-xxsmall">
+                                <div onClick={(event) => handleUserCheckboxChange(event, user.id)}>
+                                    {user.id}
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedUsers_state[user.id] || false}
+                                        onChange={(event) => handleUserCheckboxChange(event, user.id)}
+                                        onClick={(event) => event.stopPropagation()}
+                                    />
+                                </div>
+                            </div>
+                            <div className="table-cell-item highlightable-cell col-large" onClick={(event) => handle_userDetail_click(event, user)}>{user.username}</div>
+                            <div className="table-cell-item highlightable-cell col-large" onClick={(event) => handle_groupDetail_click(event, user)}>{getGroupNameById(user.membership)}</div>
+                            <div className="table-cell-item highlightable-cell col-small" onClick={(event) => handle_userDetail_click(event, user)}>N/A(<span className='highlighter-orange'>N/A</span>)</div>
+                            <div className="table-cell-item highlightable-cell col-small" onClick={(event) => handle_userDetail_click(event, user)}>
+                                {totalMessages}(<span className='highlighter-orange'>{newMessagesCount}</span>)
                             </div>
                         </div>
-                        <div className="table-cell-item highlightable-cell col-large" onClick={(event) => handle_userDetail_click(event, user)}>{user.username}</div>
-                        <div className="table-cell-item highlightable-cell col-large" onClick={(event) => handle_groupDetail_click(event, user)}>{getGroupNameById(user.membership)}</div>
-                        <div className="table-cell-item highlightable-cell col-small" onClick={(event) => handle_userDetail_click(event, user)}>5(<span className='highlighter-orange'>24</span>)</div>
-                        <div className="table-cell-item highlightable-cell col-small" onClick={(event) => handle_userDetail_click(event, user)}>
-
-                            {
-                            chatHistory_state?.filter((msg)=> msg?.data?.user_id === user.id).length
-                            }
-
-                        (<span className='highlighter-orange'>{chatHistory_state?.filter((msg)=> msg?.data?.user_id === user.id).length}</span>)</div>
-                    </div>
-                ))}
-
-
+                    );
+                })}
             </div>
         </>
     );

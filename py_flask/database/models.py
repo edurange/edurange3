@@ -16,8 +16,10 @@ from py_flask.database.db_classes import (
 )
 from py_flask.config.extensions import bcrypt
 
+
 def generate_registration_code(size=8, chars=string.ascii_lowercase + string.digits):
     return "".join(random.choice(chars) for _ in range(size))
+
 
 class StudentGroups(Edu3Mixin, SurrogatePK, Model):
     """"Groups of Users"""
@@ -31,6 +33,7 @@ class StudentGroups(Edu3Mixin, SurrogatePK, Model):
     hidden = Column(db.Boolean(), nullable=False, default=False)
     users = relationship("GroupUsers", backref="groups", cascade="all, delete-orphan")
 
+
 class ChatMessages(Edu3Mixin, SurrogatePK, Model):
     """Individual chat message"""
     ___tablename___ = "messages"
@@ -38,7 +41,7 @@ class ChatMessages(Edu3Mixin, SurrogatePK, Model):
     channel = reference_col("channels", nullable=False)
     timestamp = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
     content = Column(db.String(5000), nullable=False, unique=False)
-    scenario_id = reference_col('scenarios', nullable=False)
+    scenario_type = Column(db.String(50), nullable=False, unique=False)
     
 
 class GroupUsers(Edu3Mixin, SurrogatePK, Model):
@@ -49,14 +52,15 @@ class GroupUsers(Edu3Mixin, SurrogatePK, Model):
     group_id = reference_col("groups", nullable=False)
     group = relationship("StudentGroups", backref="group_users", viewonly=True)
 
-#
+
 class Channels(Edu3Mixin, SurrogatePK, Model):
     """"Chat Channels"""
     __tablename__ = "channels"
-    # name = Column(db.String(40), unique=True, nullable=False)  # DEV_FIX (do we want this?)
+    name = Column(db.String(40), unique=True, nullable=False) # DEV_FIX make owner username by default
     owner_id = reference_col("users", nullable=False)
     owner = relationship("Users", backref="channels")
     users = relationship("ChannelUsers", backref="channels", cascade="all, delete-orphan")
+
 
 class ChannelUsers(Edu3Mixin, SurrogatePK, Model):
     """Users belong to channels"""
@@ -73,7 +77,6 @@ class Users(Edu3Mixin, SurrogatePK, Model):
     username = Column(db.String(80), unique=True, nullable=False)
     password = Column(db.LargeBinary(128), nullable=True)   # hashed
     created_at = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
-    channel = Column(db.Integer, nullable=False, default=0)
     active = Column(db.Boolean(), default=False)
     is_admin = Column(db.Boolean(), default=False)
     is_instructor = Column(db.Boolean(), default=False)

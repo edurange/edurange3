@@ -11,7 +11,7 @@ from flask import (
 from datetime import timedelta
 
 from functools import wraps
-from py_flask.database.models import GroupUsers, StudentGroups, Users
+from py_flask.database.models import GroupUsers, StudentGroups, Users, Channels, ChannelUsers
 from flask_jwt_extended import create_access_token, decode_token
 
 ###########
@@ -96,36 +96,70 @@ def login_er3(userObj):
 # account utils available to student (e.g. non-instructor) routes
 ####
 
+
 # create student account (add to postgreSQL db)
 def register_user(validated_registration_data):
-
     db_ses = db.session
-    
     data = validated_registration_data
 
     group = StudentGroups.query.filter_by(code=data["code"]).first()
+    if group is None:
+        return jsonify({"error": "group matching this code not found"}), 404
 
-    Users.create(
-            username=data["username"],
-            password=data["password"],
-            active=True,
+    new_user = Users(
+        username=data["username"],
+        password=data["password"], # automatically hashed
+        active=True,
     )
-    
-    # won't work unless provided code matches the code for an existing group
-
-    if group is None: return jsonify({"error": "group matching this code not found"}), 404
+    db_ses.add(new_user)
+    db_ses.commit()
 
     this_user = Users.query.filter_by(username=data["username"]).first()
-    group_id = group.get_id()
-    this_user_id = this_user.get_id()
-
-    # assign channel with this_user_id here 
-    this_user.channel = this_user_id
-    db_ses.commit()  # Commit the change
-
-    GroupUsers.create(user_id=this_user_id, group_id=group_id)
-
-    return this_user_id
-
+    if not this_user:
+        return jsonify({"error": "User registration failed"}), 500
     
-# delete account (Add here)
+    # create new channel w/ this user_id as owner_id and PK (id)
+    new_channel = Channels(
+        name=this_user.username, # owner username as channel.name default
+        owner_id=this_user.id
+    )
+    db_ses.add(new_channel)
+    db_ses.commit()
+
+    # new channel_users row w/ this_user_id as channel_id and this_user_id as user_id
+    new_channel_user = ChannelUsers(
+        user_id=this_user.id,
+        channel_id=new_channel.id  # Use the newly created channel's ID
+    )
+    db_ses.add(new_channel_user)
+    db_ses.commit()
+
+    # new GroupUsers entry
+    new_group_user = GroupUsers(
+        user_id=this_user.id,
+        group_id=group.id  # ID from the existing group
+    )
+    db_ses.add(new_group_user)
+    db_ses.commit()
+
+    retObj = {
+        "user_id": this_user.id,
+        "channel": new_channel.id
+    }
+    return retObj
+
+def getChannelData_byUser(userID, username):
+
+    avail_channel_objs = Channels.query.join(ChannelUsers, Channels.id == ChannelUsers.channel_id) \
+                                  .filter(ChannelUsers.user_id == userID).all()
+
+    channels_dict = [channel.to_dict(include_relationships=True) for channel in avail_channel_objs]
+   
+    home_channel = next((chan['id'] for chan in channels_dict if chan['name'] == username), None)
+
+    channels_info = {
+        "available_channels": channels_dict,
+        "home_channel": home_channel
+    }
+
+    return channels_info

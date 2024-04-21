@@ -10,16 +10,14 @@ import Instr_Scenarios from './scenarios/Instr_Scenarios';
 import Instr_Users from './users/Instr_Users';
 import Instr_ScenDetail from './scenarios/Instr_ScenDetail';
 import Instr_UserDetail from './users/Instr_UserDetail';
-import SocketKeeper from '../pub/SocketKeeper';
 import Panopticon from './Panopticon';
-import Sockeep2 from '../pub/Sockeep2';
 import { HomeRouter_context } from '../pub/Home_router';
 
 export const InstructorRouter_context = React.createContext();
 
 function Instructor_router() {
 
-    const { login_state, userData_state, userAlias_state } = useContext(HomeRouter_context);
+    const { login_state, userData_state } = useContext(HomeRouter_context);
     const [chatHistory_state, set_chatHistory_state] = useState([]);
 
     const [users_state, set_users_state] = useState([])
@@ -28,6 +26,7 @@ function Instructor_router() {
     const [scenarioDetail_state, set_scenarioDetail_state] = useState({})
     const [userDetail_state, set_userDetail_state] = useState({})
     const [tempUsers_state, set_tempUsers_state] = useState([]);
+    const [selectedMessage_state, set_selectedMessage_state] = useState([]);
     const lastChat_ref = useRef(null);
 
     const socket_ref = useRef(null);
@@ -55,11 +54,9 @@ function Instructor_router() {
 
     // INITIALIZE ONLY SOCKET REF
     useEffect(() => {
-        // Initialize WebSocket only once after the component mounts
         socket_ref.current = new WebSocket(socketURL);
-        // WebSocket ping functionality
-        const pingInterval = 11000; // Adjust the interval as needed (e.g., 30000 for 30 seconds)
-        const intervalId = setInterval(() => {
+        const pingInterval = 11_000; // unit: ms
+        const interval_id = setInterval(() => {
             if (socket_ref.current.readyState === 1) {
                 socket_ref.current.send(JSON.stringify({
                     type: 'keepalive',
@@ -67,7 +64,7 @@ function Instructor_router() {
                 }));
             }
         }, pingInterval);
-        // Function to clean up the WebSocket when the component unmounts
+        // cleanup
         return () => {
             if (socket_ref.current) {
                 socket_ref.current.close();
@@ -75,31 +72,14 @@ function Instructor_router() {
         };
     }, []);
 
-    const updateChatHistory = (userId, message) => {
-        console.log('setting chatlog')
-        set_chatHistory_state(prevHistory => ({
-            ...prevHistory,
-            [userId]: [...(prevHistory[userId] || []), message],
-        }));
-        console.log("new chat log state: ", chatHistory_state)
-    };
-
 
     useEffect(() => {
         const handleMessage = (event) => {
             const message = JSON.parse(event.data);
             console.log('instructor_router received message: ', message)
 
-            if (message.type === 'student_message_receipt' || message.type === 'instructor_message_receipt') {
-
+            if (message.type === 'chat_message_receipt') {
                 set_chatHistory_state((prevChatLog) => [...prevChatLog, message]);
-
-                // updateChatHistory(message?.data?.user_id, message)
-
-                // need to track the metadata for every user's chatlog in piece of state
-                // add to the record here
-
-                // set_chatHistory_state((prevChatLog) => [...prevChatLog, message]);
 
             } else if (message.type === 'chatError') {
                 console.error('Chat error:', message.data);
@@ -118,7 +98,6 @@ function Instructor_router() {
     }, [socket_ref]);
 
     useEffect(() => {
-        console.log('chatHistory_state updated')
         if (lastChat_ref.current) {
             lastChat_ref.current.scrollIntoView({ behavior: 'smooth' });
         }
@@ -129,9 +108,7 @@ function Instructor_router() {
         <div className='newdash-frame'>
             <div className='newdash-frame-carpet'>
 
-
                 <Frame_side />
-
 
                 <InstructorRouter_context.Provider value={{
 
@@ -142,12 +119,10 @@ function Instructor_router() {
                     scenarioDetail_state, set_scenarioDetail_state,
                     userDetail_state, set_userDetail_state,
                     tempUsers_state, set_tempUsers_state,
-                    socket_ref, set_chatHistory_state, chatHistory_state, lastChat_ref
+                    socket_ref, set_chatHistory_state, chatHistory_state, lastChat_ref,
+                    selectedMessage_state, set_selectedMessage_state
 
                 }}>
-                    {/* <SocketKeeper /> */}
-                    {/* <Sockeep2/> */}
-                    {/* <SocketKeeper/> */}
 
                     <Routes>
                         <Route path="/*" element={<Instr_Dash />} />
@@ -167,5 +142,4 @@ function Instructor_router() {
         </div>
     );
 };
-
 export default Instructor_router;

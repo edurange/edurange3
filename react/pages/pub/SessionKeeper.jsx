@@ -26,6 +26,8 @@ function SessionKeeper () {
         const navMetasString = sessionStorage?.getItem('navMetas');
         const login_str = sessionStorage?.getItem('login');
 
+        console.log('checking userDataString: ', userDataString)
+        console.log('checking navMetasString: ', navMetasString)
         if ((!userDataString) || (!navMetasString)) { return <Login/>; };
         
         const userData = JSON.parse(userDataString);

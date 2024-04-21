@@ -170,7 +170,7 @@ export const navArrays = {
         },
         dash: {
             top: [instructor, logout],
-            side: [instructor, panopticon, studentGroups, instr_scenarios, students]
+            side: [instructor, studentGroups, instr_scenarios, students]
         },
         account: {
             top: [instructor, logout],
@@ -201,7 +201,7 @@ export const navArrays = {
         },
         dash: {
             top: [instructor, logout],
-            side: [instructor, studentGroups,panopticon, instr_scenarios, students]
+            side: [instructor, studentGroups, instr_scenarios, students]
 
         },
         account: {

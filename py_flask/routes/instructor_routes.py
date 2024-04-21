@@ -354,7 +354,7 @@ def delete_users():
     # deleteUsers() clears user's group association before deleting
     deleted_users = deleteUsers(users_to_delete)
 
-    if deleted_users:
+    if len(deleted_users) > 0:
         return jsonify({
             'deleted_users': deleted_users,
             "result": 'success'})

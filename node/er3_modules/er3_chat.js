@@ -6,7 +6,7 @@
 // - keepalive: ping/pong and other messages only for keeping socket open (frontend <-> backend)
 
 // - student_message: message 'Q' sent FROM STUDENT 'X' FOR CHANNEL 'Y' (frontend -> backend)
-// - student_message_receipt: message 'A' sent TO ALL STUDENTS IN CHANNEL 'Y' (backend -> frontend)
+// - chat_message_receipt: message 'A' sent TO ALL STUDENTS IN CHANNEL 'Y' (backend -> frontend)
 
 // - instructor_message: message 'A' sent FROM INSTRUCTOR 'Z' FOR CHANNEL 'Y' as a response to student_message 'Q' (frontend -> backend)
 // - instructor_message_receipt: instructor response message 'A' sent TO ALL USERS IN CHANNEL 'Y' (backend -> frontend)
@@ -34,15 +34,15 @@ const cookie = require('cookie');
 const jwt = require('jsonwebtoken');
 const pg = require('pg');
 const Joi = require('joi');
-const {generateInt} = require('../utils/chat_utils');
+const { generateInt } = require('../utils/chat_utils');
 
 const { Pool } = pg;
 // root project env
-dotenv.config({ path: path.join(__dirname, '..','..', '.env') });
+dotenv.config({ path: path.join(__dirname, '..', '..', '.env') });
 
 const chatSession = {
-    sessionID : generateInt(),
-    userDict : {},
+    sessionID: generateInt(),
+    userDict: {},
 }
 
 const chatHttpServer = http.createServer((req, res) => {
@@ -51,76 +51,85 @@ const chatHttpServer = http.createServer((req, res) => {
 });
 
 // register a user and add them to groups
-function regUser(user_id, username, user_role, socketConnection) {
-    console.log ('reguser called for: ', user_id, username, user_role)
+function registerUser(user_id, username, user_role, socketConnection) {
+
     if (!chatSession.userDict.hasOwnProperty(user_id)) {
         chatSession.userDict[user_id] = {
             userID: user_id,
             username: username,
             is_instructor: (user_role === 'admin' || user_role === 'instructor') ? true : false,
-            muted: false,  // silences notifications from user
-            slowed: false, // set automatic timeout until next notif will show
-            timeout: 0,
             connection: socketConnection,
-            chatChannel_id : user_id
+            chatChannel_id: user_id
         };
         console.log(`Registered new user: ${username}`);
     }
     else {
         chatSession.userDict[user_id].connection = socketConnection;
-        console.log(`User ${username} already exists in dict. Refreshing connection info and continuing...`);};
+        console.log(`User ${username} already exists in dict. Refreshing connection info and continuing...`);
+    };
 }
 
-const StuMessage_schema = Joi.object({
+async function getUsers_byChannel(channelID) {
+    try {
+        const result = await pool.query('SELECT * FROM channel_users WHERE channel_id = $1', [channelID]);
+        return result.rows;
+    } catch (error) {
+        console.error('Failed to query channel users:', error);
+    }
+}
+
+async function getChatLog_byUser(userID) {
+
+    try {
+        const query = `
+            SELECT m.* 
+            FROM messages m
+            JOIN channel_users cu ON m.channel = cu.channel_id
+            WHERE cu.user_id = $1
+        `;
+
+        const result = await pool.query(query, [userID]);
+
+        if (result.rows.length > 0) {
+            console.log("Chat logs:", result.rows);
+            return result.rows;
+        } else {
+            console.log("No chat logs found for user", userID);
+            return [];
+        }
+    } catch (error) {
+        console.error('Error fetching chat logs:', error);
+        throw error; // Optional: re-throw the error if you want to handle it further up
+    }
+}
+
+// INCOMING (from front)
+const ChatMessage_schema = Joi.object({
 
     type: Joi.string(),
 
     timestamp: Joi.number().integer(),
-    
+
     channel: Joi.number().integer().required(),
     scenario_id: Joi.number().integer(),
     message: Joi.string().trim().required(),
     user_alias: Joi.string().trim().required(),
 });
 
-const InstrMessage_schema = Joi.object({
-
-    type: Joi.string(),
-
-    timestamp: Joi.number().integer(),
-
-    channel: Joi.number().integer().required(),
-    message: Joi.string().trim().required(),
-    instructor_id: Joi.number().integer().required(),
-
-});
-
-
-class StuMsg_Receipt {
+// OUTGOING (to front)
+class Chat_Receipt {
     constructor(user_id, original_message) {
-        this.type = 'student_message_receipt';
+        this.type = 'chat_message_receipt';
         this.timestamp = original_message.timestamp;
-        this.data =  {
-            user_id : user_id,
-            scenario_id : original_message?.data?.scenario_id,
-            message : original_message?.data?.message || "missing",
-            user_alias : original_message?.data?.user_alias,
+        this.data = {
+            user_id: user_id,
+            scenario_id: original_message?.data?.scenario_id,
+            message: original_message?.data?.message || "missing",
+            user_alias: original_message?.data?.user_alias,
             channel: original_message?.data?.channel
         }
     }
 }
-class InstrMsg_Receipt {
-    constructor(instructor_user_id, timestamp, data) {     
-        this.type = 'instructor_message_receipt';
-        this.timestamp = timestamp;
-        this.data = {
-            message : data.message || null,
-            timestamp : data.timestamp,
-            instructor_id : instructor_user_id,
-        }
-    }
-}
-
 
 const pool = new Pool({
     user: process.env.CHATDB_USERNAME,
@@ -130,18 +139,28 @@ const pool = new Pool({
     port: process.env.CHATDB_PORT
 });
 
-// DEV_FIX comment this
+// this is expecting the user's request header to contain a jwt cookie
+// the cookie should be assigned when they log in via flask
+// in this block, the cookie is then unpacked for the jwt, 
+// and the jwt is then checked against the secret_key signature
 const chatSocketServer = new WebSocketServer({
     server: chatHttpServer,
     verifyClient: (info, done) => {
 
+        // parse and validate jwt
         const cookies = cookie.parse(info.req.headers.cookie || '');
-        const er3_jwt = cookies.edurange3_jwt;
-        const skey = (process.env.JWT_SECRET_KEY);
-        const verified_jwt = jwt.verify(er3_jwt, skey);
+        const provided_jwt = cookies.edurange3_jwt;
+        const jwt_secret_key = (process.env.JWT_SECRET_KEY);
+        const verified_jwt = jwt.verify(provided_jwt, jwt_secret_key);
 
-        const jwt_payload = verified_jwt.sub
+        // get payload from expected jwt payload property .sub
+        const jwt_payload = verified_jwt.sub;
+
+        // attaching closure method to temporary 'info' object 
         info.req.get_id = () => jwt_payload;
+        // this allows retrieval of jwt payload during connection lifecycle
+        // e.g. below: const {username, user_role, user_id} = request.get_id();
+        // works bc scope of verifyClient is retained
 
         done(true);
     }
@@ -151,15 +170,12 @@ const chatSocketServer = new WebSocketServer({
 chatSocketServer.on('connection', async (socketConnection, request) => {
 
 
-    const {username, user_role, user_id} = request.get_id();
+    const { username, user_role, user_id } = request.get_id();
 
-    if (!username) {return {error: 'username not found in validated jwt'}}
-    
-    // DEV_FIX check here that user exists in db
-    const existing_user = await pool.query(`SELECT FROM users WHERE id = ${user_id}`);
+    if (!user_id) { return { error: 'user_id not found in validated jwt' } }
 
-    if (!existing_user) {return {error: 'user_id not found in db'}}
-
+    const existing_user = await pool.query(`SELECT FROM users WHERE id = $1`, [user_id]);
+    if (!existing_user) { return { error: 'user_id not found in db' } }
 
     // DEV_ONLY
     console.log(
@@ -168,8 +184,8 @@ chatSocketServer.on('connection', async (socketConnection, request) => {
         `\n#    user_role: ${user_role}`,
         `\n#    user_id: ${user_id}`);
 
-    regUser(user_id, username, user_role, socketConnection);
-    
+    registerUser(user_id, username, user_role, socketConnection);
+
 
     socketConnection.on('message', async (message) => {
 
@@ -178,181 +194,129 @@ chatSocketServer.on('connection', async (socketConnection, request) => {
         const this_timestamp = this_message.timestamp;
         const this_type = this_message.type;
 
-        console.log ('RECEIVED MESSAGE: ', this_message)
-        
-        if (this_type === 'handshake'){
+        // console.log('RECEIVED MESSAGE: ', this_message)
+
+        if (this_type === 'handshake') {
             socketConnection.send(JSON.stringify({
-                type:'handshake',
+                type: 'handshake',
                 ok: true,
             }));
             return;
         }
-        if (this_type === 'keepalive'){
+        if (this_type === 'keepalive') {
             socketConnection.send(JSON.stringify({
-                type:'keepalive',
+                type: 'keepalive',
                 message: 'pong',
                 ok: true
             }));
             return;
         }
 
-        if (this_type === 'get_student_history'){
-            
-            const thisStudentHistory = await pool.query('SELECT FROM messages WHERE channel = $1', [this_data.channel]);
-            // DEV_FIX this whole area
+        if (this_type === 'get_student_history') {
 
+            const historyToGet = message?.data?.history_to_get;
+            if (!historyToGet) { return; }
+            const thisStudentHistory = await getChatLog_byUser(historyToGet)
 
-            // DEV_FIX user parameterized query with pool
-
-            // DEV_FIX look into how input is processed (e.g. content, 'OR 1=1) and make sure it takes care of 'raw' content input
-
-
-            
-            chatSession.userDict.chat_history = chatHistoryArray
-            
             socketConnection.send(JSON.stringify({
-                type:'chat_history',
-                message: chatHistoryArray,
+                type: 'chat_history',
+                timestamp: Date.now(),
+                data: thisStudentHistory,
                 ok: true
             }));
             return;
         }
-        
-        if (this_type === 'student_message'){
 
-            const { error, value } = StuMessage_schema.validate(this_message.data);
+        if (this_type === 'announcement') {
 
-            this_message.data = value;
-            
+            if (user_role === 'admin' || user_role === 'instructor') {
+                // send to every user in dict
+                console.log(`trying to send announcement from instructor ${thisDictUser.username} to all users`)
+                chatSession.userDict.forEach(user => {
+                    if (user.connection.readyState === 1) {
+
+                        user.connection.send(JSON.stringify(chat_message_receipt));
+                    }
+                    // DEV_FIX handle bad ready state
+                })
+            }
+        }
+
+        if (this_type === 'chat_message') {
+
+            const { error, value } = ChatMessage_schema.validate(this_message.data);
+
             if (error) {
                 console.log(error.details[0].message);
                 socketConnection.send(JSON.stringify({ error: error.details[0].message }));
                 return;
             }
 
-            const thisDictUser =  chatSession?.userDict[user_id];
-            
+            this_message.data = value;
+            const this_channel = value?.channel;
+            const thisDictUser = chatSession?.userDict[user_id];
+
             try {
 
+                const chat_message_receipt = new Chat_Receipt(user_id, this_message)
+                
+                
+                // create channel in db if it doesn't exist
+                // # DEV_FIX naive way of identifying
+                const matching_channels = await pool.query('SELECT id FROM channels WHERE id = $1', [this_channel]);
+                if (matching_channels.rows.length === 0) {
+                    await pool.query('INSERT INTO channels (id, owner_id, name) VALUES ($1, $2, $3)', [this_channel, user_id, thisDictUser?.username]);
+                }
+                // DEV_FIX add user_id to channel_users row x
+
+
+                // SEND TO INSTRUCTORS
                 const instrArr = Object.values(chatSession.userDict).filter((entry) => entry.is_instructor === true);
-                
-                const student_message_receipt = new StuMsg_Receipt(user_id, this_message)
-                
-                console.log(student_message_receipt);
-                    
+
                 instrArr.forEach(instructor => {
-                    console.log("READYSTATE: ",instructor.connection.readyState)
+                    console.log("READYSTATE: ", instructor.connection.readyState)
                     if (instructor.connection.readyState === 1) {
 
                         console.log(`trying to send message from ${thisDictUser.username} to instructor ${instructor.username}`)
-                        instructor.connection.send(JSON.stringify(student_message_receipt));
+                        instructor.connection.send(JSON.stringify(chat_message_receipt));
                     }
-
                     // DEV_FIX handle bad ready state
-
                 })
 
-                // DB insert
+                // send to all channel_users
 
-                const res = await pool.query('SELECT id FROM channels WHERE id = $1', [user_id]);
+                console.log('this_channel: ', this_channel);
+                const chan_users = await getUsers_byChannel(this_channel);
+                console.log('chan_users: ', chan_users);
 
-                if (res.rows.length === 0) {
-                  // channel does not exist, so create it
-                  await pool.query('INSERT INTO channels (id, owner_id) VALUES ($1, $2)', [user_id, user_id]);
-                }
 
-                const query2 = `INSERT INTO messages (sender, channel, content, scenario_id, timestamp)
-                VALUES (
-                    ${user_id},
-                    ${user_id},
-                    '${value.message}', 
-                    '${value.scenario_id}', 
-                    '${this_timestamp}')`;
-                await pool.query(query2); // run insert query
+                chan_users.forEach(user => {
 
-                thisDictUser.connection.send(JSON.stringify(student_message_receipt));
-                    
-                    
-                } catch (err) {
-                    console.error('some stu error:', err);
-                    socketConnection.send(JSON.stringify({ error: 'Internal Server Error' }));
-                }
-            }
-        
+                    const dictUser = chatSession.userDict[user.user_id];
+                    console.log("READYSTATE: ", dictUser.connection.readyState)
+                    if (dictUser.connection.readyState === 1) {
 
-        if (this_type === 'instructor_message'){
-
-            const this_instructor_id = user_id
-
-            this_message.instructor_id = this_instructor_id;
-
-            const tempObj = {
-                type: 'instructor_message_receipt',
-                channel: 1,
-                message: 'test message string',
-                instructor_id: 1,
-            }
-
-            const { error, value } = InstrMessage_schema.validate(tempObj);
-            
-            if (error) {
-                console.log(error.details[0].message);
-                socketConnection.send(JSON.stringify({ error: error.details[0].message }));
-                return;
-            }
-
-            const thisDictUser =  chatSession?.userDict[user_id];
-            
-            try {
-
-                const instrArr = Object.values(chatSession.userDict).filter((entry) => entry.is_instructor === true);
-                
-                
-                const instrMsg_receipt = new InstrMsg_Receipt(user_id, this_timestamp, value)
-                console.log('instrMsg_receipt: ',instrMsg_receipt);
-                
-                instrArr.forEach(instructor => {
-                    console.log("READYSTATE: ",instructor.connection.readyState)
-                    if (instructor.connection.readyState === 1) {
-
-                        
-                        console.log(`trying to send instructor msg from ${thisDictUser.username} to instructor ${instructor.username}`)
-                        instructor.connection.send(JSON.stringify(instrMsg_receipt));
+                        console.log(`trying to send message from ${thisDictUser.username} to user ${dictUser.username}`)
+                        dictUser.connection.send(JSON.stringify(chat_message_receipt));
                     }
-
                     // DEV_FIX handle bad ready state
-
                 })
 
-                // DB insert
-                const res = await pool.query('SELECT id FROM channels WHERE id = $1', [user_id]); // DEV_FIX change to user's current channel, not user_id
+                // insert message into db
+                await pool.query(`INSERT INTO messages (sender, channel, content, scenario_id, timestamp) VALUES ($1, $2, $3, $4, $5)
+                `, [
+                    user_id,
+                    value.channel,
+                    value.message,
+                    value.scenario_id,
+                    this_timestamp
+                ]);
 
-                if (res.rows.length === 0) {
-                  // Channel does not exist, so create it
-                  await pool.query('INSERT INTO channels (id, owner_id) VALUES ($1, $2)', [user_id, user_id]);
-                }
-
-                console.log ('sender: ', user_id);
-                console.log ('value.message ', value.message )
-                console.log ('value.scenario_id ', value.scenario_id ?? 112 )
-                console.log ('this_timestamp ', this_timestamp )
-
-                const query2 = `INSERT INTO messages (sender, channel, content, scenario_id, timestamp)
-                VALUES (
-                    ${user_id},
-                    ${user_id},
-                    '${value.message}', 
-                    '${value.scenario_id ?? 112}',
-                    '${this_timestamp}'
-                )`;
-
-                await pool.query(query2); // run insert query
-
-                } catch (err) {
-                    console.error('some instr error:', err);
-                    socketConnection.send(JSON.stringify({ error: 'Internal Server Error' }));
-                }
+            } catch (err) {
+                console.error('some stu error:', err);
+                socketConnection.send(JSON.stringify({ error: 'Internal Server Error' }));
             }
+        }
     });
 
     socketConnection.on('close', () => {

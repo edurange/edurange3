@@ -8,6 +8,8 @@ from py_flask.database.models import (
     Users,
     Notification,
     GroupUsers, 
+    ChannelUsers,
+    Channels,
     generate_registration_code
     )
 
@@ -29,7 +31,9 @@ def generateTestAccts(group_db_obj, new_user_count, group_code):
             'confirm_password' : newPass,
             'code' : group_code,
         }
-        user_dict['id'] = register_user(user_dict)
+        retObj = register_user(user_dict)
+        newUser_id = retObj['user_id']
+        user_dict['id'] = newUser_id
         generatedUsers.append(user_dict)
 
     return generatedUsers
@@ -40,6 +44,7 @@ def addGroupUsers(group_obj, userDict_list):
     assigned_user_ids = []
 
     for user_dict in userDict_list:
+        
         user_id = user_dict['id']
         user = Users.query.get(user_id)
         if user:
@@ -78,6 +83,26 @@ def clearGroups(users_to_clear):
     db_ses.commit()
     return cleared_user_ids
 
+def clearChannels(users_to_clear):
+    db_ses = db.session
+
+    cleared_user_ids = []
+    for user_id in users_to_clear:
+
+        user = Users.query.get(user_id)
+
+        if not user: continue 
+
+        ChannelUsers.query.filter_by(user_id=user_id).delete()
+        Channels.query.filter_by(owner_id=user_id).delete()
+        Channels.query.filter_by(name=user.username).delete()
+
+        cleared_user_ids.append(user_id)
+
+    db_ses.commit()
+
+    return cleared_user_ids
+
 
 def deleteUsers(users_to_delete):
 
@@ -85,16 +110,18 @@ def deleteUsers(users_to_delete):
         db_ses = db.session
         
         clearGroups(users_to_delete)
+        clearChannels(users_to_delete)
         deleted_users = []
         for user_id in users_to_delete:
-            user = db_ses.query(Users).filter(Users.id == user_id).first()
+            user = db_ses.query(Users).filter(Users.id == int(user_id)).first()
             if user:
                 db_ses.delete(user)
-                deleted_users.append(user_id)
-
+                deleted_users.append(int(user_id))
+            else: print ('deleteUser_error: user not found')
         db_ses.commit()
         return deleted_users
 
     except SQLAlchemyError as e:
+        print('error deleting user: ', e)
         db_ses.rollback()
-        return jsonify({"message": f"An error occurred: {str(e)}"}), 500
+        return []

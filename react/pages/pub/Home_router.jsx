@@ -36,8 +36,6 @@ function Home_router() {
   const [desiredNavMetas_state, set_desiredNavMetas_state] = useState(['/', 'home'])
   const [login_state, set_login_state] = useState(false);
   const [chatSocket_state, set_chatSocket_state] = useState();
-  const [userAlias_state, set_userAlias_state] = useState('none');
-
 
   const navigate = useNavigate();
 
@@ -83,9 +81,8 @@ function Home_router() {
         navArraysObj_state,
         desiredNavMetas_state, set_desiredNavMetas_state,
         chatSocket_state, set_chatSocket_state,
-        userAlias_state, set_userAlias_state,
       }}>
-
+        <SessionKeeper/>
         <Frame_head />
 
         <div id='edurange-content'>

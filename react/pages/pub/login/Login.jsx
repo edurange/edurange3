@@ -10,7 +10,6 @@ function Login() {
     const {
         set_userData_state, set_login_state,
         loginExpiry, set_desiredNavMetas_state,
-        set_userAlias_state
     } = useContext(HomeRouter_context);
 
     async function sendLoginRequest(username_input, password_input) {
@@ -26,11 +25,11 @@ function Login() {
             console.log('login userdata: ',userData)
 
             if (userData) {
+                const newAlias = genAlias();
+                userData.user_alias = newAlias;
                 set_userData_state(userData);
                 set_login_state(true);
-                const newAlias = genAlias();
                 console.log(newAlias);
-                set_userAlias_state(newAlias);
                 const newExpiry = Date.now() + loginExpiry;
                 sessionStorage.setItem('userData', JSON.stringify(userData));
                 sessionStorage.setItem('login', true);
