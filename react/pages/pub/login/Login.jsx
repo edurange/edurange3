@@ -8,7 +8,7 @@ import { genAlias } from '../../../modules/utils/chat_modules';
 function Login() {
 
     const {
-        set_userData_state, set_login_state,
+        set_userData_state, set_login_state, set_chatData_state, chatData_state,
         loginExpiry, set_desiredNavMetas_state,
     } = useContext(HomeRouter_context);
 
@@ -22,23 +22,24 @@ function Login() {
             );
             const userData = response.data;
             
-            console.log('login userdata: ',userData)
-
             if (userData) {
                 const newAlias = genAlias();
                 userData.user_alias = newAlias;
                 set_userData_state(userData);
                 set_login_state(true);
-                console.log(newAlias);
+
+                // for student history
+                const hist_response = await axios.get('/get_chat_history');
+                const chat_history = hist_response?.data?.chat_history
                 const newExpiry = Date.now() + loginExpiry;
                 sessionStorage.setItem('userData', JSON.stringify(userData));
                 sessionStorage.setItem('login', true);
                 sessionStorage.setItem('loginExpiry', newExpiry);
                 if ((userData?.role === 'instructor') || (userData?.role === 'admin')) {
-                    
                     set_desiredNavMetas_state(['/instructor', 'dash']);
                 }
                 else { 
+                    set_chatData_state(chat_history);
                     set_desiredNavMetas_state(['/scenarios', 'dash']); }
             } else {
                 const errData = response.data.error;

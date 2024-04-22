@@ -181,6 +181,13 @@ body, html {
     color: var(--orange-extreme);
     font-weight: 800;
 }
+.highlighter-aqua{
+    color: var(--aqua-extreme);
+    font-weight: 800;
+}
+.background-darken{
+    background-color: rgba(0, 0, 0, 0.5);
+}
 #edurange-appframe {
     background-color: rgb(7, 0, 17);
     color: var(--blue-muted);

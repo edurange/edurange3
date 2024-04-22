@@ -17,8 +17,7 @@ function Student_router() {
         timeStamp: Date.now(),
         message: "something"
     }]
-    const { login_state, userData_state } = useContext(HomeRouter_context);
-    const [chatHistory_state, set_chatHistory_state] = useState({});
+    const { login_state, userData_state, set_chatData_state, chatData_state, } = useContext(HomeRouter_context);
     const [notifsArray_state, set_notifsArray_state] = useState(fakeNotifs);
     const [guideBook_state, set_guideBook_state] = useState({});
     const [scenarioList_state, set_scenarioList_state] = useState([]);
@@ -69,22 +68,17 @@ function Student_router() {
         };
     }, []);
 
-    const updateChatHistory = (userId, message) => {
-        console.log('setting chatlog')
-        set_chatHistory_state(prevHistory => ({
-            ...prevHistory,
-            [userId]: [...(prevHistory[userId] || []), message],
-        }));
-        console.log("new chat log state: ", chatHistory_state)
+    const updateChatHistory = (message) => {
+        set_chatData_state(prevHistory => [...prevHistory, message]);
     };
-
+    
 
     useEffect(() => {
         const handleMessage = (event) => {
             const message = JSON.parse(event.data);
 
-            if (message.type === 'chat_receipt') {
-                updateChatHistory(message?.data?.user_id, message)
+            if (message.type === 'chat_message_receipt') {
+                updateChatHistory(message?.data)
 
             } else if (message.type === 'chatError') {
                 console.error('Chat error:', message.data);
@@ -103,11 +97,10 @@ function Student_router() {
     }, [socket_ref]);
 
     useEffect(() => {
-        console.log('chatHistory_state updated')
         if (lastChat_ref.current) {
             lastChat_ref.current.scrollIntoView({ behavior: 'smooth' });
         }
-    }, [chatHistory_state]);
+    }, [chatData_state]);
 
     return (
 

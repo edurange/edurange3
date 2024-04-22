@@ -1,9 +1,9 @@
 
 
-// types of chat socket messages (arrow indicates origin -> destination; <-> means type used two-way):
+// types of chat socket chat_messages (arrow indicates origin -> destination; <-> means type used two-way):
 //   
 // - handshake: initialize socket connection and send history and other init info (frontend -> backend -> frontend)
-// - keepalive: ping/pong and other messages only for keeping socket open (frontend <-> backend)
+// - keepalive: ping/pong and other chat_messages only for keeping socket open (frontend <-> backend)
 
 // - student_message: message 'Q' sent FROM STUDENT 'X' FOR CHANNEL 'Y' (frontend -> backend)
 // - chat_message_receipt: message 'A' sent TO ALL STUDENTS IN CHANNEL 'Y' (backend -> frontend)
@@ -16,7 +16,7 @@
 
 // thoughts:
 //  - could be useful to eventually have 'threads' within the channels which are effectively a sub-channel
-//    which would be a log of messages between users in response to a specific message
+//    which would be a log of chat_messages between users in response to a specific message
 
 // STATUS:  WORKING MESSAGES FROM USER TO BACKEND TO  INSTR
 //          WORKING MESSAGES FROM INSTR TO BACKEND TO __ (NEED TARGET)
@@ -62,6 +62,7 @@ function registerUser(user_id, username, user_role, socketConnection) {
             chatChannel_id: user_id
         };
         console.log(`Registered new user: ${username}`);
+        console.log(`user is instructor?: ${(user_role === 'admin' || user_role === 'instructor') ? true : false}`);
     }
     else {
         chatSession.userDict[user_id].connection = socketConnection;
@@ -83,7 +84,7 @@ async function getChatLog_byUser(userID) {
     try {
         const query = `
             SELECT m.* 
-            FROM messages m
+            FROM chat_messages m
             JOIN channel_users cu ON m.channel = cu.channel_id
             WHERE cu.user_id = $1
         `;
@@ -108,23 +109,21 @@ const ChatMessage_schema = Joi.object({
 
     type: Joi.string(),
 
-    timestamp: Joi.number().integer(),
-
     channel: Joi.number().integer().required(),
-    scenario_id: Joi.number().integer(),
-    message: Joi.string().trim().required(),
+    scenario_type: Joi.string().trim().required(),
+    content: Joi.string().trim().required(),
     user_alias: Joi.string().trim().required(),
 });
 
 // OUTGOING (to front)
 class Chat_Receipt {
-    constructor(user_id, original_message) {
+    constructor(user_id, original_message, timestamp) {
         this.type = 'chat_message_receipt';
-        this.timestamp = original_message.timestamp;
         this.data = {
+            timestamp : timestamp,
             user_id: user_id,
-            scenario_id: original_message?.data?.scenario_id,
-            message: original_message?.data?.message || "missing",
+            scenario_type: original_message?.data?.scenario_type,
+            content: original_message?.data?.content || "missing",
             user_alias: original_message?.data?.user_alias,
             channel: original_message?.data?.channel
         }
@@ -191,10 +190,8 @@ chatSocketServer.on('connection', async (socketConnection, request) => {
 
         const this_message = JSON.parse(message)
         const this_data = this_message.data;
-        const this_timestamp = this_message.timestamp;
         const this_type = this_message.type;
-
-        // console.log('RECEIVED MESSAGE: ', this_message)
+        const this_timestamp = new Date().toISOString();
 
         if (this_type === 'handshake') {
             socketConnection.send(JSON.stringify({
@@ -220,7 +217,7 @@ chatSocketServer.on('connection', async (socketConnection, request) => {
 
             socketConnection.send(JSON.stringify({
                 type: 'chat_history',
-                timestamp: Date.now(),
+                timestamp: this_timestamp,
                 data: thisStudentHistory,
                 ok: true
             }));
@@ -258,21 +255,21 @@ chatSocketServer.on('connection', async (socketConnection, request) => {
 
             try {
 
-                const chat_message_receipt = new Chat_Receipt(user_id, this_message)
-                
-                
+                const chat_message_receipt = new Chat_Receipt(user_id, this_message, this_timestamp)
+
                 // create channel in db if it doesn't exist
-                // # DEV_FIX naive way of identifying
                 const matching_channels = await pool.query('SELECT id FROM channels WHERE id = $1', [this_channel]);
                 if (matching_channels.rows.length === 0) {
                     await pool.query('INSERT INTO channels (id, owner_id, name) VALUES ($1, $2, $3)', [this_channel, user_id, thisDictUser?.username]);
                 }
-                // DEV_FIX add user_id to channel_users row x
-
 
                 // SEND TO INSTRUCTORS
-                const instrArr = Object.values(chatSession.userDict).filter((entry) => entry.is_instructor === true);
 
+                console.log('sending to instrs')
+                const instrArr = Object.values(chatSession.userDict).filter((entry) => entry.is_instructor === true);
+                
+                console.log('instrArr len: ',instrArr.length)
+                
                 instrArr.forEach(instructor => {
                     console.log("READYSTATE: ", instructor.connection.readyState)
                     if (instructor.connection.readyState === 1) {
@@ -284,12 +281,9 @@ chatSocketServer.on('connection', async (socketConnection, request) => {
                 })
 
                 // send to all channel_users
-
                 console.log('this_channel: ', this_channel);
                 const chan_users = await getUsers_byChannel(this_channel);
                 console.log('chan_users: ', chan_users);
-
-
                 chan_users.forEach(user => {
 
                     const dictUser = chatSession.userDict[user.user_id];
@@ -303,13 +297,13 @@ chatSocketServer.on('connection', async (socketConnection, request) => {
                 })
 
                 // insert message into db
-                await pool.query(`INSERT INTO messages (sender, channel, content, scenario_id, timestamp) VALUES ($1, $2, $3, $4, $5)
+                await pool.query(`INSERT INTO chat_messages (sender, channel, content, scenario_type, timestamp) VALUES ($1, $2, $3, $4, $5)
                 `, [
                     user_id,
                     value.channel,
-                    value.message,
-                    value.scenario_id,
-                    this_timestamp
+                    value.content,
+                    value.scenario_type,
+                    this_timestamp // now create timestamp on db insert rather than send w/ frontend request
                 ]);
 
             } catch (err) {

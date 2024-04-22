@@ -10,7 +10,6 @@ import Instr_Scenarios from './scenarios/Instr_Scenarios';
 import Instr_Users from './users/Instr_Users';
 import Instr_ScenDetail from './scenarios/Instr_ScenDetail';
 import Instr_UserDetail from './users/Instr_UserDetail';
-import Panopticon from './Panopticon';
 import { HomeRouter_context } from '../pub/Home_router';
 
 export const InstructorRouter_context = React.createContext();
@@ -18,8 +17,8 @@ export const InstructorRouter_context = React.createContext();
 function Instructor_router() {
 
     const { login_state, userData_state } = useContext(HomeRouter_context);
-    const [chatHistory_state, set_chatHistory_state] = useState([]);
-
+    const [chatLibrary_state, set_chatLibrary_state] = useState({});
+    const [channelAccess_state, set_channelAccess_state] = useState({});
     const [users_state, set_users_state] = useState([])
     const [groups_state, set_groups_state] = useState([])
     const [scenarios_state, set_scenarios_state] = useState([])
@@ -35,11 +34,12 @@ function Instructor_router() {
     const socketURL = `${proto}://${window.location.host}/chat`;
 
 
+
     async function get_instructorData() {
         try {
             const response = await axios.get("/get_instructor_data");
             const responseData = response.data;
-            console.log('Loading Instructor Data:', responseData);
+            // console.log('Loading Instructor Data:', responseData);
             set_users_state(responseData?.users);
             set_groups_state(responseData?.groups);
             set_scenarios_state(responseData?.scenarios);
@@ -51,6 +51,12 @@ function Instructor_router() {
     if (!scenarios_state) { return <></> }
     if (!login_state) { return <></> }
 
+    function updateChatLibrary (channel_id, message) {
+        set_chatLibrary_state(prevHistory => ({
+            ...prevHistory,
+            [channel_id]: [...(prevHistory?.[channel_id] ?? []), message],
+        }));
+    };
 
     // INITIALIZE ONLY SOCKET REF
     useEffect(() => {
@@ -71,15 +77,25 @@ function Instructor_router() {
             }
         };
     }, []);
-
+    useEffect(() => {
+        async function get_lib(){
+            const chatlib_resp = await axios.get('/get_chat_library');
+            const chatlib_data = chatlib_resp?.data?.chatLibrary_dict;
+            const userChannels_data = chatlib_resp?.data?.user_channels_dict;
+            set_chatLibrary_state(chatlib_data);
+            set_channelAccess_state(userChannels_data);
+        }
+        get_lib()
+    }, []);
 
     useEffect(() => {
         const handleMessage = (event) => {
             const message = JSON.parse(event.data);
-            console.log('instructor_router received message: ', message)
-
+            
             if (message.type === 'chat_message_receipt') {
-                set_chatHistory_state((prevChatLog) => [...prevChatLog, message]);
+                const msg_data = message?.data;
+                const msg_channel = msg_data?.channel;
+                updateChatLibrary (msg_channel, message?.data)
 
             } else if (message.type === 'chatError') {
                 console.error('Chat error:', message.data);
@@ -101,10 +117,9 @@ function Instructor_router() {
         if (lastChat_ref.current) {
             lastChat_ref.current.scrollIntoView({ behavior: 'smooth' });
         }
-    }, [chatHistory_state]);
+    }, [chatLibrary_state]);
 
     return (
-
         <div className='newdash-frame'>
             <div className='newdash-frame-carpet'>
 
@@ -119,11 +134,12 @@ function Instructor_router() {
                     scenarioDetail_state, set_scenarioDetail_state,
                     userDetail_state, set_userDetail_state,
                     tempUsers_state, set_tempUsers_state,
-                    socket_ref, set_chatHistory_state, chatHistory_state, lastChat_ref,
-                    selectedMessage_state, set_selectedMessage_state
+                    chatLibrary_state, set_chatLibrary_state,
+                    channelAccess_state, set_channelAccess_state,
+                    selectedMessage_state, set_selectedMessage_state,
+                    socket_ref, lastChat_ref,
 
                 }}>
-
                     <Routes>
                         <Route path="/*" element={<Instr_Dash />} />
                         <Route path="/scenarios/*" element={<Instr_Scenarios />} />
@@ -133,7 +149,6 @@ function Instructor_router() {
                         <Route path="/groups/:groupID/*" element={<Instr_GroupDetail />} />
                         <Route path="/students/*" element={<Instr_Users />} />
                         <Route path="/students/:userID/*" element={<Instr_UserDetail />} />
-                        <Route path="/panopticon" element={<Panopticon />} />
                     </Routes>
 
                 </InstructorRouter_context.Provider>

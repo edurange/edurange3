@@ -10,6 +10,8 @@ from flask import (
     g, # see note
 )
 from py_flask.utils.auth_utils import jwt_and_csrf_required
+from py_flask.utils.chat_utils import getChannelDictList_byUser, getChatHistory_byUser
+
 
 #######
 # The `g` object is a global flask object that lasts ONLY for the life of a single request.
@@ -75,3 +77,10 @@ def get_identity():
         'user_id' : current_user_id,
         'user_role': current_user_role
     })
+
+@blueprint_student.route('/get_chat_history', methods=['GET'])
+@jwt_and_csrf_required
+def get_chat_history():
+
+    chatHistory_dictList = getChatHistory_byUser(g.current_user_id, g.current_username)
+    return jsonify({'chat_history': chatHistory_dictList})

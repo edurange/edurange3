@@ -6,8 +6,8 @@ from flask import (
     g
 )
 from py_flask.database.models import Users, Channels, ChannelUsers
-from py_flask.utils.auth_utils import login_er3, getChannelData_byUser
-from py_flask.utils.auth_utils import register_user
+from py_flask.utils.chat_utils import getChannelDictList_byUser
+from py_flask.utils.auth_utils import register_user, login_er3
 from py_flask.database.user_schemas import LoginSchema, RegistrationSchema
 from werkzeug.exceptions import abort
 from flask import current_app
@@ -52,7 +52,7 @@ def login_edurange3():
 
     validated_user_dump = validation_schema.dump(vars(validated_user_obj))
 
-    chan_data = getChannelData_byUser(validated_user_dump['id'], validated_user_dump['username'])
+    chan_data = getChannelDictList_byUser(validated_user_dump['id'], validated_user_dump['username'])
 
     validated_user_dump['channel_data'] = chan_data
     

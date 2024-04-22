@@ -1,6 +1,6 @@
 from sqlalchemy.orm import joinedload
 from py_flask.database.models import ScenarioGroups, Scenarios, Users, GroupUsers, StudentGroups
-from py_flask.utils.auth_utils import getChannelData_byUser
+from py_flask.utils.chat_utils import getChannelDictList_byUser
 
 def get_group_data():
     groups = (
@@ -42,7 +42,7 @@ def get_user_data():
         # find GroupUsers instance for this user
         group_user = GroupUsers.query.filter_by(user_id=user.id).first()
 
-        channel_data = getChannelData_byUser(user.id, user.username)
+        channel_data = getChannelDictList_byUser(user.id, user.username)
         # get group ID from GroupUsers row w/ user's group_id
         group_id = group_user.group_id if group_user else None
         user_info = {

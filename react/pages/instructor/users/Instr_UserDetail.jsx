@@ -11,10 +11,23 @@ import Instr_Chat_HistoryBox from '../../student/chat/Instr_Chat_HistoryBox';
 function Instr_UserDetail() {
 
     const { userID } = useParams();
-    const { users_state, groups_state, lastChat_ref } = useContext(InstructorRouter_context);
+    const { 
+        users_state, groups_state, lastChat_ref, 
+        chatLibrary_state, set_chatLibrary_state,
+        channelAccess_state, set_channelAccess_state,
+    } = useContext(InstructorRouter_context);
     const thisUser = users_state.filter(user => user.id === parseInt(userID))?.[0]
                         
     if (!thisUser) { return <>User not found.</> } 
+    if (!channelAccess_state) { return <>User not found.</> } 
+    if (!chatLibrary_state) { return <>User not found.</> } 
+
+    const user_channels = channelAccess_state[thisUser.id]
+
+    const msglist = []
+    user_channels.forEach(chan => {
+        chatLibrary_state[chan]?.map((message) => msglist.push(message));
+    });
 
     function getMembershipGroup(){
 
@@ -23,31 +36,13 @@ function Instr_UserDetail() {
         
         return membershipGroup?.[0]
     }
-
-    const membershipGroup = getMembershipGroup();
-
     return (
         <div className="table-frame">
 
-            <div>
-                <br></br>
-            </div>
-            <div>
-                User Belongs to Group:
-                <div>
-                    Group Name: {membershipGroup?.name}
-                </div>
-                <div>
-                    Group ID: {membershipGroup?.id}
-                </div>
-                <div>
-                    Group Users Ct: {membershipGroup?.users?.length}
-                </div>
-            </div>
             <div className="chatInstr-historyBox">
-                <Instr_Chat_HistoryBox user_obj={thisUser} lastChat_ref={lastChat_ref} />
+                <Instr_Chat_HistoryBox user_obj={thisUser} lastChat_ref={lastChat_ref} messages_array={msglist} />
             </div>
-            <Instr_SenderBox user_to_message={thisUser}/>
+            <Instr_SenderBox/>
 
         </div>
     );

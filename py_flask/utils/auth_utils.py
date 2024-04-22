@@ -147,19 +147,3 @@ def register_user(validated_registration_data):
         "channel": new_channel.id
     }
     return retObj
-
-def getChannelData_byUser(userID, username):
-
-    avail_channel_objs = Channels.query.join(ChannelUsers, Channels.id == ChannelUsers.channel_id) \
-                                  .filter(ChannelUsers.user_id == userID).all()
-
-    channels_dict = [channel.to_dict(include_relationships=True) for channel in avail_channel_objs]
-   
-    home_channel = next((chan['id'] for chan in channels_dict if chan['name'] == username), None)
-
-    channels_info = {
-        "available_channels": channels_dict,
-        "home_channel": home_channel
-    }
-
-    return channels_info

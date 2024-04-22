@@ -27,9 +27,9 @@ export function genAlias() {
 }
 
 export class ChatMessage {
-    constructor(channel_id, user_alias, scenario_id, message) {
-        this.scenario_id = scenario_id;
-        this.message = message || "I love edurange";
+    constructor(channel_id, user_alias, scenario_type, content) {
+        this.scenario_type = scenario_type;
+        this.content = content || "I love edurange";
         this.user_alias = user_alias;
         this.channel = channel_id;
     }

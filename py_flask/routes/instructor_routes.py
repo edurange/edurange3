@@ -4,7 +4,7 @@ from py_flask.database.user_schemas import CreateGroupSchema, TestUserListSchema
 from py_flask.database.models import Users, StudentGroups, ScenarioGroups, GroupUsers, Scenarios
 from py_flask.utils.dataBuilder import get_group_data, get_user_data, get_scenario_data
 from py_flask.config.extensions import db
-from py_flask.utils.chat_utils import gen_chat_names
+from py_flask.utils.chat_utils import gen_chat_names, getChatLibrary
 from flask import (
     Blueprint,
     request,
@@ -392,6 +392,15 @@ def clear_groups():
     cleared_user_ids = [int(user_id) for user_id in clearedUserIDs]
 
     return jsonify({'result': 'success', 'cleared_user_ids': cleared_user_ids})
+
+@blueprint_instructor.route("/get_chat_library", methods=['GET'])
+@jwt_and_csrf_required
+def get_chat_library():
+    instructor_only()
+
+    chatLib_dict = getChatLibrary()
+
+    return jsonify(chatLib_dict)
 
 
 #TODO: A lot

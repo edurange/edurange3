@@ -6,19 +6,20 @@ import { StudentRouter_context } from '../Student_router.jsx';
 import { ChatMessage } from '@modules/utils/chat_modules.jsx';
 import { HomeRouter_context } from '../../pub/Home_router.jsx';
 
-function Chat_Student({scenario_id}) {
+function Chat_Student({scenario_type}) {
+
     const { userData_state } = useContext (HomeRouter_context);
     const { socket_ref } = useContext (StudentRouter_context);
     const [messageContent_state, set_messageContent_state] = useState('');
-    const [chatHistory_state, set_chatHistory_state] = useState([]);
+    const [chatData_state, set_chatData_state] = useState([]);
     const lastChat_ref = useRef(null);
 
     useEffect(() => {
         const handleMessage = (event) => {
             const message = JSON.parse(event.data);
-            console.log ('got a message! ', message)
             if (message.type === 'chat_message_receipt') {
-                set_chatHistory_state((prevChatLog) => [...prevChatLog, message]);
+                console.log ('got a chat message: ', message)
+                set_chatData_state((prevChatLog) => [...prevChatLog, message]);
             } else if (message.type === 'chatError') {
                 console.error('Chat error:', message);
             }
@@ -39,7 +40,7 @@ function Chat_Student({scenario_id}) {
         if (lastChat_ref.current) {
             lastChat_ref.current.scrollIntoView({ behavior: 'smooth' });
         }
-    }, [chatHistory_state]);
+    }, [chatData_state]);
 
     const handleInputChange = (event) => {
         set_messageContent_state(event.target.value);
@@ -59,12 +60,11 @@ function Chat_Student({scenario_id}) {
 
     const sendMessage = () => {
 
-        const chatMsg = new ChatMessage(userData_state?.channel_data?.home_channel, userData_state?.user_alias, scenario_id, messageContent_state.trim());
+        const chatMsg = new ChatMessage(userData_state?.channel_data?.home_channel, userData_state?.user_alias, scenario_type, messageContent_state.trim());
 
-        if (chatMsg.message) {
+        if (chatMsg.content) {
             const newChat = {
                 type: 'chat_message',
-                timestamp: Date.now(),
                 data: chatMsg
             };
             if (socket_ref.current && socket_ref.current.readyState === 1) {
@@ -78,7 +78,7 @@ function Chat_Student({scenario_id}) {
         <div className='chatStu-frame'>
             
             <div className="chatStu-historyBox">
-                <Chat_HistoryBox chatSessionID='someSessionID' chatHistory_state={chatHistory_state} lastChat_ref={lastChat_ref} />
+                <Chat_HistoryBox chatSessionID='someSessionID' chatData_state={chatData_state} lastChat_ref={lastChat_ref} />
             </div>
 
             <div className='chatStu-input-frame'>

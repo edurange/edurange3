@@ -32,6 +32,8 @@ function Scenario_controller() {
     };
 
     if (!scenarioID) return (<>Missing Scenario ID</>)
+    
+    const scenario_type = guideContent_state?.scenario_meta?.scenario_description;
 
     useEffect(() => {
         async function getContent() {
@@ -56,7 +58,7 @@ function Scenario_controller() {
     const panes = {
         info: (<InfoPane guideContent={guideContent_state}/>),
         guide: (<GuidePane guideContent={guideContent_state} />),
-        chat: (<Chat_Student scenario_id={scenarioID} />),
+        chat: (<Chat_Student scenario_type={scenario_type} />),
         ssh: (
             <SSH_web
                 scenario_id={scenarioID}
@@ -68,7 +70,8 @@ function Scenario_controller() {
     };
 
     const leftPaneToShow = panes[leftPaneName_state];
-    const rightPaneToShow = panes[rightPaneName_state];
+    const rightPaneToShow = (<GuidePane guideContent={guideContent_state} />);
+    // const rightPaneToShow = panes[rightPaneName_state];
 
     return (
         <>
@@ -88,11 +91,11 @@ function Scenario_controller() {
 
                     <div className='scenario-rightpane-frame' style={{ minWidth: rightWidth, maxWidth: rightWidth, left: rightOffset }}>
                         {rightPaneToShow}
-                        <FootControls
+                        {/* <FootControls
                             guideContent={guideContent_state}
                             updatePane={set_rightPaneName_state}
                             paneSide={"right"}
-                        />
+                        /> */}
                     </div>
                 </div>
             </div>

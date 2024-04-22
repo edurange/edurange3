@@ -7,7 +7,13 @@ import '@assets/css/tables.css';
 function Instr_UsersTable() {
 
     const { set_desiredNavMetas_state } = useContext(HomeRouter_context);
-    const { users_state, set_users_state, groups_state, set_groups_state, chatHistory_state, set_chatHistory_state } = useContext(InstructorRouter_context);
+
+    const { 
+        users_state, set_users_state, 
+        groups_state, set_groups_state, 
+        chatLibrary_state, channelAccess_state, 
+        set_channelAccess_state } = useContext(InstructorRouter_context);
+
     const [selectedUsers_state, set_selectedUsers_state] = useState({});
     const [actionSelection_state, set_actionSelection_state] = useState('');
     const [selectedGroupId_state, set_selectedGroupId_state] = useState('');
@@ -220,6 +226,20 @@ function Instr_UsersTable() {
         set_desiredNavMetas_state([`/instructor/groups/${student.membership}`, 'dash']);
     };
 
+    if (!chatLibrary_state || !channelAccess_state) {return}
+
+
+    function compileLogs(user_id) {
+
+        const user_chanList = channelAccess_state[user_id]
+        const msg_arr = []
+        user_chanList.forEach((chan) => {
+            chatLibrary_state[chan]?.forEach ((message) => msg_arr.push(message))
+        })
+
+        return msg_arr;
+    }
+
     return (
         <>
             <div className="create-frame">
@@ -266,9 +286,17 @@ function Instr_UsersTable() {
                 </div>
                 {users_state.map((user, index) => {
 
-                    const userMessages = chatHistory_state?.filter(msg => msg?.data?.user_id === user.id);
-                    const totalMessages = userMessages?.length;
-                    const newMessagesCount = userMessages?.filter(msg => ((user.recent_response ?? 0) < msg.timestamp)).length;
+                    const msg_array = compileLogs(user.id)
+                    const totalMessages = msg_array?.length ?? 0;
+
+                    // const newMessagesCount = (msg_array?.filter(msg => ((user.recent_response ?? 0) < msg.timestamp)).length) ?? 0;
+                    const newMessagesCount = (msg_array?.filter(msg => {
+
+                        const msgDate = new Date(msg.timestamp).getTime();
+                        const responseDate = new Date(user.recent_response).getTime() ?? 0; // Assuming recent_response is also a datetime string or timestamp
+
+                        return responseDate < msgDate;
+                    }).length) ?? 0;
 
                     return (
                         <div key={index + 2000} className="table-row">

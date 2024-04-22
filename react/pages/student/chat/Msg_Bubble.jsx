@@ -9,20 +9,20 @@ function Msg_Bubble({ message_obj }) {
             <div className="bubble-carpet">
                 <div className="bubble-items-container">
                     <div className="bubble-item">
-                        <div className='er3chat-message-item'>Channel ID: {message_obj?.data?.channel ?? 'missing'}</div>
+                        <div className='er3chat-message-item'>Channel ID: {message_obj?.channel ?? 'missing'}</div>
                     </div>
-                    <div className="bubble-item">
-                        <div className='er3chat-message-item'>Scenario ID: {message_obj?.data?.scenario_id}</div>
-                    </div>
+                    {/* <div className="bubble-item">
+                        <div className='er3chat-message-item'>Scenario Type: {message_obj?.scenario_type}</div>
+                    </div> */}
+                    {/* <div>
+                        <div className='er3chat-message-item'>Sender ID: {message_obj?.sender}</div>
+                    </div> */}
                     <div>
-                        <div className='er3chat-message-item'>Sender ID: {message_obj?.data?.user_id}</div>
-                    </div>
-                    <div>
-                        <div className='er3chat-message-item'>Sender Alias: {message_obj?.data?.user_alias}</div>
+                        <div className='er3chat-message-item'>Sender Alias: {message_obj?.user_alias ?? 'n/a'}</div>
                     </div>
                     <div>
                         <div className='er3chat-message-item'>
-                            Time Stamp: {
+                            Timestamp: {
                                 new Date(message_obj?.timestamp).toLocaleDateString()
                             } {` at `} {
                                 new Date(message_obj?.timestamp).toLocaleTimeString()
@@ -30,7 +30,7 @@ function Msg_Bubble({ message_obj }) {
                         </div>
                     </div>
                     <div>
-                        <div className='er3chat-message-item'>Message: {message_obj?.data?.message}</div>
+                        <div className='er3chat-message-item'>Message: <span className="highlighter-aqua background-darken"> {message_obj?.content}</span></div>
                     </div>
 
                 </div>

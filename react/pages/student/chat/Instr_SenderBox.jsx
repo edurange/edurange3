@@ -5,7 +5,8 @@ import { ChatMessage } from '@modules/utils/chat_modules.jsx';
 import { InstructorRouter_context } from '../../instructor/Instructor_router.jsx';
 import { HomeRouter_context } from '../../pub/Home_router.jsx';
 
-function Chat_SenderBox() {
+function Instr_SenderBox() {
+
     const { userData_state } = useContext (HomeRouter_context);
     const { socket_ref, selectedMessage_state, set_selectedMessage_state, users_state, set_users_state } = useContext (InstructorRouter_context);
     const [messageContent_state, set_messageContent_state] = useState('');
@@ -32,13 +33,14 @@ function Chat_SenderBox() {
             console.log('no selectedMessage_state obj found')
             return
         }
+        
         const chatMsg = new ChatMessage(
-            selectedMessage_state?.data?.channel, 
+            selectedMessage_state?.channel, 
             userData_state?.user_alias, 
-            selectedMessage_state?.data?.scenario_id, 
+            selectedMessage_state?.scenario_type, 
             messageContent_state.trim()
         );
-        if (chatMsg.message) {
+        if (chatMsg.content) {
             const newChat = {
                 type: 'chat_message',
                 timestamp: Date.now(),
@@ -50,7 +52,7 @@ function Chat_SenderBox() {
             }
         }
 
-        const response_target_user_id = selectedMessage_state?.data?.user_id;
+        const response_target_user_id = selectedMessage_state?.user_id;
         const updated_users_state = users_state.map(user => {
             if (user.id === response_target_user_id) {
                 return { ...user, recent_response: Date.now() };
@@ -72,4 +74,4 @@ function Chat_SenderBox() {
     );
 }
 
-export default Chat_SenderBox;
+export default Instr_SenderBox;

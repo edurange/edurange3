@@ -26,15 +26,15 @@ const socketURL = `${proto}://${window.location.host}/chat`;
 function Chat_Instructor() {
 
     const chatUsers = []; // array of user objects, w/ their chats
+    const { login_state, userData_state, chatData_state, set_chatData_state } = useContext(HomeRouter_context);
 
     const testMessage = new ChatMessage(1, "hello students!");
     const [messageContent_state, set_messageContent_state] = useState('');
-    const [chatHistory_state, set_chatHistory_state] = useState([]);
     useEffect(() => {
         if (lastChat_ref.current) {
             lastChat_ref.current.scrollIntoView({ behavior: 'smooth' });
         }
-    }, [chatHistory_state]);
+    }, [chatData_state]);
 
     const lastChat_ref = useRef(null);
     const socket = useRef(null);
@@ -66,7 +66,7 @@ function Chat_Instructor() {
             const message = JSON.parse(event.data);
             
             if (message.type === 'newChatMessage') {
-                set_chatHistory_state((prevChatLog) => [...prevChatLog, message.data]);
+                set_chatData_state((prevChatLog) => [...prevChatLog, message.data]);
             } else if (message.type === 'chatError') {
                 console.error('Chat error:', message.data);
             };
@@ -110,7 +110,7 @@ function Chat_Instructor() {
         <div className='chatStu-panes-container-frame'>
             <div className="chatStu-pane">
                 <Instructor_UsersList/>
-                <Chat_HistoryBox chatSessionID='123' chatHistory_state={chatHistory_state} lastChat_ref={lastChat_ref}/>
+                <Chat_HistoryBox lastChat_ref={lastChat_ref}/>
             </div>
             <div className="chatStu-pane">
             </div>

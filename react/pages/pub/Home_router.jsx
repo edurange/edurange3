@@ -33,6 +33,7 @@ function Home_router() {
   const [sideNav_isVisible_state, set_sideNav_isVisible_state] = useState(true);
   const [sideNav_isSmall_state, set_sideNav_isSmall_state] = useState(false);
   const [userData_state, set_userData_state] = useState();
+  const [chatData_state, set_chatData_state] = useState([]);
   const [desiredNavMetas_state, set_desiredNavMetas_state] = useState(['/', 'home'])
   const [login_state, set_login_state] = useState(false);
   const [chatSocket_state, set_chatSocket_state] = useState();
@@ -81,6 +82,7 @@ function Home_router() {
         navArraysObj_state,
         desiredNavMetas_state, set_desiredNavMetas_state,
         chatSocket_state, set_chatSocket_state,
+        chatData_state, set_chatData_state
       }}>
         <SessionKeeper/>
         <Frame_head />

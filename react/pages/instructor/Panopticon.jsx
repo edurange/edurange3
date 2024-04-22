@@ -8,9 +8,9 @@ import Instr_Chat_HistoryBox from '../student/chat/Instr_Chat_HistoryBox';
 
 function Panopticon() {
     const {
-        userData_state } = useContext(HomeRouter_context);
+        userData_state, set_chatData_state, chatData_state, } = useContext(HomeRouter_context);
 
-    const { socket_ref, set_chatHistory_state, chatHistory_state, lastChat_ref } = useContext(InstructorRouter_context);
+    const { socket_ref,  lastChat_ref } = useContext(InstructorRouter_context);
     const [messageContent_state, set_messageContent_state] = useState('');
 
     const handleInputChange = (event) => {
@@ -50,7 +50,7 @@ function Panopticon() {
         <div className='chatStu-frame'>
             
             <div className="chatStu-historyBox">
-                <Instr_Chat_HistoryBox chatSessionID='someSessionID' chatHistory_state={chatHistory_state} lastChat_ref={lastChat_ref} />
+                <Instr_Chat_HistoryBox chatSessionID='someSessionID' chatData_state={chatData_state} lastChat_ref={lastChat_ref} />
             </div>
 
             <div className='chatStu-input-frame'>

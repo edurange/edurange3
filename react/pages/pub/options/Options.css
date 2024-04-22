@@ -18,7 +18,6 @@
   
 }
 .options-page-outer-frame{
-  /* background: #5a64d4; */
   height: 100%;
   width: 100%;
   position: relative;
@@ -28,7 +27,6 @@
   top: 0;
 }
 .options-page-inner-frame{
-  /* background: #5a64d4; */
   height: 90%;
   width: 90%;
   position: relative;
@@ -37,15 +35,12 @@
   right: 5%;
   top: 5%;
 }
-
 .checkmark-item {
     display: flex;
     align-items: center;
     margin: 2%;
     min-width: 100%;
 }
-
-
   .selectybox {
     padding-left: 5px;
     width: 100%; 
@@ -81,20 +76,16 @@
     height: 100%;
     contain: content;
     display: flex;
-    /* background-color: pink; */
     border-radius: 15px;
 }
 .options-menu-carpet {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    /* gap: 0.4% 0.2%;  */
-    /* background-color: rgb(43, 43, 121); */
     align-items: center;
     justify-content: center;
     justify-items: center;
     width: 100%;
     height: 100%;
-    /* border: 1px solid rgb(118, 55, 55); */
     justify-content: space-around;
     contain: content;
 }
@@ -123,7 +114,6 @@
     contain: content;
 }
 
-  
   .edu3-options-pane select, 
   .edu3-options-pane input, 
   .edu3-options-pane button {

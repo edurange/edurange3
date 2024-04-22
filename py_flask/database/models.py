@@ -34,14 +34,6 @@ class StudentGroups(Edu3Mixin, SurrogatePK, Model):
     users = relationship("GroupUsers", backref="groups", cascade="all, delete-orphan")
 
 
-class ChatMessages(Edu3Mixin, SurrogatePK, Model):
-    """Individual chat message"""
-    ___tablename___ = "messages"
-    sender = reference_col("users",nullable=False)
-    channel = reference_col("channels", nullable=False)
-    timestamp = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
-    content = Column(db.String(5000), nullable=False, unique=False)
-    scenario_type = Column(db.String(50), nullable=False, unique=False)
     
 
 class GroupUsers(Edu3Mixin, SurrogatePK, Model):
@@ -52,6 +44,14 @@ class GroupUsers(Edu3Mixin, SurrogatePK, Model):
     group_id = reference_col("groups", nullable=False)
     group = relationship("StudentGroups", backref="group_users", viewonly=True)
 
+class ChatMessages(Edu3Mixin, SurrogatePK, Model):
+    """Individual chat message"""
+    ___tablename___ = "chat_messages"
+    sender = reference_col("users",nullable=False)
+    channel = reference_col("channels", nullable=False)
+    timestamp = Column(db.Integer, nullable=False)
+    content = Column(db.String(5000), nullable=False, unique=False)
+    scenario_type = Column(db.String(50), nullable=False, unique=False)
 
 class Channels(Edu3Mixin, SurrogatePK, Model):
     """"Chat Channels"""
@@ -84,10 +84,10 @@ class Users(Edu3Mixin, SurrogatePK, Model):
     def __init__(self, username, password=None, **kwargs):
         """Create instance."""
         db.Model.__init__(self, username=username, **kwargs)
-        if password:
-            self.set_password(password)
-        else:
-            self.password = None
+        
+        if password: self.set_password(password)
+        else: self.password = None
+    
     def set_password(self, password):
         """Set password."""
         self.password = bcrypt.generate_password_hash(password)
