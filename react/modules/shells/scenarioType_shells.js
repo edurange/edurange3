@@ -79,7 +79,7 @@ class Strace_shell {
         this.type = "Strace";
         this.description_short = '"Strace" is a game that teaches how to use Linux `strace` to examine executable files.';
         this.description_long = "this is where the longer description goes";
-        this.resources = [ resData.ssh, resData.strace ];
+        this.resources = [ resData.ssh, resData.strace, resData.studentManual];
     };
 };
 

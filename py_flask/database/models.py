@@ -49,7 +49,7 @@ class ChatMessages(Edu3Mixin, SurrogatePK, Model):
     ___tablename___ = "chat_messages"
     sender = reference_col("users",nullable=False)
     channel = reference_col("channels", nullable=False)
-    timestamp = Column(db.Integer, nullable=False)
+    timestamp = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
     content = Column(db.String(5000), nullable=False, unique=False)
     scenario_type = Column(db.String(50), nullable=False, unique=False)
 

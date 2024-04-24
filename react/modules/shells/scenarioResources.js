@@ -118,6 +118,10 @@ const resData = {
         label: "ELF",
         link: "https://linuxhint.com/understanding_elf_file_format"
     },
+    studentManual : {
+    	label: "EDURange Student Manual",
+	link: "https://edurange.org/docs/EDURangeStudentManual.pdf"
+    }
 
 };
 export default resData;

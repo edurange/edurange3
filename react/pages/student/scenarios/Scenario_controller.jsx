@@ -70,8 +70,8 @@ function Scenario_controller() {
     };
 
     const leftPaneToShow = panes[leftPaneName_state];
-    const rightPaneToShow = (<GuidePane guideContent={guideContent_state} />);
-    // const rightPaneToShow = panes[rightPaneName_state];
+    // const rightPaneToShow = (<GuidePane guideContent={guideContent_state} />);
+    const rightPaneToShow = panes[rightPaneName_state];
 
     return (
         <>
@@ -91,11 +91,11 @@ function Scenario_controller() {
 
                     <div className='scenario-rightpane-frame' style={{ minWidth: rightWidth, maxWidth: rightWidth, left: rightOffset }}>
                         {rightPaneToShow}
-                        {/* <FootControls
+                        { <FootControls
                             guideContent={guideContent_state}
                             updatePane={set_rightPaneName_state}
                             paneSide={"right"}
-                        /> */}
+                        /> }
                     </div>
                 </div>
             </div>
