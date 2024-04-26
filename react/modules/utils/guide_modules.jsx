@@ -62,7 +62,7 @@ export default function buildGuide(scenarioID, contentJSON) {
 
             const itemReferencePair = thisItemReferenceArray[j];
 
-            const itemContentType = itemReferencePair[0];    // 'q' or 'r'
+            const itemContentType = itemReferencePair[0] === "r" ? "reading" : "question";    // 'q' or 'r'
             const itemContentPointer = itemReferencePair[1]; // Pointer to select content by key
 
             // 'items' store actual 'content'
@@ -76,12 +76,12 @@ export default function buildGuide(scenarioID, contentJSON) {
             };
 
             // Assign content based on the type
-            if (itemContentType === "r") {
+            if (itemContentType === "reading") {
                 itemObject.itemContent = readings[itemContentPointer];
-                itemObject = GuideReading(itemObject);  // convert to react component
+                // itemObject = GuideReading(itemObject);  // convert to react component
             } else {
                 itemObject.itemContent = questions[itemContentPointer];
-                itemObject = GuideQuestion(itemObject); // convert to react component 
+                // itemObject = GuideQuestion(itemObject); // convert to react component 
             }
             // Add the 'item' to the 'chapter'
             bookChapter.push(itemObject);

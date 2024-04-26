@@ -18,6 +18,8 @@ function Student_router() {
         message: "something"
     }]
     const { login_state, userData_state, set_chatData_state, chatData_state, } = useContext(HomeRouter_context);
+    const [responseData_state, set_responseData_state] = useState({});
+
     const [notifsArray_state, set_notifsArray_state] = useState(fakeNotifs);
     const [guideBook_state, set_guideBook_state] = useState({});
     const [scenarioList_state, set_scenarioList_state] = useState([]);
@@ -78,6 +80,7 @@ function Student_router() {
             const message = JSON.parse(event.data);
 
             if (message.type === 'chat_message_receipt') {
+
                 updateChatHistory(message?.data)
 
             } else if (message.type === 'chatError') {
@@ -118,6 +121,7 @@ function Student_router() {
                             guideBook_state, set_guideBook_state,
                             notifsArray_state, set_notifsArray_state,
                             socket_ref,
+                            responseData_state, set_responseData_state
                         }}>
                             <Routes>
                                 <Route path="/" element={<Scenarios_home />} />

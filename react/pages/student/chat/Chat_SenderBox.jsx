@@ -16,7 +16,6 @@ function Chat_SenderBox({user_to_message}) {
     };
 
     const handleSubmit = (event) => {
-        console.log('handleSubmit pressed')
         event.preventDefault();
         sendMessage();
     };

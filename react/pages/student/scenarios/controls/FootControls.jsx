@@ -9,12 +9,20 @@ import { HomeRouter_context } from '@pub/Home_router';
 const zws = `\u200B`;
 
 
-function FootControls({ guideContent, updatePane, paneSide }) {
+function FootControls({ 
+    page_number, 
+    guideBook, 
+    guideContent, 
+    scenario_points_possible, scenario_points_awarded,
+    chapter_points_possible, chapter_points_awarded,
+    paneSide, updatePane
+}) {
 
     const { userData_state } = useContext(HomeRouter_context);
+    if (!userData_state?.role) { return <>You must log in to continue.</> }
     const meta = guideContent.scenario_meta;
+    if (!meta) { return (<>Scenario not found</>); }
 
-    if ((!meta)) { return (<>Scenario not found</>); }
     const tempName = userData_state.username.replace(/-/g, '')
     const creds = guideContent.credentialsJSON[tempName]
     const SSH_IP = guideContent.SSH_IP
@@ -22,8 +30,6 @@ function FootControls({ guideContent, updatePane, paneSide }) {
     const SSH_password = creds[0].password;
     const [SSH_ip, SSH_port_str] = SSH_IP.split(':');
     const sshCommand = `ssh ${SSH_username}@${SSH_ip} -p ${SSH_port_str}`;
-
-    if (!userData_state?.role) { return <>You must log in to continue.</> }
 
     const left_controls = (
         <>
@@ -113,13 +119,18 @@ function FootControls({ guideContent, updatePane, paneSide }) {
                     WebSSH
                 </div>
 
-                <div className='footcontrol-item footcontrol-chat-button'>
+                <div className='footcontrol-item footcontrol-chat-button'
+                    onClick={() => updatePane("chat")}>
                     Chat
                 </div>
 
-                <div className='footcontrol-item footcontrol-ssh-text'>
+                <div className='footcontrol-item footcontrol-progress-text'>
+                    <div> Chapter Progress:  </div>
+                    <div> Points: <span className='highlighter-aqua'>{chapter_points_awarded}</span> / Max: <span className='highlighter-orange'>{chapter_points_possible}</span> </div>
+                </div>
+                <div className='footcontrol-item footcontrol-progress-text'>
                     <div> Scenario Progress:  </div>
-                    <div> Points: 123 / Max: 456 </div>
+                    <div> Points: <span className='highlighter-aqua'>{scenario_points_awarded}</span> / Max: <span className='highlighter-orange'>{scenario_points_possible}</span> </div>
                 </div>
 
             </div>

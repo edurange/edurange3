@@ -164,18 +164,62 @@ def checkResponse():
     gradedResponse = evaluateResponse (current_user_id, this_scenario_id, question_num, this_student_response )
 
     pointsScored = 0
+    pointsPossible = 0
 
     for i, response in enumerate(gradedResponse):
         pointsScored += response["points_awarded"]
+        pointsPossible += response["points_possible"]
 
-    Responses.create(user_id=current_user_id, 
-                    scenario_id=this_scenario_id, 
-                    question=question_num,
-                    student_response=this_student_response,
-                    points=pointsScored)
+    Responses.create(user_id=current_user_id,
+                    scenario_id=this_scenario_id,
+                    question_number=question_num,
+                    content=this_student_response,
+                    points_awarded=pointsScored,
+                    points_possible=pointsPossible)
+    
+    return jsonify(gradedResponse)
 
+@blueprint_scenarios.route('/get_responses_byStudent', methods=['POST'])
+@jwt_and_csrf_required
+def get_responses_byStudent():
 
-    return jsonify({"points_gained" : gradedResponse})
+    requestJSON = request.json
+    this_scenario_id = int(requestJSON['scenario_id'])
+    db_ses = db.session
+
+    current_responses = (db_ses.query(
+        Responses.id,
+        Responses.points_awarded,
+        Responses.points_possible,
+        Responses.question_number, 
+        Responses.timestamp,
+        Responses.user_id,
+        Responses.scenario_id,
+        Responses.content
+    ) 
+    .filter(Responses.user_id == g.current_user_id) 
+    .filter(Responses.scenario_id == this_scenario_id))
+    
+    responses_dict = {}
+
+    for response in current_responses:
+
+        if response.question_number in responses_dict:
+            best_attempt = responses_dict[response.question_number]['points_awarded']
+        else:
+            best_attempt = 0
+
+        if response.points_awarded > best_attempt:
+            responseObj = {
+                "points_awarded": response.points_awarded,
+                "points_possible": response.points_possible,
+                "content": response.content,
+                "timestamp": response.timestamp
+            }
+            responses_dict[response.question_number] = responseObj
+
+    return jsonify(responses_dict)
+
 
 ### UNReviewed Routes Below ##############
 

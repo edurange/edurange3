@@ -39,8 +39,20 @@ function Instructor_router() {
         try {
             const response = await axios.get("/get_instructor_data");
             const responseData = response.data;
-            // console.log('Loading Instructor Data:', responseData);
-            set_users_state(responseData?.users);
+            const currentUsers = responseData?.users;
+
+            // recent_reply is compared to chat_message timestamp to determine
+            // whether message is considered new (Instr_UserTable.jsx).
+            // the prop is also updated when an instructor sends reply (ea instr has their own record)
+            // this record is only persistent in memory; full refresh effectively sets all to 'old'
+            currentUsers.forEach(user => {
+
+                if (!user.recent_reply) {
+                    user.recent_reply = Date.now()
+                }
+            });
+
+            set_users_state(currentUsers);
             set_groups_state(responseData?.groups);
             set_scenarios_state(responseData?.scenarios);
         }
@@ -95,6 +107,9 @@ function Instructor_router() {
             if (message.type === 'chat_message_receipt') {
                 const msg_data = message?.data;
                 const msg_channel = msg_data?.channel;
+
+                console.log('Instructor_router recv websocket message: ', message)
+
                 updateChatLibrary (msg_channel, message?.data)
 
             } else if (message.type === 'chatError') {
@@ -137,8 +152,7 @@ function Instructor_router() {
                     chatLibrary_state, set_chatLibrary_state,
                     channelAccess_state, set_channelAccess_state,
                     selectedMessage_state, set_selectedMessage_state,
-                    socket_ref, lastChat_ref,
-
+                    socket_ref, lastChat_ref
                 }}>
                     <Routes>
                         <Route path="/*" element={<Instr_Dash />} />

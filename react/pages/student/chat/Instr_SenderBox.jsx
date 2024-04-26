@@ -1,5 +1,5 @@
 
-import { useState, useRef, useEffect, useContext } from 'react';
+import { useState, useContext } from 'react';
 import './Chat_Student.css';
 import { ChatMessage } from '@modules/utils/chat_modules.jsx';
 import { InstructorRouter_context } from '../../instructor/Instructor_router.jsx';
@@ -15,12 +15,12 @@ function Instr_SenderBox() {
         set_messageContent_state(event.target.value);
     };
 
-    const handleSubmit = (event) => {
+    function handleSubmit (event) {
         event.preventDefault();
         sendMessage();
     };
 
-    const handleKeyPress = (event) => {
+    function handleKeyPress (event) {
         if (event.key === 'Enter' && !event.shiftKey) {
             event.preventDefault();
             sendMessage();
@@ -28,9 +28,7 @@ function Instr_SenderBox() {
     };
 
     const sendMessage = () => {
-
         if (!selectedMessage_state) {
-            console.log('no selectedMessage_state obj found')
             return
         }
         
@@ -51,11 +49,11 @@ function Instr_SenderBox() {
                 set_messageContent_state('');
             }
         }
-
-        const response_target_user_id = selectedMessage_state?.user_id;
+        const response_target_user_id = selectedMessage_state?.sender;
+        const new_timestamp = Date.now();
         const updated_users_state = users_state.map(user => {
             if (user.id === response_target_user_id) {
-                return { ...user, recent_response: Date.now() };
+                return { ...user, recent_reply: new_timestamp };
             }
             return user;
         });

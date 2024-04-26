@@ -52,16 +52,6 @@ guide_utils:
     evaluateResponse ( grades a student's answer, returns true/false, correct answer, and pts awarded )
     get_dockerPort  
 
-    From Legacy:
-        getResponses
-        calcScr
-        displayCorrectAnswers
-        recentCorrect
-        responseSelector
-        responseProcessing
-        scoreSetup
-        scoreCheck
-        scoreCheck2
 
 scenario_utils:
     

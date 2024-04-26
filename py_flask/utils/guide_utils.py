@@ -120,14 +120,17 @@ def evaluateResponse(user_id, scenario_id, question_num, student_response):
 
         correctResponse = str(i['Value'])
 
+        student_response = str(student_response)
+
         tempResponseItem = {
-            "submitted_response":student_response,
-            "correct_response":correctResponse,
-            "points_awarded":0
+            "submitted_response": student_response,
+            "correct_response": correctResponse,
+            "points_awarded":0,
+            "points_possible" : i['Points']
         }
 
         if "${" in correctResponse:
-            correctResponse = bashResponse(scenario_id, user_id, correctResponse)
+            correctResponse = str(bashResponse(scenario_id, user_id, correctResponse))
 
         if student_response == correctResponse or correctResponse == 'ESSAY':
             pointsAwarded = i['Points']
@@ -138,6 +141,8 @@ def evaluateResponse(user_id, scenario_id, question_num, student_response):
     return responseData
 
 ### UNTESTED / DEV 
+
+
 
 def get_dockerPort (scenario_unique_name):
 

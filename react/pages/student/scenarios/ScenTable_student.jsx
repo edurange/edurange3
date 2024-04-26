@@ -10,8 +10,7 @@ function ScenTable_student() {
 
     const navigate = useNavigate();
 
-    const { scenarioList_state,   set_scenarioList_state,
-            scenarioMeta_state, set_scenarioMeta_state
+    const { scenarioList_state,   set_scenarioList_state
      } = useContext( StudentRouter_context );
 
     async function fetchScenarioList() {
@@ -39,7 +38,7 @@ function ScenTable_student() {
                 <div className='table-cell-item highlightable-cell col-small'>Gr.Name</div>
             </div>
             {scenarioList_state.slice(0).map((scenario, index) => (
-                <div key={nanoid(3)} onClick={() => handleNavClick(index)} >
+                <div key={nanoid(index + 311)} onClick={() => handleNavClick(index)} >
                     <div className="table-row">
                         <div className='table-cell-item highlightable-cell table-int'>{scenario.scenario_id}</div>
                         <div className='table-cell-item highlightable-cell col-small'>{scenario.scenario_name}</div>

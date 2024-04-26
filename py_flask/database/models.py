@@ -34,7 +34,6 @@ class StudentGroups(Edu3Mixin, SurrogatePK, Model):
     users = relationship("GroupUsers", backref="groups", cascade="all, delete-orphan")
 
 
-    
 
 class GroupUsers(Edu3Mixin, SurrogatePK, Model):
     """Users belong to groups"""
@@ -108,7 +107,6 @@ class Scenarios(Edu3Mixin, SurrogatePK, Model):
     owner_id = reference_col("users", nullable=False)
     owner = relationship("Users", backref="scenarios", lazy="subquery")
     status = Column(db.Integer, default=0, nullable=False)
-    attempt = Column(db.Integer, default=0, nullable=False, server_default="0")
     created_at = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
     resps = relationship("Responses", backref="scenarios", cascade="all, delete-orphan")
     def __repr__(self):
@@ -134,17 +132,19 @@ class ScenarioGroups(Edu3Mixin, SurrogatePK, Model):
 class Responses(Edu3Mixin, SurrogatePK, Model):
     """Student responses to scenario questions"""
     __tablename__ = "responses"
+
+    timestamp = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
+    
     user_id = reference_col("users", nullable=False)
     user = relationship("Users", backref="responses")
+
     scenario_id = reference_col("scenarios", nullable=False)
     scenario = relationship("Scenarios", backref="responses", viewonly=True)
-    question = Column(db.Integer, default=0, nullable=False)
-    student_response = Column(db.String(40), unique=False, nullable=True)
-    #correct = Column(db.Boolean(), default=False)
-    points = Column(db.Integer, default=0, nullable=False)
-    response_time = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
-    # learning objective field?
 
+    question_number = Column(db.Integer, default=0, nullable=False)
+    content = Column(db.String(80), unique=False, nullable=True)
+    points_possible = Column(db.Integer, default=0, nullable=False)
+    points_awarded = Column(db.Integer, default=0, nullable=False)
 
 class BashHistory(Edu3Mixin, SurrogatePK, Model):
     """Bash Histories, associated with users and scenarios"""
@@ -156,27 +156,3 @@ class BashHistory(Edu3Mixin, SurrogatePK, Model):
     input = Column(db.String(250), nullable=False, unique=False)
     output = Column(db.String(10000), nullable=False, unique=False)
     prompt = Column(db.String(80), nullable=False, unique=False)
-
-class ChatHistory(Edu3Mixin, SurrogatePK, Model):
-    """Chat Histories, associated with users and scenarios"""
-
-    __tablename__ = "chat_history"
-    
-    sid = reference_col("scenarios", nullable=False)
-    #scenario = relationship("Scenarios", backref="scenario_groups")
-    
-    sender = reference_col("users", nullable=False)
-    recipient = reference_col("users", nullable=True)    
-    timestamp = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
-    message_contents = Column(db.String(10000), nullable=False, unique=False)
-    
-
-class GroupChatHistory(Edu3Mixin, SurrogatePK, Model):
-    """Group Chat Histories"""
-
-    __tablename__ = "group_chat_history"
-    
-    sid = reference_col("scenarios", nullable=False)
-    sender = reference_col("users", nullable=False)
-    timestamp = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
-    message_contents = Column(db.String(10000), nullable=False, unique=False)

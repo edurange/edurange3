@@ -6,7 +6,7 @@ import '@assets/css/tables.css';
 
 function Instr_UsersTable() {
 
-    const { set_desiredNavMetas_state } = useContext(HomeRouter_context);
+    const { set_desiredNavMetas_state, userData_state } = useContext(HomeRouter_context);
 
     const { 
         users_state, set_users_state, 
@@ -212,13 +212,10 @@ function Instr_UsersTable() {
             console.error('Error clearing users from groups:', error);
         }
     }
-
-
     function getGroupNameById(groupId) {
         const group = groups_state.find((group) => group.id === groupId);
         return group ? group.name : 'none';
     }
-
     function handle_userDetail_click(event, student) {
         set_desiredNavMetas_state([`/instructor/students/${student.id}`, 'dash']);
     };
@@ -228,15 +225,12 @@ function Instr_UsersTable() {
 
     if (!chatLibrary_state || !channelAccess_state) {return}
 
-
     function compileLogs(user_id) {
-
         const user_chanList = channelAccess_state[user_id]
         const msg_arr = []
         user_chanList.forEach((chan) => {
             chatLibrary_state[chan]?.forEach ((message) => msg_arr.push(message))
         })
-
         return msg_arr;
     }
 
@@ -288,15 +282,17 @@ function Instr_UsersTable() {
 
                     const msg_array = compileLogs(user.id)
                     const totalMessages = msg_array?.length ?? 0;
-
-                    // const newMessagesCount = (msg_array?.filter(msg => ((user.recent_response ?? 0) < msg.timestamp)).length) ?? 0;
-                    const newMessagesCount = (msg_array?.filter(msg => {
-
-                        const msgDate = new Date(msg.timestamp).getTime();
-                        const responseDate = new Date(user.recent_response).getTime() ?? 0; // Assuming recent_response is also a datetime string or timestamp
-
-                        return responseDate < msgDate;
-                    }).length) ?? 0;
+                    const newMessagesCount = (msg_array
+                        .filter(msg => {
+                            const dateString = msg.timestamp;  // Ensure msg.timestamp is converted to Date
+                            const dateObject = new Date(dateString);
+                            const msg_timestamp_int = dateObject.getTime();
+                            const recentReplyDate_int = user.recent_reply;
+                        
+                            return recentReplyDate_int < msg_timestamp_int;
+                        })
+                        .filter((msg) => msg.sender !== userData_state.id)
+                        .length) ?? 0;
 
                     return (
                         <div key={index + 2000} className="table-row">

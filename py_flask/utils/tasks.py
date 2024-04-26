@@ -147,7 +147,6 @@ def create_scenario_task(self, scen_name, scen_type, students_list, grp_id, scen
 @celery.task(bind=True)
 def start_scenario_task(self, scenario_id):
     from py_flask.database.models import Scenarios
-    from py_flask.utils.scenario_utils import setAttempt
     from py_flask.utils.instructor_utils import NotifyCapture
 
     app = current_app
@@ -182,7 +181,6 @@ def start_scenario_task(self, scenario_id):
             os.system("../../../shell_scripts/scenario_movekeys.sh {} {} {}".format(gateway, start, start_ip))
             os.chdir("../../..")
             scenario.update(status=1)
-            scenario.update(attempt=setAttempt(scenario_id))
             NotifyCapture("Scenario " + name + " has started successfully.")
             return {
                 "result": "success", 

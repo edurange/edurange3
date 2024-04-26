@@ -1,43 +1,65 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import './GuidePane.css';
+import {nanoid} from 'nanoid';
 import buildGuide from '@modules/utils/guide_modules';
 import HomeChapter from './Q_and_A/HomeChapter';
 import { HomeRouter_context } from '@pub/Home_router';
+import GuideReading from './Q_and_A/GuideReading';
+import GuideQuestion from './Q_and_A/GuideQuestion';
 
-function GuidePane({ guideContent, set_leftPane_state }) {
+function GuidePane({ guideBook, guideContent }) {
 
     const { scenarioID, pageID } = useParams(); // from URL parameters
-    const [guideBook_state, set_guideBook_state] = useState([])
     const { userData_state } = useContext(HomeRouter_context);
 
     const meta = guideContent.scenario_meta;
 
-    useEffect(() => {
-        async function beginGuideBuild() {
-            try {
-                const guideReturn = buildGuide(scenarioID, guideContent.contentJSON);
-                set_guideBook_state(guideReturn);
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            };
-        };
-        beginGuideBuild();
-    }, []);
-
-    if ((guideBook_state.length < 1) || (!meta)) { return (<>Scenario not found</>); } // GUARD
+    if ((guideBook?.length < 1) || (!meta)) { return (<>Scenario not found</>); }
 
     const tabActiveClass = 'guidepane-controlbar-tab guidepane-tab-active';
     const tabInactiveClass = 'guidepane-controlbar-tab guidepane-tab-inactive';
 
-    const chapterToShow = () => {
+    function selectChapter () {
         if (Number(pageID) === 0) { return <HomeChapter />; }
         else if (Number(pageID) === 1337) { return <HomeChapter />; }
-        else { return guideBook_state[Number(pageID) - 1]; }
-    };
+        else {
+            const this_guideItem_arr = guideBook [Number(pageID) - 1];
 
+            const react_arr = []
+
+            this_guideItem_arr.map((item) => {
+
+                if (item?.itemContentType){
+                    let tempItem
+                    if (item?.itemContentType === 'reading') {
+                        tempItem = (
+                            <div key={nanoid(5)}>
+                                <GuideReading readingObj={item} />
+                            </div>
+                    )
+                        
+                    }
+                    else {
+                        tempItem = (
+                            <div key={nanoid(5)}>
+                                <GuideQuestion scenario_id={scenarioID} questionObj={item}/>
+                            </div>
+                        )
+                    }
+                    react_arr.push(tempItem)
+                }
+            }   
+            )
+            return react_arr;
+        }
+    };
+    const current_chapter = selectChapter()
     return (
         <div className='guidepane-guide-frame'>
+
+            
+
             <div className='guidepane-guide-main'>
 
                 <div className='guidepane-controlbar-frame'>
@@ -51,11 +73,15 @@ function GuidePane({ guideContent, set_leftPane_state }) {
                             </div>
                         </Link>
 
-                        {guideBook_state.map((val, index) => {
+                        {guideBook.map((val, index) => {
                             return (
                                 <Link
-                                    to={`${(userData_state?.role === "instructor" || userData_state?.role === "admin") ? `/instructor/scenarios/${scenarioID}/${index + 1}` : `/scenarios/${scenarioID}/${index + 1}`}`} key={index + 3000}
-                                    // to={`/scenarios/${scenarioID}/${index + 1}`} key={index + 3000}
+                                    to={
+                                        `${(userData_state?.role === "instructor" 
+                                        || userData_state?.role === "admin") 
+                                        ? `/instructor/scenarios/${scenarioID}/${index + 1}` 
+                                        : `/scenarios/${scenarioID}/${index + 1}`}`
+                                    } key={index + 3000}
                                     className={`guidepane-tab-middles ${pageID === (index + 1).toString() ? tabActiveClass : tabInactiveClass}`}>
                                     <div key={index} >
                                         Chpt.{index + 1}
@@ -76,7 +102,7 @@ function GuidePane({ guideContent, set_leftPane_state }) {
                 </div>
 
                 <article className='guidepane-guide-text'>
-                    {chapterToShow()}
+                    {current_chapter}
                 </article>
 
             </div>

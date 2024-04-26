@@ -119,7 +119,6 @@ def get_student_responses():
             "response_content": student_response.content,
             "response_is_correct": student_response.correct,
             "response_time_stamp": student_response.response_time,
-            "response_attempts_made": student_response.attempt,
         }
         all_student_responses_list.append(student_response_info)
     return all_student_responses_list

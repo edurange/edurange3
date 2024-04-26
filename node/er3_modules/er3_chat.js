@@ -117,11 +117,11 @@ const ChatMessage_schema = Joi.object({
 
 // OUTGOING (to front)
 class Chat_Receipt {
-    constructor(user_id, original_message, timestamp) {
+    constructor(sender_user_id, original_message, timestamp) {
         this.type = 'chat_message_receipt';
         this.data = {
             timestamp : timestamp,
-            user_id: user_id,
+            sender: sender_user_id,
             scenario_type: original_message?.data?.scenario_type,
             content: original_message?.data?.content || "missing",
             user_alias: original_message?.data?.user_alias,

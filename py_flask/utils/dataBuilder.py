@@ -80,7 +80,6 @@ def get_scenario_data():
             "octet": scenario.octet,
             "owner_id": scenario.owner_id,
             "status": scenario.status,
-            "attempt": scenario.attempt,
             "created_at": scenario.created_at.isoformat(),
             "membership": group.id if group else None,
             "students": [{"id": gu.user.id, "username": gu.user.username} for gu in group.users] if group else []

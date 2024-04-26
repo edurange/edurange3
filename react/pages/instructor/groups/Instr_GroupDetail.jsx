@@ -17,7 +17,7 @@ function Instr_GroupDetail() {
         .map((group) => group);
 
     thisGroup = thisGroup[0];
-    console.log (thisGroup)
+    
     if (!thisGroup) { return <>Group not found.</> }
 
     const thisGroupID = (thisGroup?.id);
@@ -35,7 +35,6 @@ function Instr_GroupDetail() {
         }
     }
 
-    // 
     const scen_colData = [
         {label: 'id',
         css_class: 'col-xsmall'},
