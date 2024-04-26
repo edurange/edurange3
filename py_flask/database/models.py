@@ -33,8 +33,19 @@ class StudentGroups(Edu3Mixin, SurrogatePK, Model):
     hidden = Column(db.Boolean(), nullable=False, default=False)
     users = relationship("GroupUsers", backref="groups", cascade="all, delete-orphan")
 
+<<<<<<< Updated upstream
+=======
+class ChatMessages(Edu3Mixin, SurrogatePK, Model):
+    """Individual chat message"""
+    ___tablename___ = "messages"
+    sender = reference_col("users",nullable=False)
+    channel = reference_col("channels", nullable=False)
+    timestamp = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
+    content = Column(db.String(5000), nullable=False, unique=False)
+    scenario_id = reference_col('scenarios', nullable=False)
+    
 
-
+>>>>>>> Stashed changes
 class GroupUsers(Edu3Mixin, SurrogatePK, Model):
     """Users belong to groups"""
     ___tablename___ = "group_users"
