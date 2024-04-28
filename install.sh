@@ -101,6 +101,7 @@ do
       elif [ $optnumber -eq 2 ]; then
         hostAddress="$option2"
       fi
+    done
     localDomain=''
 
     while [ -z "$localDomain" ]
