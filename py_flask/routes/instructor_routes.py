@@ -181,7 +181,7 @@ def scenario_interface():
             scenario_info = {
                 "scenario_id": scenario.id,
                 "scenario_name": scenario.name,
-                "scenario_description": scenario.description,
+                "scenario_type": scenario.scenario_type,
                 "scenario_owner_id": scenario.owner_id,
                 "scenario_created_at": scenario.created_at,
                 "scenario_status": scenario.status,
@@ -213,7 +213,7 @@ def scenario_interface():
         for i, s in enumerate(students_list):
             students_list[i] = s._asdict()
 
-        Scenarios.create(name=scenario_name, description=scenario_type, owner_id=owner_user_id)
+        Scenarios.create(name=scenario_name, scenario_type=scenario_type, owner_id=owner_user_id)
         NotifyCapture(f"Scenario {scenario_name} has been created.")
     
         scen_id_dbList = db_ses.query(Scenarios.id).filter(Scenarios.name == scenario_name).first()

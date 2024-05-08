@@ -76,7 +76,7 @@ def get_scenario_data():
         scenario_info = {
             "id": scenario.id,
             "name": scenario.name,
-            "description": scenario.description,
+            "scenario_type": scenario.scenario_type,
             "octet": scenario.octet,
             "owner_id": scenario.owner_id,
             "status": scenario.status,

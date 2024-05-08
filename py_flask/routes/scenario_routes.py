@@ -124,7 +124,7 @@ def get_scenarios():
         db_ses.query(
             Scenarios.id,
             Scenarios.name.label("sname"),
-            Scenarios.description.label("type"),
+            Scenarios.scenario_type.label("type"),
             Scenarios.status.label("status"),
             StudentGroups.name.label("gname"),
             Scenarios.created_at.label("created_at"),
@@ -143,7 +143,7 @@ def get_scenarios():
         scenario_info = {
             "scenario_id": entry.id,
             "scenario_name": entry.sname,
-            "scenario_description": entry.type,
+            "scenario_type": entry.type,
             "scenario_owner_id": entry.owner_id,
             "scenario_created_at": entry.created_at,
             "scenario_status": entry.status,

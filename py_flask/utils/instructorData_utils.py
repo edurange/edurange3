@@ -85,7 +85,7 @@ def get_scenarios():
         scenario_info = {
             "scenario_id": scenario.id,
             "scenario_name": scenario.name,
-            "scenario_description": scenario.description,
+            "scenario_type": scenario.scenario_type,
             "scenario_owner_id": scenario.owner_id,
             "scenario_created_at": scenario.created_at,
             "scenario_status": scenario.status,
