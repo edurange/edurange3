@@ -56,7 +56,7 @@ class RegistrationSchema(ma.SQLAlchemyAutoSchema):
     username = String(required=True, validate=[
         validate.Length(min=3, max=25, error="Username must be between 3 and 25 characters"),
         validate.ContainsNoneOf(banned_names, error="Nice try bucko, use a different name"),
-        validate.Regexp('^\w+-?\w+-?\w+$', error="Username must be alphanumeric")
+        validate.Regexp('^[a-zA-Z0-9]+$', error="Username must be alphanumeric")
         ])
     
     code = String(required=True, validate=[validate.Length(min=0, max=8)])

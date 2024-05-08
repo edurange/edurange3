@@ -666,7 +666,7 @@ if __name__ == "__main__":
     root_prompt = ''
     skip_reading_in_first_iteration = True
     ttylog_lines_read_next = []
-    ttylog_lines = [] # DEV_FIX (I added this, not sure why it was 'missing'?) - Jonah
+    ttylog_lines = [] 
     exit_flag = False
     user_prompt = ''
     known_prompts = []

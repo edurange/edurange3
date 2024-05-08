@@ -10,7 +10,7 @@ from celery.utils.log import get_task_logger
 from flask import current_app, flash, jsonify
 from py_flask.utils.terraform_utils import adjust_network, find_and_copy_template, write_resource
 from py_flask.config.settings import CELERY_BROKER_URL, CELERY_RESULT_BACKEND
-from py_flask.utils.csv_utils import claimOctet, discardOctet
+from py_flask.utils.scenario_utils import claimOctet
 
 logger = get_task_logger(__name__)
 path_to_directory = os.path.dirname(os.path.abspath(__file__))
@@ -111,11 +111,11 @@ def create_scenario_task(self, scen_name, scen_type, students_list, grp_id, scen
             else:
                 outfile.write(content.read())
 
-        claimedOctet = claimOctet()
+        lowest_avail_octet = claimOctet()
 
         # Write provider and networks
         find_and_copy_template(scen_type, "network")
-        adjust_network(str(claimedOctet), scen_name)
+        adjust_network(str(lowest_avail_octet), scen_name)
         os.system("terraform init")
         os.system("terraform plan -out network")
 
@@ -125,13 +125,13 @@ def create_scenario_task(self, scen_name, scen_type, students_list, grp_id, scen
         for i, c in enumerate(c_names):
             find_and_copy_template(scen_type, c)
             write_resource(
-                str(claimedOctet), scen_name, scen_type, i, usernames, passwords,
+                str(lowest_avail_octet), scen_name, scen_type, i, usernames, passwords,
                 s_files[i], g_files[i], u_files[i], flags, c_names
             )
 
         scenario.update(
             status=0,
-            octet=claimedOctet
+            octet=lowest_avail_octet
         )
         os.chdir("../../..")
 
@@ -307,14 +307,13 @@ def destroy_scenario_task(self, scenario_id):
                 os.chdir("../..")
                 if s_group:
                     s_group.delete()
-                discarded_octet = discardOctet(scenario.octet)
+
                 scenario.delete()
                 NotifyCapture("The Scenario " + name + " is successfully deleted.")
                 return {
                     "result": "success", 
                     "new_status": 0,
                     "scenario_id": scenario_id,
-                    "discarded_octet": discarded_octet
                     }
             else:
                 logger.info("Scenario files not found, assuming broken scenario and deleting")
@@ -337,7 +336,8 @@ def destroy_scenario_task(self, scenario_id):
 def scenarioCollectLogs(self, arg):
     from py_flask.utils.csv_utils import readCSV
     from py_flask.config.extensions import db
-    from py_flask.database.models import BashHistory
+    from py_flask.database.models import Scenarios, ScenarioGroups, Responses, BashHistory
+    from py_flask.utils.instructor_utils import NotifyCapture
 
     def get_or_create(session, model, **kwargs):
         instance = session.query(model).filter_by(**kwargs).first()
@@ -351,55 +351,60 @@ def scenarioCollectLogs(self, arg):
 
     containers = subprocess.run(['docker', 'container', 'ls'], stdout=subprocess.PIPE).stdout.decode('utf-8')
     containers = containers.split('\n')
-    scenarios = []
+    scenario_nameList = []
     for i, c in enumerate(containers[:-1]):
         if i == 0:
             continue
         c = c.split(' ')
         c_name = c[-1]
         if c_name is not None and c_name != 'ago' and c_name != 'NAMES':
-            if c_name.split('_')[0] is not None and c_name.split('_')[0] not in scenarios:
-                scenarios.append(c_name.split('_')[0])
+            if c_name.split('_')[0] is not None and c_name.split('_')[0] not in scenario_nameList:
+                scenario_nameList.append(c_name.split('_')[0])
 
     files = subprocess.run(['ls', 'logs/'], stdout=subprocess.PIPE).stdout.decode('utf-8')
     files = files.split('\n')[:-1]
-    for s in scenarios:
+    for scenario_name in scenario_nameList:
         try:  # DEV_FIX This is dangerous, may want to substitute for subprocess.call
-            os.system(f'docker cp {s}_gateway:/usr/local/src/merged_logs.csv logs/{s}_gateway.csv')
-            os.system(f'docker cp {s}_gateway:/usr/local/src/raw_logs.zip logs/{s}_gateway.zip')
+            os.system(f'docker cp {scenario_name}_gateway:/usr/local/src/merged_logs.csv logs/{scenario_name}_gateway.csv')
+            os.system(f'docker cp {scenario_name}_gateway:/usr/local/src/raw_logs.zip logs/{scenario_name}_gateway.zip')
         except FileNotFoundError as e:
             print(f'{e}')
-        if os.path.isdir(f'scenarios/tmp/{s}'):
+        if os.path.isdir(f'scenarios/tmp/{scenario_name}'):
             try:
-                os.system(f'cat /dev/null > scenarios/tmp/{s}/{s}-history.csv')
+                os.system(f'cat /dev/null > scenarios/tmp/{scenario_name}/{scenario_name}-history.csv')
             except Exception as e:
                 print(f'Not a scenario: {e} - Skipping')
 
     for f in files:
-        for s in scenarios:
-            if f.find(s) == 0 and os.path.isdir(f'scenarios/tmp/{s}') and f.endswith('.csv'):
+        for scenario_name in scenario_nameList:
+            if f.find(scenario_name) == 0 and os.path.isdir(f'scenarios/tmp/{scenario_name}') and f.endswith('.csv'):
                 try:
-                    os.system(f'cat logs/{f} >> scenarios/tmp/{s}/{s}-history.csv')
+                    os.system(f'cat logs/{f} >> scenarios/tmp/{scenario_name}/{scenario_name}-history.csv')
                 except Exception as e:
                     print(f'Not a scenario: {e} - Skipping')
-            if f.find(s) == 0 and os.path.isdir(f'scenarios/tmp/{s}') and f.endswith('.zip'):
+            if f.find(scenario_name) == 0 and os.path.isdir(f'scenarios/tmp/{scenario_name}') and f.endswith('.zip'):
                 try:
-                    os.system(f'cp logs/{f} scenarios/tmp/{s}/{s}-raw.zip')
+                    os.system(f'cp logs/{f} scenarios/tmp/{scenario_name}/{scenario_name}-raw.zip')
                 except Exception as e:
                     print(f'Not a scenario: {e} - Skipping')
 
-    for s in scenarios:
+    for scenario_name in scenario_nameList:
         try:
-            data = readCSV(s, 'name')
+            data = readCSV(scenario_name, 'name')
             for i, line in enumerate(data):
                 if i == 0:
                     continue
                 line[3] = datetime.fromtimestamp(int(line[3]))
 
+                scenario_rawObj = Scenarios.query.filter_by(name=scenario_name).first()
+                ## use scenario_name (scenario_name) to get get scenario_type and scenario_id DEV_FIX
+
                 get_or_create(
                     session=db.session,
                     model=BashHistory,
-                    scenario_name=s,
+                    # scenario_name=scenario_name, # DEV_FIX (REMOVED FROM MODEL)
+                    scenario_type=scenario_rawObj.scenario_type, # ADDED TO MODEL
+                    scenario_id=scenario_rawObj.scenario_id, # ADDED TO MODEL
                     container_name=line[6].split(':')[0],
                     timestamp=line[3],
                     current_directory=line[5],

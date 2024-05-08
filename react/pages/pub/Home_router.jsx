@@ -1,8 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Route, Routes, useNavigate } from 'react-router-dom';
-
-
-import './Home.css';
 import { navArrays } from '@modules/nav/navItemsData';
 import Home from './Home';
 import Login from './login/Login';
@@ -18,13 +15,13 @@ import Options_controller from './options/Options_controller';
 import Frame_head from '../../frame/head/Frame_head';
 import Frame_foot from '../../frame/foot/Frame_foot';
 import Account from '../student/account/Account';
+import './Home.css';
 
 export const HomeRouter_context = React.createContext();
 
-// 12 hr in milliseconds (minus 30 mins for convenience, see note)
-// note: -30 mins is bc this only impacts UI render! to change 
-// actual jwt expiry, look in py_flask/utils/auth_utils.py > er3_login()
-const loginExpiry = ((1000 * 60 * 60 * 11.5));
+// note: this only impacts UI render. To change actual jwt expiry, 
+// look in py_flask/utils/auth_utils.py > er3_login().
+const loginExpiry = ((1000 * 60 * 60) * 11.5); // 11.5 hrs in milliseconds
 
 function Home_router() {
 

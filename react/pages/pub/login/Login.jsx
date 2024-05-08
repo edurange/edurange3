@@ -3,7 +3,7 @@ import axios from 'axios';
 import { HomeRouter_context } from '@pub/Home_router';
 import edurange_icons from '@modules/ui/edurangeIcons';
 import './Login.css'
-import { genAlias } from '../../../modules/utils/chat_modules';
+import { genAlias } from '@modules/utils/chat_modules';
 
 function Login() {
 
@@ -21,7 +21,7 @@ function Login() {
                 }
             );
             const userData = response.data;
-            
+
             if (userData) {
                 const newAlias = genAlias();
                 userData.user_alias = newAlias;
@@ -38,9 +38,10 @@ function Login() {
                 if ((userData?.role === 'instructor') || (userData?.role === 'admin')) {
                     set_desiredNavMetas_state(['/instructor', 'dash']);
                 }
-                else { 
+                else {
                     set_chatData_state(chat_history);
-                    set_desiredNavMetas_state(['/scenarios', 'dash']); }
+                    set_desiredNavMetas_state(['/scenarios', 'dash']);
+                }
             } else {
                 const errData = response.data.error;
                 console.log('Login failure.');
@@ -71,31 +72,31 @@ function Login() {
             </h2>
 
             <form className='login-submit-frame' onSubmit={handleSubmit}>
-    <div className='login-submit-row'>
+                <div className='login-submit-row'>
 
-        <div className='login-submit-row-left'>
-            <div className='login-submit-item'>
-                <label className='login-prompt-text' htmlFor='username'>Username:</label>
-                <input className='login-input-text' type='text' id='username' name='username' />
-            </div>
+                    <div className='login-submit-row-left'>
+                        <div className='login-submit-item'>
+                            <label className='login-prompt-text' htmlFor='username'>Username:</label>
+                            <input className='login-input-text' type='text' id='username' name='username' />
+                        </div>
 
-            <div className='login-submit-item'>
-                <label className='login-prompt-text' htmlFor='password'>Password:</label>
-                <input className='login-input-text' type='password' id='password' name='password' />
-            </div>
-        </div>
+                        <div className='login-submit-item'>
+                            <label className='login-prompt-text' htmlFor='password'>Password:</label>
+                            <input className='login-input-text' type='password' id='password' name='password' />
+                        </div>
+                    </div>
 
-        <div className='login-submit-row-right'>
-            <button className='login-button' type='submit'>
-                <div className='login-button-content'>
-                    {edurange_icons.user_check}
-                    <span className='login-button-text'>SUBMIT</span>
+                    <div className='login-submit-row-right'>
+                        <button className='login-button' type='submit'>
+                            <div className='login-button-content'>
+                                {edurange_icons.user_check}
+                                <span className='login-button-text'>SUBMIT</span>
+                            </div>
+                        </button>
+                    </div>
+
                 </div>
-            </button>
-        </div>
-
-    </div>
-</form>
+            </form>
 
             <div className='reg-redirect-clicker' onClick={handleRegNav_click}>
                 No account? Register here!

@@ -26,7 +26,8 @@ def generateTestAccts(group_db_obj, new_user_count, group_code):
     for i in range(new_user_count):
         newPass = generate_registration_code()
         user_dict = {
-            'username' : group_obj_dict['name'] + '-' + str(i),
+            'username' : group_obj_dict['name'] + str(i),
+            # 'username' : group_obj_dict['name'] + '-' + str(i),
             'password' : newPass,
             'confirm_password' : newPass,
             'code' : group_code,
@@ -105,6 +106,24 @@ def clearChannels(users_to_clear):
 
 
 def deleteUsers(users_to_delete):
+
+    # ARCHIVE CHAT MESSAGES (FOR USER)
+    # ARCHIVE RESPONSES (FOR USER)
+    # ARCHIVE BASH HISTORY (FOR USER)
+
+    # DELETE CHAT MESSAGES (FOR USER)
+    # DELETE RESPONSES (FOR USER)
+    # DELETE BASH HISTORY (FOR USER)
+
+    # DELETE USER FROM CHANNELUSER TABLE
+    # DELETE CHANNEL FROM CHANNELS TABLE WHERE OWNER = USERNAME
+    # DELETE USER FROM GROUPUSERS TABLE
+
+    # DELETE GROUP IF OWNED BY USER (USUALLY NOT)
+    # DELETE SCENARIO IF OWNED BY USER (USUALLY NOT)
+    # DELETE SCENARIO GROUP IF OWNED BY USER (USUALLY NOT)
+
+    # DELETE USER
 
     try:
         db_ses = db.session

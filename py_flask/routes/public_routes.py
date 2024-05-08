@@ -7,6 +7,7 @@ from flask import (
 )
 from py_flask.database.models import Users, Channels, ChannelUsers
 from py_flask.utils.chat_utils import getChannelDictList_byUser
+from py_flask.utils.error_utils import handle_error
 from py_flask.utils.auth_utils import register_user, login_er3
 from py_flask.database.user_schemas import LoginSchema, RegistrationSchema
 from werkzeug.exceptions import abort
@@ -29,15 +30,18 @@ blueprint_public = Blueprint(
     __name__, 
     url_prefix='/api')
 
-
+# @blueprint_public.errorhandler()
+# def public_error_handler(error):
+#     return handle_error(error)
 
 
 @blueprint_public.errorhandler(418)
-def custom_error_handler(error):
-    response = jsonify({"error": "request pubroute denied"})
+def public_error_handler(error):
+    response = jsonify({"error": f"Error from flask public_route: {error}"})
     response.status_code = 418
     response.content_type = "application/json"
     return response
+
 
 
 @blueprint_public.route("/login", methods=["POST"])
@@ -51,6 +55,10 @@ def login_edurange3():
         session['X-XSRF-TOKEN'] = secrets.token_hex(32)
 
     validated_user_dump = validation_schema.dump(vars(validated_user_obj))
+
+    if not validated_user_dump:
+        raise ValueError("User not found", 404)
+
 
     chan_data = getChannelDictList_byUser(validated_user_dump['id'], validated_user_dump['username'])
 

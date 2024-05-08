@@ -3,12 +3,11 @@ import React, { useContext } from "react";
 import './Chat_HistoryBox.css';
 import Msg_Bubble from './Msg_Bubble';
 import { InstructorRouter_context } from "../../instructor/Instructor_router";
-import { HomeRouter_context } from "../../pub/Home_router";
 
 // this is for instructors to look at the history of an individual student; 
 // includes all channels a student has available
 
-function Instr_Chat_HistoryBox({user_obj, lastChat_ref, messages_array}) {
+function Instr_Chat_HistoryBox({lastChat_ref, messages_array}) {
     
     const { selectedMessage_state, set_selectedMessage_state, chatLibrary_state } = useContext(InstructorRouter_context);
 

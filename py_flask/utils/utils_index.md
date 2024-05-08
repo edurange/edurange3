@@ -15,11 +15,6 @@ instructor_utils:
     NotifyCapture
     NotifyClear
     removeUserFromGroup
-    scenario_create
-    scenario_start
-    scenario_stop
-    scenario_update
-    scenario_destroy
 
 terraform_utils (was scenario_json):
     adjust_network
@@ -32,7 +27,6 @@ terraform_utils (was scenario_json):
 csv_utils:
     readCSV
     groupCSV
-
 
 instructorData_utils:
     get_user
@@ -50,34 +44,20 @@ guide_utils:
     bashResponse
     readQuestions ( returns all questions for a certain scenario )
     evaluateResponse ( grades a student's answer, returns true/false, correct answer, and pts awarded )
-    get_dockerPort  
-
+    get_dockerPort
 
 scenario_utils:
-    
-    evaluate: keep/move/edit/delete ?
-
     keep:
-        gen_chat_names (moved to chat_utils)
         gather_files (used in scenario creation)
         item_generator (used in scenario creation, parsing)
-
-    questionable:
-        CatalogEntry
-        displayProgress
-        getTotalScore
-        getScore
-        getAttempt
-        getProgress
-
-    nix:
-        setAttempt (doesn't even work right)
-        getPass (gets ssh credentials for certain container)
-
-    uncategorized:
-        getDescription
         identify_type
         identify_state
-        populate_catalog
-        queryPolish
-        readScenario
+    nix:
+        gen_chat_names (moved to chat_utils)
+
+tasks:
+    create_scenario_task
+    start_scenario_task
+    stop_scenario_task
+    update_scenario_task
+    destroy_scenario_task

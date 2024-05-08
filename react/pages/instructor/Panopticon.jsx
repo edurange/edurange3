@@ -50,7 +50,7 @@ function Panopticon() {
         <div className='chatStu-frame'>
             
             <div className="chatStu-historyBox">
-                <Instr_Chat_HistoryBox chatSessionID='someSessionID' chatData_state={chatData_state} lastChat_ref={lastChat_ref} />
+                <Instr_Chat_HistoryBox chatData_state={chatData_state} lastChat_ref={lastChat_ref} />
             </div>
 
             <div className='chatStu-input-frame'>

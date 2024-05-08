@@ -11,23 +11,20 @@ function Logout () {
 
     } = useContext(HomeRouter_context);
 
-    if (!userData_state) {
-        return <h1>You are currently logged out.</h1>
-    }
-
     async function sendLogoutRequest() {
+        if (!userData_state || !login_state) {return}
         try {
             const response = await axios.post('/logout');
             const responseData = response.data;
-
+            
             if (responseData.message) {
                 set_userData_state();
                 set_login_state(false);
-                set_desiredNavMetas_state(['/logout','home'])
-            sessionStorage.setItem('login', false);
-            sessionStorage.setItem('loginExpiry', 0);
-            sessionStorage.setItem('userData', '{}');
-            sessionStorage.setItem('navStub','logout')
+                sessionStorage.setItem('login', false);
+                sessionStorage.setItem('loginExpiry', 0);
+                sessionStorage.setItem('userData', '{}');
+                sessionStorage.setItem('navStub','home')
+                set_desiredNavMetas_state(['/','home'])
             }
             else {
                 console.log('Logout failure.');
@@ -37,8 +34,11 @@ function Logout () {
             console.error('Error logging out:', error);
         };
     };
-
-    useEffect(() => {sendLogoutRequest();}, []);
+    
+    useEffect(() => {
+        sendLogoutRequest();
+        set_desiredNavMetas_state(['/','home'])
+    }, []);
 
     if (login_state) {return (<h1>Logout not successful!</h1>)}
     return (<h1>You are currently logged out.</h1>);

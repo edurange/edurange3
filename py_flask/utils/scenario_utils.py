@@ -1,6 +1,13 @@
 
 import json
 import os
+from py_flask.database.models import Scenarios
+from py_flask.config.extensions import db
+from flask import (
+    current_app,
+    abort
+)
+
 
 # Import the scenario string, and set to 'known_types' as a list
 from py_flask.config.settings import KNOWN_SCENARIOS
@@ -114,3 +121,18 @@ def identify_state(name, state):
             return {"State file is still being written": "Try Refreshing"}
 
     else: return {"Could not find scenario folder": "Please destroy and re-make this scenario"}
+
+def claimOctet():
+
+    lowest_octet = int(os.getenv("SUBNET_STARTING_OCTET", 10))
+    octets_intList = [octet[0] for octet in db.session.query(Scenarios.octet).all() if octet[0] is not None]
+
+    candidate_octet = lowest_octet
+        
+    while True:
+        if candidate_octet not in octets_intList:
+            return candidate_octet
+        candidate_octet += 1
+        if candidate_octet > 255:
+            return False
+
