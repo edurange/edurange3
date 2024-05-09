@@ -10,7 +10,7 @@ function InfoPane({ guideContent }) {
 
     if ((!meta)) { return (<>Scenario not found</>); } // GUARD
 
-    const shellData = scenarioShells[`${meta.scenario_description}`];
+    const shellData = scenarioShells[`${meta.scenario_type}`];
 
     return (
         <section className='er3-infopane-frame'>

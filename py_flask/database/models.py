@@ -130,19 +130,17 @@ class ChatMessages(Edu3Mixin, SurrogatePK, Model):
     """Individual chat message"""
     ___tablename___ = "chat_messages"
 
-
-    # sender = reference_col("users",nullable=False) # renamed to user_id to be same as bashHistory and responses 
     user_id = reference_col("users",nullable=False) 
-    user = relationship("Users", backref="chat_messsages") # dev_fix (this is wrong)
+    user = relationship("Users", backref="chat_messsages")
 
     scenario_type = Column(db.String(50), nullable=False, unique=False)
     scenario_id = reference_col("scenarios", nullable=False)
     scenario = relationship("Scenarios", backref="chat_messages", viewonly=True)
 
-
     channel = reference_col("channels", nullable=False)
     timestamp = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
     content = Column(db.String(5000), nullable=False, unique=False)
+
 
 class Responses(Edu3Mixin, SurrogatePK, Model):
     """Student responses to scenario questions"""
@@ -150,11 +148,11 @@ class Responses(Edu3Mixin, SurrogatePK, Model):
 
     timestamp = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
     
-    user_id = reference_col("users", nullable=False) # ADDED DEV_FIX
-    user = relationship("Users", backref="responses") # ADDED DEV_FIX
+    user_id = reference_col("users", nullable=False)
+    user = relationship("Users", backref="responses")
 
     scenario_id = reference_col("scenarios", nullable=False)
-    scenario_type = Column(db.String, nullable=False)  # added dev_Fix
+    scenario_type = Column(db.String, nullable=False) 
     scenario = relationship("Scenarios", backref="responses", viewonly=True)
 
     question_number = Column(db.Integer, default=0, nullable=False)
@@ -167,12 +165,11 @@ class BashHistory(Edu3Mixin, SurrogatePK, Model):
     __tablename__ = "bash_history"
 
 
-    user_id = reference_col("users", nullable=False) # added
-    user = relationship("Users", backref="bash_history") # added dev_fix (backref is wrong)
+    user_id = reference_col("users", nullable=False)
+    user = relationship("Users", backref="bash_history")
 
-    # scenario_name = Column(db.String(40), unique=False, nullable=False)  # removed
-    scenario_type = Column(db.String(40), unique=False, nullable=False) # added
-    scenario_id = reference_col("scenarios", nullable=False) # added  # may need to be reference column
+    scenario_type = Column(db.String(40), unique=False, nullable=False)
+    scenario_id = reference_col("scenarios", nullable=False)  # may need to be reference column
     scenario = relationship("Scenarios", backref="bash_history", viewonly=True)  # dev_fix may not work
     
     container_name = Column(db.String(40), nullable=False, unique=False)
@@ -180,5 +177,3 @@ class BashHistory(Edu3Mixin, SurrogatePK, Model):
     current_directory = Column(db.String(200), nullable=False, unique=False)
     input = Column(db.String(250), nullable=False, unique=False)
     output = Column(db.String(10000), nullable=False, unique=False)
-
-    # prompt = Column(db.String(80), nullable=False, unique=False) # removed (redundant(?) (we are storing user_id, scenario_type, scenario_id))

@@ -25,7 +25,7 @@ import resData from '@modules/shells/scenarioResources';
 class Getting_Started_shell {
     constructor(input = {}) {
         this.keywords = ["Linux shell"];
-        this.type = 'Getting_Started';
+        this.scenario_type = 'Getting_Started';
         this.icon = gettingStarted;
         this.description_short = '"Getting Started" teaches basics of the Linux terminal shell.  These skills may also extend to the Mac terminal.';
         this.description_long = ("this is where the longer description goes");
@@ -36,7 +36,7 @@ class Ssh_Inception_shell {
     constructor(input = {}) {
         this.keywords = ["ssh", "Linux shell"];
         this.icon = maze;
-        this.type = "Ssh_Inception";
+        this.scenario_type = "Ssh_Inception";
         this.description_short = '"SSH_Inception" teaches basics of the "Secure Shell" (SSH), a secure protocol for logging into a remote machine.';
         this.description_long = "this is where the longer description goes";
         this.resources = [ resData.ssh, resData.grep, resData.locate, resData.find, resData.ftp ];
@@ -46,7 +46,7 @@ class Total_Recon_shell {
     constructor(input = {}) {
         this.keywords = ["nmap", "directory traversal", "Linux shell"];
         this.icon = survivalist;
-        this.type = "Total_Recon";
+        this.scenario_type = "Total_Recon";
         this.description_short = '"Total_Recon" is a progressive, story-based game designed to teach nmap network reconnaissance.';
         this.description_long = "this is where the longer description goes";
         this.resources = [ resData.ssh, resData.tcp, resData.udp, resData.icmp, resData.ftp, resData.smtp, resData.imap ];
@@ -56,7 +56,7 @@ class File_Wrangler_shell {
     constructor(input = {}) {
         this.keywords = ["directory traversal","Linux shell"];
         this.icon = wrangler;
-        this.type = "File_Wrangler";
+        this.scenario_type = "File_Wrangler";
         this.description_short = '"File_Wrangler" teaches the basics of files and directories in the Linux command line.';
         this.description_long = "this is where the longer description goes";
         this.resources = [ resData.ssh, resData.ls ];
@@ -66,7 +66,7 @@ class ELF_Infection_shell {
     constructor(input = {}) {
         this.keywords = ["Binary"];
         this.icon = elf;
-        this.type = "Elf_Infection";
+        this.scenario_type = "Elf_Infection";
         this.description_short = "This game teaches about infected ELF binaries.";
         this.description_long = "this is where the longer description goes";
         this.resources = [ resData.ssh, resData.elf ];
@@ -76,7 +76,7 @@ class Strace_shell {
     constructor(input = {}) {
         this.keywords = ["Binary", "strace"];
         this.icon = fingerprint;
-        this.type = "Strace";
+        this.scenario_type = "Strace";
         this.description_short = '"Strace" is a game that teaches how to use Linux `strace` to examine executable files.';
         this.description_long = "this is where the longer description goes";
         this.resources = [ resData.ssh, resData.strace, resData.studentManual];
@@ -87,7 +87,7 @@ class Metasploitable_shell {
     constructor(input = {}) {
         this.keywords = ["metasploit"];
         this.icon = twoHeads;
-        this.type = "Metasploitable";
+        this.scenario_type = "Metasploitable";
         this.description_short = `"Metasploitable" is a game that teaches the basic usage of the Metasploit framework.`;
         this.description_long = "this is where the longer description goes";
         this.resources = [ resData.ssh, resData.metasploit ];
@@ -97,7 +97,7 @@ class Web_Fu_shell {
     constructor(input = {}) {
         this.keywords = ["Cross-site scripting (XSS)", "SQL injection (SQLi)"];
         this.icon = kick;
-        this.type = "Web_Fu";
+        this.scenario_type = "Web_Fu";
         this.description_short = `"Web_Fu" teaches the basics of web application security. Put in practice your SQLi and XSS skills!`;
         this.description_long = "this is where the longer description goes";
         this.resources = [ resData.ssh ];
@@ -107,7 +107,7 @@ class Treasure_Hunt_shell {
     constructor(input = {}) {
         this.keywords = ["pwn","Linux shell"];
         this.icon = treasureMap;
-        this.type = "Treasure_Hunt";
+        this.scenario_type = "Treasure_Hunt";
         this.description_short = `"Treasure_Hunt" is an exercise that teaches about permissions and other security loopholes in Linux. The goal is to find the passwords of 16 fake users.`;
         this.description_long = "this is where the longer description goes";
         this.resources = [ resData.ssh ];
@@ -117,7 +117,7 @@ class Ransomware_shell {
     constructor(input = {}) {
         this.keywords = ["Web security","Ransomware"];
         this.icon = alchemy;
-        this.type = "Ransomware";
+        this.scenario_type = "Ransomware";
         this.description_short = "blurb needed for Ransomware",
         this.description_long = "this is where the longer description goes";
         this.resources = [ resData.ssh ];
@@ -134,4 +134,5 @@ export const scenarioShells = {
     Strace:             new Strace_shell,
     Total_Recon:        new Total_Recon_shell,
     Treasure_Hunt:      new Treasure_Hunt_shell,
+    Web_Fu:             new Web_Fu_shell
 };

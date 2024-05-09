@@ -14,7 +14,7 @@ function Resources_card({ guideContent }) {
     if ((!meta)) { return (<>Scenario not found</>); }
     // GUARD
 
-    const shellData = scenarioShells[`${meta.scenario_description}`];
+    const shellData = scenarioShells[`${meta.scenario_type}`];
 
     return (
         <section className='resources-frame'>

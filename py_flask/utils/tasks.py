@@ -397,14 +397,12 @@ def scenarioCollectLogs(self, arg):
                 line[3] = datetime.fromtimestamp(int(line[3]))
 
                 scenario_rawObj = Scenarios.query.filter_by(name=scenario_name).first()
-                ## use scenario_name (scenario_name) to get get scenario_type and scenario_id DEV_FIX
 
                 get_or_create(
                     session=db.session,
                     model=BashHistory,
-                    # scenario_name=scenario_name, # DEV_FIX (REMOVED FROM MODEL)
-                    scenario_type=scenario_rawObj.scenario_type, # ADDED TO MODEL
-                    scenario_id=scenario_rawObj.scenario_id, # ADDED TO MODEL
+                    scenario_type=scenario_rawObj.scenario_type,
+                    scenario_id=scenario_rawObj.scenario_id,
                     container_name=line[6].split(':')[0],
                     timestamp=line[3],
                     current_directory=line[5],

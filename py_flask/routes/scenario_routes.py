@@ -13,7 +13,7 @@ import json
 from py_flask.utils.scenario_utils import (
      identify_state
 )
-# from py_flask.utils.role_utils import get_roles, scenario_exists, student_has_access
+
 from flask import (
     Blueprint,
     request,
@@ -124,7 +124,7 @@ def get_scenarios():
         db_ses.query(
             Scenarios.id,
             Scenarios.name.label("sname"),
-            Scenarios.scenario_type.label("type"),
+            Scenarios.scenario_type.label("scenario_type"),
             Scenarios.status.label("status"),
             StudentGroups.name.label("gname"),
             Scenarios.created_at.label("created_at"),
@@ -143,7 +143,7 @@ def get_scenarios():
         scenario_info = {
             "scenario_id": entry.id,
             "scenario_name": entry.sname,
-            "scenario_type": entry.type,
+            "scenario_type": entry.scenario_type,
             "scenario_owner_id": entry.owner_id,
             "scenario_created_at": entry.created_at,
             "scenario_status": entry.status,

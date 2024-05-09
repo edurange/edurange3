@@ -13,11 +13,6 @@ from flask import (
 from py_flask.config.settings import KNOWN_SCENARIOS
 known_types = KNOWN_SCENARIOS
 
-class CatalogEntry:
-    def __init__(self, name, description):
-        self.name = name
-        self.description = description
-
 def item_generator(json_input, lookup_key):
     if isinstance(json_input, dict):
         for k, v in json_input.items():
@@ -135,4 +130,3 @@ def claimOctet():
         candidate_octet += 1
         if candidate_octet > 255:
             return False
-

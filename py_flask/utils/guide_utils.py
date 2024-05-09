@@ -142,8 +142,6 @@ def evaluateResponse(user_id, scenario_id, question_num, student_response):
 
 ### UNTESTED / DEV 
 
-
-
 def get_dockerPort (scenario_unique_name):
 
     # use name to select docker container

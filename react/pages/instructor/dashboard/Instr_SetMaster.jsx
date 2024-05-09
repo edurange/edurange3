@@ -63,7 +63,7 @@ function Instr_SetMaster() {
                                 {/* Scenario Name: {guideContent_state?.unique_scenario_name} */}
                             </div>
                             <div className='setmaster-info-item'>
-                                {/* Scenario Type: {guideContent_state?.scenario_meta?.scenario_description} */}
+                                {/* Scenario Type: {guideContent_state?.scenario_meta?.scenario_type} */}
                             </div>
                             <div className='setmaster-info-item'>
                                 Current Group: Group123? (fix)

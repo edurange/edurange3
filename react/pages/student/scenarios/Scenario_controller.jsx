@@ -37,7 +37,7 @@ function Scenario_controller() {
 
     if (!scenarioID) return (<>Missing Scenario ID</>)
     
-    const scenario_type = guideContent_state?.scenario_meta?.scenario_description;
+    const scenario_type = guideContent_state?.scenario_meta?.scenario_type;
 
     useEffect(() => {
         async function getContent() {

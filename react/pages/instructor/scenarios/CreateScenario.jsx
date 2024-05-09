@@ -102,7 +102,7 @@ function CreateScenario() {
                     {Object.keys(scenarioShells).map((key) => {
                         const scenario = scenarioShells[key];
                         return (
-                            <option key={key} value={scenario.type}>{scenario.type}</option>
+                            <option key={key} value={scenario.scenario_type}>{scenario.scenario_type}</option>
                         );
                     })}
                 </select>
