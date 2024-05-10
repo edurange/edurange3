@@ -240,7 +240,7 @@ body, html{
 }
 .newdash-sidebar-frame{
     display: flex;
-    max-width: 100px;
+    max-width: 120px;
     background-color:rgb(11, 20, 42);
     border-top-left-radius: 15px;
     border-bottom-left-radius: 15px;
@@ -268,7 +268,7 @@ body, html{
     width: 100%;
 }
 .newdash-sidebar-icon {
-    width: 40px;
+    width: 50px;
     height: 40px;
     display: flex;
     justify-content: center;

@@ -85,7 +85,7 @@ function Scenario_controller() {
     const panes = {
         info: (<InfoPane guideContent={guideContent_state}/>),
         guide: (<GuidePane guideBook={guideBook_state} guideContent={guideContent_state} />),
-        chat: (<Chat_Student scenario_type={scenario_type} />),
+        chat: (<Chat_Student scenario_id={scenarioID} scenario_type={scenario_type} />),
         ssh: (
             <SSH_web
                 scenario_id={scenarioID}

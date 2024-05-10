@@ -1,69 +1,73 @@
 
-import { useState, useRef, useEffect, useContext } from 'react';
-import '@student/chat/Chat_Student.css';
-import { HomeRouter_context } from '@pub/Home_router.jsx';
+
+import React, { useContext } from 'react';
+import '@assets/css/tables.css';
+import '@student/chat/Chat_Student.css'
+import '@student/chat/Chat_HistoryBox.css'
+import Instr_SenderBox from '@student/chat/Instr_SenderBox';
+import Instr_Chat_Unibox from '@student/chat/Instr_Chat_HistoryBox';
 import { InstructorRouter_context } from './Instructor_router';
-import { ChatMessage } from '@modules/utils/chat_modules.jsx';
-import Instr_Chat_HistoryBox from '../student/chat/Instr_Chat_HistoryBox';
+import Instr_Groups from './groups/Instr_Groups';
 
 function Panopticon() {
+
     const {
-        userData_state, set_chatData_state, chatData_state, } = useContext(HomeRouter_context);
+        users_state, groups_state, lastChat_ref,
+        chatLibrary_state, set_chatLibrary_state,
+        channelAccess_state, set_channelAccess_state,
+    } = useContext(InstructorRouter_context);
 
-    const { socket_ref,  lastChat_ref } = useContext(InstructorRouter_context);
-    const [messageContent_state, set_messageContent_state] = useState('');
+    // if (!channelAccess_state) { return <>User not found.</> } 
 
-    const handleInputChange = (event) => {
-        set_messageContent_state(event.target.value);
-    };
+    console.log('panop here')
+    if (!chatLibrary_state) { return <>MISSING CHAT LIBRARY.</> }
+    console.log('panop here 2')
 
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        sendMessage();
-    };
-
-    const handleKeyPress = (event) => {
-        if (event.key === 'Enter' && !event.shiftKey) {
-            event.preventDefault();
-            sendMessage();
-        }
-    };
-
-    const sendMessage = () => {
-
-        const chatMsg = new ChatMessage(userData_state?.channel, userData_state?.user_alias, 112, messageContent_state.trim());
-        if (chatMsg.message) {
-            const newChat = {
-                type: 'chat_message',
-                timestamp: Date.now(),
-                data: chatMsg
-            };
-            
-            if (socket_ref.current && socket_ref.current.readyState === 1) {
-                socket_ref.current.send(JSON.stringify(newChat));
-                set_messageContent_state('');
+    const handleCheckboxChange = (message, isChecked) => {
+        if (isChecked) {
+            set_selectedMessage_state(message);
+        } else {
+            if (selectedMessage_state === message) {
+                set_selectedMessage_state(null);
             }
         }
     };
 
-    return (
-        <div className='chatStu-frame'>
-            
-            <div className="chatStu-historyBox">
-                <Instr_Chat_HistoryBox chatData_state={chatData_state} lastChat_ref={lastChat_ref} />
-            </div>
+    console.log('LIBRARY : ', chatLibrary_state)
 
-            <div className='chatStu-input-frame'>
-                <form className='chatStu-input-frame' onSubmit={handleSubmit}>
-                    <div className='chatStu-input-item sender-frame'>
-                        <textarea className='sender-text' value={messageContent_state} onChange={handleInputChange} onKeyPress={handleKeyPress} placeholder="Enter your message"></textarea>
-                        <button className='sender-button connect-button' type="submit">Send</button>
+    const messages_array = []
+
+    if (!messages_array) { return }
+
+
+    return (
+        <div className="table-frame">
+            <div className="chatInstr-historyBox">
+                <div className="instr-historybox-frame">
+                    <div className='chat-historybox-carpet'>
+                        
+
+                        {messages_array?.map((chat, index) => (
+                            <div key={index} ref={index === messages_array?.length - 1 ? lastChat_ref : null} className="er3chat-message-frame">
+
+                                <input
+                                    type="checkbox"
+                                    checked={selectedMessage_state === chat}
+                                    onChange={(e) => handleCheckboxChange(chat, e.target.checked)}
+                                    className="message-select-checkbox"
+                                />
+                                <Msg_Bubble message_obj={chat} />
+                            </div>
+                        ))}
+
+
                     </div>
-                </form>
+                </div>
             </div>
+            <Instr_SenderBox />
 
         </div>
     );
-}
+};
 
 export default Panopticon;

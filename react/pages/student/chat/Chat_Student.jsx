@@ -6,7 +6,7 @@ import { StudentRouter_context } from '../Student_router.jsx';
 import { ChatMessage } from '@modules/utils/chat_modules.jsx';
 import { HomeRouter_context } from '../../pub/Home_router.jsx';
 
-function Chat_Student({scenario_type}) {
+function Chat_Student({scenario_type, scenario_id}) {
 
     const { userData_state } = useContext (HomeRouter_context);
     const { socket_ref } = useContext (StudentRouter_context);
@@ -17,10 +17,12 @@ function Chat_Student({scenario_type}) {
     useEffect(() => {
         const handleMessage = (event) => {
             const message = JSON.parse(event.data);
-            if (message.type === 'chat_message_receipt') {
-                console.log ('got a chat message: ', message)
+            console.log ('got a chat message: ', message)
+            if (message.message_type === 'chat_message_receipt') {
+                console.log ('got a chat message receipt: ', message)
+                console.log ('is chat_message_receipt: ', message.message_type === 'chat_message_receipt')
                 set_chatData_state((prevChatLog) => [...prevChatLog, message]);
-            } else if (message.type === 'chatError') {
+            } else if (message.message_type === 'chatError') {
                 console.error('Chat error:', message);
             }
         };
@@ -60,11 +62,11 @@ function Chat_Student({scenario_type}) {
 
     const sendMessage = () => {
 
-        const chatMsg = new ChatMessage(userData_state?.channel_data?.home_channel, userData_state?.user_alias, scenario_type, messageContent_state.trim());
+        const chatMsg = new ChatMessage(userData_state?.channel_data?.home_channel, userData_state?.user_alias, scenario_type, messageContent_state.trim(), scenario_id);
 
         if (chatMsg.content) {
             const newChat = {
-                type: 'chat_message',
+                message_type: 'chat_message',
                 data: chatMsg
             };
             if (socket_ref.current && socket_ref.current.readyState === 1) {
@@ -74,12 +76,14 @@ function Chat_Student({scenario_type}) {
         }
     };
 
+    console.log('checking CDS: ', chatData_state)
+
     return (
         <div className='chatStu-frame'>
             
             <div className="chatStu-historyBox">
-                <Chat_HistoryBox chatSessionID='someSessionID' chatData_state={chatData_state} lastChat_ref={lastChat_ref} />
-            </div>
+            <Chat_HistoryBox chatSessionID='someSessionID' chatData_state={chatData_state} lastChat_ref={lastChat_ref} />
+        </div>
 
             {/* chat message submission box */}
             <div className='chatStu-input-frame'>

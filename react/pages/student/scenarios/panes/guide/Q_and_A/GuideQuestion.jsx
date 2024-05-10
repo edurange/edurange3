@@ -5,7 +5,7 @@ import './Q_and_A.css';
 import ResponseStatus from './ResponseStatus';
 import { StudentRouter_context } from '../../../../Student_router';
 
-function GuideQuestion({ scenario_id, questionObj }) {
+function GuideQuestion({ scenario_id, questionObj, scenario_type }) {
     if (!questionObj?.itemContent) { return null; }
     const { responseData_state, set_responseData_state } = useContext(StudentRouter_context);
 
@@ -20,11 +20,14 @@ function GuideQuestion({ scenario_id, questionObj }) {
     
     const [inputText_state, set_inputText_state] = useState('');
 
+    console.log('check subby: ', scenario_type)
+
     async function handleSubmit() {
         try {
             const evaluated = await axios.post('/check_response', {
                 scenario_id: scenario_id,
                 question_num: questionObj?.itemContentPointer,
+                scenario_type: scenario_type,
                 student_response: inputText_state
             });
             if (evaluated && evaluated.data?.[0]) {

@@ -4,6 +4,8 @@ import './Msg_Bubble.css';
 
 function Msg_Bubble({ message_obj }) {
 
+    console.log('msg_bubble checking obj: ', message_obj)
+
     return (
         <div className="bubble-frame">
             <div className="bubble-carpet">

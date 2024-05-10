@@ -10,12 +10,26 @@ const jwt = require('jsonwebtoken');
 const pg = require('pg');
 const Joi = require('joi');
 const { Pool } = pg;
+const fs = require('fs').promises;
 
 
 // root project env
 dotenv.config({ path: path.join(__dirname, '..', '..', '.env') });
 
+let logs_id;
+
+async function updateLogsID() {
+    try {
+        const data = await fs.readFile('../logs/logs_id.txt', 'utf8');
+        logs_id = data;
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+
 const userDict = {}
+
 
 // register a user and add them to groups
 function updateUserDict(user_id, username, user_role, socketConnection) {
@@ -48,25 +62,28 @@ async function getUsers_byChannel(channelID) {
 // INCOMING (from front)
 const ChatMessage_schema = Joi.object({
 
-    type: Joi.string(),
+    message_type: Joi.string(),
 
     channel: Joi.number().integer().required(),
     scenario_type: Joi.string().trim().required(),
     content: Joi.string().trim().required(),
     user_alias: Joi.string().trim().required(),
+    scenario_id: Joi.number().integer().required()
 });
 
 // OUTGOING (to front)
 class Chat_Receipt {
     constructor(sender_user_id, original_message, timestamp) {
-        this.type = 'chat_message_receipt';
+        this.message_type = 'chat_message_receipt';
         this.data = {
             timestamp: timestamp,
-            sender: sender_user_id,
+            user_id: sender_user_id,
             scenario_type: original_message?.data?.scenario_type,
             content: original_message?.data?.content || "missing",
             user_alias: original_message?.data?.user_alias,
-            channel: original_message?.data?.channel
+            channel: original_message?.data?.channel,
+            scenario_id: Number(original_message?.data?.scenario_id),
+            logs_id: String(logs_id)
         }
     }
 }
@@ -138,17 +155,22 @@ async function echoMessage_all(messageReceipt) {
     });
 }
 
-async function insertMessageIntoDB(senderId, messageData, timestamp) {
-    await pool.query('INSERT INTO chat_messages (sender, channel, content, scenario_type, timestamp) VALUES ($1, $2, $3, $4, $5)', [
+async function insertMessageIntoDB(senderId, messageData, timestamp, logs_id) {
+    await pool.query('INSERT INTO chat_messages (user_id, channel, content, scenario_type, timestamp, scenario_id, logs_id) VALUES ($1, $2, $3, $4, $5, $6, $7)', [
         senderId,
         messageData.channel,
         messageData.content,
         messageData.scenario_type,
-        timestamp
+        timestamp,
+        messageData.scenario_id,
+        logs_id
     ]);
 }
 
-async function handleChatMessage(message, socketConnection, user_id, timestamp) {
+async function handleChatMessage(message, socketConnection, user_id, timestamp, logs_id) {
+
+    console.log('handling chat message: ', message)
+
     const { error, value } = ChatMessage_schema.validate(message.data);
     if (error) {
         socketConnection.send(JSON.stringify({ error: error.details[0].message }));
@@ -162,13 +184,13 @@ async function handleChatMessage(message, socketConnection, user_id, timestamp) 
         await checkForChannel(value.channel, user_id, value.username);
         await echoMessage_toChannelUsers(chat_message_receipt, value.channel);
         await echoMessage_toInstructors(chat_message_receipt);
-        await insertMessageIntoDB(user_id, value, timestamp);
+        await insertMessageIntoDB(user_id, value, timestamp, logs_id);
     } catch (err) {
         console.error('Error processing chat message:', err);
         socketConnection.send(JSON.stringify({ error: 'Internal Server Error' }));
     }
 }
-async function handleAnnouncement(message, socketConnection, user_id, timestamp) {
+async function handleAnnouncement(message, socketConnection, user_id, timestamp, logs_id) {
 
     console.log('Handling announcement from instructor with ID: ', user_id)
     const { error, value } = ChatMessage_schema.validate(message.data);
@@ -183,7 +205,7 @@ async function handleAnnouncement(message, socketConnection, user_id, timestamp)
     try {
         await checkForChannel(value.channel, user_id, value.username);
         await echoMessage_all(chat_message_receipt);
-        await insertMessageIntoDB(user_id, value, timestamp);
+        await insertMessageIntoDB(user_id, value, timestamp, logs_id);
     } catch (err) {
         console.error('Error processing chat message:', err);
         socketConnection.send(JSON.stringify({ error: 'Internal Server Error' }));
@@ -191,8 +213,9 @@ async function handleAnnouncement(message, socketConnection, user_id, timestamp)
 }
 
 
+
 ///////
-// main 
+// server 
 
 const pool = new Pool({
     user: process.env.CHATDB_USERNAME,
@@ -226,9 +249,7 @@ const chatSocketServer = new WebSocketServer({
     }
 });
 
-
-
-chatSocketServer.on('connection', async (socketConnection, request) => {
+async function handleConnection(socketConnection, request) {
     const { username, user_role, user_id } = request.get_id();
     if (!user_id) {
         socketConnection.close(1008, 'User ID not found in validated JWT'); // Close connection with policy violation status code
@@ -247,28 +268,49 @@ chatSocketServer.on('connection', async (socketConnection, request) => {
         `user_role: ${user_role}`
     );
 
-    updateUserDict(user_id, username, user_role, socketConnection);
+    try {
+
+        await updateLogsID(); // Wait for updateLogsID to complete
+        updateUserDict(user_id, username, user_role, socketConnection);
+
+    } catch (err) {
+        console.error('Error getting logs_id:', err);
+        socketConnection.close(1008, 'Error getting logs_id');
+    }
+}
+
+
+///////
+// main 
+
+
+chatSocketServer.on('connection', async (socketConnection, request) => {
+
+    await handleConnection(socketConnection, request);
+
+    const { username, user_role, user_id } = request.get_id();
 
     socketConnection.on('message', async (message) => {
         const this_message = JSON.parse(message);
-        const this_type = this_message.type;
+        const this_message_type = this_message.message_type;
         const this_timestamp = new Date().toISOString();
+        const this_scenario_id = Number(this_message.scenario_id)
 
-        console.log(`got msg with type ${this_type}: `, this_message);
+        console.log(`got msg with message_type ${this_message_type}: `, this_message);
 
-        // handle messages by type
+        // handle messages by message_type
         const handlers = {
-            'handshake': () => socketConnection.send(JSON.stringify({ type: 'handshake', ok: true })),
-            'keepalive': () => socketConnection.send(JSON.stringify({ type: 'keepalive', message: 'pong', ok: true })),
-            'chat_message': async () => await handleChatMessage(this_message, socketConnection, user_id, this_timestamp),
-            'announcement': async () => await handleAnnouncement(this_message, socketConnection, user_id, this_timestamp)
+            'handshake': () => socketConnection.send(JSON.stringify({ message_type: 'handshake', ok: true })),
+            'keepalive': () => socketConnection.send(JSON.stringify({ message_type: 'keepalive', message: 'pong', ok: true })),
+            'chat_message': async () => await handleChatMessage(this_message, socketConnection, user_id, this_timestamp, logs_id),
+            'announcement': async () => await handleAnnouncement(this_message, socketConnection, user_id, this_timestamp, logs_id)
         };
 
-        if (handlers[this_type]) {
+        if (handlers[this_message_type]) {
             try {
-                await handlers[this_type]();
+                await handlers[this_message_type]();
             } catch (error) {
-                console.error(`Error handling message type ${this_type}:`, error);
+                console.error(`Error handling message_type ${this_message_type}:`, error);
                 socketConnection.send(JSON.stringify({ error: 'Internal Server Error' }));
             }
         }

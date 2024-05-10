@@ -4,12 +4,11 @@ import Msg_Bubble from './Msg_Bubble';
 import { HomeRouter_context } from "../../pub/Home_router";
 import { StudentRouter_context } from "../Student_router";
 
-function Chat_HistoryBox({lastChat_ref}) {
-
-    const { chatData_state } = useContext(HomeRouter_context);
+function Chat_HistoryBox({lastChat_ref, chatData_state}) {
 
     if (!chatData_state) {return;}
     
+    console.log('historybox chatdata_state', chatData_state)
 
     return (
         <div className="chat-historybox-frame">
@@ -22,7 +21,7 @@ function Chat_HistoryBox({lastChat_ref}) {
                     <div key={index} ref={index === chatData_state.length - 1 ? lastChat_ref : null} className="er3chat-message-frame">
                         
                         {/* Msg_Bubble is the individual chat message component */}
-                        <Msg_Bubble message_obj={chat}/>
+                        <Msg_Bubble message_obj={chat?.data}/>
                     </div>
                 ))}
             </div>

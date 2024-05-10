@@ -132,7 +132,7 @@ const instr_scenarios = {
 };
 const panopticon = {
     title: "Panopticon",
-    icon: edurange_icons.chess_knight,
+    icon: edurange_icons.tower,
     path: `/instructor/panopticon`,
     navStub: 'dash'
 };
@@ -170,7 +170,7 @@ export const navArrays = {
         },
         dash: {
             top: [instructor, logout],
-            side: [instructor, studentGroups, instr_scenarios, students]
+            side: [instructor, studentGroups, instr_scenarios, students, panopticon]
         },
         account: {
             top: [instructor, logout],
@@ -201,7 +201,7 @@ export const navArrays = {
         },
         dash: {
             top: [instructor, logout],
-            side: [instructor, studentGroups, instr_scenarios, students]
+            side: [instructor, studentGroups, instr_scenarios, students, panopticon]
 
         },
         account: {

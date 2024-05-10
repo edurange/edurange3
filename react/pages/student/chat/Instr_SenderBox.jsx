@@ -40,7 +40,7 @@ function Instr_SenderBox() {
         );
         if (chatMsg.content) {
             const newChat = {
-                type: 'chat_message',
+                message_type: 'chat_message',
                 timestamp: Date.now(),
                 data: chatMsg
             };

@@ -65,9 +65,9 @@ function Chat_Instructor() {
         socket.current.onmessage = (event) => {
             const message = JSON.parse(event.data);
             
-            if (message.type === 'newChatMessage') {
+            if (message.message_type === 'newChatMessage') {
                 set_chatData_state((prevChatLog) => [...prevChatLog, message.data]);
-            } else if (message.type === 'chatError') {
+            } else if (message.message_type === 'chatError') {
                 console.error('Chat error:', message.data);
             };
         };

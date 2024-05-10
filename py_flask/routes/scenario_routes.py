@@ -160,6 +160,9 @@ def checkResponse():
     question_num = int(requestJSON['question_num'])
     this_scenario_id = int(requestJSON['scenario_id'])
     this_student_response = requestJSON['student_response']
+    this_scenario_type = (requestJSON['scenario_type'])
+
+    this_logs_id = current_app.config.get('LOGS_ID')
     
     gradedResponse = evaluateResponse (current_user_id, this_scenario_id, question_num, this_student_response )
 
@@ -170,12 +173,16 @@ def checkResponse():
         pointsScored += response["points_awarded"]
         pointsPossible += response["points_possible"]
 
-    Responses.create(user_id=current_user_id,
-                    scenario_id=this_scenario_id,
-                    question_number=question_num,
-                    content=this_student_response,
-                    points_awarded=pointsScored,
-                    points_possible=pointsPossible)
+    Responses.create(
+        user_id=current_user_id,
+        question_number=question_num,
+        content=this_student_response,
+        points_awarded=pointsScored,
+        points_possible=pointsPossible,
+        scenario_id=this_scenario_id,
+        scenario_type=this_scenario_type,
+        logs_id=this_logs_id,
+    )
     
     return jsonify(gradedResponse)
 
@@ -185,7 +192,9 @@ def get_responses_byStudent():
 
     requestJSON = request.json
     this_scenario_id = int(requestJSON['scenario_id'])
+    
     db_ses = db.session
+    
 
     current_responses = (db_ses.query(
         Responses.id,
@@ -195,7 +204,7 @@ def get_responses_byStudent():
         Responses.timestamp,
         Responses.user_id,
         Responses.scenario_id,
-        Responses.content
+        Responses.content,
     ) 
     .filter(Responses.user_id == g.current_user_id) 
     .filter(Responses.scenario_id == this_scenario_id))

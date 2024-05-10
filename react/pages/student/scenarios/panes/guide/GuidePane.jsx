@@ -15,7 +15,9 @@ function GuidePane({ guideBook, guideContent }) {
 
     const meta = guideContent.scenario_meta;
 
+    
     if ((guideBook?.length < 1) || (!meta)) { return (<>Scenario not found</>); }
+    
 
     const tabActiveClass = 'guidepane-controlbar-tab guidepane-tab-active';
     const tabInactiveClass = 'guidepane-controlbar-tab guidepane-tab-inactive';
@@ -43,7 +45,7 @@ function GuidePane({ guideBook, guideContent }) {
                     else {
                         tempItem = (
                             <div key={nanoid(5)}>
-                                <GuideQuestion scenario_id={scenarioID} questionObj={item}/>
+                                <GuideQuestion scenario_id={scenarioID} questionObj={item} scenario_type={meta?.scenario_type}/>
                             </div>
                         )
                     }

@@ -5,7 +5,7 @@ import axios from 'axios';
 import './Q_and_A.css'
 
 
-function SubmitButton({ scenario_id, question_num }) {
+function SubmitButton({ scenario_id, question_num, scenario_type }) {
 
     const [inputText_state, set_inputText_state] = useState('');
 
@@ -15,6 +15,7 @@ function SubmitButton({ scenario_id, question_num }) {
             const evaluated = await axios.post('/check_response', {
                 scenario_id: scenario_id,
                 question_num: question_num,
+                scenario_type: scenario_type,
                 student_response: inputText_state
             });
             if (evaluated) {

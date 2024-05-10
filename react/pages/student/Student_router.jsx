@@ -56,7 +56,7 @@ function Student_router() {
         const pingInterval_id = setInterval(() => {
             if (socket_ref.current.readyState === 1) {
                 socket_ref.current.send(JSON.stringify({
-                    type: 'keepalive',
+                    message_type: 'keepalive',
                     message: 'ping'
                 }));
             }
@@ -79,11 +79,11 @@ function Student_router() {
         const handleMessage = (event) => {
             const message = JSON.parse(event.data);
 
-            if (message.type === 'chat_message_receipt') {
+            if (message.message_type === 'chat_message_receipt') {
 
                 updateChatHistory(message?.data)
 
-            } else if (message.type === 'chatError') {
+            } else if (message.message_type === 'chatError') {
                 console.error('Chat error:', message.data);
             }
         };

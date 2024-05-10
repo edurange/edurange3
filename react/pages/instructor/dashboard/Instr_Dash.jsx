@@ -39,6 +39,7 @@ function Instr_Dash() {
                     <Placard placard_text='STUDENTS' navMetas={['/instructor/students', 'dash']} is_button={true} />
                     <Instr_UsersTable set_scenarioDetail_state={set_scenarioDetail_state} />
                 </div>
+                
 
             </div>
 

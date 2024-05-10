@@ -141,6 +141,8 @@ class ChatMessages(Edu3Mixin, SurrogatePK, Model):
     timestamp = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
     content = Column(db.String(5000), nullable=False, unique=False)
 
+    logs_id = Column(db.String(8), nullable=False, unique=True)
+
 
 class Responses(Edu3Mixin, SurrogatePK, Model):
     """Student responses to scenario questions"""
@@ -160,6 +162,8 @@ class Responses(Edu3Mixin, SurrogatePK, Model):
     points_possible = Column(db.Integer, default=0, nullable=False)
     points_awarded = Column(db.Integer, default=0, nullable=False)
 
+    logs_id = Column(db.String(8), nullable=False, unique=True)
+
 class BashHistory(Edu3Mixin, SurrogatePK, Model):
     """Bash Histories, associated with users and scenarios"""
     __tablename__ = "bash_history"
@@ -177,3 +181,5 @@ class BashHistory(Edu3Mixin, SurrogatePK, Model):
     current_directory = Column(db.String(200), nullable=False, unique=False)
     input = Column(db.String(250), nullable=False, unique=False)
     output = Column(db.String(10000), nullable=False, unique=False)
+
+    logs_id = Column(db.String(8), nullable=False, unique=True)

@@ -339,6 +339,11 @@ def scenarioCollectLogs(self, arg):
     from py_flask.database.models import Scenarios, ScenarioGroups, Responses, BashHistory
     from py_flask.utils.instructor_utils import NotifyCapture
 
+    this_logs_id = current_app.config.get('LOGS_ID')
+
+    current_app.logger('running periodic task for logger')
+    print('running periodic task for logger')
+
     def get_or_create(session, model, **kwargs):
         instance = session.query(model).filter_by(**kwargs).first()
         if instance:
@@ -398,21 +403,25 @@ def scenarioCollectLogs(self, arg):
 
                 scenario_rawObj = Scenarios.query.filter_by(name=scenario_name).first()
 
+                print('logs_id for bashhistory: ', this_logs_id)
+
                 get_or_create(
                     session=db.session,
                     model=BashHistory,
                     scenario_type=scenario_rawObj.scenario_type,
-                    scenario_id=scenario_rawObj.scenario_id,
+                    scenario_id=scenario_rawObj.id,
                     container_name=line[6].split(':')[0],
                     timestamp=line[3],
                     current_directory=line[5],
                     input=line[6].split(':')[-1],
                     output=line[6],
-                    prompt=line[1]
+                    logs_id=this_logs_id
+                    # prompt=line[1]
                 )
         except FileNotFoundError as e:
             print(f"Container not found: {e} - Skipping")
 
 @celery.on_after_configure.connect
 def setup_periodic_tasks(sender, **kwargs):
-    sender.add_periodic_task(60.0, scenarioCollectLogs.s(''))
+    print('setting periodic task for logger')
+    sender.add_periodic_task(10.0, scenarioCollectLogs.s(''))

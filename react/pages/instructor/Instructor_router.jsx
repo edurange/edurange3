@@ -11,6 +11,7 @@ import Instr_Users from './users/Instr_Users';
 import Instr_ScenDetail from './scenarios/Instr_ScenDetail';
 import Instr_UserDetail from './users/Instr_UserDetail';
 import { HomeRouter_context } from '../pub/Home_router';
+import Panopticon from './Panopticon';
 
 export const InstructorRouter_context = React.createContext();
 
@@ -77,7 +78,7 @@ function Instructor_router() {
         const interval_id = setInterval(() => {
             if (socket_ref.current.readyState === 1) {
                 socket_ref.current.send(JSON.stringify({
-                    type: 'keepalive',
+                    message_type: 'keepalive',
                     message: 'ping'
                 }));
             }
@@ -104,7 +105,7 @@ function Instructor_router() {
         const handleMessage = (event) => {
             const message = JSON.parse(event.data);
             
-            if (message.type === 'chat_message_receipt') {
+            if (message.message_type === 'chat_message_receipt') {
                 const msg_data = message?.data;
                 const msg_channel = msg_data?.channel;
 
@@ -112,7 +113,7 @@ function Instructor_router() {
 
                 updateChatLibrary (msg_channel, message?.data)
 
-            } else if (message.type === 'chatError') {
+            } else if (message.message_type === 'chatError') {
                 console.error('Chat error:', message.data);
             }
         };
@@ -154,6 +155,7 @@ function Instructor_router() {
                     selectedMessage_state, set_selectedMessage_state,
                     socket_ref, lastChat_ref
                 }}>
+
                     <Routes>
                         <Route path="/*" element={<Instr_Dash />} />
                         <Route path="/scenarios/*" element={<Instr_Scenarios />} />
@@ -163,6 +165,7 @@ function Instructor_router() {
                         <Route path="/groups/:groupID/*" element={<Instr_GroupDetail />} />
                         <Route path="/students/*" element={<Instr_Users />} />
                         <Route path="/students/:userID/*" element={<Instr_UserDetail />} />
+                        <Route path="/panopticon/" element={<Panopticon />} />
                     </Routes>
 
                 </InstructorRouter_context.Provider>

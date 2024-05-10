@@ -32,7 +32,8 @@ import {
     FaRegCopy,
     FaCheck,
     FaHatWizard,
-    FaTrashCan 
+    FaTrashCan ,
+    FaTowerObservation
 } from "react-icons/fa6";
 
 import { 
@@ -93,7 +94,8 @@ import {
     wizardHat: <FaHatWizard/>,
     stopSign: <FaStopCircle/>,
     playSign: <FaPlayCircle />,
-    trash: <FaTrashCan/>
+    trash: <FaTrashCan/>,
+    tower: <FaTowerObservation/>
 }
 export default edurange_icons
 
