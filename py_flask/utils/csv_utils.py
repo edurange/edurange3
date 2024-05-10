@@ -7,14 +7,16 @@ from flask import (
     abort
 )
 
+
 def readCSV(value, attribute):
+    this_logs_id = current_app.config.get('LOGS_ID')
     if attribute == 'id':
         sName = db.session.query(Scenarios.name).filter(Scenarios.id == value).first()[0]
         sName = "".join(e for e in sName if e.isalnum())
     else:
         sName = value
 
-    fd = open(f"./scenarios/tmp/{sName}/{sName}-history.csv")
+    fd = open(f"./scenarios/tmp/{sName}/{sName}-{this_logs_id}.csv")
     reader = csv.reader(fd, delimiter="|", quotechar="%", quoting=csv.QUOTE_MINIMAL)
 
     return [row for row in reader if len(row) == 8]

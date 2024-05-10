@@ -336,13 +336,10 @@ def destroy_scenario_task(self, scenario_id):
 def scenarioCollectLogs(self, arg):
     from py_flask.utils.csv_utils import readCSV
     from py_flask.config.extensions import db
-    from py_flask.database.models import Scenarios, ScenarioGroups, Responses, BashHistory
+    from py_flask.database.models import Scenarios, BashHistory, Users
     from py_flask.utils.instructor_utils import NotifyCapture
 
     this_logs_id = current_app.config.get('LOGS_ID')
-
-    current_app.logger('running periodic task for logger')
-    print('running periodic task for logger')
 
     def get_or_create(session, model, **kwargs):
         instance = session.query(model).filter_by(**kwargs).first()
@@ -376,7 +373,7 @@ def scenarioCollectLogs(self, arg):
             print(f'{e}')
         if os.path.isdir(f'scenarios/tmp/{scenario_name}'):
             try:
-                os.system(f'cat /dev/null > scenarios/tmp/{scenario_name}/{scenario_name}-history.csv')
+                os.system(f'cat /dev/null > scenarios/tmp/{scenario_name}/{scenario_name}-{this_logs_id}.csv')
             except Exception as e:
                 print(f'Not a scenario: {e} - Skipping')
 
@@ -384,7 +381,7 @@ def scenarioCollectLogs(self, arg):
         for scenario_name in scenario_nameList:
             if f.find(scenario_name) == 0 and os.path.isdir(f'scenarios/tmp/{scenario_name}') and f.endswith('.csv'):
                 try:
-                    os.system(f'cat logs/{f} >> scenarios/tmp/{scenario_name}/{scenario_name}-history.csv')
+                    os.system(f'cat logs/{f} >> scenarios/tmp/{scenario_name}/{scenario_name}-{this_logs_id}.csv')
                 except Exception as e:
                     print(f'Not a scenario: {e} - Skipping')
             if f.find(scenario_name) == 0 and os.path.isdir(f'scenarios/tmp/{scenario_name}') and f.endswith('.zip'):
@@ -397,13 +394,24 @@ def scenarioCollectLogs(self, arg):
         try:
             data = readCSV(scenario_name, 'name')
             for i, line in enumerate(data):
+
                 if i == 0:
                     continue
-                line[3] = datetime.fromtimestamp(int(line[3]))
+
+                # DEV_FIX logs are being added to database repeatedly
+                
+                # DEV_FIX this was added, not sure why it was needed all of a sudden...
+                if line[0][0] == "#":
+                    continue
+
+                timestamp_int_unformatted = line[3]
+                timestamp_int_casted = int(timestamp_int_unformatted)
+                datetime = datetime.fromtimestamp(timestamp_int_casted)
 
                 scenario_rawObj = Scenarios.query.filter_by(name=scenario_name).first()
 
-                print('logs_id for bashhistory: ', this_logs_id)
+                user_name = str(line[4])
+                user_rawObj = Users.query.filter_by(username=user_name).first()
 
                 get_or_create(
                     session=db.session,
@@ -411,17 +419,17 @@ def scenarioCollectLogs(self, arg):
                     scenario_type=scenario_rawObj.scenario_type,
                     scenario_id=scenario_rawObj.id,
                     container_name=line[6].split(':')[0],
-                    timestamp=line[3],
+                    timestamp=datetime,
                     current_directory=line[5],
                     input=line[6].split(':')[-1],
                     output=line[6],
-                    logs_id=this_logs_id
-                    # prompt=line[1]
+                    logs_id=this_logs_id,
+                    user_id=user_rawObj.id
+                    
                 )
         except FileNotFoundError as e:
             print(f"Container not found: {e} - Skipping")
 
 @celery.on_after_configure.connect
 def setup_periodic_tasks(sender, **kwargs):
-    print('setting periodic task for logger')
-    sender.add_periodic_task(10.0, scenarioCollectLogs.s(''))
+    sender.add_periodic_task(60.0, scenarioCollectLogs.s(''))
