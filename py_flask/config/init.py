@@ -4,7 +4,6 @@ import logging
 import sys
 import os
 from flask import Flask
-from py_flask.utils.common_utils import generate_alphanum
 from py_flask.routes.public_routes import blueprint_public
 from py_flask.routes.student_routes import blueprint_student
 from py_flask.routes.instructor_routes import blueprint_instructor
@@ -32,14 +31,7 @@ def create_app(config_object="py_flask.config.settings"):
     app.config['SESSION_COOKIE_SECURE'] = True
     app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 
-    logs_id = generate_alphanum(8)
-
-    # store logs_id in text so node has access
-    with open('./logs/logs_id.txt', 'w') as file:
-        file.write(logs_id)
-
     # store logs_id in config so other flask scripts have access
-    app.config['LOGS_ID'] = logs_id
 
     register_extensions(app)
     register_blueprints(app)

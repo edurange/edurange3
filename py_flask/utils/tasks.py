@@ -338,8 +338,9 @@ def scenarioCollectLogs(self, arg):
     from py_flask.config.extensions import db
     from py_flask.database.models import Scenarios, BashHistory, Users
     from py_flask.utils.instructor_utils import NotifyCapture
-
-    this_logs_id = current_app.config.get('LOGS_ID')
+    
+    with open('./logs/logs_id.txt', 'r') as log_id_file:
+        this_logs_id = log_id_file.read().rstrip()
 
     def get_or_create(session, model, **kwargs):
         instance = session.query(model).filter_by(**kwargs).first()
@@ -406,7 +407,7 @@ def scenarioCollectLogs(self, arg):
 
                 timestamp_int_unformatted = line[3]
                 timestamp_int_casted = int(timestamp_int_unformatted)
-                datetime = datetime.fromtimestamp(timestamp_int_casted)
+                clean_datetime = datetime.fromtimestamp(timestamp_int_casted)
 
                 scenario_rawObj = Scenarios.query.filter_by(name=scenario_name).first()
 
@@ -419,7 +420,7 @@ def scenarioCollectLogs(self, arg):
                     scenario_type=scenario_rawObj.scenario_type,
                     scenario_id=scenario_rawObj.id,
                     container_name=line[6].split(':')[0],
-                    timestamp=datetime,
+                    timestamp=clean_datetime,
                     current_directory=line[5],
                     input=line[6].split(':')[-1],
                     output=line[6],

@@ -182,4 +182,4 @@ class BashHistory(Edu3Mixin, SurrogatePK, Model):
     input = Column(db.String(250), nullable=False, unique=False)
     output = Column(db.String(10000), nullable=False, unique=False)
 
-    logs_id = Column(db.String(8), nullable=False, unique=True)
+    logs_id = Column(db.String(8), nullable=False, unique=False)

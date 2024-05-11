@@ -8,9 +8,15 @@ import os
 from py_flask.config.init import create_app
 from py_flask.config.extensions import db
 from py_flask.database.models import StudentGroups, Users
+from py_flask.utils.common_utils import generate_alphanum
 
 app = create_app()
 app.app_context().push()
+
+current_logs_id = generate_alphanum(8)
+with open('./logs/logs_id.txt', 'w') as log_id_file:
+    log_id_file.write(current_logs_id)
+
 db.create_all()
 
 def create_admin():

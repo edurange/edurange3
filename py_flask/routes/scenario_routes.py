@@ -1,5 +1,5 @@
 """Student View API routes."""
-
+import os
 from py_flask.config.extensions import db
 from py_flask.database.models import (
     GroupUsers, 
@@ -162,7 +162,8 @@ def checkResponse():
     this_student_response = requestJSON['student_response']
     this_scenario_type = (requestJSON['scenario_type'])
 
-    this_logs_id = current_app.config.get('LOGS_ID')
+    with open('./logs/logs_id.txt', 'r') as log_id_file:
+        this_logs_id = log_id_file.read().rstrip()
     
     gradedResponse = evaluateResponse (current_user_id, this_scenario_id, question_num, this_student_response )
 
