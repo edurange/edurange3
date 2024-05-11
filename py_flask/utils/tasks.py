@@ -423,7 +423,7 @@ def scenarioCollectLogs(self, arg):
                     timestamp=clean_datetime,
                     current_directory=line[5],
                     input=line[6].split(':')[-1],
-                    output=line[6],
+                    output=line[7],
                     logs_id=this_logs_id,
                     user_id=user_rawObj.id
                     
