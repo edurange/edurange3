@@ -1,18 +1,22 @@
 from py_flask.config.extensions import db
-from flask import (
-    Blueprint,
-    request,
-    jsonify,
-    g
-)
 from py_flask.database.models import Users, Channels, ChannelUsers
 from py_flask.utils.chat_utils import getChannelDictList_byUser
-from py_flask.utils.error_utils import handle_error
 from py_flask.utils.auth_utils import register_user, login_er3
 from py_flask.database.user_schemas import LoginSchema, RegistrationSchema
 from werkzeug.exceptions import abort
-from flask import current_app
 import secrets
+import traceback
+
+
+from sqlalchemy.exc import SQLAlchemyError  # Import SQLAlchemy exceptions
+
+from py_flask.utils.error_utils import (
+    Err_Unexpected_FullInfo,
+    Err_Unexpected_MinInfo,
+    Err_Teapot,
+    Err_InvalidCreds,
+    Err_Custom_FullInfo
+)
 
 from flask import (
     Blueprint,
@@ -20,6 +24,8 @@ from flask import (
     session,
     jsonify,
     make_response,
+    current_app,
+    g
 )
 db_ses = db.session
 edurange3_csrf = secrets.token_hex(32)
@@ -30,18 +36,27 @@ blueprint_public = Blueprint(
     __name__, 
     url_prefix='/api')
 
-# @blueprint_public.errorhandler()
-# def public_error_handler(error):
-#     return handle_error(error)
 
+@blueprint_public.errorhandler(SQLAlchemyError)
+def handle_sqlalchemy_error(error):
 
-@blueprint_public.errorhandler(418)
-def public_error_handler(error):
-    response = jsonify({"error": f"Error from flask public_route: {error}"})
-    response.status_code = 418
-    response.content_type = "application/json"
-    return response
+    # log full error, including traceback
+    current_app.logger.error(f"SQLAlchemy Error: {error}\n{traceback.format_exc()}")
 
+    # return detail in debug mode or generic error message in prod
+    if current_app.config['DEBUG']:
+        response_error = Err_Custom_FullInfo(f"Database error occurred: {str(error)}", 500)
+    
+    else: response_error = Err_Custom_FullInfo(f"Database error occurred.", 500)
+
+    return response_error
+
+# catch-all handler
+@blueprint_public.errorhandler(Exception)
+def general_error_handler(error):
+    status_code = getattr(error, 'status_code', 500)
+    error_handler = Err_Custom_FullInfo(error.message, status_code)
+    return error_handler.get_response()
 
 
 @blueprint_public.route("/login", methods=["POST"])
@@ -57,8 +72,7 @@ def login_edurange3():
     validated_user_dump = validation_schema.dump(vars(validated_user_obj))
 
     if not validated_user_dump:
-        raise ValueError("User not found", 404)
-
+        return (Err_Custom_FullInfo("User not found", 404))
 
     chan_data = getChannelDictList_byUser(validated_user_dump['id'], validated_user_dump['username'])
 
@@ -92,4 +106,5 @@ def registration():
             "message":"account successfully registered",
             "user_id": newUser_id,
             })
-    else: return jsonify({"message":"user already exists. account NOT registered"})
+    
+    else: return (Err_Custom_FullInfo('User already exists.  Account NOT registered!', 409))

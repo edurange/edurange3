@@ -31,7 +31,7 @@ def create_app(config_object="py_flask.config.settings"):
     app.config['SESSION_COOKIE_SECURE'] = True
     app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 
-    # store logs_id in config so other flask scripts have access
+    # store archive_id in config so other flask scripts have access
 
     register_extensions(app)
     register_blueprints(app)

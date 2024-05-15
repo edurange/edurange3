@@ -38,6 +38,24 @@ axios.defaults.baseURL = '/api';
 axios.defaults.headers.common['X-XSRF-TOKEN'] = csrfToken || ""; // provide empty for login
 axios.defaults.withCredentials = true; // very important
 
+const showDetailedErrors = false; // Set to false in production
+
+// Global response interceptor
+axios.interceptors.response.use(response => {
+    // Any status code that lie within the range of 2xx cause this function to trigger
+    return response;
+}, error => {
+    // Any status codes that falls outside the range of 2xx cause this function to trigger
+    console.error("Axios Error:", error.response ? error.response.data : error.message);
+
+    if (showDetailedErrors) {
+        console.error("Detailed Error:", error);
+    }
+
+    return Promise.reject(error);
+});
 // allows er3_entry.jsx to wrap itself in AxiosConfig.js
 function AxiosConfig ({children}) {return children;}
 export default AxiosConfig;
+
+

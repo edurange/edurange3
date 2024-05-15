@@ -18,6 +18,13 @@ from marshmallow import (
     validates_schema,
     )
 
+from py_flask.utils.error_utils import (
+    Err_Unexpected_FullInfo,
+    Err_Unexpected_MinInfo,
+    Err_Teapot,
+    Err_InvalidCreds,
+    custom_abort
+)
 
 from marshmallow import Schema, fields, validates, ValidationError
 from marshmallow.fields import String, Boolean, Integer
@@ -44,7 +51,7 @@ class LoginSchema(ma.SQLAlchemyAutoSchema):
             not user 
             or not bcrypt.check_password_hash(user.password, password_plain_input)
             ):
-                abort(418)  
+                custom_abort("Invalid credentials.", 403)
 
     class Meta:
         model = Users

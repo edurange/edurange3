@@ -9,6 +9,14 @@ from py_flask.database.models import (
     Users,
     StudentGroups,  
 )
+from py_flask.utils.error_utils import (
+    Err_Unexpected_FullInfo,
+    Err_Unexpected_MinInfo,
+    Err_Teapot,
+    Err_InvalidCreds,
+    Err_Custom_FullInfo
+)
+
 import json
 from py_flask.utils.scenario_utils import (
      identify_state
@@ -83,7 +91,7 @@ def get_content(i):
     meta = getScenarioMeta(current_scenario_id)
 
     if not credentialsJSON or not unique_name:
-        return jsonify({"error": f"scenario with id {i} is found, build failed"})
+        return Err_Custom_FullInfo(f"scenario with id {i} is found, but build failed", 500)
     
     SSH_connections = identify_state(unique_name, "Started")
     SSH_IP = ""
@@ -162,8 +170,8 @@ def checkResponse():
     this_student_response = requestJSON['student_response']
     this_scenario_type = (requestJSON['scenario_type'])
 
-    with open('./logs/logs_id.txt', 'r') as log_id_file:
-        this_logs_id = log_id_file.read().rstrip()
+    with open('./logs/archive_id.txt', 'r') as log_id_file:
+        this_archive_id = log_id_file.read().rstrip()
     
     gradedResponse = evaluateResponse (current_user_id, this_scenario_id, question_num, this_student_response )
 
@@ -182,7 +190,7 @@ def checkResponse():
         points_possible=pointsPossible,
         scenario_id=this_scenario_id,
         scenario_type=this_scenario_type,
-        logs_id=this_logs_id,
+        archive_id=this_archive_id,
     )
     
     return jsonify(gradedResponse)

@@ -44,10 +44,10 @@ function Login() {
                 }
             } else {
                 const errData = response.data.error;
-                console.log('Login failure.');
+                
             };
         } catch (error) {
-            console.error('Error:', error);
+            console.log('Login failure.');
         };
     };
 

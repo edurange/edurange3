@@ -141,7 +141,7 @@ class ChatMessages(Edu3Mixin, SurrogatePK, Model):
     timestamp = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
     content = Column(db.String(5000), nullable=False, unique=False)
 
-    logs_id = Column(db.String(8), nullable=False, unique=True)
+    archive_id = Column(db.String(8), nullable=False, unique=False)
 
 
 class Responses(Edu3Mixin, SurrogatePK, Model):
@@ -162,7 +162,7 @@ class Responses(Edu3Mixin, SurrogatePK, Model):
     points_possible = Column(db.Integer, default=0, nullable=False)
     points_awarded = Column(db.Integer, default=0, nullable=False)
 
-    logs_id = Column(db.String(8), nullable=False, unique=True)
+    archive_id = Column(db.String(8), nullable=False, unique=False)
 
 class BashHistory(Edu3Mixin, SurrogatePK, Model):
     """Bash Histories, associated with users and scenarios"""
@@ -174,12 +174,12 @@ class BashHistory(Edu3Mixin, SurrogatePK, Model):
     user = relationship("Users", backref="bash_history")
 
     scenario_type = Column(db.String(40), unique=False, nullable=False)
-    scenario_id = reference_col("scenarios", nullable=False)  # may need to be reference column
-    scenario = relationship("Scenarios", backref="bash_history", viewonly=True)  # dev_fix may not work
+    scenario_id = reference_col("scenarios", nullable=False)
+    scenario = relationship("Scenarios", backref="bash_history", viewonly=True)
     
     container_name = Column(db.String(40), nullable=False, unique=False)
     current_directory = Column(db.String(200), nullable=False, unique=False)
     input = Column(db.String(250), nullable=False, unique=False)
     output = Column(db.String(10000), nullable=False, unique=False)
 
-    logs_id = Column(db.String(8), nullable=False, unique=False)
+    archive_id = Column(db.String(8), nullable=False, unique=False)

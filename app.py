@@ -13,9 +13,9 @@ from py_flask.utils.common_utils import generate_alphanum
 app = create_app()
 app.app_context().push()
 
-current_logs_id = generate_alphanum(8)
-with open('./logs/logs_id.txt', 'w') as log_id_file:
-    log_id_file.write(current_logs_id)
+current_archive_id = generate_alphanum(8)
+with open('./logs/archive_id.txt', 'w') as log_id_file:
+    log_id_file.write(current_archive_id)
 
 db.create_all()
 

@@ -339,8 +339,8 @@ def scenarioCollectLogs(self, arg):
     from py_flask.database.models import Scenarios, BashHistory, Users
     from py_flask.utils.instructor_utils import NotifyCapture
     
-    with open('./logs/logs_id.txt', 'r') as log_id_file:
-        this_logs_id = log_id_file.read().rstrip()
+    with open('./logs/archive_id.txt', 'r') as log_id_file:
+        this_archive_id = log_id_file.read().rstrip()
 
     def get_or_create(session, model, **kwargs):
         instance = session.query(model).filter_by(**kwargs).first()
@@ -374,7 +374,7 @@ def scenarioCollectLogs(self, arg):
             print(f'{e}')
         if os.path.isdir(f'scenarios/tmp/{scenario_name}'):
             try:
-                os.system(f'cat /dev/null > scenarios/tmp/{scenario_name}/{scenario_name}-{this_logs_id}.csv')
+                os.system(f'cat /dev/null > scenarios/tmp/{scenario_name}/{scenario_name}-{this_archive_id}.csv')
             except Exception as e:
                 print(f'Not a scenario: {e} - Skipping')
 
@@ -382,7 +382,7 @@ def scenarioCollectLogs(self, arg):
         for scenario_name in scenario_nameList:
             if f.find(scenario_name) == 0 and os.path.isdir(f'scenarios/tmp/{scenario_name}') and f.endswith('.csv'):
                 try:
-                    os.system(f'cat logs/{f} >> scenarios/tmp/{scenario_name}/{scenario_name}-{this_logs_id}.csv')
+                    os.system(f'cat logs/{f} >> scenarios/tmp/{scenario_name}/{scenario_name}-{this_archive_id}.csv')
                 except Exception as e:
                     print(f'Not a scenario: {e} - Skipping')
             if f.find(scenario_name) == 0 and os.path.isdir(f'scenarios/tmp/{scenario_name}') and f.endswith('.zip'):
@@ -424,7 +424,7 @@ def scenarioCollectLogs(self, arg):
                     current_directory=line[5],
                     input=line[6].split(':')[-1],
                     output=line[7],
-                    logs_id=this_logs_id,
+                    archive_id=this_archive_id,
                     user_id=user_rawObj.id
                     
                 )

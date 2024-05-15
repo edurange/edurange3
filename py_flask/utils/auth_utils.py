@@ -13,6 +13,9 @@ from datetime import timedelta
 from functools import wraps
 from py_flask.database.models import GroupUsers, StudentGroups, Users, Channels, ChannelUsers
 from flask_jwt_extended import create_access_token, decode_token
+from py_flask.utils.error_utils import (
+    Err_InvalidCreds,
+)
 
 ###########
 #  This `@jwt_and_csrf_required()` decorator function should be used on ALL 
@@ -45,7 +48,8 @@ def jwt_and_csrf_required(fn):
             # To avoid auth 'misses', use the `g` object any time the values are needed
 
         except Exception as err:
-            return jsonify({"error": "some request denied"}), 418
+            return Err_InvalidCreds()
+            # return jsonify({"error": "some request denied"}), 418
 
         return fn(*args, **kwargs)
     
@@ -55,6 +59,7 @@ def jwt_and_csrf_required(fn):
 def instructor_only():
     if g.current_user_role not in ('instructor', 'admin'):
         return jsonify({"error": "insufficient role privileges"}), 418
+
 
 def login_er3(userObj):
 

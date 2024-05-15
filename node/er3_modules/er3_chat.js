@@ -16,12 +16,12 @@ const fs = require('fs').promises;
 // root project env
 dotenv.config({ path: path.join(__dirname, '..', '..', '.env') });
 
-let logs_id;
+let archive_id;
 
 async function updateLogsID() {
     try {
-        const data = await fs.readFile('../logs/logs_id.txt', 'utf8');
-        logs_id = data;
+        const data = await fs.readFile('../logs/archive_id.txt', 'utf8');
+        archive_id = data;
     } catch (err) {
         console.error(err);
     }
@@ -83,7 +83,7 @@ class Chat_Receipt {
             user_alias: original_message?.data?.user_alias,
             channel: original_message?.data?.channel,
             scenario_id: Number(original_message?.data?.scenario_id),
-            logs_id: String(logs_id)
+            archive_id: String(archive_id)
         }
     }
 }
@@ -155,19 +155,19 @@ async function echoMessage_all(messageReceipt) {
     });
 }
 
-async function insertMessageIntoDB(senderId, messageData, timestamp, logs_id) {
-    await pool.query('INSERT INTO chat_messages (user_id, channel, content, scenario_type, timestamp, scenario_id, logs_id) VALUES ($1, $2, $3, $4, $5, $6, $7)', [
+async function insertMessageIntoDB(senderId, messageData, timestamp, archive_id) {
+    await pool.query('INSERT INTO chat_messages (user_id, channel, content, scenario_type, timestamp, scenario_id, archive_id) VALUES ($1, $2, $3, $4, $5, $6, $7)', [
         senderId,
         messageData.channel,
         messageData.content,
         messageData.scenario_type,
         timestamp,
         messageData.scenario_id,
-        logs_id
+        archive_id
     ]);
 }
 
-async function handleChatMessage(message, socketConnection, user_id, timestamp, logs_id) {
+async function handleChatMessage(message, socketConnection, user_id, timestamp, archive_id) {
 
     console.log('handling chat message: ', message)
 
@@ -184,13 +184,13 @@ async function handleChatMessage(message, socketConnection, user_id, timestamp, 
         await checkForChannel(value.channel, user_id, value.username);
         await echoMessage_toChannelUsers(chat_message_receipt, value.channel);
         await echoMessage_toInstructors(chat_message_receipt);
-        await insertMessageIntoDB(user_id, value, timestamp, logs_id);
+        await insertMessageIntoDB(user_id, value, timestamp, archive_id);
     } catch (err) {
         console.error('Error processing chat message:', err);
         socketConnection.send(JSON.stringify({ error: 'Internal Server Error' }));
     }
 }
-async function handleAnnouncement(message, socketConnection, user_id, timestamp, logs_id) {
+async function handleAnnouncement(message, socketConnection, user_id, timestamp, archive_id) {
 
     console.log('Handling announcement from instructor with ID: ', user_id)
     const { error, value } = ChatMessage_schema.validate(message.data);
@@ -205,7 +205,7 @@ async function handleAnnouncement(message, socketConnection, user_id, timestamp,
     try {
         await checkForChannel(value.channel, user_id, value.username);
         await echoMessage_all(chat_message_receipt);
-        await insertMessageIntoDB(user_id, value, timestamp, logs_id);
+        await insertMessageIntoDB(user_id, value, timestamp, archive_id);
     } catch (err) {
         console.error('Error processing chat message:', err);
         socketConnection.send(JSON.stringify({ error: 'Internal Server Error' }));
@@ -274,8 +274,8 @@ async function handleConnection(socketConnection, request) {
         updateUserDict(user_id, username, user_role, socketConnection);
 
     } catch (err) {
-        console.error('Error getting logs_id:', err);
-        socketConnection.close(1008, 'Error getting logs_id');
+        console.error('Error getting archive_id:', err);
+        socketConnection.close(1008, 'Error getting archive_id');
     }
 }
 
@@ -302,8 +302,8 @@ chatSocketServer.on('connection', async (socketConnection, request) => {
         const handlers = {
             'handshake': () => socketConnection.send(JSON.stringify({ message_type: 'handshake', ok: true })),
             'keepalive': () => socketConnection.send(JSON.stringify({ message_type: 'keepalive', message: 'pong', ok: true })),
-            'chat_message': async () => await handleChatMessage(this_message, socketConnection, user_id, this_timestamp, logs_id),
-            'announcement': async () => await handleAnnouncement(this_message, socketConnection, user_id, this_timestamp, logs_id)
+            'chat_message': async () => await handleChatMessage(this_message, socketConnection, user_id, this_timestamp, archive_id),
+            'announcement': async () => await handleAnnouncement(this_message, socketConnection, user_id, this_timestamp, archive_id)
         };
 
         if (handlers[this_message_type]) {
