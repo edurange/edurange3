@@ -1,6 +1,12 @@
-- Text: There are no questions here yet. This is not a questions
+- Text: How many total syscalls are executed when running ./empty ?
   Type: String
   Values:
-    - Value: 000
-      Points: 0
-  Points: 0
+    - Value: 29
+      Points: 5
+  Points: 5
+- Text: What syscall is invoked when running ./hello that wasnt present when running ./empty ?
+  Type: String
+  Values:
+    - Value: write
+      Points: 5
+  Points: 5
