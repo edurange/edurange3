@@ -69,4 +69,115 @@ diff empty-trace hello-trace
 Is this an effective way to determine the differences between these traces?
 Why or why not? (ESSAY)
 
+## Second Traces
 
+Use a text editor to read the source code contents of copy.c
+
+
+Notice the new functions we're using, such as:
+```
+fopen()
+snprintf()
+fprintf()
+```
+How might these C functions be invoked in syscall form? (TODO)
+
+<question 3>
+
+## Reverse Engineering a Trace
+
+The file strace-identify was created by calling strace on a command. The first line of the trace
+has been deleted to make it harder to identify. Determine the command on which strace was
+called to produce this trace. Do not include "strace" in your answer.
+
+<question 4>
+
+## Trace Filtering
+
+Sometimes strace prints out an overwhelming amount of output. One way to filter through the
+output is to save the trace to a file and search through the file with grep. But strace is equipped
+with some options that can do some summarization and filtering. To see some of these, try the
+following, and explain the results:
+```
+find /etc/dhcp
+strace find /etc/dhcp
+strace -c find /etc/dhcp
+strace -e trace=file find /etc/dhcp
+strace -e trace=open,close,read,write find /etc/dhcp
+```
+
+<question 5>
+
+## Mystery Files
+The file mystery is an executable whose source code is not available. Use strace to explain
+what the program does in the context of the following examples:
+```
+./mystery foo abc
+./mystery foo def
+./mystery baz gh
+```
+
+TODO ESSAY POTENTIAL
+
+<question 6>
+
+TODO Preamble about when a script calls a forked process
+
+Here is a simple shell script in script.sh:
+```
+#!/bin/bash
+echo "a" > foo.txt
+echo "bc" >> foo.txt
+echo ‘id -urn‘ >> foo.txt
+chmod 750 foo.txt
+cat foo.txt | wc
+chmod 644 foo.txt
+Compare the outputs of the following calls to strace involving this script. Explain what you see in
+the traces in terms of the commands in the script.
+strace ./script.sh
+strace -f ./script.sh
+```
+
+Make "script.sh" execute-only
+Questions:
+What bash commands are contained within script.sh (how many)?
+
+Call another script, need fork to watch what it's doing
+What didn't you see it doing without the -f flag?
+
+TODO: turn the above into questions in the yml
+
+## What's wrong with that cat?
+
+Create a one-line “secret.txt” file. Here’s an example, though of course you should choose
+something different as your secret:
+```
+echo "My phone number is 123-456-7890" > secret.txt
+```
+Now display the secret to yourself using cat:
+```
+cat secret.txt
+My phone number is 123-456-7890
+```
+
+Is your secret really secret? How much do you trust the cat program? Start by running strace on
+cat secret.txt to determine what it's actually doing. Based on this and subsequent experiments,
+determine answers to the following questions:
+
+TODO: What does cat normally not do that you see?
+use localtime
+setuid(0)
+It calls cat again on itself
+More answers........
+
+TODO: What is the end result of this cat?
+Writes a copy of my file to /tmp/data
+
+<question 7>
+<question 8>
+<question 9>
+
+TODO: How do you think the trojaned cat program was implemented?
+How do you think it was installed? Justify your explanations
+
+```
