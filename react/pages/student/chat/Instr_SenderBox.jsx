@@ -31,13 +31,15 @@ function Instr_SenderBox() {
         if (!selectedMessage_state) {
             return
         }
-        
+
         const chatMsg = new ChatMessage(
             selectedMessage_state?.channel, 
             userData_state?.user_alias, 
             selectedMessage_state?.scenario_type, 
-            messageContent_state.trim()
+            messageContent_state.trim(),
+            selectedMessage_state?.scenario_id
         );
+        
         if (chatMsg.content) {
             const newChat = {
                 message_type: 'chat_message',

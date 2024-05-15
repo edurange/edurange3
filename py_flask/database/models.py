@@ -168,6 +168,7 @@ class BashHistory(Edu3Mixin, SurrogatePK, Model):
     """Bash Histories, associated with users and scenarios"""
     __tablename__ = "bash_history"
 
+    timestamp = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
 
     user_id = reference_col("users", nullable=False)
     user = relationship("Users", backref="bash_history")
@@ -177,7 +178,6 @@ class BashHistory(Edu3Mixin, SurrogatePK, Model):
     scenario = relationship("Scenarios", backref="bash_history", viewonly=True)  # dev_fix may not work
     
     container_name = Column(db.String(40), nullable=False, unique=False)
-    timestamp = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
     current_directory = Column(db.String(200), nullable=False, unique=False)
     input = Column(db.String(250), nullable=False, unique=False)
     output = Column(db.String(10000), nullable=False, unique=False)
