@@ -10,3 +10,47 @@
     - Value: write
       Points: 5
   Points: 5
+- Text: What syscalls occur before and after where the printf() from the c source code would execute? (TODO: make less bad)
+  Type: String
+  Answers:
+    - Value: fstat
+      Points: 5
+  Points: 5
+- Text: What command produced the tracefile strace-identify? 
+  Type: String
+  Answers:
+    - Value: which start
+      Points: 5
+  Points: 5
+- Text: What argument would you add after the -e flag to look for file reads?
+  Type: String
+  Answers:
+    - Value: read
+      Points: 5
+  Points: 5
+- Text: What directory does the mystery executable interact with?
+  Type: String
+  Answers:
+    - Value: /tmp/
+      Points: 5
+  Points: 5
+- Text: Where is the cat you are using being executed from?
+  Type: String
+  Answers:
+    - Value: /usr/bin/cat
+      Points: 5
+  Points: 5
+- Text: True or False, can anyone else read your secrets?
+  Type: String
+  Answers:
+    - Value: True
+      Points: 5
+  Points: 5
+- Text: True or False, can you read the secrets of others?
+  Type: String
+  Answers:
+    - Value: True
+      Points: 5
+  Points: 5
+
+
