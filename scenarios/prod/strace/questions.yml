@@ -10,13 +10,13 @@
     - Value: write
       Points: 5
   Points: 5
-- Text: What syscalls occur before and after where the printf() from the c source code would execute? (TODO: make less bad)
+- Text: What syscall is associated with the printf() function in the C source code?
   Type: String
   Answers:
-    - Value: fstat
+    - Value: write
       Points: 5
   Points: 5
-- Text: What command produced the tracefile strace-identify? 
+- Text: What command was run by strace to produce the tracefile "strace-identify"?
   Type: String
   Answers:
     - Value: which start
@@ -32,6 +32,8 @@
   Type: String
   Answers:
     - Value: /tmp/
+      Points: 5
+    - Value: /tmp
       Points: 5
   Points: 5
 - Text: Where is the cat you are using being executed from?
