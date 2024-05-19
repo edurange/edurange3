@@ -8,8 +8,8 @@ function Chat_HistoryBox({lastChat_ref, chatData_state}) {
     const { userData_state } = useContext(HomeRouter_context);
 
     if (!chatData_state) {return;}
-    
-    console.log('historybox chatdata_state', chatData_state)
+
+    console.log(chatData_state)
 
     return (
         <div className="chat-historybox-frame">
@@ -17,12 +17,10 @@ function Chat_HistoryBox({lastChat_ref, chatData_state}) {
                 
                 {chatData_state.map((chat, index) => (
 
-                    // add div with checkbox to select channel property of 'chat' object -> use set_selectedChannels_state() to add to array
-
                     <div key={index} ref={index === chatData_state.length - 1 ? lastChat_ref : null} className="er3chat-message-frame">
-                        
+    
                         {/* Msg_Bubble is the individual chat message component */}
-                        <Msg_Bubble user_id={userData_state?.id} message_obj={chat?.data}/>
+                        <Msg_Bubble user_id={userData_state?.id} message_obj={chat}/>
                     </div>
                 ))}
             </div>

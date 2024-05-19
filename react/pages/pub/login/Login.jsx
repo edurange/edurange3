@@ -28,18 +28,15 @@ function Login() {
                 set_userData_state(userData);
                 set_login_state(true);
 
-                // for student history
-                const hist_response = await axios.get('/get_chat_history');
-                const chat_history = hist_response?.data?.chat_history
                 const newExpiry = Date.now() + loginExpiry;
                 sessionStorage.setItem('userData', JSON.stringify(userData));
                 sessionStorage.setItem('login', true);
                 sessionStorage.setItem('loginExpiry', newExpiry);
+                // set_chatData_state(chat_history);
                 if ((userData?.role === 'instructor') || (userData?.role === 'admin')) {
                     set_desiredNavMetas_state(['/instructor', 'dash']);
                 }
                 else {
-                    set_chatData_state(chat_history);
                     set_desiredNavMetas_state(['/scenarios', 'dash']);
                 }
             } else {

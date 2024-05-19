@@ -8,35 +8,10 @@ import { HomeRouter_context } from '../../pub/Home_router.jsx';
 
 function Chat_Student({scenario_type, scenario_id}) {
 
-    const { userData_state } = useContext (HomeRouter_context);
+    const { userData_state, chatData_state, set_chatData_state } = useContext (HomeRouter_context);
     const { socket_ref } = useContext (StudentRouter_context);
     const [messageContent_state, set_messageContent_state] = useState('');
-    const [chatData_state, set_chatData_state] = useState([]);
     const lastChat_ref = useRef(null);
-
-    useEffect(() => {
-        const handleMessage = (event) => {
-            const message = JSON.parse(event.data);
-            console.log ('got a chat message: ', message)
-            if (message.message_type === 'chat_message_receipt') {
-                console.log ('got a chat message receipt: ', message)
-                console.log ('is chat_message_receipt: ', message.message_type === 'chat_message_receipt')
-                set_chatData_state((prevChatLog) => [...prevChatLog, message]);
-            } else if (message.message_type === 'chatError') {
-                console.error('Chat error:', message);
-            }
-        };
-
-        if (socket_ref.current) {
-            socket_ref.current.addEventListener('message', handleMessage);
-        }
-
-        return () => {
-            if (socket_ref.current) {
-                socket_ref.current.removeEventListener('message', handleMessage);
-            }
-        };
-    }, [socket_ref]);
 
     useEffect(() => {
         if (lastChat_ref.current) {
@@ -76,13 +51,11 @@ function Chat_Student({scenario_type, scenario_id}) {
         }
     };
 
-    console.log('checking CDS: ', chatData_state)
-
     return (
         <div className='chatStu-frame'>
             
             <div className="chatStu-historyBox">
-            <Chat_HistoryBox chatSessionID='someSessionID' chatData_state={chatData_state} lastChat_ref={lastChat_ref} />
+            <Chat_HistoryBox chatData_state={chatData_state} lastChat_ref={lastChat_ref} />
         </div>
 
             {/* chat message submission box */}

@@ -47,13 +47,12 @@ function Student_router() {
     };
     useEffect(() => { fetchScenarioList(); }, []);
 
+
+    // INITIALIZE ONLY SOCKET REF
     useEffect(() => {
-        // only place websocket inits for student connection ; passed via context after
         socket_ref.current = new WebSocket(socketURL);
-
-        const pingInterval = 11000;
-
-        const pingInterval_id = setInterval(() => {
+        const pingInterval = 11_000; // unit: ms
+        const interval_id = setInterval(() => {
             if (socket_ref.current.readyState === 1) {
                 socket_ref.current.send(JSON.stringify({
                     message_type: 'keepalive',
@@ -61,14 +60,45 @@ function Student_router() {
                 }));
             }
         }, pingInterval);
-
-        // clean up
+        // cleanup
         return () => {
             if (socket_ref.current) {
                 socket_ref.current.close();
             }
         };
     }, []);
+
+    useEffect(() => {
+        async function get_studentChatHistory(){
+            const hist_response = await axios.get('/get_chat_history');
+            const chat_history = hist_response?.data?.chat_history
+            set_chatData_state(chat_history);
+        }
+        get_studentChatHistory()
+    }, []);
+
+    // useEffect(() => {
+    //     // only place websocket inits for student connection ; passed via context after
+    //     socket_ref.current = new WebSocket(socketURL);
+
+    //     const pingInterval = 11000;
+
+    //     const pingInterval_id = setInterval(() => {
+    //         if (socket_ref.current.readyState === 1) {
+    //             socket_ref.current.send(JSON.stringify({
+    //                 message_type: 'keepalive',
+    //                 message: 'ping'
+    //             }));
+    //         }
+    //     }, pingInterval);
+
+    //     // clean up
+    //     return () => {
+    //         if (socket_ref.current) {
+    //             socket_ref.current.close();
+    //         }
+    //     };
+    // }, []);
 
     const updateChatHistory = (message) => {
         set_chatData_state(prevHistory => [...prevHistory, message]);
@@ -80,7 +110,9 @@ function Student_router() {
             const message = JSON.parse(event.data);
 
             if (message.message_type === 'chat_message_receipt') {
-
+                
+                console.log('checking new message: ', message)
+                console.log('checking new message data: ', message?.data)
                 updateChatHistory(message?.data)
 
             } else if (message.message_type === 'chatError') {

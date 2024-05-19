@@ -8,6 +8,7 @@ import { StudentRouter_context } from '../../../../Student_router';
 function GuideQuestion({ scenario_id, questionObj, scenario_type }) {
     if (!questionObj?.itemContent) { return null; }
     const { responseData_state, set_responseData_state } = useContext(StudentRouter_context);
+    const [inputText_state, set_inputText_state] = useState('');
 
     const points_possible = questionObj?.itemContent?.Points ?? '?';
 
@@ -18,9 +19,6 @@ function GuideQuestion({ scenario_id, questionObj, scenario_type }) {
         }
     };
     
-    const [inputText_state, set_inputText_state] = useState('');
-
-    console.log('check subby: ', scenario_type)
 
     async function handleSubmit() {
         try {
@@ -42,7 +40,8 @@ function GuideQuestion({ scenario_id, questionObj, scenario_type }) {
                     }));
                 }
 
-                console.log(`Submission for scenario ${scenario_id} question ${questionObj?.itemContentPointer}: "${inputText_state}". Correct answer was ${this_item.correct_response}. You were awarded ${this_item.points_awarded} points!`);
+                console.log(`Submission for scenario ${scenario_id} question ${questionObj?.itemContentPointer}: "${inputText_state}". Correct answer was [ REDACTED ]. You were awarded ${this_item.points_awarded} points!`);
+                // console.log(`Submission for scenario ${scenario_id} question ${questionObj?.itemContentPointer}: "${inputText_state}". Correct answer was ${this_item.correct_response}. You were awarded ${this_item.points_awarded} points!`);
             }
 
             set_inputText_state('');

@@ -1,19 +1,39 @@
 
-import React, { useContext } from "react";
+
+import React, { useContext, useEffect, useState } from "react";
 import './Chat_HistoryBox.css';
 import Msg_Bubble from './Msg_Bubble';
 import { InstructorRouter_context } from "../../instructor/Instructor_router";
 import { HomeRouter_context } from "../../pub/Home_router";
 
-// this is for instructors to look at the history of an individual student; 
-// includes all channels a student has available
-
-function Instr_Chat_HistoryBox({lastChat_ref, messages_array}) {
-    
-    const { selectedMessage_state, set_selectedMessage_state, chatLibrary_state } = useContext(InstructorRouter_context);
+function Instr_Chat_HistoryBox({ lastChat_ref, chatLibrary, selectedUser_obj }) {
+    const { selectedMessage_state, set_selectedMessage_state } = useContext(InstructorRouter_context);
     const { userData_state } = useContext(HomeRouter_context);
 
-    if (!chatLibrary_state) {return}
+    const [messagesToDisplay_state, set_messagesToDisplay_state] = useState([]);
+    
+    useEffect(() => {
+
+        // if selectedUser_obj is supplied in component prop, this component displays
+        // chat for only that user (all of their avail channels)
+        if (selectedUser_obj?.channel_data?.available_channels) {
+            const user_channels = selectedUser_obj.channel_data.available_channels;
+            const msglist = user_channels.flatMap(chan => chatLibrary[chan.id] || []);
+            set_messagesToDisplay_state(msglist);
+        
+
+        // if no user is supplied, chats for all users will be displayed
+        } else {
+            const allMessages = Object.values(chatLibrary).flat();
+            set_messagesToDisplay_state(allMessages);
+        }
+    }, [selectedUser_obj, chatLibrary]);
+
+    useEffect(() => {
+        if (lastChat_ref.current) {
+            lastChat_ref.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [messagesToDisplay_state]);
 
     const handleCheckboxChange = (message, isChecked) => {
         if (isChecked) {
@@ -25,25 +45,25 @@ function Instr_Chat_HistoryBox({lastChat_ref, messages_array}) {
         }
     };
 
-    if (!messages_array){return}
-    
+    if (!messagesToDisplay_state.length) return null;
+
     return (
         <div className="instr-historybox-frame">
             <div className='chat-historybox-carpet'>
-                {messages_array?.map((chat, index) =>  (
-                    <div key={index} ref={index === messages_array?.length - 1 ? lastChat_ref : null} className="er3chat-message-frame">
-
+                {messagesToDisplay_state.map((chat, index) => (
+                    <div key={index} ref={index === messagesToDisplay_state.length - 1 ? lastChat_ref : null} className="er3chat-message-frame">
                         <input
                             type="checkbox"
                             checked={selectedMessage_state === chat}
                             onChange={(e) => handleCheckboxChange(chat, e.target.checked)}
                             className="message-select-checkbox"
                         />
-                        <Msg_Bubble user_id={userData_state?.user_id} message_obj={chat}/>
+                        <Msg_Bubble user_id={userData_state?.id} message_obj={chat} />
                     </div>
                 ))}
             </div>
         </div>
     );
 }
+
 export default Instr_Chat_HistoryBox;

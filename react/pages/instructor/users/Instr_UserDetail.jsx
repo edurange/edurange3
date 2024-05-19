@@ -16,31 +16,19 @@ function Instr_UserDetail() {
         chatLibrary_state, set_chatLibrary_state,
         channelAccess_state, set_channelAccess_state,
     } = useContext(InstructorRouter_context);
+
     const thisUser = users_state.filter(user => user.id === parseInt(userID))?.[0]
                         
-    if (!thisUser) { return <>User not found.</> } 
-    if (!channelAccess_state) { return <>User not found.</> } 
-    if (!chatLibrary_state) { return <>User not found.</> } 
-
+    if (!thisUser || !channelAccess_state || !chatLibrary_state) { return <>Required data not found.</> } 
+    
     const user_channels = channelAccess_state[thisUser.id]
+    if (!user_channels) { return <>user_channels not found.</> } 
 
-    const msglist = []
-    user_channels.forEach(chan => {
-        chatLibrary_state[chan]?.map((message) => msglist.push(message));
-    });
-
-    function getMembershipGroup(){
-
-        const membershipGroup = groups_state?.
-        filter((group) => group.id === thisUser.membership)
-        
-        return membershipGroup?.[0]
-    }
     return (
         <div className="table-frame">
 
             <div className="chatInstr-historyBox">
-                <Instr_Chat_HistoryBox user_obj={thisUser} lastChat_ref={lastChat_ref} messages_array={msglist} />
+                <Instr_Chat_HistoryBox selectedUser_obj={thisUser} lastChat_ref={lastChat_ref} chatLibrary={chatLibrary_state} />
             </div>
             <Instr_SenderBox/>
 
