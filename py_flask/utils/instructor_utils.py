@@ -26,7 +26,6 @@ def generateTestAccts(group_db_obj, new_user_count, group_code):
         newPass = generate_registration_code()
         user_dict = {
             'username' : group_obj_dict['name'] + str(i),
-            # 'username' : group_obj_dict['name'] + '-' + str(i),
             'password' : newPass,
             'confirm_password' : newPass,
             'code' : group_code,

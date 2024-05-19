@@ -1,5 +1,5 @@
 
-.bubble-frame{
+.bubble-frame-outgoing{
     display:flex;
     color: aquamarine;
     border: 1px solid rgb(123, 151, 142);
@@ -7,6 +7,15 @@
     padding: 5px;
     background-color: rgba(127, 255, 212, 0.139);
 }
+.bubble-frame-incoming{
+    display:flex;
+    color: rgb(255, 170, 127);
+    border: 1px solid rgb(234, 164, 95);
+    border-radius: 4px;
+    padding: 5px;
+    background-color: rgba(127, 255, 212, 0.139);
+}
+
 .bubble-carpet{
     display:flex;
 }

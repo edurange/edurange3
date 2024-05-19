@@ -3,6 +3,7 @@ import React, { useContext } from "react";
 import './Chat_HistoryBox.css';
 import Msg_Bubble from './Msg_Bubble';
 import { InstructorRouter_context } from "../../instructor/Instructor_router";
+import { HomeRouter_context } from "../../pub/Home_router";
 
 // this is for instructors to look at the history of an individual student; 
 // includes all channels a student has available
@@ -10,6 +11,7 @@ import { InstructorRouter_context } from "../../instructor/Instructor_router";
 function Instr_Chat_HistoryBox({lastChat_ref, messages_array}) {
     
     const { selectedMessage_state, set_selectedMessage_state, chatLibrary_state } = useContext(InstructorRouter_context);
+    const { userData_state } = useContext(HomeRouter_context);
 
     if (!chatLibrary_state) {return}
 
@@ -37,7 +39,7 @@ function Instr_Chat_HistoryBox({lastChat_ref, messages_array}) {
                             onChange={(e) => handleCheckboxChange(chat, e.target.checked)}
                             className="message-select-checkbox"
                         />
-                        <Msg_Bubble message_obj={chat}/>
+                        <Msg_Bubble user_id={userData_state?.user_id} message_obj={chat}/>
                     </div>
                 ))}
             </div>
