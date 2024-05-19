@@ -3,8 +3,9 @@ import os
 import yaml
 import ast
 import docker
-from flask import abort
-
+from py_flask.utils.error_utils import (
+    Err_Custom_FullInfo
+)
 from py_flask.config.extensions import db
 from py_flask.database.models import Scenarios, Users, Responses
 
@@ -32,7 +33,10 @@ def getContent(user_role, scenario_id, username):
     unique_name = db_ses.query(Scenarios.name).filter(Scenarios.id == scenario_id).first()
     if unique_name: unique_name = unique_name[0]
     if (not unique_name
-    or status != "Started"): abort(418) 
+        
+    or status != "Started"):     
+        return Err_Custom_FullInfo("Scenario not in started state.  Arborting.", 400)
+
       
     unique_name = "".join(e for e in unique_name if e.isalnum())
     
@@ -44,7 +48,9 @@ def getContent(user_role, scenario_id, username):
     if (user_role == 'student'):
         saniName = username.replace('-','')
         user_creds = credentialsJSON[saniName][0]
-        if not user_creds: abort(418)
+        if not user_creds:
+            return Err_Custom_FullInfo("Error retrieving user credentials.  Arborting.", 500)
+
     else: 
         user_creds = credentialsJSON
 

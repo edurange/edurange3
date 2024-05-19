@@ -36,13 +36,8 @@ from py_flask.utils.tasks import (
     destroy_scenario_task,
 )
 from py_flask.utils.error_utils import (
-    Err_Unexpected_FullInfo,
-    Err_Unexpected_MinInfo,
-    Err_Teapot,
-    Err_InvalidCreds,
+    Err_Custom_FullInfo
 )
-
-from werkzeug.exceptions import abort
 
 from py_flask.utils.instructorData_utils import get_instructorData
 
@@ -76,13 +71,26 @@ blueprint_instructor = Blueprint(
     __name__, 
     url_prefix='/api')
 
-@blueprint_instructor.errorhandler(418)
-def custom_error_handler(error):
-    response = jsonify({"error": "request denied"})
-    response.status_code = 418
-    response.content_type = "application/json"
-    return response
+@blueprint_instructor.errorhandler(SQLAlchemyError)
+def handle_sqlalchemy_error(error):
 
+    # log full error, including traceback
+    current_app.logger.error(f"SQLAlchemy Error: {error}\n{traceback.format_exc()}")
+
+    # return detail in debug mode or generic error message in prod
+    if current_app.config['DEBUG']:
+        response_error = Err_Custom_FullInfo(f"Database error occurred: {str(error)}", 500)
+    
+    else: response_error = Err_Custom_FullInfo(f"Database error occurred.", 500)
+
+    return response_error
+
+# catch-all handler
+@blueprint_instructor.errorhandler(Exception)
+def general_error_handler(error):
+    status_code = getattr(error, 'status_code', 500)
+    error_handler = Err_Custom_FullInfo(error.message, status_code)
+    return error_handler.get_response()
 
 # TESTED AND WORKING ROUTES
 @blueprint_instructor.route("/create_group", methods=['POST'])
@@ -172,12 +180,11 @@ def scenario_interface():
 
     requestJSON = request.json
     if ('METHOD' not in requestJSON):
-        return jsonify({'message':'method not found'}), 418
+        return Err_Custom_FullInfo('METHOD property not supplied in request.', 400)
 
     method = requestJSON['METHOD']
     if method not in ('LIST','CREATE', 'START', 'STOP', 'UPDATE', 'DESTROY'):
-        return jsonify({'message':'wrong method given'}), 418
-
+        return Err_Custom_FullInfo(f'Unrecognized METHOD property: {method}', 400)
 
     def list_scenarios():
 
@@ -203,7 +210,7 @@ def scenario_interface():
             or "name" not in requestJSON
             or "group_name" not in requestJSON
             ):
-            return jsonify({'message':'missing create_scenario arg'}), 418
+            return Err_Custom_FullInfo('Required argument for create_scenario was not supplied.', 400)
         scenario_type = requestJSON["type"]
         scenario_name = requestJSON["name"]
         scenario_group_name = requestJSON["group_name"]
@@ -242,24 +249,22 @@ def scenario_interface():
             or scenario_id is None\
             or namedict is None
         ):
-            print('missing create arg, aborting')
-            abort(418)
+            return Err_Custom_FullInfo('Required argument for create_scenario_task was None.', 400)
+
 
         returnObj = create_scenario_task.delay(scenario_name, scenario_type, students_list, group_id, scenario_id).get(timeout=None)
         returnObj['students_return'] = [{'username': student['username']} for student in students_list]
 
         if (returnObj != None): return returnObj
 
-        else: 
-            print ("Scenario CREATE failed")
-            return jsonify({"message": "error"}), 418
-
+        else:
+            return Err_Custom_FullInfo("Scenario CREATE failed", 500)
 
     def start_scenario(requestJSON):
 
         scenario_id = requestJSON["scenario_id"]
         if not scenario_id:
-            return jsonify({'message':'missing scenario_id'}), 418
+            return Err_Custom_FullInfo("Required request property scenario_id was None", 400)
 
         return_obj = start_scenario_task.delay(scenario_id).get(timeout=None)
 
@@ -271,7 +276,8 @@ def scenario_interface():
         
     def stop_scenario(requestJSON):
         if ("scenario_id" not in requestJSON):
-            return jsonify({'message':'missing scenario_id'}), 418
+            return Err_Custom_FullInfo("Required request property scenario_id was None", 400)
+        
         scenario_id = requestJSON["scenario_id"]
         return_obj = stop_scenario_task(scenario_id)
         if (return_obj != None):
@@ -282,7 +288,7 @@ def scenario_interface():
 
     def update_scenario(requestJSON):
         if ("scenario_id" not in requestJSON):
-            return jsonify({'message':'missing scenario_id'}), 418
+            return Err_Custom_FullInfo("Required request property scenario_id was None", 400)
         scenario_id = requestJSON["scenario_id"]
         
         return_obj = update_scenario_task.delay(scenario_id).get(timeout=None)
@@ -294,7 +300,8 @@ def scenario_interface():
 
     def destroy_scenario(requestJSON):
         if ("scenario_id" not in requestJSON):
-            return jsonify({'message':'missing scenario_id'}), 418
+            return Err_Custom_FullInfo("Required request property scenario_id was None", 400)
+
         scenario_id = requestJSON["scenario_id"]
         return_obj = destroy_scenario_task.delay(scenario_id).get(timeout=None)
         if (return_obj != None):
@@ -356,7 +363,7 @@ def delete_users():
     requestJSON = request.json
     users_to_delete = requestJSON.get('users_to_delete')
     if not users_to_delete:
-        return jsonify({"message": "Missing required argument 'users_to_delete', delete aborted"}), 400
+        return Err_Custom_FullInfo("Missing required argument 'users_to_delete', delete aborted", 400)
     
     # deleteUsers() clears user's group association before deleting
     deleted_users = deleteUsers(users_to_delete)

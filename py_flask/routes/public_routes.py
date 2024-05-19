@@ -3,18 +3,12 @@ from py_flask.database.models import Users, Channels, ChannelUsers
 from py_flask.utils.chat_utils import getChannelDictList_byUser
 from py_flask.utils.auth_utils import register_user, login_er3
 from py_flask.database.user_schemas import LoginSchema, RegistrationSchema
-from werkzeug.exceptions import abort
 import secrets
 import traceback
-
 
 from sqlalchemy.exc import SQLAlchemyError  # Import SQLAlchemy exceptions
 
 from py_flask.utils.error_utils import (
-    Err_Unexpected_FullInfo,
-    Err_Unexpected_MinInfo,
-    Err_Teapot,
-    Err_InvalidCreds,
     Err_Custom_FullInfo
 )
 
@@ -23,9 +17,7 @@ from flask import (
     request,
     session,
     jsonify,
-    make_response,
     current_app,
-    g
 )
 db_ses = db.session
 edurange3_csrf = secrets.token_hex(32)

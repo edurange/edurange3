@@ -1,4 +1,3 @@
-from flask import abort
 from py_flask.config.extensions import db, bcrypt
 from py_flask.database.models import (
     GroupUsers, 
@@ -19,11 +18,8 @@ from marshmallow import (
     )
 
 from py_flask.utils.error_utils import (
-    Err_Unexpected_FullInfo,
-    Err_Unexpected_MinInfo,
-    Err_Teapot,
-    Err_InvalidCreds,
-    custom_abort
+    custom_abort,
+    Err_Custom_FullInfo,
 )
 
 from marshmallow import Schema, fields, validates, ValidationError
@@ -83,14 +79,13 @@ class RegistrationSchema(ma.SQLAlchemyAutoSchema):
 
         user = db_ses.query(Users).filter_by(username=username_input).first()
         if user != None:
-            print("user already exists! aborting...")
-            abort(418)
+            return Err_Custom_FullInfo('User already exists in database.  Creation aborted.', 400)
+
 
         group = db_ses.query(StudentGroups).filter_by(code=code_input).first()
 
         if group is None:
-            print('student group w/ this code not found, aborting.')
-            abort(418)
+            return Err_Custom_FullInfo('Student group w/ this code not found, aborting.', 403)
 
     class Meta:
         model = Users

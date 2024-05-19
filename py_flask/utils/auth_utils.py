@@ -5,7 +5,6 @@ from flask import (
     session,
     jsonify,
     make_response,
-    abort,
     g
 )
 from datetime import timedelta
@@ -16,7 +15,10 @@ from flask_jwt_extended import create_access_token, decode_token
 from py_flask.utils.error_utils import (
     Err_InvalidCreds,
 )
-
+from py_flask.utils.error_utils import (
+    Err_InvalidCreds,
+    Err_Custom_FullInfo,
+)
 ###########
 #  This `@jwt_and_csrf_required()` decorator function should be used on ALL 
 #  non-legacy routes except those not requiring login.
@@ -27,14 +29,14 @@ def jwt_and_csrf_required(fn):
         
         # CSRF check (dev)
         client_CSRF = request.cookies.get('X-XSRF-TOKEN')
-        if not client_CSRF: return jsonify({"error": "no client csrf request denied"}), 418
+        if not client_CSRF: return jsonify({"error": "no client csrf request denied"}), 403
         server_CSRF = session.get('X-XSRF-TOKEN')
-        if not server_CSRF: return jsonify({"error": "no server csrf request denied"}), 418
-        if client_CSRF != server_CSRF:  return jsonify({"error": "csrf bad match"}), 418
+        if not server_CSRF: return jsonify({"error": "no server csrf request denied"}), 403
+        if client_CSRF != server_CSRF:  return jsonify({"error": "csrf bad match"}), 403
         
         # JWT check
         token = request.cookies.get('edurange3_jwt')
-        if not token: return jsonify({"error": "jwt request denied"}), 418
+        if not token: return jsonify({"error": "jwt request denied"}), 403
         try:
 
             validated_jwt_token = decode_token(token)  # check if signature still valid
@@ -49,7 +51,6 @@ def jwt_and_csrf_required(fn):
 
         except Exception as err:
             return Err_InvalidCreds()
-            # return jsonify({"error": "some request denied"}), 418
 
         return fn(*args, **kwargs)
     
@@ -58,7 +59,7 @@ def jwt_and_csrf_required(fn):
 # returns true if argument is an element of this tuple, false otherwise.
 def instructor_only():
     if g.current_user_role not in ('instructor', 'admin'):
-        return jsonify({"error": "insufficient role privileges"}), 418
+        return Err_Custom_FullInfo("Insufficient role privileges.", 403)
 
 
 def login_er3(userObj):

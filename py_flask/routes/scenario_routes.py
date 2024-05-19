@@ -10,17 +10,15 @@ from py_flask.database.models import (
     StudentGroups,  
 )
 from py_flask.utils.error_utils import (
-    Err_Unexpected_FullInfo,
-    Err_Unexpected_MinInfo,
-    Err_Teapot,
-    Err_InvalidCreds,
     Err_Custom_FullInfo
 )
+from sqlalchemy.exc import SQLAlchemyError  # Import SQLAlchemy exceptions
 
 import json
 from py_flask.utils.scenario_utils import (
      identify_state
 )
+import traceback
 
 from flask import (
     Blueprint,
@@ -66,12 +64,27 @@ blueprint_scenarios = Blueprint(
     __name__, 
     url_prefix='/api')
 
-@blueprint_scenarios.errorhandler(418)
-def custom_error_handler(error):
-    response = jsonify({"error": error})
-    response.status_code = 418
-    response.content_type = "application/json"
-    return response
+
+@blueprint_scenarios.errorhandler(SQLAlchemyError)
+def handle_sqlalchemy_error(error):
+
+    # log full error, including traceback
+    current_app.logger.error(f"SQLAlchemy Error: {error}\n{traceback.format_exc()}")
+
+    # return detail in debug mode or generic error message in prod
+    if current_app.config['DEBUG']:
+        response_error = Err_Custom_FullInfo(f"Database error occurred: {str(error)}", 500)
+    
+    else: response_error = Err_Custom_FullInfo(f"Database error occurred.", 500)
+
+    return response_error
+
+# catch-all handler
+@blueprint_scenarios.errorhandler(Exception)
+def general_error_handler(error):
+    status_code = getattr(error, 'status_code', 500)
+    error_handler = Err_Custom_FullInfo(error.message, status_code)
+    return error_handler.get_response()
 
 ### Reviewed / Working Routes  ##############
 

@@ -3,11 +3,6 @@ import json
 import os
 from py_flask.database.models import Scenarios
 from py_flask.config.extensions import db
-from flask import (
-    current_app,
-    abort
-)
-
 
 # Import the scenario string, and set to 'known_types' as a list
 from py_flask.config.settings import KNOWN_SCENARIOS

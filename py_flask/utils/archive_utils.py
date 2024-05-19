@@ -1,7 +1,4 @@
 import os
-from flask import abort, jsonify, g
-from py_flask.utils.auth_utils import register_user
-from sqlalchemy.exc import SQLAlchemyError
 
 from py_flask.config.extensions import db
 from py_flask.database.models import (

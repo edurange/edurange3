@@ -2,10 +2,6 @@ import csv
 import os
 from py_flask.database.models import Scenarios
 from py_flask.config.extensions import db
-from flask import (
-    current_app,
-    abort
-)
 
 
 def readCSV(value, attribute):
