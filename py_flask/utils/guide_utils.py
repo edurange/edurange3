@@ -56,6 +56,56 @@ def getContent(user_role, scenario_id, username):
 
     return contentJSON, credentialsJSON, unique_name
 
+def getYamlContent(user_role, scenario_id, username):
+    db_ses = db.session
+    statusSwitch = {
+        0: "Stopped",
+        1: "Started",
+        2: "Something went very wrong",
+        3: "Starting",
+        4: "Stopping",
+        5: "ERROR",
+        7: "Building",
+        8: "Archived"
+    }
+    status = db_ses.query(Scenarios.status).filter(Scenarios.id == scenario_id).first()
+    status = statusSwitch[status[0]]
+
+    unique_name = db_ses.query(Scenarios.name).filter(Scenarios.id == scenario_id).first()
+    if unique_name: unique_name = unique_name[0]
+    if (not unique_name
+        
+    or status != "Started"):     
+        return Err_Custom_FullInfo("Scenario not in started state.  Arborting.", 400)
+
+      
+    unique_name = "".join(e for e in unique_name if e.isalnum())
+
+    scenario_type = db_ses.query(Scenarios.scenario_type).filter(Scenarios.id == scenario_id).first()
+ 
+    if scenario_type: scenario_type = scenario_type[0].lower()
+ 
+    if (not scenario_type or status != "Started"):     
+        return Err_Custom_FullInfo("Scenario not in started state.  Arborting.", 400)
+
+    
+    with open(f'scenarios/prod/{scenario_type}/guide_content.yml', 'r') as fp:
+        contentYAML = yaml.safe_load(fp)
+
+    with open(f'scenarios/tmp/{unique_name}/students.json', 'r') as fp:
+        credentialsJSON = json.load(fp)
+    
+    if (user_role == 'student'):
+        saniName = username.replace('-','')
+        user_creds = credentialsJSON[saniName][0]
+        if not user_creds:
+            return Err_Custom_FullInfo("Error retrieving user credentials.  Arborting.", 500)
+
+    else: 
+        user_creds = credentialsJSON
+
+    return contentYAML, credentialsJSON, unique_name
+
 
 def getScenarioMeta(scenario_id):
         db_ses = db.session

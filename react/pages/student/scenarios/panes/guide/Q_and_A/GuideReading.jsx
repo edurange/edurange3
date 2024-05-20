@@ -15,3 +15,4 @@ function GuideReading ({readingObj}) {
 }
 
 export default GuideReading;
+

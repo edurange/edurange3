@@ -7,7 +7,6 @@ import HomeChapter from './Q_and_A/HomeChapter';
 import { HomeRouter_context } from '@pub/Home_router';
 import GuideReading from './Q_and_A/GuideReading';
 import GuideQuestion from './Q_and_A/GuideQuestion';
-import GuideReading2 from './Q_and_A/GuideReading2';
 
 function GuidePane({ guideBook, guideContent }) {
 
@@ -16,7 +15,6 @@ function GuidePane({ guideBook, guideContent }) {
 
     const meta = guideContent.scenario_meta;
 
-    console.log('guidepane guidebook check: ', guideBook)
     
     if ((guideBook?.length < 1) || (!meta)) { return (<>Scenario not found</>); }
     
@@ -28,23 +26,18 @@ function GuidePane({ guideBook, guideContent }) {
         if (Number(pageID) === 0) { return <HomeChapter />; }
         else if (Number(pageID) === 1337) { return <HomeChapter />; }
         else {
+            const this_guideItem_arr = guideBook [Number(pageID) - 1];
 
-            const this_guideItem = guideBook [Number(pageID) - 1];
-            const this_guideItem_arr = this_guideItem?.content_array;
-
-            
             const react_arr = []
-            
-            this_guideItem_arr.map((item, index) => {
-                
-                console.log(`TGI_arr item index ${index}: `,item)
-                if (item?.type){
+
+            this_guideItem_arr.map((item) => {
+
+                if (item?.itemContentType){
                     let tempItem
-                    if (item?.type === 'reading') {
-                        console.log('isreading: ', item.content)
+                    if (item?.itemContentType === 'reading') {
                         tempItem = (
                             <div key={nanoid(5)}>
-                                <GuideReading2 readingObj={item} />
+                                <GuideReading readingObj={item} />
                             </div>
                     )
                         

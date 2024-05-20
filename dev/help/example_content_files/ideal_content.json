@@ -1,0 +1,340 @@
+{
+    "ScenarioTitle": "File Wrangler",
+    "StudentGuide": {
+
+        "Chapters" : [
+
+            {
+                "chapter_num" : 1,
+                "title": "Learning Objectives",
+                "content_array" : [
+                    {
+                        "type": "reading",
+                        "content": "# Learning Objectives\n* Become familiar with ls and common flags: -a, -l\n* (see [Getting Started](https://github.com/edurange/edurange-flask/blob/master/edurange_refactored/templates/tutorials/Getting_Started/Getting_Started.md)) Know how to search man pages to find a specific option.\n* Navigate file system to find specific files\n* Move and copy files.\n* Set permissions (access control) for files.",
+                        "styles": ["heading", "justify-center", "align-bottom"]
+                    }
+                ]
+            },
+
+            {
+                "chapter_num" : 2,
+                "title": "Task 1",
+                "content_array" : [
+
+                    {
+                        "type": "reading",
+                        "content": "<h2>Task 1</h2>\n<p>The <code>pwd</code> command will give you the current working directory. This tells you where you are in the Linux file system.</p>\n<p>Steps:</p>\n<ol>\n<li>\n<p>answer_type <code>pwd</code> into the prompt</p>\n</li>\n<li>\n<p>Answer question 1 in EDURange.</p>\n</li>\n</ol>"
+                    },
+
+                    {
+                        "type": "question",
+                        "content": "What is the full path of your directory when you typed the pwd command?",
+                        "options": [],
+                        "answers": [
+                            {
+                                "value": "/home/${player.login}",
+                                "answer_type": "String",
+                                "points_possible": 1
+                            }
+                        ],
+                        "points_possible": 1
+                    }
+                ]
+            },
+
+            {
+                "chapter_num" : 3,
+                "title": "Task 2",
+                
+                "content_array" : [
+                    {
+                        "type": "reading",
+                        "content": "<h2>Task 2</h2>\n<p>The <code>man</code> command outputs the manual entry for a given command. The format is as follows:</p>\n<p><code>man [command]</code></p>\n<p>Steps:</p>\n<ol>\n<li>\n<p>View the manual entry for the <code>pwd</code> command by replacing with <code>pwd</code>. (Note that you need to type <code>q</code> to get out of the manual!)</p>\n</li>\n<li>\n<p>Answer question 2 in EDURange.</p>\n</li>\n</ol>",
+                        "styles": ["heading", "justify-center", "align-bottom"]
+                    },
+                    {
+                        "type": "question",
+                        "content": "What command would you type into the prompt to see the manual entry for the current directory command?",
+                        "options": [],
+                        "answers": [
+                            {
+                                "answer_type": "String",
+                                "value": "man pwd",
+                                "points_possible": 1
+                            }
+                        ],
+                        "points_possible": 1
+                    }
+                ]
+            },
+
+            {
+                "chapter_num" : 4,
+                "title": "Task 3",
+                "content_array" : [
+
+                    {
+                        "type": "reading",
+                        "content": "<h2>Task 3</h2>\n<p>Now that we know where we are, we will want to know what is in this directory. For a simple list of files and directories, you would use the list command.</p>\n<p>Steps:</p>\n<ol>\n<li>\n<p>answer_type <code>ls</code> into the prompt for a list of files and directories.</p>\n</li>\n<li>\n<p>Answer question 3 in EDURange.</p>\n</li>\n</ol>"
+                    },
+                    {
+                        "type": "question",
+                        "content": "How many visible files and directories are in the account home directory?",
+                        "options": [
+                            "accept-integer",
+                            "accept-decimal"
+                        ],
+                        "answers": [
+                            {
+                                "answer_type": "Number",
+                                "value": 12,
+                                "points_possible": 1
+                            }
+                        ],
+                        "points_possible": 1
+                    }
+                ]
+            },
+
+            {
+                "chapter_num" : 5,
+                "title": "Task 4",
+                "content_array" : [
+
+                    {
+                        "type": "reading",
+                        "content": "<h2>Task 4</h2>\n<p>Steps:</p>\n<ol>\n<li>View the manual entry for the <code>ls</code> command. Notice in the <code>SYNOPSIS</code>, the format of the command is as follows:</li>\n</ol>\n<p><code>ls [OPTION]... [FILE]...</code></p>\n<p>Anything in square brackets is optional. In this case, we can use <code>ls</code> along with one of the options listed with <code>-</code> or <code>--</code> and we could add a complete file path.</p>\n<ol>\n<li>\n<p>Scroll through to manual to find the option that will provide a long listing format for the <code>ls</code> command.</p>\n</li>\n<li>\n<p>Answer question 4 in EDURange.</p>\n</li>\n</ol>"
+                    },
+                    
+                    {
+                        "type": "question",
+                        "content": "What is the option for the ls command that will provide a long listing format? (Don't forget the -!)",
+                        "options": [],
+                        "answers": [
+                            {
+                                "answer_type": "String",
+                                "value": "-l",
+                                "points_possible": 1
+                            }
+                        ],
+                        "points_possible": 1
+                    },
+                
+                    {
+                        "type": "reading",
+                        "content": "<ol>\n<li>\n<p>Try this command with the option you found. Don\u2019t forget to include the <code>-</code> or <code>--</code>! You can immediately tell whether the item is a file or a directory by the very first character provided in the output. Files are denoted by a <code>-</code> and directories are denoted by a <code>d</code>.</p>\n</li>\n<li>\n<p>Answer question 5 in EDURange.</p>\n</li>\n</ol>"
+                    },
+
+                    {
+                        "type": "question",
+                        "content": "How many directories are there in the account home directory?",
+                        "options": [
+                            "accept-integer",
+                            "accept-decimal"
+                        ],
+                        "answers": [
+                            {
+                                "answer_type": "Number",
+                                "value": 4,
+                                "points_possible": 1
+                            }
+                        ],
+                        "points_possible": 1
+                    }
+                ]
+            },
+
+            {
+                "chapter_num" : 6,
+                "title": "Task 5",
+                "content_array" : [
+
+                    {
+                        "type": "reading",
+                        "content": "<h2>Task 5</h2>\n<p>The <code>cd</code> command allows you to change into another directory. The format is as follows:</p>\n<p><code>cd</code></p>\n<p>Steps:</p>\n<ol>\n<li>\n<p>Change into the view directory and run the list (<code>ls</code>) command to view the files in this directory.</p>\n</li>\n<li>\n<p>Answer question 6 in EDURange.</p>\n</li>\n</ol>"
+                    },
+
+                    {
+                        "type": "question",
+                        "content": "How many VISIBLE FILES are in the view directory?",
+                        "options": [
+                            "accept-integer",
+                            "accept-decimal"
+                        ],
+                        "answers": [
+                            {
+                                "answer_type": "Number",
+                                "value": 8,
+                                "points_possible": 1
+                            }
+                        ],
+                        "points_possible": 1
+                    }
+                ]
+            },
+
+            {
+                "chapter_num" : 7,
+                "title": "Task 6",
+                "content_array" : [
+
+                    {
+                        "type": "reading",
+                        "content": "<h2>Task 6</h2>\n<p>Hidden files begin with a <code>'.'</code> and are not displayed unless you specify an option with the <code>ls</code> command.</p>\n<p>Steps:</p>\n<ol>\n<li>\n<p>View the manual entry for the <code>ls</code> command again.</p>\n</li>\n<li>\n<p>Scroll through to manual to find the option that will not ignore files that start with a <code>'.'</code>.</p>\n</li>\n<li>\n<p>Answer question 7 in EDURange.</p>\n</li>\n</ol>"
+                    },
+
+                    {
+                        "type": "question",
+                        "content": "What is the complete command for listing all files, including hidden files?",
+                        "options": [],
+                        "answers": [
+                            {
+                                "answer_type": "String",
+                                "value": "ls -a",
+                                "points_possible": 1
+                            }
+                        ],
+                        "points_possible": 1
+                    },
+
+                    {
+                        "type": "reading",
+                        "content": "<ol>\n<li>\n<p>Try this command with the option you found. You should see any hidden files or folders (those beginning with a <code>'.'</code>).</p>\n</li>\n<li>\n<p>Answer question 8 in EDURange.</p>\n</li>\n</ol>"
+                    },
+
+                    {
+                        "type": "question",
+                        "content": "How many HIDDEN FILES are in the view directory?",
+                        "options": [
+                            "accept-integer",
+                            "accept-decimal"
+                        ],
+                        "answers": [
+                            {
+                                "answer_type": "Number",
+                                "value": 1,
+                                "points_possible": 1
+                            }
+                        ],
+                        "points_possible": 1
+                    }
+
+                ]
+            },
+
+            {
+                "chapter_num" : 8,
+                "title": "Task 7",
+                "content_array" : [
+
+                    {
+                        "type": "reading",
+                        "content": "<h2>Task 7</h2>\n<p>To go back a directory, you would type the following command:</p>\n<p><code>cd ..</code></p>\n<p>The command <code>pwd</code>, will show you where you are in the Linux file system.</p>\n<p>Steps:</p>\n<ol>\n<li>\n<p>answer_type <code>cd ..</code> into the prompt.</p>\n</li>\n<li>\n<p>answer_type <code>pwd</code> into the prompt. You should see that you are back in the home directory for the account you log in with.</p>\n</li>\n<li>\n<p>Answer question 9 in EDURange.</p>\n</li>\n</ol>"
+                    },
+                     
+                    {
+                        "type": "question",
+                        "content": "What is the full path of the directory you are in after typing cd ..?",
+                        "answer_type": "String",
+                        "options": [],
+                        "answers": [
+                            {
+                                "value": "/home/${player.login}",
+                                "points_possible": 1
+                            }
+                        ],
+                        "points_possible": 1
+                    }
+                ]
+            },
+
+            {
+                "chapter_num" : 9,
+                "title": "Task 8",
+                "content_array" : [
+
+                    {
+                        "type": "reading",
+                        "content": "<h2>Task 8</h2>\n<p>You can chain options for a single command. So, for example, you could include both the options for long listing and listing hidden files by simply adding each option after the <code>ls</code> command.</p>\n<p>Steps:</p>\n<ol>\n<li>\n<p>answer_type this chained command now. You should now see all files and folders, including those that are hidden, and all of the details about them.</p>\n</li>\n<li>\n<p>Answer question 10 in EDURange.</p>\n</li>\n</ol>"
+                    },
+                    
+                    {
+                        "type": "question",
+                        "content": "How many HIDDEN DIRECTORIES are in the home directory? (. and .. don't count)",
+                        "options": [
+                            "accept-integer",
+                            "accept-decimal"
+                        ],
+                        "answers": [
+                            {
+                                "answer_type": "Number",
+                                "value": 2,
+                                "points_possible": 1
+                            }
+                        ],
+                        "points_possible": 1
+                    }
+                    
+                ]
+            },
+
+            {
+                "chapter_num" : 10,
+                "title": "Task 9",
+                "content_array" : [
+                    {
+                        "type": "reading",
+                        "content": "<h2>Task 9</h2>\n<p>Steps:</p>\n<ol>\n<li>\n<p>Change into the manipulate directory and run the list (<code>ls</code>) command to view the files in this directory.</p>\n</li>\n<li>\n<p>Renaming files</p>\n<ul>\n<li>\n<p>a. Look up the manual entry for the <code>mv</code> command</p>\n</li>\n<li>\n<p>b. Use the <code>mv</code> command to rename <code>file1.txt</code> to <code>renamed_file1.txt</code>. Be sure to be exact!</p>\n</li>\n</ul>\n</li>\n<li>\n<p>Copying files</p>\n<ul>\n<li>\n<p>a. Look up the manual entry for the <code>cp</code> command.</p>\n</li>\n<li>\n<p>b. Use the <code>cp</code> command to copy <code>file2.txt</code> to <code>copied_file2.txt</code>.</p>\n</li>\n</ul>\n</li>\n<li>\n<p>answer_type the following into the prompt for the flag: <code>sudo manflag</code></p>\n</li>\n<li>\n<p>Answer question 11 in EDURange.</p>\n</li>\n</ol>"
+                    },
+                    {
+                        "type": "question",
+                        "content": "What is the flag you discovered by running sudo manflag in the manipulate directory?",
+                        "answers": [
+                            {
+                                "answer_type": "String",
+                                "value": "$RANDOM_ONE",
+                                "points_possible": 10
+                            }
+                        ],
+                        "points_possible": 10
+                    },
+                    {
+                        "type": "reading",
+                        "content": "<ol>\n<li>Go back to your home directory, and then go to the permissions directory.</li>\n</ol>"
+                    }
+                ]
+            },
+
+            {
+                "chapter_num" : 11,
+                "title": "Task 10",
+                "content_array" : [
+
+                    {
+                        "type": "reading",
+                        "content": "<h2>Task 10</h2>\n<p>Steps:</p>\n<ol>\n<li>\n<p>run the list (<code>ls</code>) command to view the files in this directory.</p>\n</li>\n<li>\n<p>Read the following resource on Linux file permissions: http://linuxcommand.org/lc3_lts0090.php</p>\n</li>\n<li>\n<p>Copy the <code>perm1.txt</code> to <code>copied_perm1.txt</code>.</p>\n</li>\n<li>\n<p>Changing permissions</p>\n<ul>\n<li>\n<p>a. Look up the manual entry for the <code>chmod</code> command.</p>\n</li>\n<li>\n<p>b. Use the <code>chmod</code> command to change the permissions of <code>copied_perm1.txt</code> to:</p>\n<ul>\n<li>\n<p>i. Owner = Read + Write</p>\n</li>\n<li>\n<p>ii. Group = Read + Write</p>\n</li>\n<li>\n<p>iii. User = No permissions</p>\n</li>\n</ul>\n</li>\n<li>\n<p>c. Copy the <code>perm2.txt</code> to <code>copied_perm2.txt</code></p>\n</li>\n<li>\n<p>d. Use the <code>chmod</code> command to change the permissions of <code>copied_perm2.txt</code> to:</p>\n<ul>\n<li>\n<p>i. Owner = Read + Write + Execute</p>\n</li>\n<li>\n<p>ii. Group = Read + Write</p>\n</li>\n<li>\n<p>iii. User = Read only</p>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n<li>\n<p>answer_type the following into the terminal for the flag: <code>sudo perflag</code></p>\n</li>\n<li>\n<p>Answer question 12 in EDURange.</p>\n</li>\n</ol>"
+                    },
+
+                    {
+                        "type": "question",
+                        "content": "What is the flag you discovered by running sudo perflag in the permissions directory?",
+                        "answers": [
+                            {
+                                "answer_type": "String",
+                                "value": "$RANDOM_TWO",
+                                "points_possible": 10
+                            }
+                        ],
+                        "points_possible": 10
+                    },
+
+                    {
+                        "type": "reading",
+                        "content": "<p>Exercise Complete!</p>"
+                    }
+                ]
+            }
+        ]
+    },
+    "InstructorGuide": {}
+}

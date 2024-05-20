@@ -29,7 +29,7 @@ from flask import (
 )
 from py_flask.utils.auth_utils import jwt_and_csrf_required
 from py_flask.utils.guide_utils import (
-    getContent, 
+    getContent, getYamlContent,
     getScenarioMeta,
     evaluateResponse
     )
@@ -119,6 +119,43 @@ def get_content(i):
     return jsonify({
         "scenario_meta": meta,
         "contentJSON":contentJSON, 
+        "credentialsJSON":credentialsJSON,
+        "unique_scenario_name":unique_name,
+        "SSH_IP": SSH_IP
+        })
+
+
+@blueprint_scenarios.route('/get_yaml_content/<int:i>', methods=['GET']) # WIP
+@jwt_and_csrf_required
+def get_yaml_content(i):
+    current_scenario_id = i
+    if (
+        not isinstance(current_scenario_id, int)
+        or i < 0 
+        or i > 999
+        ):
+            return jsonify({'error': 'invalid scenario ID'}) # DEV_ONLY (replace with standard denial msg)
+
+    contentYAML, credentialsJSON, unique_name = getYamlContent(g.current_user_role, current_scenario_id, g.current_username)
+
+    meta = getScenarioMeta(current_scenario_id)
+
+    if not credentialsJSON or not unique_name:
+        return Err_Custom_FullInfo(f"scenario with id {i} is found, but build failed", 500)
+    
+    SSH_connections = identify_state(unique_name, "Started")
+    SSH_IP = ""
+
+    # IMPORTANT
+    # we are assuming every scenario has only ONE port that does not include the string 'HIDDEN',
+    # and that this is the port users should connect to w/ SSH to start scenario
+    for (key,val) in SSH_connections.items():
+        if "HIDDEN" not in val:
+            SSH_IP = val
+
+    return jsonify({
+        "scenario_meta": meta,
+        "contentYAML":contentYAML, 
         "credentialsJSON":credentialsJSON,
         "unique_scenario_name":unique_name,
         "SSH_IP": SSH_IP

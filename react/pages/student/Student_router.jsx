@@ -9,6 +9,7 @@ import Frame_side from '@frame/sidenav/Frame_side';
 export const StudentRouter_context = React.createContext();
 import '@assets/css/dashboard.css';
 import { HomeRouter_context } from '../pub/Home_router';
+import Scenario_controller2 from './scenarios/Scenario_controller2';
 
 function Student_router() {
 
@@ -157,8 +158,8 @@ function Student_router() {
                         }}>
                             <Routes>
                                 <Route path="/" element={<Scenarios_home />} />
-                                <Route path="/:scenarioID" element={<Scenario_controller />} />
-                                <Route path="/:scenarioID/:pageID" element={<Scenario_controller />} />
+                                <Route path="/:scenarioID" element={<Scenario_controller2 />} />
+                                <Route path="/:scenarioID/:pageID" element={<Scenario_controller2 />} />
                                 <Route path="/:scenarioID/chat" element={<Chat_Student />} />
                             </Routes>
                         </StudentRouter_context.Provider>
