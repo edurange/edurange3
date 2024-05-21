@@ -86,7 +86,8 @@ def create_scenario_task(self, scen_name, scen_type, students_list, grp_id, scen
 
 
         questions = open(f"../../../scenarios/prod/{scen_type}/questions.yml", "r+")
-        content = open(f"../../../scenarios/prod/{scen_type}/student_view/content.json", "r+")
+        # content = open(f"../../../scenarios/prod/{scen_type}/student_view/content.json", "r+")
+        content = open(f"../../../scenarios/prod/{scen_type}/guide_content.yml", "r+")
 
         logger.info(f"Questions Type: {type(questions)}")
         logger.info(f"Content Type: {type(content)}")

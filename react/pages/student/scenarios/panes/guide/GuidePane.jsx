@@ -8,6 +8,7 @@ import { HomeRouter_context } from '@pub/Home_router';
 import GuideReading from './Q_and_A/GuideReading';
 import GuideQuestion from './Q_and_A/GuideQuestion';
 import GuideReading2 from './Q_and_A/GuideReading2';
+import GuideQuestion2 from './Q_and_A/GuideQuestion2';
 
 function GuidePane({ guideBook, guideContent }) {
 
@@ -50,9 +51,10 @@ function GuidePane({ guideBook, guideContent }) {
                         
                     }
                     else {
+                        console.log('isquestion: ', item.content)
                         tempItem = (
                             <div key={nanoid(5)}>
-                                <GuideQuestion scenario_id={scenarioID} questionObj={item} scenario_type={meta?.scenario_type}/>
+                                <GuideQuestion2 scenario_id={scenarioID} questionObj={item} scenario_type={meta?.scenario_type}/>
                             </div>
                         )
                     }
