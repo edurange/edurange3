@@ -13,7 +13,7 @@ class ErrorHandler:
         return response
 
 class Err_Custom_FullInfo(ErrorHandler):
-    def __init__(self, message, status_code=500):
+    def __init__(self, message="Unknown Error", status_code=500):
         super().__init__(message, status_code)
 
 class Err_Custom_MinInfo(ErrorHandler):

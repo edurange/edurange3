@@ -83,6 +83,10 @@ def handle_sqlalchemy_error(error):
 @blueprint_scenarios.errorhandler(Exception)
 def general_error_handler(error):
     status_code = getattr(error, 'status_code', 500)
+
+    if getattr(error, 'message', None) is None:
+        error.message = "Unknown Error"
+
     error_handler = Err_Custom_FullInfo(error.message, status_code)
     return error_handler.get_response()
 
@@ -215,6 +219,10 @@ def get_scenarios():
 def checkResponse():
     requestJSON = request.json
     current_user_id = g.current_user_id
+
+
+    print('printing requestJSON: ', requestJSON)
+
     question_num = int(requestJSON['question_num'])
     this_scenario_id = int(requestJSON['scenario_id'])
     this_student_response = requestJSON['student_response']

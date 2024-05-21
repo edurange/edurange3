@@ -4,6 +4,8 @@ import React, { useContext, useState } from 'react';
 import './Q_and_A.css';
 import ResponseStatus from './ResponseStatus';
 import { StudentRouter_context } from '../../../../Student_router';
+import ReactMarkdown from 'react-markdown';
+
 
 function GuideQuestion2({ scenario_id, questionObj, scenario_type }) {
     console.log('quob: ', questionObj)
@@ -21,6 +23,7 @@ function GuideQuestion2({ scenario_id, questionObj, scenario_type }) {
         }
     };
     
+    console.log('quobby: ', questionObj)
 
     async function handleSubmit() {
         try {
@@ -28,7 +31,8 @@ function GuideQuestion2({ scenario_id, questionObj, scenario_type }) {
                 scenario_id: scenario_id,
                 question_num: questionObj?.itemContentPointer,
                 scenario_type: scenario_type,
-                student_response: inputText_state
+                student_response: inputText_state,
+                question_num: questionObj.question_num
             });
             if (evaluated && evaluated.data?.[0]) {
                 const this_item = evaluated.data[0];
@@ -57,7 +61,9 @@ function GuideQuestion2({ scenario_id, questionObj, scenario_type }) {
         <div className='edu3-question-frame' key={scenario_id}>
             <div className='edu-question-carpet'>
                 <div className='edu3-question-text-row'>
-                    {questionObj?.itemContent?.Text}
+                <ReactMarkdown className='edu-reading-text'>
+                    {questionObj?.content}
+                </ReactMarkdown>
                 </div>
                 <div className='edu3-response-row'>
                     <div className='edu3-response-row-top'>

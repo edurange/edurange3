@@ -154,6 +154,7 @@ ContentDefinitions:
       Exercise Complete!
 
   Question1: &question1
+    question_num: 1
     type: question
     content: What is the full path of your directory when you typed the pwd command?
     options: []
@@ -164,6 +165,7 @@ ContentDefinitions:
     points_possible: 5
 
   Question2: &question2
+    question_num: 2
     type: question
     content: What command would you type into the prompt to see the manual entry for the current directory command?
     options: []
@@ -175,6 +177,7 @@ ContentDefinitions:
 
 
   Question3: &question3
+    question_num: 3
     type: question
     content: How many visible files and directories are in the account home directory?
     options:
@@ -187,6 +190,7 @@ ContentDefinitions:
     points_possible: 5
 
   Question4: &question4
+    question_num: 4
     type: question
     content: What is the option for the ls command that will provide a long listing format? (Don't forget the -!)
     options: []
@@ -198,6 +202,7 @@ ContentDefinitions:
 
 
   Question5: &question5
+    question_num: 5
     type: question
     content: How many directories are there in the account home directory?
     options:
@@ -210,6 +215,7 @@ ContentDefinitions:
     points_possible: 5
 
   Question6: &question6
+    question_num: 6
     type: question
     content: How many VISIBLE FILES are in the view directory?
     options:
@@ -223,6 +229,7 @@ ContentDefinitions:
 
 
   Question7: &question7
+    question_num: 7
     type: question
     content: What is the complete command for listing all files, including hidden files?
     options: []
@@ -233,7 +240,9 @@ ContentDefinitions:
     points_possible: 5
 
   Question8: &question8
+
     type: question
+    question_num: 8
     content: How many HIDDEN FILES are in the view directory?
     options:
       - accept-integer
@@ -246,6 +255,7 @@ ContentDefinitions:
 
 
   Question9: &question9
+    question_num: 9
     type: question
     content: What is the full path of the directory you are in after typing cd ..?
     options: []
@@ -256,6 +266,7 @@ ContentDefinitions:
 
 
   Question10: &question10
+    question_num: 10
     type: question
     content: How many HIDDEN DIRECTORIES are in the home directory? (. and .. don't count)
     options:
@@ -268,6 +279,7 @@ ContentDefinitions:
     points_possible: 5
 
   Question11: &question11
+    question_num: 11
     type: question
     content: What is the flag you discovered by running sudo manflag in the manipulate directory?
     options: []
@@ -279,6 +291,7 @@ ContentDefinitions:
 
 
   Question12: &question12
+    question_num: 12
     type: question
     content: What is the flag you discovered by running sudo perflag in the permissions directory?
     options: []
