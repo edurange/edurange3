@@ -8,13 +8,12 @@ import ReactMarkdown from 'react-markdown';
 
 
 function GuideQuestion2({ scenario_id, questionObj, scenario_type }) {
-    console.log('quob: ', questionObj)
     if (!questionObj?.content) { return null; }
 
     const { responseData_state, set_responseData_state } = useContext(StudentRouter_context);
     const [inputText_state, set_inputText_state] = useState('');
 
-    const points_possible = questionObj?.itemContent?.Points ?? '?';
+    const points_possible = questionObj?.points_possible ?? '?';
 
     const handleKeyPress = (event) => {
         if (event.key === 'Enter' && !event.shiftKey) {
@@ -85,7 +84,7 @@ function GuideQuestion2({ scenario_id, questionObj, scenario_type }) {
                         </div>
                     </div>
                     <div className='edu3-response-row-bottom'>
-                        <ResponseStatus points_possible={points_possible} question_num={questionObj?.itemContentPointer} />
+                        <ResponseStatus points_possible={points_possible} question_num={questionObj?.question_num} />
                     </div>
                 </div>
             </div>

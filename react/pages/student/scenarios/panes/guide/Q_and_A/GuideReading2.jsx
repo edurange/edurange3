@@ -5,12 +5,11 @@ import './Q_and_A.css';
 import '@assets/css/markdown.css';
 
 function GuideReading2({ readingObj }) {
-    console.log('reading obj in gr2: ', readingObj);
 
     const this_content = readingObj?.content;
     const this_styles = readingObj?.styles || [];
 
-    // Generate a dynamic style object based on `this_styles`
+    // generate style object based on `this_styles`, there are any
     const dynamicStyles = this_styles.reduce((acc, style) => {
         acc[style] = true;
         return acc;

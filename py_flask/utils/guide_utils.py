@@ -14,7 +14,6 @@ from py_flask.database.models import Scenarios, Users, Responses
 
 ## TESTED/WORKING 
 
-
 def getContent(user_role, scenario_id, username):
     db_ses = db.session
     statusSwitch = {
@@ -37,7 +36,6 @@ def getContent(user_role, scenario_id, username):
     or status != "Started"):     
         return Err_Custom_FullInfo("Scenario not in started state.  Arborting.", 400)
 
-      
     unique_name = "".join(e for e in unique_name if e.isalnum())
     
     with open(f'scenarios/tmp/{unique_name}/student_view/content.json', 'r') as fp:
@@ -50,7 +48,6 @@ def getContent(user_role, scenario_id, username):
         user_creds = credentialsJSON[saniName][0]
         if not user_creds:
             return Err_Custom_FullInfo("Error retrieving user credentials.  Arborting.", 500)
-
     else: 
         user_creds = credentialsJSON
 
@@ -78,7 +75,6 @@ def getYamlContent(user_role, scenario_id, username):
     or status != "Started"):     
         return Err_Custom_FullInfo("Scenario not in started state.  Arborting.", 400)
 
-      
     unique_name = "".join(e for e in unique_name if e.isalnum())
 
     scenario_type = db_ses.query(Scenarios.scenario_type).filter(Scenarios.id == scenario_id).first()
@@ -88,7 +84,6 @@ def getYamlContent(user_role, scenario_id, username):
     if (not scenario_type or status != "Started"):     
         return Err_Custom_FullInfo("Scenario not in started state.  Arborting.", 400)
 
-    
     with open(f'scenarios/prod/{scenario_type}/guide_content.yml', 'r') as fp:
         contentYAML = yaml.safe_load(fp)
 
@@ -100,7 +95,6 @@ def getYamlContent(user_role, scenario_id, username):
         user_creds = credentialsJSON[saniName][0]
         if not user_creds:
             return Err_Custom_FullInfo("Error retrieving user credentials.  Arborting.", 500)
-
     else: 
         user_creds = credentialsJSON
 
@@ -110,7 +104,6 @@ def getYamlContent(user_role, scenario_id, username):
 def getScenarioMeta(scenario_id):
         db_ses = db.session
         scenario = db_ses.query (Scenarios).filter_by(id=scenario_id).first()
-
         scenario_info = {
             "scenario_id": scenario.id,
             "scenario_name": scenario.name,
@@ -147,23 +140,25 @@ def bashResponse(sid, uid, ans):
         for d in index:
             if d["name"] == (sName + "_PLAYER"):
                 ans = d["ipv4_address"]
-
         return ans
-
     return ans
 
-def readQuestions(scenario):
-    scenario = "".join(e for e in scenario if e.isalnum())
 
-    with open(f"./scenarios/tmp/{scenario}/questions.yml") as yml:
-        return yaml.full_load(yml)
+def readQuestions(scenario_type):
+    scenario_type = scenario_type.lower()
+
+    with open(f"scenarios/prod/{scenario_type}/guide_content.yml") as yml:
+        yml_full = yaml.full_load(yml)
+        questions = [value for value in yml_full['contentDefinitions'].values() if value['type'] == 'question']
+        return questions
 
 def evaluateResponse(user_id, scenario_id, question_num, student_response):
     """Check student answer matches correct one from YAML file."""
     db_ses = db.session
     scenario = db_ses.query (Scenarios).filter_by(id=scenario_id).first()
-    scenario_uniqueName = scenario.name
-    questions = readQuestions(scenario_uniqueName)
+
+    questions = readQuestions(scenario.scenario_type)
+
     question = questions[question_num-1]
 
     responseData = []
@@ -172,24 +167,23 @@ def evaluateResponse(user_id, scenario_id, question_num, student_response):
     # Then parse the string ala:
     # parsed_response_list = student_response.split(", ")
 
-    for i in question['Answers']:
+    for i in question['answers']:
 
-        correctResponse = str(i['Value'])
-
+        correctResponse = str(i['value'])
         student_response = str(student_response)
 
         tempResponseItem = {
             "submitted_response": student_response,
             "correct_response": correctResponse,
-            "points_awarded":0,
-            "points_possible" : i['Points']
+            "points_awarded": 0,
+            "points_possible" : i['points_possible']
         }
 
         if "${" in correctResponse:
             correctResponse = str(bashResponse(scenario_id, user_id, correctResponse))
 
         if student_response == correctResponse or correctResponse == 'ESSAY':
-            pointsAwarded = i['Points']
+            pointsAwarded = i['points_possible']
             tempResponseItem['points_awarded'] = pointsAwarded
 
         responseData.append (tempResponseItem)

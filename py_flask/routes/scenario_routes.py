@@ -14,7 +14,6 @@ from py_flask.utils.error_utils import (
 )
 from sqlalchemy.exc import SQLAlchemyError  # Import SQLAlchemy exceptions
 
-import json
 from py_flask.utils.scenario_utils import (
      identify_state
 )
@@ -176,12 +175,6 @@ def get_scenarios():
     if group_id == None:
         return jsonify({"scenarios_list":[]})
     
-    filter_group_id = group_id[0]
-
-    # query for all entries with the given 'group_id' value
-    grp_db_scenarios = db_ses.query(ScenarioGroups).filter(ScenarioGroups.group_id == filter_group_id).all()
-    
-    scenario_ids = [entry.id for entry in grp_db_scenarios]
     scenarioTable = (
         db_ses.query(
             Scenarios.id,
@@ -219,9 +212,6 @@ def get_scenarios():
 def checkResponse():
     requestJSON = request.json
     current_user_id = g.current_user_id
-
-
-    print('printing requestJSON: ', requestJSON)
 
     question_num = int(requestJSON['question_num'])
     this_scenario_id = int(requestJSON['scenario_id'])
@@ -261,7 +251,6 @@ def get_responses_byStudent():
     this_scenario_id = int(requestJSON['scenario_id'])
     
     db_ses = db.session
-    
 
     current_responses = (db_ses.query(
         Responses.id,

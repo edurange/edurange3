@@ -1,5 +1,5 @@
-import csv
 from sqlalchemy.exc import SQLAlchemyError
+import traceback
 from py_flask.database.user_schemas import CreateGroupSchema, TestUserListSchema
 from py_flask.database.models import Users, StudentGroups, ScenarioGroups, GroupUsers, Scenarios
 from py_flask.utils.dataBuilder import get_group_data, get_user_data, get_scenario_data
@@ -18,7 +18,6 @@ from py_flask.utils.scenario_utils import (
 from py_flask.utils.guide_utils import (
     getContent, 
     getScenarioMeta,
-    evaluateResponse
     )
 from py_flask.utils.auth_utils import jwt_and_csrf_required, instructor_only
 from py_flask.utils.instructor_utils import generateTestAccts, addGroupUsers
@@ -40,9 +39,8 @@ from py_flask.utils.error_utils import (
 )
 
 from py_flask.utils.instructorData_utils import get_instructorData
-
-import os
 import subprocess
+
 #######
 # The `g` object is a global flask object that lasts ONLY for the life of a single request.
 #

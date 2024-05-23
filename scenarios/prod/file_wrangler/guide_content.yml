@@ -1,7 +1,7 @@
 ScenarioTitle: File Wrangler
 
 # Define content sections with aliases
-ContentDefinitions:
+contentDefinitions:
   Reading1: &reading1
     type: reading
     content: |
@@ -302,8 +302,8 @@ ContentDefinitions:
     points_possible: 15
 
 # Order of content using aliases
-StudentGuide:
-  Chapters:
+studentGuide:
+  chapters:
     - chapter_num: 1
       title: Learning Objectives
       content_array:
@@ -374,5 +374,3 @@ StudentGuide:
         - *reading14
         - *question12
         - *reading15
-
-InstructorGuide: {}

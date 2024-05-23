@@ -6,7 +6,7 @@ from py_flask.database.user_schemas import LoginSchema, RegistrationSchema
 import secrets
 import traceback
 
-from sqlalchemy.exc import SQLAlchemyError  # Import SQLAlchemy exceptions
+from sqlalchemy.exc import SQLAlchemyError
 
 from py_flask.utils.error_utils import (
     Err_Custom_FullInfo

@@ -9,23 +9,25 @@ import { HomeRouter_context } from '@pub/Home_router';
 const zws = `\u200B`;
 
 
-function FootControls({ 
-    page_number, 
-    guideBook, 
-    guideContent, 
-    scenario_points_possible, scenario_points_awarded,
-    chapter_points_possible, chapter_points_awarded,
-    paneSide, updatePane
+function FootControls({
+    guideContent,
+    updatePane,
+    paneSide,
+    scenario_points_possible,
+    scenario_points_awarded,
+    chapter_points_possible,
+    chapter_points_awarded,
+    credentialsJSON,
+    SSH_IP
 }) {
 
     const { userData_state } = useContext(HomeRouter_context);
+
     if (!userData_state?.role) { return <>You must log in to continue.</> }
-    const meta = guideContent.scenario_meta;
-    if (!meta) { return (<>Scenario not found</>); }
+    if (!guideContent?.studentGuide) { return (<>Scenario not found</>); }
 
     const tempName = userData_state.username.replace(/-/g, '')
-    const creds = guideContent.credentialsJSON[tempName]
-    const SSH_IP = guideContent.SSH_IP
+    const creds = credentialsJSON[tempName]
     const SSH_username = creds[0].username;
     const SSH_password = creds[0].password;
     const [SSH_ip, SSH_port_str] = SSH_IP.split(':');

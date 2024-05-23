@@ -1,6 +1,8 @@
 
 from flask import jsonify
 
+# import inspect (for error handling to find what function called an error)
+
 class ErrorHandler:
     def __init__(self, message, status_code=500):
         self.message = message
