@@ -1,0 +1,327 @@
+ScenarioTitle: Strace
+
+contentDefinitions:
+  Reading1: &reading1
+    type: reading
+    content: |
+      # Description
+      Strace (dynamic analysis of binaries) poses the challenge of understanding what a process is doing based on its system calls. You will learn to filter large amounts of data to distinguish between normal and anomalous behavior.
+      One of the important skills of cyber security is being able to analyze malware. These skills overlap with debugging, except that the problems can be more subtle. This exercise focuses on dynamic analysis of programs, i.e. analyzing what a program does while it is running. It turns out that in order to do anything, a program or process relies heavily on the operating system. The system call (syscalls) can reveal a lot about what the program is doing. One of the tools for examining the syscalls is strace. You should first figure out where the strace binary is located and what some of the options are (look at the man pages)
+      You will start with whitebox testing of some programs for which you have the source code. Then, you can move to blackbox testing using trace files. When reading through the traces, you will first need to figure out what the system calls are doing. The system calls also have man pages. The last strace in this example has two executables running. If you are working in a group, think about how you can divide up the work in an efficient way.
+  Reading2: &reading2
+    type: reading
+    content: |
+      # Learning Objectives
+      * Know how to analyze the sequence of sys calls and recognize patterns
+      * Be able to determine if a program is behaving as expected
+      * Recognize when a process forks another process
+      * Recognize when a process opens a file or socket
+      * Recognize when a process deletes a file
+      * Recognize which system calls introduce threats and how that happens
+    styles:
+      - heading
+      - justify-center
+      - align-bottom
+  
+  Reading3: &reading3
+    type: reading
+    content: |
+      # First Traces
+      Your home directory contains various files that will be used in this scenario. One is the file empty.c, whose contents are:
+
+      `int main () {}`
+
+      Compile this program as follows gcc -o empty empty.c
+
+      Now run strace to execute the empty program:
+
+      `strace ./empty`
+
+      To see a summary and count of all the syscalls used, you can add the -c flag such as `strace -c ./empty`
+
+      There are additional arguments to provide summary statistics or filter your output, check man strace for more information.
+  
+  Reading4: &reading4
+    type: reading
+    content: |
+      The file hello.c contains this simple program:
+
+      `#include <stdio.h>`
+
+      `int main () {`
+
+      `printf("hello\n");`
+
+      `}`
+
+      Compile hello.c to hello and execute it with strace:
+
+
+      `gcc –o hello hello.c`
+
+      `strace ./hello`
+
+  Reading5: &reading5
+    type: reading
+    content: |
+      The -o option of strace writes its output to a file. Try the following:
+
+      `strace -o empty-trace ./empty`
+
+      `strace -o hello-trace ./hello`
+
+      `diff empty-trace hello-trace`
+
+      Is this an effective way to determine the differences between these traces? Why or why not?
+
+  Reading6: &reading6
+    type: reading
+    content: |
+      # Second Traces
+
+      Use a text editor to read the source code contents of copy.c
+
+      Notice the new functions we're using, such as
+
+      `fopen()`
+
+      `snprintf()`
+
+      `fprintf()`
+
+      How might these C functions be invoked in syscall form?
+
+  Reading7: &reading7
+    type: reading
+    content: |
+      # Reverse Engineering a trace
+      The file strace-identify was created by calling strace on a command. The first line of the trace has been deleted to make it harder to identify. Determine the command on which strace was called to produce this trace. Do not include "strace" in your answer.
+
+  Reading8: &reading8
+    type: reading
+    content: |
+      # Trace Filtering
+
+      Sometimes strace prints out an overwhelming amount of output. One way to filter through the output is to save the trace to a file and search through the file with grep. But strace is equipped with some options that can do some summarization and filtering. To see some of these, try the following, and explain the results:
+
+      `find /etc/dhcp`
+
+      `strace find /etc/dhcp`
+
+      `strace -c find /etc/dhcp`
+
+      `strace -e trace=file find /etc/dhcp`
+
+      `strace -e trace=open,close,read,write find /etc/dhcp`
+
+  Reading9: &reading9
+    type: reading
+    content: |
+      The file mystery is an executable whose source code is not available. Use strace to explain what the program does in the context of the following examples:
+
+      `./mystery foo abc`
+
+      `./mystery foo def`
+
+      `./mystery baz gh`
+
+  Reading10: &reading10
+    type: reading
+    content: |
+      Processes will often spawn child tasks, or "forks", which may not be as easy to trace.
+
+      Here is a simple shell script in script.sh:
+
+      `#!/bin/bash`
+
+      `echo "a" > foo.txt`
+
+      `echo "bc" >> foo.txt`
+
+      `echo ‘id -urn‘ >> foo.txt`
+
+      `chmod 750 foo.txt`
+
+      `cat foo.txt | wc`
+
+      `chmod 644 foo.txt`
+
+
+      Compare the outputs of the following calls to strace involving this script. Explain what you see in the traces in terms of the commands in the script.
+
+      `strace ./script.sh`
+      `strace -f ./script.sh`
+
+      What didn't you see it doing without the -f flag?
+
+  Reading11: &reading11
+    type: reading
+    content: |
+      ## What's wrong with that cat?
+
+      Create a one-line “secret.txt” file. Here’s an example, though of course you should choose something different as your secret:
+
+      `echo "My phone number is 123-456-7890" > secret.txt`
+
+      Now display the secret to yourself using cat:
+
+      `cat secret.txt My phone number is 123-456-7890`
+
+      Is your secret really secret? How much do you trust the cat program? Start by running strace on cat secret.txt to determine what it's actually doing. Based on this and subsequent experiments, determine answers to the following questions:
+
+      Discussion question: What is this cat doing that you wouldn't expect? What is the end result of this cat? How do you think the trojaned cat program was implemented?
+
+
+  Question1: &question1
+    question_num: 1
+    type: question
+    content: How many total syscalls are executed when running ./empty?
+    options: []
+    answers:
+      - value: "29"
+        answer_type: String
+        points_possible: 5
+    points_possible: 5
+
+  Question2: &question2
+    question_num: 2
+    type: question
+    content: What syscall is invoked when running ./hello that wasnt present when running ./empty?
+    options: []
+    answers:
+      - answer_type: String
+        value: write
+        points_possible: 5
+    points_possible: 5
+
+  Question3: &question3
+    question_num: 3
+    type: question
+    content: What syscall is associated with the printf() function in the C source code?
+    answers: 
+      - answer_type: String
+        value: write
+        points_possible: 5
+    points_possible: 5
+
+  Question4: &question4
+    question_num: 4
+    type: question
+    content: What command was run by strace to produce the tracefile "strace-identify"?
+    answers:
+      - answer_type: String
+        value: which start
+        points_possible: 5
+    points_possible: 5
+
+  Question5: &question5
+    question_num: 5
+    type: question
+    content: What argument would you add after the -e flag to look for file reads?
+    answers:
+      - answer_type: String
+        value: read
+        points_possible: 5
+    points_possible: 5
+
+  Question6: &question6
+    question_num: 6
+    type: question
+    content: What directory does the mystery executable interact with? (no trailing `/`)
+    answers:
+      - answer_type: String
+        value: /tmp
+        points_possible: 5
+    points_possible: 5
+
+  Question7: &question7
+    question_num: 7
+    type: question
+    content: What is the secret Flag obtained by tracing script.sh? (The inner contents of FLAG{...})
+    answers:
+      - answer_type: String
+        value: $RANDOM_ONE
+        points_possible: 10
+    points_possible: 10
+
+  Question8: &question8
+    question_num: 8
+    type: question
+    content: Where is the cat you are using being executed from?
+    answers:
+      - answer_type: String
+        value: /usr/bin/cat
+        points_possible: 10
+    points_possible: 10
+
+  Question9: &question9
+    question_num: 9
+    type: question
+    content: True or False, can anyone else read your secrets?
+    answers:
+      - answer_type: String
+        value: True
+        points_possible: 5
+    points_possible: 5
+
+  Question10: &question10
+    question_num: 10
+    type: question
+    content: True or False, can you read the secrets of others?
+    answers:
+      - answer_type: String
+        value: True
+        points_possible: 5
+    points_possible: 5
+
+studentGuide:
+  chapters:
+    - chapter_num: 1
+      title: Description
+      content_array:
+        - *reading1
+
+    - chapter_num: 2
+      title: Learning Objectives
+      content_array:
+        - *reading2
+
+    - chapter_num: 3
+      title: First Trace
+      content_array:
+        - *reading3
+        - *question1
+        - *reading4
+        - *question2
+        - *reading5
+
+    - chapter_num: 4
+      title: Second Traces
+      content_array:
+        - *reading6
+        - *question3
+        - *reading7
+        - *question4
+
+    - chapter_num: 5
+      title: Trace Filtering
+      content_array:
+        - *reading8
+        - *question5
+
+    - chapter_num: 6
+      title: Mystery Files
+      content_array:
+        - *reading9
+        - *question6
+        - *reading10
+        - *question7
+
+    - chapter_num: 7
+      title: Weird Cat
+      content_array:
+        - *reading11
+        - *question8
+        - *question9
+        - *question10
+

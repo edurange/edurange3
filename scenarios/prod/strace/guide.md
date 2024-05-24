@@ -66,13 +66,13 @@ strace -o empty-trace ./empty
 strace -o hello-trace ./hello
 diff empty-trace hello-trace
 ```
-Is this an effective way to determine the differences between these traces?
-Why or why not? (ESSAY)
+
+Discussion Question: Is this an effective way to determine the differences between these traces?
+Why or why not?
 
 ## Second Traces
 
 Use a text editor to read the source code contents of copy.c
-
 
 Notice the new functions we're using, such as:
 ```
@@ -80,7 +80,7 @@ fopen()
 snprintf()
 fprintf()
 ```
-How might these C functions be invoked in syscall form? (TODO)
+How might these C functions be invoked in syscall form?
 
 <question 3>
 
@@ -117,11 +117,9 @@ what the program does in the context of the following examples:
 ./mystery baz gh
 ```
 
-TODO ESSAY POTENTIAL
-
 <question 6>
 
-TODO Preamble about when a script calls a forked process
+Processes will often spawn child tasks, or "forks", which may not be as easy to trace.
 
 Here is a simple shell script in script.sh:
 ```
@@ -132,20 +130,19 @@ echo ‘id -urn‘ >> foo.txt
 chmod 750 foo.txt
 cat foo.txt | wc
 chmod 644 foo.txt
+``
+
 Compare the outputs of the following calls to strace involving this script. Explain what you see in
 the traces in terms of the commands in the script.
+
+```
 strace ./script.sh
 strace -f ./script.sh
 ```
 
-Make "script.sh" execute-only
-Questions:
-What bash commands are contained within script.sh (how many)?
+Discussion: What didn't you see it doing without the -f flag?
 
-Call another script, need fork to watch what it's doing
-What didn't you see it doing without the -f flag?
-
-TODO: turn the above into questions in the yml
+<question 7>
 
 ## What's wrong with that cat?
 
@@ -164,20 +161,13 @@ Is your secret really secret? How much do you trust the cat program? Start by ru
 cat secret.txt to determine what it's actually doing. Based on this and subsequent experiments,
 determine answers to the following questions:
 
-TODO: What does cat normally not do that you see?
-use localtime
-setuid(0)
-It calls cat again on itself
-More answers........
+Discussion question: What is this cat doing that you wouldn't expect? What is the end result of this cat?
 
-TODO: What is the end result of this cat?
-Writes a copy of my file to /tmp/data
-
-<question 7>
 <question 8>
 <question 9>
+<question 10>
 
-TODO: How do you think the trojaned cat program was implemented?
-How do you think it was installed? Justify your explanations
+Discussion questions: 
+How do you think the trojaned cat program was implemented?
 
 ```

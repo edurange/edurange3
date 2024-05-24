@@ -84,7 +84,7 @@ def getYamlContent(user_role, scenario_id, username):
     if (not scenario_type or status != "Started"):     
         return Err_Custom_FullInfo("Scenario not in started state.  Arborting.", 400)
 
-    with open(f'scenarios/prod/{scenario_type}/guide_content.yml', 'r') as fp:
+    with open(f'scenarios/tmp/{unique_name}/guide_content.yml', 'r') as fp:
         contentYAML = yaml.safe_load(fp)
 
     with open(f'scenarios/tmp/{unique_name}/students.json', 'r') as fp:
@@ -144,10 +144,9 @@ def bashResponse(sid, uid, ans):
     return ans
 
 
-def readQuestions(scenario_type):
-    scenario_type = scenario_type.lower()
+def readQuestions(scenario_uniqueName):
 
-    with open(f"scenarios/prod/{scenario_type}/guide_content.yml") as yml:
+    with open(f"scenarios/tmp/{scenario_uniqueName}/guide_content.yml") as yml:
         yml_full = yaml.full_load(yml)
         questions = [value for value in yml_full['contentDefinitions'].values() if value['type'] == 'question']
         return questions
@@ -157,9 +156,11 @@ def evaluateResponse(user_id, scenario_id, question_num, student_response):
     db_ses = db.session
     scenario = db_ses.query (Scenarios).filter_by(id=scenario_id).first()
 
-    questions = readQuestions(scenario.scenario_type)
+    questions = readQuestions(scenario.name)
 
-    question = questions[question_num-1]
+    for q in questions:
+        if q["question_num"] == question_num:
+            question = q
 
     responseData = []
 
