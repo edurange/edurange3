@@ -4,6 +4,7 @@ import random
 import shutil
 import string
 import subprocess
+import yaml
 from datetime import datetime
 from celery import Celery
 from celery.utils.log import get_task_logger
@@ -84,33 +85,30 @@ def create_scenario_task(self, scen_name, scen_type, students_list, grp_id, scen
         with open("students.json", "w") as outfile:
             json.dump(students, outfile)
 
+        with open(f"../../../scenarios/prod/{scen_type}/questions.yml", "r+") as f:
+            questions = yaml.safe_load(f)
+            logger.info(f"Questions Type: {type(questions)}")
+        
+        with open(f"../../../scenarios/prod/{scen_type}/student_view/content.json", "r+")as f:
+            content = json.load(f)
+            logger.info(f"Content Type: {type(content)}")
 
-        questions = open(f"../../../scenarios/prod/{scen_type}/questions.yml", "r+")
-        content = open(f"../../../scenarios/prod/{scen_type}/student_view/content.json", "r+")
-
-        logger.info(f"Questions Type: {type(questions)}")
-        logger.info(f"Content Type: {type(content)}")
-
+        
         flags = []
-        if scen_type == "getting_started" or scen_type == "file_wrangler":
-            flags.append("".join(random.choice(string.ascii_letters + string.digits) for _ in range(8)))
-            flags.append("".join(random.choice(string.ascii_letters + string.digits) for _ in range(8)))
-
-            questions = questions.read().replace("$RANDOM_ONE", flags[0]).replace("$RANDOM_TWO", flags[1])
-            content = content.read().replace("$RANDOM_ONE", flags[0]).replace("$RANDOM_TWO", flags[1])
+        for q_num, q in enumerate(questions):
+            for a_num, a in enumerate(q["Answers"]):
+                if isinstance(a["Value"], str) and "$RANDOM" in a["Value"]:
+                    rnd_ans = "".join(random.choice(string.ascii_letters + string.digits) for _ in range(8))
+                    content["StudentGuide"]["Questions"][str(q_num + 1)]["Answers"][a_num]["Value"] = rnd_ans
+                    a["Value"] = rnd_ans
+                    flags.append(rnd_ans)
 
         with open("questions.yml", "w") as outfile:
-            if type(questions) == str:
-                outfile.write(questions)
-            else:
-                outfile.write(questions.read())
+            yaml.dump(questions, outfile)
 
         with open("./student_view/content.json", "w") as outfile:
-            if type(content) == str:
-                outfile.write(content)
-            else:
-                outfile.write(content.read())
-
+            json.dump(content, outfile, indent=4)   
+        
         lowest_avail_octet = claimOctet()
 
         # Write provider and networks

@@ -36,6 +36,12 @@
     - Value: /tmp
       Points: 5
   Points: 5
+- Text: What is the secret Flag obtained by tracing script.sh? (The inner contents of FLAG{...})
+  Type: String
+  Answers:
+    - Value: $RANDOM_ONE
+      Points: 5
+  Points: 5
 - Text: Where is the cat you are using being executed from?
   Type: String
   Answers:
@@ -54,5 +60,4 @@
     - Value: True
       Points: 5
   Points: 5
-
 
