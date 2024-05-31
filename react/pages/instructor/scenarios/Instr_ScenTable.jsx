@@ -128,7 +128,7 @@ function Instr_ScenTable() {
                     <div className="table-row">
                         <div className='table-cell-item col-xxsmall'>{scenario.id}</div>
                         <div className='table-cell-item col-large'>{scenario.name}</div>
-                        <div className='table-cell-item col-large'>{scenario.description}</div>
+                        <div className='table-cell-item col-large'>{scenario.scenario_type}</div>
                         <div className='table-cell-item highlightable-cell col-medium'>{getGroupNameById(scenario.membership)}</div>
                         <div className='table-cell-item col-medium'>{statusSwitch[scenario.status]}</div>
                         <div className='table-cell-item control-panel'>

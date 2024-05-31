@@ -1,0 +1,83 @@
+
+# Define content sections with aliases
+contentDefinitions:
+  Reading1: &reading1
+    type: reading
+    content: |
+      # Debrief & Progress Summary
+      * Once you have made some progress in the scenario, you can check this tab to get updated progress information.
+      * In addition, the development team would appreciate your feedback and opinions (even critical ones!).
+      * Below the progress stats, you will find a series of survey questions that will help us improve Edurange.
+      * Feel free to answer any, all, or none of the survey questions.  You also can submit 'essay' type answers more than once.
+  
+
+  Survey1: &survey1
+    survey_num: 1
+    type: survey
+    content: How difficult did you personally find this scenario's command-line-based challenges?  Higher numbers mean more challenging.  (Please enter an integer between 1-10.)
+    options: []
+
+  Survey2: &survey2
+    survey_num: 2
+    type: survey
+    content: How helpful did you find the information provided in this guide window?  Higher numbers mean more helpful.  (Please enter an integer between 1-10.)
+    options: []
+
+  Survey3: &survey3
+    survey_num: 3
+    type: survey
+    content: How understandable did you find the questions in this guide?  Higher numbers mean it was easier to understand.  (Please enter an integer between 1-10.)
+    options: []
+
+  Survey4: &survey4
+    survey_num: 4
+    type: survey
+    content: If you used the resources in the Info panel, how useful did you find them?  (Please enter an integer between 1-10 if you used the resources, or leave blank if not.)
+    options: []
+    
+  Survey5: &survey5
+    survey_num: 5
+    type: survey
+    content: How appropriately tuned is the challenge level of this scenario for your current skill level?  (Please enter an integer between 1-10.)
+    options: []
+
+  Survey6: &survey6
+    survey_num: 6
+    type: survey
+    content: How enjoyable did you find this scenario, in general?  (Please enter an integer between 1-10.)
+    options: []
+
+  Survey7: &survey7
+    survey_num: 7
+    type: survey
+    content: Do you have any general suggestions or other feedback? (You can submit feedback here more than once.)
+    options: []
+
+
+
+  Report1: &report1
+    report_num: 1
+    type: report
+    content: Scenario Overall Progress
+    options: []
+    report_type: scenario_points
+
+  Report2: &report2
+    report_num: 2
+    type: report
+    content: Responses Summary
+    options: []
+    report_type: responses_summary
+
+# order of content using aliases
+debrief:
+  - *reading1
+  - *report1
+  - *report2
+  - *survey1
+  - *survey2
+  - *survey3
+  - *survey4
+  - *survey5
+  - *survey6
+  - *survey7

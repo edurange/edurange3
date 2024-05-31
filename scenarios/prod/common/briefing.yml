@@ -1,0 +1,19 @@
+
+# Define content sections with aliases
+contentDefinitions:
+  Reading1: &reading1
+    type: reading
+    content: |
+      # Welcome to eduRange scenarios!
+      * This window will be both your guide and your judge.⚖️
+      * You can move to a guide chapter page by clicking its tab at the top of this viewport.
+      * To play a scenario, connect with SSH!  
+      * To connect via SSH protocol, you can use your native Linux, MacOS, or PowerShell terminal, or our own in-browser ssh terminal by clicking the Web-SSH button below either viewpane.  
+      * The SSH connection info can be found on the INFO pane (in-browser SSH terminal button at bottom of info pane).👈
+      * Each challenge in the SSH game is paired with a question in this window, so when you find a secret answer or flag, come back to this window, and enter your answer into the provided field.  If you got the right answer, you will be awarded points!
+      * If you're having trouble, check out some of the challenge-specific resources or our FAQ(link). Both can be found in the Info pane on the left. 👈 If you're still having trouble, you can ask for help in the chat!
+  
+
+# order of content using aliases
+briefing:
+  - *reading1

@@ -83,11 +83,12 @@ def handle_sqlalchemy_error(error):
 
     return response_error
 
+
+
 # catch-all handler
 @blueprint_instructor.errorhandler(Exception)
 def general_error_handler(error):
-    status_code = getattr(error, 'status_code', 500)
-    error_handler = Err_Custom_FullInfo(error.message, status_code)
+    error_handler = Err_Custom_FullInfo(error)
     return error_handler.get_response()
 
 # TESTED AND WORKING ROUTES

@@ -1,0 +1,338 @@
+ScenarioTitle: Total Recon
+
+# Define content sections with aliases
+contentDefinitions:
+
+###### READINGS ######
+
+  Reading1: &reading1
+    type: reading
+    content: |
+      ## About
+      Total Recon is a story-based game designed to teach how network
+      protocols such as TCP, UDP, and ICMP can be used to reveal information about
+      a network. Total Recon focuses on reconnaissance to determine hosts in an
+      unknown network. You will explore tradeoffs between speed and stealth when
+      using tools such as nmap.
+
+  Reading2: &reading2
+    type: reading
+    content: |
+      ## Background
+
+      Whether you're doing a large-scale security audit, inventorying a network, or
+      analyzing network response times, nmap is a powerful tool to help you complete
+      your task. In order to understand this exercise, you should be familiar with the
+      3-way handshake for TCP. A basic understanding of ICMP and UDP will also
+      be helpful. 
+      
+      This exercise is not designed to teach you all of the details of those
+      protocols, but rather to show you how they can be used for network exploring.
+      You will learn how to discover hosts on a network, determine which ports on
+      those hosts are open, and what applications are running on them.
+
+      In practice, each message that is sent over the Internet uses multiple protocols,
+      which are divided into five layers: physical layer, link layer, network layer,
+      transport layer and application layer. For example, the physical layer handles
+      what is encoded as a 0 or 1. The link layer handles communication on local area
+      networks (LANs). The network layer handles routing on wide area networks
+      (WANs), e.g. IP. The transport layer handles ports and processes, e.g. TCP,
+      UDP, ICMP. The application layer handles applications communicating with
+      each other, e.g. http, ftp, by nesting packets inside of packets. 
+      
+      In general, these packets correspond to layers of functionality: TCP is connection-oriented and is
+      responsible for a number of things including reliably conveying messages between
+      the application layers on two hosts. The three-way handshake establishes this
+      pairing with the following sequence: SYN, SYN-ACK, and ACK You can get a
+      summary of the important protocols and their layers in: Chapter 4 of Hacking:
+      The Art of Exploitation (Erickson)[1] or Chapter 2 of Counter Hack Reloaded
+      [2]. Network Security by Kaufman, Perlman, Speciner [3].
+
+  Reading3: &reading3
+    type: reading
+    content: |
+      ## Learning Objectives
+
+      Understand how the networking protocols (TCP, UDP, ICMP) can be
+      exploited for recon
+      - Know how to use nmap to find hosts and open ports on a network
+      - Recognize the standard common ports (e.g. SSH, FTP, HTTP, SMTP,
+      IMAP)
+      - Understand the TCP flags and how they can be used for different types of
+      scans
+      - Understand CIDR network configuration and how to subdivide a network
+      IP range
+
+  Reading4: &reading4
+    type: reading
+    content: |
+      ## Instructions
+
+      Connect to the VM via your instructor's directions, or as displayed on your
+      EDURange account. Instructions will be displayed upon logging in and at each
+      new checkpoint.
+
+  Reading5: &reading5
+    type: reading
+    content: |
+      ## Lab Assignments and Questions
+
+
+  Reading5: &reading6
+    type: reading
+    content: |
+      ## Review Questions
+
+      - What is the 3-way handshake?
+      - What does 10.1.1.0/17 mean? how many IP addresses does that include?
+      - What does the SYN flag do? What does the FIN flag do?
+      - What are the options for nmap and what are their differences in terms of
+      time, stealth and protocols?
+      - Which methods did you use to speed up your scans? What else could you
+      have done?
+
+  Reading7: &reading7
+    type: reading
+    content: |
+      Exercise Complete!
+
+
+
+###### QUESTIONS ######
+
+  Question1: &question1
+    question_num: 1
+    type: question
+    content: What port is open at Rekall?
+    answers:
+      - value: 444
+        answer_type: number
+        points_possible: 10
+    points_possible: 10
+
+  Question2: &question2
+    question_num: 2
+    type: question
+    content: What standard port does an HTTP server use?
+    answers:
+      - answer_type: number
+        value: 80
+        points_possible: 10
+    points_possible: 10
+
+  Question3: &question3
+    question_num: 3
+    type: question
+    content: What is the last octet of the IP address for Subway?
+    answers:
+      - answer_type: number
+        value: 101
+        points_possible: 10
+    points_possible: 10
+
+  Question4: &question4
+    question_num: 4
+    type: question
+    content: What is the state of ports 80 and 443 on the earth-spaceport host?
+
+    answers:
+      - answer_type: string
+        value: filtered
+        options:
+        - ignore-case
+        points_possible: 10
+    points_possible: 10
+
+  Question5: &question5
+    question_num: 5
+    type: question
+    content: In the nmap man page, under "--min-rate", what --min-rate example do they give? (Hint, it's an integer greater than 100 and less than 500)
+    answers:
+      - answer_type: number
+        value: 300
+        points_possible: 10
+    points_possible: 10
+    
+  Question6: &question6
+    question_num: 6
+    type: question
+    content: What is the nmap option for a Ping scan (disable port scan)? It should take the form -Xx. For example, -sL is the option for List scan.
+    options:
+      - accept-integer
+      - accept-decimal
+    answers:
+      - answer_type: string
+        value: -sn
+        points_possible: 10
+      - answer_type: string
+        value: -sP
+        points_possible: 10
+    points_possible: 10
+  
+
+  Question7: &question7
+    question_num: 7
+    type: question
+    content: What is the 3rd octet of the Mars spaceport IP address? (The last octet is 33)
+    answers:
+      - answer_type: number
+        value: 217
+        points_possible: 10
+    points_possible: 10
+
+
+  Question8: &question8
+
+    type: question
+    question_num: 8
+    content: What has the ssh port on Venusville been changed to?
+    answers:
+      - answer_type: number
+        value: 123
+        points_possible: 10
+    points_possible: 10
+
+  Question9: &question9
+    question_num: 9
+    type: question
+    content: What has the SSH port on Last Resort been changed to?
+    answers:
+      - answer_type: number
+        value: 2345
+        points_possible: 10
+    points_possible: 10
+
+
+  Question10: &question10
+    question_num: 10
+    type: question
+    content: What port was open on the Resistance Base?
+    answers:
+      - answer_type: number
+        value: 632
+        points_possible: 20
+    points_possible: 20
+
+
+  Question11: &question11
+    question_num: 11
+    type: question
+    content: What kind of stealth scan, other than a basic SYN scan, works on 10.0.233.34? (Do not include scan in your answer)
+    answers:
+      - answer_type: string
+        value: "$RANDOM_ONE"
+        points_possible: 10
+        answer_options:  
+          - ignore-case
+    points_possible: 10
+
+  Question12: &question12
+    question_num: 12
+    type: question
+    content: What kind of stealth scan, other than a basic SYN scan, works on 10.0.233.36? (Do not include scan in your answer)
+    answers:
+      - answer_type: string
+        value: 'null'
+        points_possible: 10
+    points_possible: 10
+
+  Question13: &question13
+    question_num: 13
+    type: question
+    content: What kind of stealth scan, other than a basic SYN scan, works on 10.0.233.38? (Do not include scan in your answer)
+    answers:
+      - answer_type: string
+        value: fin
+        points_possible: 10
+        options:
+        - ignore-case
+    points_possible: 10
+
+
+
+  Question14: &question14
+    question_num: 14
+    type: question
+    content: How many possible hosts does the subnet 10.0.192.0/18 cover?
+    answers:
+      - answer_type: number
+        value: 16382
+        points_possible: 15
+    points_possible: 15
+
+
+
+  Question15: &question15
+    question_num: 15
+    type: question
+    content: How many ports are open on the control room host? (The IP ends in 5)
+    answers:
+      - answer_type: number
+        value: 9
+        points_possible: 10
+    points_possible: 10
+
+
+
+  Question16: &question16
+    question_num: 16
+    type: question
+    content: On the control_room box, what is the name of the directory where chmod was moved to?
+    answers:
+      - answer_type: string
+        options:
+        - ignore-case
+        value: look-in-here
+        points_possible: 10
+    points_possible: 10
+
+
+
+##### Order of content using aliases
+studentGuide:
+  chapters:
+    - chapter_num: 1
+      title: About
+      content_array:
+        - *reading1
+
+    - chapter_num: 2
+      title: Background
+      content_array:
+        - *reading2
+
+    - chapter_num: 3
+      title: Learning Objectives
+      content_array:
+        - *reading3
+
+    - chapter_num: 4
+      title: Instructions
+      content_array:
+        - *reading4
+
+    - chapter_num: 5
+      title: Lab Assignments and Questions
+      content_array:
+        - *reading5
+        - *question1
+        - *question2
+        - *question3
+        - *question4
+        - *question5
+        - *question6
+        - *question7
+        - *question8
+        - *question9
+        - *question10
+        - *question11
+        - *question12
+        - *question13
+        - *question14
+        - *question15
+        - *question16
+
+    - chapter_num: 6
+      title: Discussion Questions
+      content_array:
+        - *reading6

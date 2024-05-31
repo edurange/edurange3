@@ -14,9 +14,39 @@ class ErrorHandler:
         response.content_type = "application/json"
         return response
 
+# status_code = getattr(error, 'status_code', 500)
+# message = getattr()
+
 class Err_Custom_FullInfo(ErrorHandler):
-    def __init__(self, message="Unknown Error", status_code=500):
+    def __init__(self, error):
+        # Initialize default message and status_code
+        message = "Unknown Error"
+        status_code = 500
+
+        # Extract message from error
+        if hasattr(error, 'message'):
+            message = error.message
+        elif hasattr(error, 'args') and error.args:
+            # Use the first argument of the error as the message
+            message = error.args[0]
+
+        # Extract status code from error
+        if hasattr(error, 'status_code'):
+            status_code = error.status_code
+
+        # Call the superclass constructor with the extracted values
         super().__init__(message, status_code)
+
+
+
+# class Err_Custom_FullInfo(ErrorHandler):
+#     def __init__(self, error):
+#         super().__init__(error)
+
+
+# class Err_Custom_FullInfo(ErrorHandler):
+#     def __init__(self, message="Unknown Error", status_code=500):
+#         super().__init__(message, status_code)
 
 class Err_Custom_MinInfo(ErrorHandler):
     def __init__(self, status_code=500):
