@@ -112,6 +112,34 @@ def groupAllMessages_byUser(chatLibrary_dbObj):
 
     return chatLibrary_dict
 
+def createListOfChats(chatLibrary_dbObj):
+    """
+    Returns a list of dictionaries where each dictionary represents a message with all its data.
+    """
+    messages_list = [message.to_dict() for message in chatLibrary_dbObj]
+    return messages_list
+
+def getChatLibrary():
+    """
+    Fetches all chat messages and channel user entries from the database, and returns them as a list of dictionaries for messages and a dictionary for user-channel mappings.
+    """
+    all_db_chatMessages_rawObj = ChatMessages.query.all()
+    unordered_messages_list = createListOfChats(all_db_chatMessages_rawObj)
+
+    channel_user_entries = ChannelUsers.query.all()
+    user_channels_dict = {}
+    for entry in channel_user_entries:
+        if entry.user_id in user_channels_dict:
+            user_channels_dict[entry.user_id].append(entry.channel_id)
+        else:
+            user_channels_dict[entry.user_id] = [entry.channel_id]
+
+    return {
+        "unordered_messages_list": unordered_messages_list,
+        "user_channels_dict": user_channels_dict
+    }
+
+
 def groupAllMessages_byChannel(chatLibrary_dbObj):
 
     chatLibrary_dict = {}
@@ -125,8 +153,7 @@ def groupAllMessages_byChannel(chatLibrary_dbObj):
             chatLibrary_dict[channel] = [message_dict]
 
     return chatLibrary_dict
-
-def getChatLibrary():
+def getChatLibrary_sortByChannel():
 
     chatLibrary = ChatMessages.query.all()
     chatLibrary_dict = groupAllMessages_byChannel(chatLibrary)

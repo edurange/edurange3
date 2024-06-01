@@ -17,8 +17,8 @@ export const InstructorRouter_context = React.createContext();
 
 function Instructor_router() {
 
-    const { login_state, userData_state } = useContext(HomeRouter_context);
-    const [chatLibrary_state, set_chatLibrary_state] = useState({});
+    const { login_state } = useContext(HomeRouter_context);
+    const [chatObjs_UL_state, set_chatObjs_UL_state] = useState([]); // unordered array of all chats
     const [channelAccess_state, set_channelAccess_state] = useState({});
     const [users_state, set_users_state] = useState([])
     const [groups_state, set_groups_state] = useState([])
@@ -28,13 +28,9 @@ function Instructor_router() {
     const [tempUsers_state, set_tempUsers_state] = useState([]);
     const [selectedMessage_state, set_selectedMessage_state] = useState([]);
     const lastChat_ref = useRef(null);
-
     const socket_ref = useRef(null);
-
-    const proto = (window.location.protocol === "https:") ? "wss" : "ws";
-    const socketURL = `${proto}://${window.location.host}/chat`;
-
-
+    const socket_protocol = (window.location.protocol === "https:") ? "wss" : "ws";
+    const socketURL = `${socket_protocol}://${window.location.host}/chat`;
 
     async function get_instructorData() {
         try {
@@ -64,13 +60,6 @@ function Instructor_router() {
     if (!scenarios_state) { return <></> }
     if (!login_state) { return <></> }
 
-    function updateChatLibrary (channel_id, message) {
-        set_chatLibrary_state(prevHistory => ({
-            ...prevHistory,
-            [channel_id]: [...(prevHistory?.[channel_id] ?? []), message],
-        }));
-    };
-
     // INITIALIZE ONLY SOCKET REF
     useEffect(() => {
         socket_ref.current = new WebSocket(socketURL);
@@ -93,26 +82,20 @@ function Instructor_router() {
     useEffect(() => {
         async function get_lib(){
             const chatlib_resp = await axios.get('/get_chat_library');
-            const chatlib_data = chatlib_resp?.data?.chatLibrary_dict;
+            const unordered_chatObjs_array = chatlib_resp?.data?.unordered_messages_list;
             const userChannels_data = chatlib_resp?.data?.user_channels_dict;
-            set_chatLibrary_state(chatlib_data);
+            set_chatObjs_UL_state(unordered_chatObjs_array);
             set_channelAccess_state(userChannels_data);
         }
         get_lib()
     }, []);
-
+    
     useEffect(() => {
         const handleMessage = (event) => {
             const message = JSON.parse(event.data);
-            
             if (message.message_type === 'chat_message_receipt') {
-                const msg_data = message?.data;
-                const msg_channel = msg_data?.channel;
-
                 console.log('Instructor_router recv websocket message: ', message)
-
-                updateChatLibrary (msg_channel, message?.data)
-
+                set_chatObjs_UL_state(prevHistory => [...prevHistory, message?.data]);
             } else if (message.message_type === 'chatError') {
                 console.error('Chat error:', message.data);
             }
@@ -133,7 +116,7 @@ function Instructor_router() {
         if (lastChat_ref.current) {
             lastChat_ref.current.scrollIntoView({ behavior: 'smooth' });
         }
-    }, [chatLibrary_state]);
+    }, [chatObjs_UL_state]);
 
     return (
         <div className='newdash-frame'>
@@ -150,7 +133,7 @@ function Instructor_router() {
                     scenarioDetail_state, set_scenarioDetail_state,
                     userDetail_state, set_userDetail_state,
                     tempUsers_state, set_tempUsers_state,
-                    chatLibrary_state, set_chatLibrary_state,
+                    chatObjs_UL_state, set_chatObjs_UL_state,
                     channelAccess_state, set_channelAccess_state,
                     selectedMessage_state, set_selectedMessage_state,
                     socket_ref, lastChat_ref

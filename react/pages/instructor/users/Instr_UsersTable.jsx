@@ -11,8 +11,8 @@ function Instr_UsersTable() {
     const { 
         users_state, set_users_state, 
         groups_state, set_groups_state, 
-        chatLibrary_state, channelAccess_state, 
-        set_channelAccess_state } = useContext(InstructorRouter_context);
+        chatObjs_UL_state, channelAccess_state
+    } = useContext(InstructorRouter_context);
 
     const [selectedUsers_state, set_selectedUsers_state] = useState({});
     const [actionSelection_state, set_actionSelection_state] = useState('');
@@ -223,13 +223,13 @@ function Instr_UsersTable() {
         set_desiredNavMetas_state([`/instructor/groups/${student.membership}`, 'dash']);
     };
 
-    if (!chatLibrary_state || !channelAccess_state) {return}
+    if (!chatObjs_UL_state || !channelAccess_state) {return}
 
     function compileLogs(user_id) {
         const user_chanList = channelAccess_state[user_id]
         const msg_arr = []
         user_chanList.forEach((chan) => {
-            chatLibrary_state[chan]?.forEach ((message) => msg_arr.push(message))
+            chatObjs_UL_state[chan]?.forEach ((message) => msg_arr.push(message))
         })
         return msg_arr;
     }

@@ -411,9 +411,9 @@ def clear_groups():
 def get_chat_library():
     instructor_only()
 
-    chatLib_dict = getChatLibrary()
-
-    return jsonify(chatLib_dict)
+    # chatHistoryData_dict containins: "unordered_messages_list", "user_channels_dict"
+    chatHistoryData_dict = getChatLibrary()
+    return jsonify(chatHistoryData_dict)
 
 
 #TODO: A lot

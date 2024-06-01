@@ -8,13 +8,13 @@ import Instr_Chat_HistoryBox from '../student/chat/Instr_Chat_HistoryBox';
 
 function Panopticon() {
     const {
-        lastChat_ref, chatLibrary_state,
+        lastChat_ref, chatObjs_UL_state,
         selectedMessage_state, set_selectedMessage_state,
     } = useContext(InstructorRouter_context);
 
     if (!selectedMessage_state) {return}
 
-    if (!chatLibrary_state) {
+    if (!chatObjs_UL_state) {
         return <>MISSING CHAT LIBRARY.</>;
     }
 
@@ -22,7 +22,7 @@ function Panopticon() {
         <div className="table-frame">
 
             <div className="chatInstr-historyBox">
-                <Instr_Chat_HistoryBox lastChat_ref={lastChat_ref} chatLibrary={chatLibrary_state} />
+                <Instr_Chat_HistoryBox lastChat_ref={lastChat_ref} chatObjs_array={chatObjs_UL_state} />
             </div>
 
             <Instr_SenderBox />
