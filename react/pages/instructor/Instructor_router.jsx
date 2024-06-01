@@ -26,7 +26,7 @@ function Instructor_router() {
     const [scenarioDetail_state, set_scenarioDetail_state] = useState({})
     const [userDetail_state, set_userDetail_state] = useState({})
     const [tempUsers_state, set_tempUsers_state] = useState([]);
-    const [selectedMessage_state, set_selectedMessage_state] = useState([]);
+    const [selectedMessage_state, set_selectedMessage_state] = useState(null);
     const lastChat_ref = useRef(null);
     const socket_ref = useRef(null);
     const socket_protocol = (window.location.protocol === "https:") ? "wss" : "ws";
