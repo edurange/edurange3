@@ -224,14 +224,21 @@ function Instr_UsersTable() {
     };
 
     if (!chatObjs_UL_state || !channelAccess_state) {return}
-
+	
     function compileLogs(user_id) {
-        const user_chanList = channelAccess_state[user_id]
-        const msg_arr = []
-        user_chanList.forEach((chan) => {
-            chatObjs_UL_state[chan]?.forEach ((message) => msg_arr.push(message))
+    	const user_chanList = channelAccess_state[user_id]
+
+        const returnArr = []
+
+        user_chanList.map((allowed_chan_int) => {
+            chatObjs_UL_state.map ((chatObj)=> {
+                if (chatObj.channel === allowed_chan_int) {
+                    returnArr.push(chatObj);
+                }
+            });
         })
-        return msg_arr;
+        
+        return returnArr;
     }
 
     return (
@@ -280,9 +287,9 @@ function Instr_UsersTable() {
                 </div>
                 {users_state.map((user, index) => {
 
-                    const msg_array = compileLogs(user.id)
-                    const totalMessages = msg_array?.length ?? 0;
-                    const newMessagesCount = (msg_array
+                    const allowedMessages = compileLogs(user.id)
+                    const totalMessages = allowedMessages?.length ?? 0;
+                    const newMessagesCount = (allowedMessages
                         .filter(msg => {
                             const dateString = msg.timestamp;  // Ensure msg.timestamp is converted to Date
                             const dateObject = new Date(dateString);
