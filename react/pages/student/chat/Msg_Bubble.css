@@ -24,6 +24,7 @@
     display:flex;
     flex-direction: column;
     width: 100%;
+    height: 100%;
 }
 .bubble-header{
     background-color: rgba(0, 0, 0, 0.203);
@@ -92,4 +93,36 @@
     min-width: 25px;
     background-color: green;
 }
+.selectable-chat-item {
+    display: flex;
+    width: 100%;
+    min-height: 100px;  /* Adjust this value as necessary to fit content */
+    align-items: stretch;  /* This will make children stretch to fill the container height */
+    /* margin-bottom: 10px; */
+    cursor: pointer;
 
+}
+.selectable-chat-item:hover {
+    display: flex;
+    width: 100%;
+    min-height: 100px;  /* Adjust this value as necessary to fit content */
+    align-items: stretch;  /* This will make children stretch to fill the container height */
+    /* margin-bottom: 10px; */
+    background-color: rgb(255, 255, 255);
+    color: rgb(0, 0, 0);
+    cursor: pointer;
+}
+.unselectable-chat-item {
+    display: flex;
+    width: 100%;
+    min-height: 100px;  /* Adjust this value as necessary to fit content */
+    align-items: stretch;  /* This will make children stretch to fill the container height */
+    /* margin-bottom: 10px; */
+}
+.selected-chat-item {
+    background-color: rgba(255, 255, 255, 0.666);
+    color: rgb(0, 0, 0);
+    display: flex;
+    width: 100%;
+    cursor: default;
+}

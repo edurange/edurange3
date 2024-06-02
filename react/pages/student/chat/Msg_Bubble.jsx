@@ -4,54 +4,42 @@ import './Msg_Bubble.css';
 import { InstructorRouter_context } from "../../instructor/Instructor_router";
 
 function Msg_Bubble({ is_instructor, message_obj, user_id, is_outgoing }) {
+    const { selectedMessage_state, set_selectedMessage_state } = is_instructor ? useContext(InstructorRouter_context) : { selectedMessage_state: null, set_selectedMessage_state: null };
 
-    const { selectedMessage_state, set_selectedMessage_state } = useContext(InstructorRouter_context);
-    if (!message_obj || !user_id || typeof is_outgoing !== 'boolean') { return null }
+    function handleSelectionClick(event, message) {
+        event.stopPropagation();
+        console.log('clicked on message obj: ', message);
+        console.log('event: ', event);
+        if (set_selectedMessage_state) {
+            set_selectedMessage_state(message);
+        }
+    }
+
+    if (!message_obj || !user_id || typeof is_outgoing !== 'boolean') return null;
 
     return (
         <div className="msg-row-frame">
-
             <div className="stembar-container">
-
-            {message_obj.user_id !== 1 && is_instructor ? (
-                <input
-                type="checkbox"
-                checked={selectedMessage_state === message_obj}
-                onChange={(event) => handleCheckboxChange(message_obj, event.target.checked)}
-                className="message-select-checkbox"
-                />
-            ) : <></>}
-            <div className={!is_outgoing ? "bubble-stem" : ""} />
+                <div className={!is_outgoing ? "bubble-stem" : ""} />
             </div>
 
             <div className={is_outgoing ? "bubble-frame bframe-outgoing" : "bubble-frame"}>
-                <div className="bubble-carpet">
+                <div 
+                    className={`${!is_outgoing && (message_obj === selectedMessage_state && is_instructor) ? "selected-chat-item" : !is_outgoing && is_instructor ? "selectable-chat-item" : "unselectable-chat-item"}`}
+                    onClick={(event) => handleSelectionClick(event, message_obj)}
+                >
                     <div className="bubble-items-container">
-
-
                         <div className='bubble-header'>
-
                             <div className="bubble-header-item">
-                                {
-                                    (is_outgoing)
-                                        ? "Me"
-                                        : message_obj.user_id === 1
-                                            ? "Instructor"
-                                            : message_obj?.user_alias ?? 'n/a'
-                                }{` `}
+                                {is_outgoing ? "Me" : message_obj.user_id === 1 ? "Instructor" : message_obj?.user_alias ?? 'n/a'}
                             </div>
-
                             <div className="bubble-header-item">
                                 chnl: {message_obj?.channel ?? 'missing'}
                             </div>
-
                         </div>
 
-
                         <div className='bubble-header bubble-timestamp'>
-                            {new Date(message_obj?.timestamp).toLocaleDateString()}
-                            {` at `}
-                            {new Date(message_obj?.timestamp).toLocaleTimeString()}
+                            {new Date(message_obj?.timestamp).toLocaleDateString()} {` at `} {new Date(message_obj?.timestamp).toLocaleTimeString()}
                         </div>
 
                         <div className="bubble-msg-frame">
@@ -59,12 +47,10 @@ function Msg_Bubble({ is_instructor, message_obj, user_id, is_outgoing }) {
                         </div>
                     </div>
                 </div>
-
             </div>
-
             <div className={is_outgoing ? "bubble-stem bubble-stem-right" : <></>}></div>
         </div>
-    )
-} 
+    );
+}
 
-export default Msg_Bubble
+export default Msg_Bubble;
