@@ -19,7 +19,7 @@ function GuideTabs({ allChapters_array }) {
 
                         <Link
                             to={`/scenarios/${scenarioID}/0`}
-                            className={`guidepane-tab-left ${pageID_int === "0" ? tabActiveClass : tabInactiveClass}`}>
+                            className={`guidepane-tab-left ${pageID_int === 0 ? tabActiveClass : tabInactiveClass}`}>
                             <div >
                                 Brief
                             </div>
@@ -30,9 +30,9 @@ function GuideTabs({ allChapters_array }) {
                                 <Link
                                     to={`/scenarios/${scenarioID}/${val.chapter_num}`}
                                     key={index + 3000}
-                                    className={`guidepane-tab-middles ${pageID_int === (val.chapter_num).toString() ? tabActiveClass : tabInactiveClass}`}>
+                                    className={`guidepane-tab-middles ${pageID_int === val.chapter_num ? tabActiveClass : tabInactiveClass}`}>
                                     <div key={index} >
-                                        Chpt.{val.chapter_num}
+                                        {val.chapter_num}
                                     </div>
                                 </Link>
                             );
@@ -40,7 +40,7 @@ function GuideTabs({ allChapters_array }) {
 
                         <Link
                             to={`/scenarios/${scenarioID}/1337`}
-                            className={`guidepane-tab-right ${pageID_int === "1337" ? tabActiveClass : tabInactiveClass}`}>
+                            className={`guidepane-tab-right ${pageID_int === 1337 ? tabActiveClass : tabInactiveClass}`}>
                             <div >
                                 Debrief
                             </div>

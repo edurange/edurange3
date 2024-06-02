@@ -39,16 +39,19 @@ html, body{
   height: 44dvh;
 }
 .chat-historybox-carpet{
-  /* background-color: rgb(130, 154, 211); */
-  width: 99%;
-  height: 98%;
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
   border: 1px solid black;
   box-sizing: border-box;
   position: relative;
-  left: 1%;
-  top: 1%;
+  padding: 12px;
+
   gap: 2px;
+}
+.msg-row-frame{
+  display: block;
+  width: 100%;
 }

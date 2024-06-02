@@ -46,9 +46,10 @@
 .guidepane-tab-left{
     border-top-left-radius: 15px;
     border-left:none;
-    min-width: 10%;
     display: flex;
     position: relative;
+    min-width: 40px;
+
     left:0;
 }
 .guidepane-tab-middles{
@@ -57,7 +58,7 @@
 }
 .guidepane-tab-right{
     border-top-right-radius: 15px;
-    min-width: 10%;
+    min-width: 50px;
     display: flex;
 }
 .guidepane-tab-inactive{

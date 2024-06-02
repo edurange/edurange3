@@ -6,9 +6,9 @@ import CreateGroup from '../groups/CreateGroup.jsx';
 import Placard from '@components/Placard'
 import TempUsers_table from '../notifications/items/TempUsers_table.jsx';
 import Creation_Instructions from '../notifications/items/Creation_Instructions.jsx';
-import Instr_UsersTable from '../users/Instr_UsersTable.jsx';
 import { InstructorRouter_context } from '../Instructor_router.jsx';
 import './Instr_Dash.css';
+import Instr_UsersTable from '../users/Instr_UsersTable.jsx';
 
 function Instr_Dash() {
 

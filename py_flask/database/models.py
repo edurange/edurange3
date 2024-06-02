@@ -137,6 +137,7 @@ class ChatMessages(Edu3Mixin, SurrogatePK, Model):
     scenario_id = reference_col("scenarios", nullable=False)
     scenario = relationship("Scenarios", backref="chat_messages", viewonly=True)
 
+    # CHANGED FROM 'channel' TO 'channel_id'
     channel = reference_col("channels", nullable=False)
     timestamp = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
     content = Column(db.String(5000), nullable=False, unique=False)
