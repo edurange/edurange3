@@ -12,7 +12,6 @@ function Chat_HistoryBox({lastChat_ref, chatData_state}) {
     if (!chatData_state) {return;}
     const sortedArr = useSortedData(chatData_state,'timestamp', 'asc');
     if (!sortedArr) {return <>CHAT DATA UNAVAILABLE</>}
-    console.log('UDS: ', userData_state)
     return (
         <div className="chat-historybox-frame">
             <div className='chat-historybox-carpet'>

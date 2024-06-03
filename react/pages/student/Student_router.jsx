@@ -2,7 +2,6 @@
 import axios from 'axios';
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import { Route, Routes } from 'react-router-dom';
-import Scenario_controller from './scenarios/Scenario_controller';
 import Scenarios_home from './scenarios/Scenarios_home';
 import Chat_Student from '@student/chat/Chat_Student';
 import Frame_side from '@frame/sidenav/Frame_side';
@@ -46,8 +45,12 @@ function Student_router() {
         }
         catch (error) { console.log('get_scenarios_list error:', error); };
     };
-    useEffect(() => { fetchScenarioList(); }, []);
 
+    const updateChatHistory = (message) => {
+        set_chatData_state(prevHistory => [...prevHistory, message]);
+    };
+
+    useEffect(() => { fetchScenarioList(); }, []);
 
     // INITIALIZE ONLY SOCKET REF
     useEffect(() => {
@@ -78,42 +81,12 @@ function Student_router() {
         get_studentChatHistory()
     }, []);
 
-    // useEffect(() => {
-    //     // only place websocket inits for student connection ; passed via context after
-    //     socket_ref.current = new WebSocket(socketURL);
-
-    //     const pingInterval = 11000;
-
-    //     const pingInterval_id = setInterval(() => {
-    //         if (socket_ref.current.readyState === 1) {
-    //             socket_ref.current.send(JSON.stringify({
-    //                 message_type: 'keepalive',
-    //                 message: 'ping'
-    //             }));
-    //         }
-    //     }, pingInterval);
-
-    //     // clean up
-    //     return () => {
-    //         if (socket_ref.current) {
-    //             socket_ref.current.close();
-    //         }
-    //     };
-    // }, []);
-
-    const updateChatHistory = (message) => {
-        set_chatData_state(prevHistory => [...prevHistory, message]);
-    };
-    
-
     useEffect(() => {
         const handleMessage = (event) => {
             const message = JSON.parse(event.data);
 
             if (message.message_type === 'chat_message_receipt') {
                 
-                console.log('checking new message: ', message)
-                console.log('checking new message data: ', message?.data)
                 updateChatHistory(message?.data)
 
             } else if (message.message_type === 'chatError') {

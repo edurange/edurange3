@@ -38,7 +38,7 @@ function Instr_Chat_HistoryBox({ lastChat_ref, chatObjs_array, selectedUser_obj 
     if (!Array.isArray(sortedArr)) {
         return <></>; 
     }
-    const handleCheckboxChange = (message, isChecked) => {
+    const handle_messageSelection = (message, isChecked) => {
         if (isChecked) {
             set_selectedMessage_state(message);
         } else {
@@ -64,18 +64,12 @@ function Instr_Chat_HistoryBox({ lastChat_ref, chatObjs_array, selectedUser_obj 
             <div className='chat-historybox-carpet'>
                 {sortedArr.map((chat, index) => (
                     <div key={index} ref={index === messagesToDisplay_state.length - 1 ? lastChat_ref : null}>
-                        
-                        {/* {chat.user_id !== 1 ? (
-                                <input 
-                                    type="checkbox"
-                                    checked={selectedMessage_state === chat}
-                                    onChange={(event) => handleCheckboxChange(chat, event.target.checked)}
-                                    className="message-select-checkbox"
-                                />
-                        ) : <></>} */}
-
-                        <Msg_Bubble is_instructor={is_instructor} checkbox_setter={handleCheckboxChange} user_id={userData_state?.id} message_obj={chat} is_outgoing={chat?.user_id === userData_state?.id} />
-
+                        <Msg_Bubble 
+                            is_instructor={is_instructor} 
+                            user_id={userData_state?.id} 
+                            message_obj={chat} 
+                            is_outgoing={chat?.user_id === userData_state?.id} 
+                        />
                     </div>
                 ))}
             </div>

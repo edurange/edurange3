@@ -58,7 +58,6 @@ function Chat_Student({scenario_type, scenario_id}) {
             <Chat_HistoryBox chatData_state={chatData_state} lastChat_ref={lastChat_ref} />
         </div>
 
-            {/* chat message submission box */}
             <div className='chatStu-input-frame'>
                 <form className='chatStu-input-frame' onSubmit={handleSubmit}>
                     <div className='chatStu-input-item sender-frame'>

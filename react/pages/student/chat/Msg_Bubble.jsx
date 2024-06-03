@@ -8,8 +8,6 @@ function Msg_Bubble({ is_instructor, message_obj, user_id, is_outgoing }) {
 
     function handleSelectionClick(event, message) {
         event.stopPropagation();
-        console.log('clicked on message obj: ', message);
-        console.log('event: ', event);
         if (set_selectedMessage_state) {
             set_selectedMessage_state(message);
         }
