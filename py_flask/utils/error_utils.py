@@ -43,6 +43,7 @@ class CustomValidationError(Exception):
         self.message = message
         self.status_code = status_code
 
+# DEV_FIX , RAISE USED WRONG
 def custom_abort(message, status_code=400):
     raise CustomValidationError(message, status_code)
 

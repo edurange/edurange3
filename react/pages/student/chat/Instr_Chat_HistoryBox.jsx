@@ -14,6 +14,8 @@ function Instr_Chat_HistoryBox({ lastChat_ref, chatObjs_array, selectedUser_obj 
     const [messagesToDisplay_state, set_messagesToDisplay_state] = useState([]);
     const [sortDirection_state, set_sortDirection_state] = useState('asc');
     const [primarySortProperty_state, set_primarySortProperty_state] = useState('timestamp');
+
+    const is_instructor = userData_state?.role === "admin" || userData_state?.role === "instructor";
     
     useEffect(() => {
         if (selectedUser_obj?.channel_data?.available_channels) {
@@ -61,14 +63,19 @@ function Instr_Chat_HistoryBox({ lastChat_ref, chatObjs_array, selectedUser_obj 
         <div className="instr-historybox-frame">
             <div className='chat-historybox-carpet'>
                 {sortedArr.map((chat, index) => (
-                    <div key={index} ref={index === messagesToDisplay_state.length - 1 ? lastChat_ref : null} className="er3chat-message-frame">
-                        <input
-                            type="checkbox"
-                            checked={selectedMessage_state === chat}
-                            onChange={(e) => handleCheckboxChange(chat, e.target.checked)}
-                            className="message-select-checkbox"
-                            />
-                        <Msg_Bubble user_id={userData_state?.id} message_obj={chat} />
+                    <div key={index} ref={index === messagesToDisplay_state.length - 1 ? lastChat_ref : null}>
+                        
+                        {/* {chat.user_id !== 1 ? (
+                                <input 
+                                    type="checkbox"
+                                    checked={selectedMessage_state === chat}
+                                    onChange={(event) => handleCheckboxChange(chat, event.target.checked)}
+                                    className="message-select-checkbox"
+                                />
+                        ) : <></>} */}
+
+                        <Msg_Bubble is_instructor={is_instructor} checkbox_setter={handleCheckboxChange} user_id={userData_state?.id} message_obj={chat} is_outgoing={chat?.user_id === userData_state?.id} />
+
                     </div>
                 ))}
             </div>

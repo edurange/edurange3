@@ -134,6 +134,7 @@ function Instr_UsersTable() {
         }
     }
 
+    
     async function assignToGroup() {
         const usersToAssignIds = Object.keys(selectedUsers_state)
             .filter((userId) => selectedUsers_state[userId])
@@ -224,21 +225,17 @@ function Instr_UsersTable() {
     };
 
     if (!chatObjs_UL_state || !channelAccess_state) {return}
-	
-    function compileLogs(user_id) {
-    	const user_chanList = channelAccess_state[user_id]
 
-        const returnArr = []
+    function compileMessages_byUser(user_id) {
 
-        user_chanList.map((allowed_chan_int) => {
-            chatObjs_UL_state.map ((chatObj)=> {
-                if (chatObj.channel === allowed_chan_int) {
-                    returnArr.push(chatObj);
-                }
-            });
-        })
-        
-        return returnArr;
+        const userAllowed_chanID_intArr = channelAccess_state[user_id];
+
+        const userAllowed_messageObjs_arr = userAllowed_chanID_intArr.map((allowed_channel_id) => {
+            const filtered_messageObjs_arr = chatObjs_UL_state
+                .filter(( chat_obj ) => chat_obj.channel === allowed_channel_id)
+            return filtered_messageObjs_arr
+        });
+        return userAllowed_messageObjs_arr;
     }
 
     return (
@@ -286,8 +283,7 @@ function Instr_UsersTable() {
                     <div className="table-cell-item highlightable-cell col-small">Chats</div>
                 </div>
                 {users_state.map((user, index) => {
-
-                    const allowedMessages = compileLogs(user.id)
+                    const allowedMessages = compileMessages_byUser(user.id)
                     const totalMessages = allowedMessages?.length ?? 0;
                     const newMessagesCount = (allowedMessages
                         .filter(msg => {
