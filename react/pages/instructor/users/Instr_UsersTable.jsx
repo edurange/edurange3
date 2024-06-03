@@ -283,12 +283,9 @@ function Instr_UsersTable() {
                     <div className="table-cell-item highlightable-cell col-small">Chats</div>
                 </div>
                 {users_state.map((user, index) => {
-
-                    console.log('whodauser?',user)
-                    const msg_array = compileMessages_byUser(user.id)
-                    console.log('msgarr',msg_array)
-                    const totalMessages = msg_array?.length ?? 0;
-                    const newMessagesCount = (msg_array
+                    const allowedMessages = compileMessages_byUser(user.id)
+                    const totalMessages = allowedMessages?.length ?? 0;
+                    const newMessagesCount = (allowedMessages
                         .filter(msg => {
                             const dateString = msg.timestamp;  // Ensure msg.timestamp is converted to Date
                             const dateObject = new Date(dateString);
