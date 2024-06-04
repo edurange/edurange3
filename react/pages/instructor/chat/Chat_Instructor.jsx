@@ -13,121 +13,119 @@
 //     this is intended to be useful for when the student leaves chat or refreshes the page (both disconnect WS)
 // 
 
-import { useState, useRef, useEffect } from 'react';
-import '../../student/chat/Chat_Student.css';
-import Chat_HistoryBox from '@student/chat/Chat_HistoryBox.jsx';
-import Instructor_UsersList from './Instr_UsersList.jsx';
-import { ChatMessage } from '@modules/utils/chat_modules.jsx';
+// import { useState, useRef, useEffect } from 'react';
+// import '../../student/chat/Chat_Student.css';
+// import Chat_HistoryBox from '@student/chat/Chat_HistoryBox.jsx';
+// import Instructor_UsersList from './Instr_UsersList.jsx';
+// import { ChatMessage } from '@modules/utils/chat_modules.jsx';
 
-// !important! use 'wss:' for production (reqs SSL certs) // DEV_ONLY
-const proto = (window.location.protocol == "https") ? "wss" : "ws";
-const socketURL = `${proto}://${window.location.host}/chat`;
+// // !important! use 'wss:' for production (reqs SSL certs) // DEV_ONLY
+// const proto = (window.location.protocol == "https") ? "wss" : "ws";
+// const socketURL = `${proto}://${window.location.host}/chat`;
 
-function Chat_Instructor() {
+// function Chat_Instructor() {
 
-    const chatUsers = []; // array of user objects, w/ their chats
-    const { login_state, userData_state, chatData_state, set_chatData_state } = useContext(HomeRouter_context);
+//     const { chatData_state, set_chatData_state } = useContext(HomeRouter_context);
 
-    const testMessage = new ChatMessage(1, "hello students!");
-    const [messageContent_state, set_messageContent_state] = useState('');
-    useEffect(() => {
-        if (lastChat_ref.current) {
-            lastChat_ref.current.scrollIntoView({ behavior: 'smooth' });
-        }
-    }, [chatData_state]);
+//     const [messageContent_state, set_messageContent_state] = useState('');
+//     useEffect(() => {
+//         if (lastChat_ref.current) {
+//             lastChat_ref.current.scrollIntoView({ behavior: 'smooth' });
+//         }
+//     }, [chatData_state]);
 
-    const lastChat_ref = useRef(null);
-    const socket = useRef(null);
-    const pingInterval = 12000;
+//     const lastChat_ref = useRef(null);
+//     const socket = useRef(null);
+//     const pingInterval = 12000;
 
-    useEffect(() => {
-        trySocket();
-    }, []); 
+//     useEffect(() => {
+//         trySocket();
+//     }, []); 
 
-    async function trySocket(){
-        socket.current = new WebSocket(socketURL);
-        socket.current.onopen = () => {
-            const newnewChat2 = new ChatMessage(1, messageContent_state);
-            const newChat2 = {
-                type: 'instructor_message',
-                data: newnewChat2
-            };
-            if (socket.current && socket.current.readyState === 1) {
-                socket.current.send(JSON.stringify(newChat2));
-            };
-            // keep connection alive w/ pings to server
-            setInterval(() => {
-                if (socket.current.readyState === 1) {
-                    socket.current.send(JSON.stringify({ping:'ping'}));
-                }
-            }, pingInterval);
-        };
-        socket.current.onmessage = (event) => {
-            const message = JSON.parse(event.data);
+//     async function trySocket(){
+//         socket.current = new WebSocket(socketURL);
+//         socket.current.onopen = () => {
+//             const newnewChat2 = new ChatMessage(1, messageContent_state);
+//             const newChat2 = {
+//                 type: 'instructor_message',
+//                 data: newnewChat2
+//             };
+//             if (socket.current && socket.current.readyState === 1) {
+//                 socket.current.send(JSON.stringify(newChat2));
+//             };
+//             // keep connection alive w/ pings to server
+//             setInterval(() => {
+//                 if (socket.current.readyState === 1) {
+//                     socket.current.send(JSON.stringify({ping:'ping'}));
+//                 }
+//             }, pingInterval);
+//         };
+//         socket.current.onmessage = (event) => {
+//             const message = JSON.parse(event.data);
             
-            if (message.message_type === 'newChatMessage') {
-                set_chatData_state((prevChatLog) => [...prevChatLog, message.data]);
-            } else if (message.message_type === 'chatError') {
-                console.error('Chat error:', message.data);
-            };
-        };
+//             if (message.message_type === 'newChatMessage') {
+//                 set_chatData_state((prevChatLog) => [...prevChatLog, message.data]);
+//             } else if (message.message_type === 'chatError') {
+//                 console.error('Chat error:', message.data);
+//             };
+//         };
 
-        socket.current.onerror = (event) => {
-            console.error('WebSocket error:', event);
-        };
+//         socket.current.onerror = (event) => {
+//             console.error('WebSocket error:', event);
+//         };
 
-        socket.current.onclose = (event) => {
-            socket.current = new WebSocket(socketURL);
-        };
-        return () => {
-            if (socket.current) {
-                socket.current.close();
-            };
-        };
-    };
-    const handleInputChange = (event, setState) => {
-        setState(event.target.value);
-    };
+//         socket.current.onclose = (event) => {
+//             socket.current = new WebSocket(socketURL);
+//         };
+//         return () => {
+//             if (socket.current) {
+//                 socket.current.close();
+//             };
+//         };
+//     };
+//     const handleInputChange = (event, setState) => {
+//         setState(event.target.value);
+//     };
 
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        const chatMsg = new ChatMessage(1, messageContent_state);
-        const newChat = {
-            type: 'chatMessage',
-            data: chatMsg
-        };
-        if (socket.current && socket.current.readyState === 1) {
-            socket.current.send(JSON.stringify(newChat));
-        };
-    };
-    const handleConnectSubmit = (event) => {
-        event.preventDefault();
-        trySocket();
-    };
+//     const handleSubmit = (event) => {
+//         event.preventDefault();
+//         const chatMsg = new ChatMessage(1, messageContent_state);
+//         const newChat = {
+//             type: 'chatMessage',
+//             data: chatMsg
+//         };
+//         if (socket.current && socket.current.readyState === 1) {
+//             socket.current.send(JSON.stringify(newChat));
+//         };
+//     };
+//     const handleConnectSubmit = (event) => {
+//         event.preventDefault();
+//         trySocket();
+//     };
 
-    return (
-        <div className='chatStu-frame'>
-        <div className='chatStu-panes-container-frame'>
-            <div className="chatStu-pane">
-                <Instructor_UsersList/>
-                <Chat_HistoryBox lastChat_ref={lastChat_ref}/>
-            </div>
-            <div className="chatStu-pane">
-            </div>
-        </div>
-        <div className='chatInstr-input-frame'>
-            <form className='chatInstr-input-frame' onSubmit={handleSubmit}>
-                <div className='chatStu-input-item sender-frame'>
-                    <textarea className='sender-text' value={messageContent_state} onChange={(e) => handleInputChange(e, set_messageContent_state)} placeholder="Enter your message"></textarea>
-                    <button className='sender-button connect-button' type="submit">Send</button>
-                </div>
-            </form>
-            <div onClick={handleConnectSubmit}>
-                <button className='sender-button connect-button' type="submit">Connect</button>
-            </div>
-        </div>
-    </div>
-    );
-};
+//     return (
+//         <div className='chatStu-frame'>
+//         <div className='chatStu-panes-container-frame'>
+//             <div className="chatStu-pane">
+//                 <Instructor_UsersList/>
+//                 <Chat_HistoryBox lastChat_ref={lastChat_ref}/>
+//             </div>
+//             <div className="chatStu-pane">
+//             </div>
+//         </div>
+//         <div className='chatInstr-input-frame'>
+//             <form className='chatInstr-input-frame' onSubmit={handleSubmit}>
+//                 <div className='chatStu-input-item sender-frame'>
+//                     <textarea className='sender-text' value={messageContent_state} onChange={(e) => handleInputChange(e, set_messageContent_state)} placeholder="Enter your message"></textarea>
+//                     <button className='sender-button connect-button' type="submit">Send</button>
+//                 </div>
+//             </form>
+//             <div onClick={handleConnectSubmit}>
+//                 <button className='sender-button connect-button' type="submit">Connect</button>
+//             </div>
+//         </div>
+//     </div>
+//     );
+// };
 
-export default Chat_Instructor;
+// export default Chat_Instructor;

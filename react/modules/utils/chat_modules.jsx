@@ -27,11 +27,25 @@ export function genAlias() {
 }
 
 export class ChatMessage {
-    constructor(channel_id, user_alias, scenario_type, content, scenario_id) {
+    constructor(channel_id, thread_uid, parent_uid, user_alias, scenario_type, content, scenario_id) {
         this.scenario_id = Number(scenario_id);
-        this.scenario_type = scenario_type;
-        this.content = content || "I love edurange";
-        this.user_alias = user_alias;
-        this.channel = Number(channel_id);
+        this.scenario_type = String(scenario_type);
+        this.content = String(content) || "I love edurange";
+        this.user_alias = String(user_alias);
+        this.channel_id = Number(channel_id);
+        this.thread_uid = String(thread_uid);
+        this.message_uid = generateAlphanum(12);
+        this.parent_uid = parent_uid ?? null;
+        this.child_uid_array = [];
     }
+}
+
+export function generateAlphanum(length) {
+    const alphanums = '1234567890abcdefghijklmnopqrstuvwxyz';
+    let result = '';
+    for (let i = 0; i < length; i++) {
+        const randomIndex = Math.floor(Math.random() * alphanums.length);
+        result += alphanums[randomIndex];
+    }
+    return result;
 }

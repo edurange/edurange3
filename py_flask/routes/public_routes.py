@@ -45,15 +45,24 @@ def handle_sqlalchemy_error(error):
 
 # catch-all handler
 @blueprint_public.errorhandler(Exception)
-def general_error_handler(error):
-    status_code = getattr(error, 'status_code', 500)
-    error_handler = Err_Custom_FullInfo(error.message, status_code)
+def general_error_handler(err_message, err_code):
+
+    status_code = 500
+    error_message = "Unknown error."
+
+    if err_code is not None: status_code = err_code
+    if err_message is not None: error_message = err_message
+
+    error_handler = Err_Custom_FullInfo(error_message, status_code)
     return error_handler.get_response()
+
 
 
 @blueprint_public.route("/login", methods=["POST"])
 def login_edurange3():
     validation_schema = LoginSchema()  # instantiate validation schema
+
+    print('trying to login with: ', request.json)
     validated_data = validation_schema.load(request.json)  # validate login. reject if bad.
     
     validated_user_obj = Users.query.filter_by(username=validated_data["username"]).first()

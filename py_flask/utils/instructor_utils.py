@@ -22,7 +22,11 @@ def generateTestAccts(group_db_obj, new_user_count, group_code):
 
     generatedUsers = []
 
+    print('genning test 1 group_obj_dict: ', group_db_obj)
+    print('genning test 1b group_obj_dict: ', group_obj_dict)
+
     for i in range(new_user_count):
+        print(f'genning test 2, {i}')
         newPass = generate_registration_code()
         user_dict = {
             'username' : group_obj_dict['name'] + str(i),
@@ -30,7 +34,9 @@ def generateTestAccts(group_db_obj, new_user_count, group_code):
             'confirm_password' : newPass,
             'code' : group_code,
         }
+        print('genning test 3', user_dict)
         retObj = register_user(user_dict)
+        print('genning test 4', retObj)
         newUser_id = retObj['user_id']
         user_dict['id'] = newUser_id
         generatedUsers.append(user_dict)

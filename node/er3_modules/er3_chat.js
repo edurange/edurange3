@@ -64,11 +64,16 @@ const ChatMessage_schema = Joi.object({
 
     message_type: Joi.string(),
 
-    channel: Joi.number().integer().required(),
+    channel_id: Joi.number().integer().required(),
     scenario_type: Joi.string().trim().required(),
     content: Joi.string().trim().required(),
     user_alias: Joi.string().trim().required(),
-    scenario_id: Joi.number().integer().required()
+    scenario_id: Joi.number().integer().required(),
+    thread_uid: Joi.string().trim().length(12).required(),
+    message_uid: Joi.string().trim().length(12).required(),
+    parent_uid: Joi.string().trim().length(12).allow(null),
+    child_uid_array: Joi.array().required(),
+    
 });
 
 // OUTGOING (to front)
@@ -81,9 +86,9 @@ class Chat_Receipt {
             scenario_type: original_message?.data?.scenario_type,
             content: original_message?.data?.content || "missing",
             user_alias: original_message?.data?.user_alias,
-            channel: original_message?.data?.channel,
+            channel_id: original_message?.data?.channel_id,
             scenario_id: Number(original_message?.data?.scenario_id),
-            archive_id: String(archive_id)
+            archive_id: String(archive_id),
         }
     }
 }
@@ -101,7 +106,7 @@ async function echoMessage_toChannelUsers(messageReceipt, channelId) {
     chan_users.forEach(user => {
 
         const dictUser = userDict[Number(user.user_id)];
-
+        console.log('user_id: ', user.user_id)
         if (dictUser?.connection) {
             if (dictUser.connection.readyState === 1) {
                 dictUser.connection.send(JSON.stringify(messageReceipt));
@@ -156,15 +161,35 @@ async function echoMessage_all(messageReceipt) {
 }
 
 async function insertMessageIntoDB(senderId, messageData, timestamp, archive_id) {
-    await pool.query('INSERT INTO chat_messages (user_id, channel, content, scenario_type, timestamp, scenario_id, archive_id) VALUES ($1, $2, $3, $4, $5, $6, $7)', [
+    // Ensure that the number of placeholders matches the number of parameters
+    console.log("Test insert args: ",
         senderId,
-        messageData.channel,
+        messageData.channel_id,
         messageData.content,
         messageData.scenario_type,
         timestamp,
         messageData.scenario_id,
-        archive_id
+        archive_id,
+        messageData.thread_uid,
+        messageData.message_uid,
+        messageData.parent_uid,
+        messageData.child_uid_array)
+
+    await pool.query(
+        'INSERT INTO chat_messages (user_id, channel_id, content, scenario_type, timestamp, scenario_id, archive_id, thread_uid, message_uid, parent_uid, child_uid_array) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)', [
+        senderId,
+        messageData.channel_id,
+        messageData.content,
+        messageData.scenario_type,
+        timestamp,
+        messageData.scenario_id,
+        archive_id,
+        messageData.thread_uid,
+        messageData.message_uid,
+        messageData.parent_uid,
+        messageData.child_uid_array
     ]);
+    console.log('message insertion passed')
 }
 
 async function handleChatMessage(message, socketConnection, user_id, timestamp, archive_id) {
@@ -181,8 +206,8 @@ async function handleChatMessage(message, socketConnection, user_id, timestamp, 
     const chat_message_receipt = new Chat_Receipt(user_id, message, timestamp);
 
     try {
-        await checkForChannel(value.channel, user_id, value.username);
-        await echoMessage_toChannelUsers(chat_message_receipt, value.channel);
+        await checkForChannel(value.channel_id, user_id, value.username);
+        await echoMessage_toChannelUsers(chat_message_receipt, value.channel_id);
         await echoMessage_toInstructors(chat_message_receipt);
         await insertMessageIntoDB(user_id, value, timestamp, archive_id);
     } catch (err) {

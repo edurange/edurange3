@@ -5,20 +5,25 @@ from flask import (
     session,
     jsonify,
     make_response,
+    current_app,
     g
 )
 from datetime import timedelta
 
 from functools import wraps
-from py_flask.database.models import GroupUsers, StudentGroups, Users, Channels, ChannelUsers
+from py_flask.database.models import GroupUsers, StudentGroups, Users, Channels, ChannelUsers, ChatMessages
 from flask_jwt_extended import create_access_token, decode_token
 from py_flask.utils.error_utils import (
     Err_InvalidCreds,
+)
+from py_flask.utils.chat_utils import (
+    getChannelDictList_byUser
 )
 from py_flask.utils.error_utils import (
     Err_InvalidCreds,
     Err_Custom_FullInfo,
 )
+from py_flask.utils.common_utils import generate_alphanum
 ###########
 #  This `@jwt_and_csrf_required()` decorator function should be used on ALL 
 #  non-legacy routes except those not requiring login.
@@ -104,20 +109,39 @@ def login_er3(userObj):
 
 
 # create student account (add to postgreSQL db)
-def register_user(validated_registration_data):
+def register_user(userDict):
     db_ses = db.session
-    data = validated_registration_data
-
-    group = StudentGroups.query.filter_by(code=data["code"]).first()
+    from flask import current_app
+    current_app.logger.debug("This is a debug message")
+    print('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> reg_user test1', userDict)
+    # current_app.logger.error(f"SQLAlchemy Error: {error}\n{traceback.format_exc()}")('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> reg_user test1', userDict)
+    group = StudentGroups.query.filter_by(code=userDict["code"]).first()
     if group is None:
         return jsonify({"error": "group matching this code not found"}), 404
 
+    print('reg_user test2', group)
     new_user = Users(
-        username=data["username"],
-        password=data["password"], # automatically hashed
+        username=userDict["username"],
+        password=userDict["password"], # automatically hashed
         active=True,
     )
+    print('reg_user test2 new_user', new_user)
+    print('reg_user test2 new_user', new_user.username)
     db_ses.add(new_user)
+    db_ses.commit()
+    new_thread_uid = generate_alphanum(12)
+    channel_rootMessage_uid = generate_alphanum(12)
+    print('NEW_USER id: ', new_user.id)
+    print('NEW_USER name: ', new_user.username)
+    channelDict = getChannelDictList_byUser(new_user.id, new_user.username)
+    print('reg_user test2 channelDict', channelDict)
+    new_channel = Channels(
+        name=new_user.username, # owner username as channel.name default
+        owner_id=new_user.id,
+        root_thread_uid=new_thread_uid,
+        root_message_uid=channel_rootMessage_uid,
+    )
+    db_ses.add(new_channel)
     db_ses.commit()
 
     this_user = Users.query.filter_by(username=data["username"]).first()
@@ -125,11 +149,21 @@ def register_user(validated_registration_data):
         return jsonify({"error": "User registration failed"}), 500
     
     # create new channel w/ this user_id as owner_id and PK (id)
-    new_channel = Channels(
-        name=this_user.username, # owner username as channel.name default
-        owner_id=this_user.id
-    )
+
     db_ses.add(new_channel)
+
+
+
+    first_message = ChatMessages(
+        1234, 
+        new_thread_uid,
+        channel_rootMessage_uid,
+        "WelcomeBot", 
+        "Welcome", 
+        "Welcome to eduRange3 Chat!", 
+        1337
+    )
+    db_ses.add(first_message)
     db_ses.commit()
 
     # new channel_users row w/ this_user_id as channel_id and this_user_id as user_id

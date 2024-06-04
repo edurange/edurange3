@@ -26,32 +26,83 @@ from marshmallow import Schema, fields, validates, ValidationError
 from marshmallow.fields import String, Boolean, Integer
 from marshmallow.validate import OneOf, Length, Regexp
 ma = Marshmallow()
-db_ses = db.session
+
+from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 
 class LoginSchema(ma.SQLAlchemyAutoSchema):
+    username = fields.String(required=True, validate=validate.Length(min=3, max=40))
+    password = fields.String(required=True, validate=validate.Length(min=3, max=40))
 
-    username = String(required=True, validate=[validate.Length(min=3, max=40) ])
-    password = String(required=True, validate=[
-        validate.Length(min=3, max=40),
-        # validate.ContainsNoneOf[]
-        ])
-    
     @validates_schema
     def validate_login(self, data, **kwargs):
+        # Retrieve the user from the database by username
+        user = Users.query.filter_by(username=data.get("username")).first()
 
-        username_input = data.get("username")
-        password_plain_input = data.get("password")
-        user = db_ses.query(Users).filter_by(username=username_input).first()
+        # Check if the user was found and if the password is correct
+        if user is None:
+            raise ValidationError("Invalid username.", fields=['username'])
 
-        if (
-            not user 
-            or not bcrypt.check_password_hash(user.password, password_plain_input)
-            ):
-                custom_abort("Invalid credentials.", 403)
+        if not bcrypt.check_password_hash(user.password, data.get("password")):
+            raise ValidationError("Invalid password.", fields=['password'])
+
+        # Output for debugging; remove or replace with logging as appropriate for production
+        print('Validation complete for user:', user.id)
 
     class Meta:
         model = Users
-        # exclude = ["id"]
+
+
+
+# class LoginSchema(ma.SQLAlchemyAutoSchema):
+#     username = fields.String(required=True, validate=[validate.Length(min=3, max=40)])
+#     password = fields.String(required=True, validate=[validate.Length(min=3, max=40)])
+#     home_channel_id = fields.Integer(validate=validate.Range(min=1), required=False, load_only=True)
+
+#     @validates_schema
+#     def validate_login(self, data, **kwargs):
+#         username_input = data.get("username")
+#         password_plain_input = data.get("password")
+#         user = db_ses.query(Users).filter_by(username=username_input).first()
+
+#         if user is None:
+#             raise ValidationError("Invalid username.", 'username')
+
+#         if not bcrypt.check_password_hash(user.password, password_plain_input):
+#             raise ValidationError("Invalid password.", 'password')
+
+#         print('Validation complete for user:', user.id)
+
+#     class Meta:
+#         model = Users
+
+
+# class LoginSchema(ma.SQLAlchemyAutoSchema):
+
+#     username = String(required=True, validate=[validate.Length(min=3, max=40) ])
+#     password = String(required=True, validate=[
+#         validate.Length(min=3, max=40),
+#         # validate.ContainsNoneOf[]
+#         ])
+    
+#     @validates_schema
+#     def validate_login(self, data, **kwargs):
+
+#         username_input = data.get("username")
+#         password_plain_input = data.get("password")
+#         user = db_ses.query(Users).filter_by(username=username_input).first()
+#         home_channel_id = ma.auto_field(validate=validate.Range(min=1), required=False)
+
+#         print('made it to validate schema past db pull for user: ', user.id)
+#         print('made it to validate schema past db pull for home_channel_id: ', home_channel_id)
+
+#         if (
+#             not user 
+#             or not bcrypt.check_password_hash(user.password, password_plain_input)
+#             ):
+#                 custom_abort("Invalid credentials.", 403)
+
+#     class Meta:
+#         model = Users
 
 class RegistrationSchema(ma.SQLAlchemyAutoSchema):
     banned_names = ["root", "ubuntu", "nobody", "ec2user", "user", "student", "guest", '' ]
@@ -68,6 +119,7 @@ class RegistrationSchema(ma.SQLAlchemyAutoSchema):
     
     @validates_schema
     def validate_registration(self, data, **kwargs):
+        db_ses = db.session
         username_input = data.get("username")
         password_input = data.get("password")
         confirm_password_input = data.get("confirm_password")

@@ -226,8 +226,11 @@ function Instr_UsersTable() {
 
     if (!chatObjs_UL_state || !channelAccess_state) {return}
 
+    console.log('cas', channelAccess_state)
     function compileMessages_byUser(user_id) {
 
+        console.log('user_id: ', user_id)
+        console.log('CAS: ', channelAccess_state)
         const userAllowed_chanID_intArr = channelAccess_state[user_id];
 
         const userAllowed_messageObjs_arr = userAllowed_chanID_intArr.map((allowed_channel_id) => {

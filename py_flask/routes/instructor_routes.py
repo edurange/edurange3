@@ -69,27 +69,38 @@ blueprint_instructor = Blueprint(
     __name__, 
     url_prefix='/api')
 
+
 @blueprint_instructor.errorhandler(SQLAlchemyError)
 def handle_sqlalchemy_error(error):
+    # Log full error, including traceback
+    current_app.logger.error(f"SQLAlchemy Error: {str(error)}\n{traceback.format_exc()}")
 
-    # log full error, including traceback
-    current_app.logger.error(f"SQLAlchemy Error: {error}\n{traceback.format_exc()}")
-
-    # return detail in debug mode or generic error message in prod
+    # Determine error message based on debug mode
     if current_app.config['DEBUG']:
-        response_error = Err_Custom_FullInfo(f"Database error occurred: {str(error)}", 500)
-    
-    else: response_error = Err_Custom_FullInfo(f"Database error occurred.", 500)
+        error_detail = f"Database error occurred: {str(error)}"
+    else:
+        error_detail = "Database error occurred."
 
-    return response_error
+    # Return JSON error response with 500 status code
+    response = jsonify({"error": error_detail})
+    response.status_code = 500
+    return response
 
 
 
 # catch-all handler
 @blueprint_instructor.errorhandler(Exception)
-def general_error_handler(error):
-    error_handler = Err_Custom_FullInfo(error)
+def general_error_handler(err_message, err_code):
+
+    status_code = 500
+    error_message = "Unknown error."
+
+    if err_code is not None: status_code = err_code
+    if err_message is not None: error_message = err_message
+
+    error_handler = Err_Custom_FullInfo(error_message, status_code)
     return error_handler.get_response()
+
 
 # TESTED AND WORKING ROUTES
 @blueprint_instructor.route("/create_group", methods=['POST'])
@@ -98,10 +109,10 @@ def create_group():
     instructor_only()
 
     requestJSON = request.json
-
+    print(requestJSON)
     createGroup_schema = CreateGroupSchema()
     validatedJSON = createGroup_schema.load(requestJSON)    
-
+    print('VALIDATED OK')
     group_name = validatedJSON['group_name']
     new_code = grc()
 
@@ -109,9 +120,12 @@ def create_group():
 
     if (validatedJSON['should_generate']):
 
+        print('TRYING TO GEN1')
         newUsers_list = generateTestAccts(group_obj, validatedJSON['new_user_count'], new_code)
+        print('TRYING TO GEN2')
         return_groupDict = addGroupUsers(group_obj, newUsers_list)
 
+        print('TRYING TO GEN3')
         return {
             "result": "success",
             "group_obj": group_obj.to_dict(),

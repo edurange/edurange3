@@ -66,9 +66,15 @@ def handle_sqlalchemy_error(error):
 
 # catch-all handler
 @blueprint_student.errorhandler(Exception)
-def general_error_handler(error):
-    status_code = getattr(error, 'status_code', 500)
-    error_handler = Err_Custom_FullInfo(error.message, status_code)
+def general_error_handler(err_message, err_code):
+
+    status_code = 500
+    error_message = "Unknown error."
+
+    if err_code is not None: status_code = err_code
+    if err_message is not None: error_message = err_message
+
+    error_handler = Err_Custom_FullInfo(error_message, status_code)
     return error_handler.get_response()
 
 

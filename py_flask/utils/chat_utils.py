@@ -2,7 +2,7 @@
 import json
 import os
 from py_flask.database.models import GroupUsers, StudentGroups, Users, Channels, ChannelUsers, ChatMessages
-
+from py_flask.config.extensions import db
 
 from random import seed, getrandbits
 
@@ -74,16 +74,21 @@ def gen_chat_names(student_ids, sid):
 
 def getChannelDictList_byUser(userID, username):
 
-    avail_channel_objs = Channels.query.join(ChannelUsers, Channels.id == ChannelUsers.channel_id) \
-                                  .filter(ChannelUsers.user_id == userID).all()
+    db_ses = db.session
+    chan_objs = db_ses.query(Channels).filter(Channels.name == username).all()
+
+    avail_channel_objs = db_ses.query(Channels) \
+        .join(ChannelUsers, Channels.id == ChannelUsers.channel_id) \
+        .filter(ChannelUsers.user_id == userID) \
+        .all()
 
     channelDict_list = [channel.to_dict(include_relationships=True) for channel in avail_channel_objs]
    
-    home_channel = next((chanDict['id'] for chanDict in channelDict_list if chanDict['name'] == username), None)
+    home_channel_id = next((chanDict['id'] for chanDict in channelDict_list if chanDict['name'] == username), None)
 
     channels_info = {
         "available_channels": channelDict_list,
-        "home_channel": home_channel
+        "home_channel_id": home_channel_id
     }
 
     return channels_info
@@ -93,7 +98,7 @@ def getChatHistory_byUser(userID, username):
     channelData = getChannelDictList_byUser(userID, username)
     available_channel_ids = [channel['id'] for channel in channelData['available_channels']]
 
-    chatHistory_forUser = ChatMessages.query.filter(ChatMessages.channel.in_(available_channel_ids)).all()
+    chatHistory_forUser = ChatMessages.query.filter(ChatMessages.channel_id.in_(available_channel_ids)).all()
     chatHistory_dictList = [message.to_dict() for message in chatHistory_forUser]
 
     return chatHistory_dictList

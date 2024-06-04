@@ -22,7 +22,7 @@ function Panopticon() {
     }
 
     console.log('panopticon loaded successfully')
-
+    console.log(selectedMessage_state)
     return (
         <div className="table-frame">
 
@@ -30,7 +30,10 @@ function Panopticon() {
                 <Instr_Chat_HistoryBox lastChat_ref={lastChat_ref} chatObjs_array={chatObjs_UL_state} />
             </div>
 
-            <Instr_SenderBox />
+            <Instr_SenderBox 
+                scenario_type={selectedMessage_state?.scenario_type} 
+                scenario_id={selectedMessage_state?.scenario_id} 
+            />
         </div>
     );
 }

@@ -5,6 +5,7 @@
 
 """Create an application instance."""
 import os
+import logging
 from py_flask.config.init import create_app
 from py_flask.config.extensions import db
 from py_flask.database.models import StudentGroups, Users
@@ -42,3 +43,5 @@ admin = Users.query.filter_by(username=os.environ["FLASK_USERNAME"]).first()
 if admin: a_id = admin.id
 
 if not group: create_all_group(a_id)
+
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')

@@ -5,11 +5,12 @@ import { ChatMessage } from '@modules/utils/chat_modules.jsx';
 import { InstructorRouter_context } from '../../instructor/Instructor_router.jsx';
 import { HomeRouter_context } from '../../pub/Home_router.jsx';
 
-function Instr_SenderBox() {
+function Instr_SenderBox({scenario_type, scenario_id}) {
 
     const { userData_state } = useContext (HomeRouter_context);
     const { socket_ref, selectedMessage_state, set_selectedMessage_state, users_state, set_users_state } = useContext (InstructorRouter_context);
     const [messageContent_state, set_messageContent_state] = useState('');
+    const [lastParentUID_state, set_lastParentUID_state] = useState(null);
 
     const handleInputChange = (event) => {
         set_messageContent_state(event.target.value);
@@ -28,22 +29,25 @@ function Instr_SenderBox() {
     };
 
     const sendMessage = () => {
+        
         if (!selectedMessage_state) {
+            console.log("Please select a message before replying.")
             return
         }
-
+        
         const chatMsg = new ChatMessage(
-            selectedMessage_state?.channel, 
+            selectedMessage_state.channel_id, 
+            "testtesttest",
+            lastParentUID_state,
             userData_state?.user_alias, 
-            selectedMessage_state?.scenario_type, 
-            messageContent_state.trim(),
-            selectedMessage_state?.scenario_id
+            scenario_type, 
+            messageContent_state.trim(), 
+            scenario_id
         );
         
         if (chatMsg.content) {
             const newChat = {
                 message_type: 'chat_message',
-                timestamp: Date.now(),
                 data: chatMsg
             };
             if (socket_ref.current && socket_ref.current.readyState === 1) {
@@ -51,6 +55,8 @@ function Instr_SenderBox() {
                 set_messageContent_state('');
             }
         }
+        set_lastParentUID_state(chatMsg.message_uid);
+    
         const response_target_user_id = selectedMessage_state?.sender;
         const new_timestamp = Date.now();
         const updated_users_state = users_state.map(user => {

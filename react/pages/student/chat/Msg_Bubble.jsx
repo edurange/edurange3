@@ -2,6 +2,7 @@
 import React, { useContext } from "react";
 import './Msg_Bubble.css';
 import { InstructorRouter_context } from "../../instructor/Instructor_router";
+import ThreadGetter from "./ThreadGetter";
 
 function Msg_Bubble({ is_instructor, message_obj, user_id, is_outgoing }) {
     const { selectedMessage_state, set_selectedMessage_state } = is_instructor ? useContext(InstructorRouter_context) : { selectedMessage_state: null, set_selectedMessage_state: null };
@@ -14,6 +15,8 @@ function Msg_Bubble({ is_instructor, message_obj, user_id, is_outgoing }) {
     }
 
     if (!message_obj || !user_id || typeof is_outgoing !== 'boolean') return null;
+
+    console.log('checking msg_obj in msg_bubble.jsx: ', message_obj)
 
     return (
         <div className="msg-row-frame">
@@ -32,7 +35,7 @@ function Msg_Bubble({ is_instructor, message_obj, user_id, is_outgoing }) {
                                 {is_outgoing ? "Me" : message_obj.user_id === 1 ? "Instructor" : message_obj?.user_alias ?? 'n/a'}
                             </div>
                             <div className="bubble-header-item">
-                                chnl: {message_obj?.channel ?? 'missing'}
+                                chnl: {message_obj?.channel_id ?? 'missing'}
                             </div>
                         </div>
 
@@ -43,6 +46,11 @@ function Msg_Bubble({ is_instructor, message_obj, user_id, is_outgoing }) {
                         <div className="bubble-msg-frame">
                             {message_obj?.content}
                         </div>
+                        
+                        <div className="bubble-msg-frame">
+                            <ThreadGetter thread_uid={message_obj?.thread_uid}/>
+                        </div>
+
                     </div>
                 </div>
             </div>

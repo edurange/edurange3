@@ -3,8 +3,8 @@
 import datetime as dt
 import random
 import string
-from sqlalchemy import inspect
-
+from sqlalchemy import inspect, CheckConstraint
+from datetime import datetime, timezone
 from py_flask.database.db_classes import (
     Column,
     Model,
@@ -16,6 +16,7 @@ from py_flask.database.db_classes import (
 )
 from py_flask.config.extensions import bcrypt
 
+from py_flask.utils.common_utils import generate_alphanum
 
 def generate_registration_code(size=8, chars=string.ascii_lowercase + string.digits):
     return "".join(random.choice(chars) for _ in range(size))
@@ -51,6 +52,8 @@ class Channels(Edu3Mixin, SurrogatePK, Model):
     owner_id = reference_col("users", nullable=False)
     owner = relationship("Users", backref="channels")
     users = relationship("ChannelUsers", backref="channels", cascade="all, delete-orphan")
+    root_thread_uid = Column(db.String(40), unique=True, nullable=False);
+    root_message_uid = Column(db.String(40), unique=True, nullable=False);
 
 
 class ChannelUsers(Edu3Mixin, SurrogatePK, Model):
@@ -66,12 +69,13 @@ class Users(Edu3Mixin, SurrogatePK, Model):
     """A user of the app."""
     __tablename__ = "users"
     username = Column(db.String(80), unique=True, nullable=False)
-    password = Column(db.LargeBinary(128), nullable=True)   # hashed
-    created_at = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
+    password = Column(db.LargeBinary(128), nullable=True)   # hashed upon insert
+    created_at = Column(db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
     active = Column(db.Boolean(), default=False)
     is_admin = Column(db.Boolean(), default=False)
     is_instructor = Column(db.Boolean(), default=False)
     is_static = Column(db.Boolean(), default=False) # static: user belongs to one group only (for generated groups)
+    home_channel_id = Column(db.Integer(), nullable=False) # DEV_FIX nullable should be false, testing
     def __init__(self, username, password=None, **kwargs):
         """Create instance."""
         db.Model.__init__(self, username=username, **kwargs)
@@ -99,7 +103,8 @@ class Scenarios(Edu3Mixin, SurrogatePK, Model):
     owner_id = reference_col("users", nullable=False)
     owner = relationship("Users", backref="scenarios", lazy="subquery")
     status = Column(db.Integer, default=0, nullable=False)
-    created_at = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
+    # created_at = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow) #replaced
+    created_at = Column(db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
     resps = relationship("Responses", backref="scenarios", cascade="all, delete-orphan")
     def __repr__(self):
         """Represent instance as a unique string."""
@@ -108,7 +113,7 @@ class Scenarios(Edu3Mixin, SurrogatePK, Model):
 
 class Notification(Edu3Mixin, SurrogatePK, Model):
     detail = Column(db.String(60), unique=False, nullable=False)
-    date = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
+    date = Column(db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
 
 class ScenarioGroups(Edu3Mixin, SurrogatePK, Model):
     """Groups associated with scenarios"""
@@ -128,20 +133,31 @@ class ScenarioGroups(Edu3Mixin, SurrogatePK, Model):
 
 class ChatMessages(Edu3Mixin, SurrogatePK, Model):
     """Individual chat message"""
-    ___tablename___ = "chat_messages"
+    __tablename__ = "chat_messages"
 
     user_id = reference_col("users",nullable=False) 
-    user = relationship("Users", backref="chat_messsages")
+    user = relationship("Users", backref="chat_messages")
 
     scenario_type = Column(db.String(50), nullable=False, unique=False)
     scenario_id = reference_col("scenarios", nullable=False)
     scenario = relationship("Scenarios", backref="chat_messages", viewonly=True)
 
-    # CHANGED FROM 'channel' TO 'channel_id'
-    channel = reference_col("channels", nullable=False)
-    timestamp = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
+    channel_id = reference_col("channels", nullable=False)
+    timestamp = db.Column(db.DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
+
     content = Column(db.String(5000), nullable=False, unique=False)
 
+    # if the parent_uid is None / NULL, then we assume it is root
+    thread_uid = Column(db.String(12), nullable=False, unique=True, default=generate_alphanum(12))
+    parent_uid = Column(db.String(12), nullable=True)
+    message_uid = Column(db.String(12), nullable=False)
+    child_uid_array = Column(db.ARRAY(db.String(12)), nullable=False, default=[])
+
+    __table_args__ = (
+        db.CheckConstraint("parent_uid ~* '^[a-z0-9]+$'", name='parent_alphanum_only'),
+        db.CheckConstraint("thread_uid ~* '^[a-z0-9]+$'", name='thread_alphanum_only'),
+        db.CheckConstraint("ALL(child_uid_array ~* '^[a-z0-9]+$')", name='children_alphanum_only'),
+    )
     archive_id = Column(db.String(8), nullable=False, unique=False)
 
 
@@ -149,7 +165,7 @@ class Responses(Edu3Mixin, SurrogatePK, Model):
     """Student responses to scenario questions"""
     __tablename__ = "responses"
 
-    timestamp = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
+    timestamp = db.Column(db.DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
     
     user_id = reference_col("users", nullable=False)
     user = relationship("Users", backref="responses")
@@ -169,8 +185,7 @@ class BashHistory(Edu3Mixin, SurrogatePK, Model):
     """Bash Histories, associated with users and scenarios"""
     __tablename__ = "bash_history"
 
-    timestamp = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
-
+    timestamp = db.Column(db.DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
     user_id = reference_col("users", nullable=False)
     user = relationship("Users", backref="bash_history")
 

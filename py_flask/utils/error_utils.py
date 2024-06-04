@@ -18,18 +18,11 @@ class ErrorHandler:
 # message = getattr()
 
 class Err_Custom_FullInfo(ErrorHandler):
-    def __init__(self, error):
+    def __init__(self, err_message, err_code):
 
         message = "Unknown Error"
-        status_code = 500
-
-        if hasattr(error, 'message'):
-            message = error.message
-        elif hasattr(error, 'args') and error.args:
-            message = error.args[0]
-
-        if hasattr(error, 'status_code'):
-            status_code = error.status_code
+        if err_code is not None: status_code = err_code
+        if err_message is not None: message = err_message
 
         super().__init__(message, status_code)
 

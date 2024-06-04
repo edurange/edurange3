@@ -2,7 +2,6 @@ import axios from 'axios';
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import Instr_Dash from './dashboard/Instr_Dash';
-import Chat_Instructor from './chat/Chat_Instructor';
 import Instr_Groups from './groups/Instr_Groups';
 import Instr_GroupDetail from './groups/Instr_GroupDetail';
 import Frame_side from '../../frame/sidenav/Frame_side';
@@ -143,7 +142,6 @@ function Instructor_router() {
                         <Route path="/*" element={<Instr_Dash />} />
                         <Route path="/scenarios/*" element={<Instr_Scenarios />} />
                         <Route path="/scenarios/:scenarioID" element={<Instr_ScenDetail />} />
-                        <Route path="/scenarios/:scenarioID/chat" element={<Chat_Instructor />} />
                         <Route path="/groups/*" element={<Instr_Groups />} />
                         <Route path="/groups/:groupID/*" element={<Instr_GroupDetail />} />
                         <Route path="/students/*" element={<Instr_Users />} />

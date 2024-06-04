@@ -20,6 +20,7 @@ function Student_router() {
     const { login_state, userData_state, set_chatData_state, chatData_state, } = useContext(HomeRouter_context);
     const [responseData_state, set_responseData_state] = useState({});
 
+    const [currentThreadUID_state, set_currentThreadUID_state] = useState(null);
     const [notifsArray_state, set_notifsArray_state] = useState(fakeNotifs);
     const [guideBook_state, set_guideBook_state] = useState({});
     const [scenarioList_state, set_scenarioList_state] = useState([]);
@@ -84,10 +85,11 @@ function Student_router() {
     useEffect(() => {
         const handleMessage = (event) => {
             const message = JSON.parse(event.data);
-
+            console.log('got a message: ', message)
             if (message.message_type === 'chat_message_receipt') {
                 
                 updateChatHistory(message?.data)
+                set_currentThreadUID_state(message?.thread_uid)
 
             } else if (message.message_type === 'chatError') {
                 console.error('Chat error:', message.data);
@@ -127,7 +129,8 @@ function Student_router() {
                             guideBook_state, set_guideBook_state,
                             notifsArray_state, set_notifsArray_state,
                             socket_ref,
-                            responseData_state, set_responseData_state
+                            responseData_state, set_responseData_state,
+                            currentThreadUID_state, set_currentThreadUID_state
                         }}>
                             <Routes>
                                 <Route path="/" element={<Scenarios_home />} />

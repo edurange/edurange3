@@ -5,13 +5,16 @@ import './Chat_Student.css';
 import { StudentRouter_context } from '../Student_router.jsx';
 import { ChatMessage } from '@modules/utils/chat_modules.jsx';
 import { HomeRouter_context } from '../../pub/Home_router.jsx';
+import { generateAlphanum } from '../../../modules/utils/chat_modules.jsx';
 
 function Chat_Student({scenario_type, scenario_id}) {
 
     const { userData_state, chatData_state, set_chatData_state } = useContext (HomeRouter_context);
-    const { socket_ref } = useContext (StudentRouter_context);
+    const { socket_ref, currentThreadUID_state, set_currentThreadUID_state } = useContext (StudentRouter_context);
     const [messageContent_state, set_messageContent_state] = useState('');
     const lastChat_ref = useRef(null);
+
+    const [lastParentUID_state, set_lastParentUID_state] = useState(null);
 
     useEffect(() => {
         if (lastChat_ref.current) {
@@ -36,9 +39,17 @@ function Chat_Student({scenario_type, scenario_id}) {
     };
 
     const sendMessage = () => {
-
-        const chatMsg = new ChatMessage(userData_state?.channel_data?.home_channel, userData_state?.user_alias, scenario_type, messageContent_state.trim(), scenario_id);
-
+        console.log(currentThreadUID_state)
+        const chatMsg = new ChatMessage(
+            userData_state?.channel_data?.home_channel_id, 
+            currentThreadUID_state ?? generateAlphanum(12), // DEV_FIX
+            lastParentUID_state,
+            userData_state?.user_alias, 
+            scenario_type, 
+            messageContent_state.trim(), 
+            scenario_id
+        );
+        
         if (chatMsg.content) {
             const newChat = {
                 message_type: 'chat_message',
@@ -49,8 +60,10 @@ function Chat_Student({scenario_type, scenario_id}) {
                 set_messageContent_state('');
             }
         }
+        set_lastParentUID_state(chatMsg.message_uid)
     };
-
+    console.log('chatdatastate: ', chatData_state)
+    console.log('last_ref: ', lastChat_ref)
     return (
         <div className='chatStu-frame'>
             
