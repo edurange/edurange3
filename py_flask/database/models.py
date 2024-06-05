@@ -75,7 +75,7 @@ class Users(Edu3Mixin, SurrogatePK, Model):
     is_admin = Column(db.Boolean(), default=False)
     is_instructor = Column(db.Boolean(), default=False)
     is_static = Column(db.Boolean(), default=False) # static: user belongs to one group only (for generated groups)
-    home_channel_id = Column(db.Integer(), nullable=False) # DEV_FIX nullable should be false, testing
+    home_channel_id = Column(db.Integer(), nullable=True) # DEV_FIX nullable should be false, testing
     def __init__(self, username, password=None, **kwargs):
         """Create instance."""
         db.Model.__init__(self, username=username, **kwargs)
@@ -139,10 +139,11 @@ class ChatMessages(Edu3Mixin, SurrogatePK, Model):
     user = relationship("Users", backref="chat_messages")
 
     scenario_type = Column(db.String(50), nullable=False, unique=False)
-    scenario_id = reference_col("scenarios", nullable=False)
+    scenario_id = reference_col("scenarios", nullable=True)
     scenario = relationship("Scenarios", backref="chat_messages", viewonly=True)
 
-    channel_id = reference_col("channels", nullable=False)
+    # channel_id = reference_col("channels", nullable=True)
+    channel_id = Column(db.Integer, nullable=True, unique=False)
     timestamp = db.Column(db.DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
 
     content = Column(db.String(5000), nullable=False, unique=False)

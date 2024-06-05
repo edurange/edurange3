@@ -35,13 +35,14 @@ function Instructor_router() {
         try {
             const response = await axios.get("/get_instructor_data");
             const responseData = response.data;
+            console.log('get instr data resp: ', responseData)
             const currentUsers = responseData?.users;
 
             // recent_reply is compared to chat_message timestamp to determine
             // whether message is considered new (Instr_UserTable.jsx).
             // the prop is also updated when an instructor sends reply (ea instr has their own record)
             // this record is only persistent in memory; full refresh effectively sets all to 'old'
-            currentUsers.forEach(user => {
+            currentUsers?.forEach(user => {
 
                 if (!user.recent_reply) {
                     user.recent_reply = Date.now()

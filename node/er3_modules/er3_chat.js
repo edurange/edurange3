@@ -244,11 +244,12 @@ async function handleAnnouncement(message, socketConnection, user_id, timestamp,
 
 const pool = new Pool({
     user: process.env.CHATDB_USERNAME,
-    host: process.env.CHATDB_LOCALHOST,
+    host: "localhost",
     database: process.env.CHATDB_DATABASENAME,
     password: process.env.CHATDB_PASSWORD,
     port: process.env.CHATDB_PORT
 });
+
 
 const chatHttpServer = http.createServer((req, res) => {
     res.writeHead(200, { 'Content-Type': 'text/plain' });

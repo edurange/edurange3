@@ -1,4 +1,5 @@
 from py_flask.config.extensions import db
+from datetime import datetime, timezone
 
 from flask import (
     request,
@@ -109,20 +110,20 @@ def login_er3(userObj):
 
 
 # create student account (add to postgreSQL db)
-def register_user(userDict):
+def register_user(newUser_dictObj):
     db_ses = db.session
     from flask import current_app
     current_app.logger.debug("This is a debug message")
-    print('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> reg_user test1', userDict)
-    # current_app.logger.error(f"SQLAlchemy Error: {error}\n{traceback.format_exc()}")('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> reg_user test1', userDict)
-    group = StudentGroups.query.filter_by(code=userDict["code"]).first()
+    print('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> reg_user test1', newUser_dictObj)
+    # current_app.logger.error(f"SQLAlchemy Error: {error}\n{traceback.format_exc()}")('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> reg_user test1', newUser_dictObj)
+    group = StudentGroups.query.filter_by(code=newUser_dictObj["code"]).first()
     if group is None:
         return jsonify({"error": "group matching this code not found"}), 404
 
     print('reg_user test2', group)
     new_user = Users(
-        username=userDict["username"],
-        password=userDict["password"], # automatically hashed
+        username=newUser_dictObj["username"],
+        password=newUser_dictObj["password"], # automatically hashed
         active=True,
     )
     print('reg_user test2 new_user', new_user)
@@ -144,7 +145,9 @@ def register_user(userDict):
     db_ses.add(new_channel)
     db_ses.commit()
 
-    this_user = Users.query.filter_by(username=data["username"]).first()
+    # check registration success
+    this_user = Users.query.filter_by(username=new_user.username).first()
+
     if not this_user:
         return jsonify({"error": "User registration failed"}), 500
     
@@ -152,16 +155,18 @@ def register_user(userDict):
 
     db_ses.add(new_channel)
 
-
-
     first_message = ChatMessages(
-        1234, 
-        new_thread_uid,
-        channel_rootMessage_uid,
-        "WelcomeBot", 
-        "Welcome", 
-        "Welcome to eduRange3 Chat!", 
-        1337
+        user_id=new_user.id, 
+        scenario_type="WelcomeBot", 
+        scenario_id=None, 
+        channel_id=1337,
+        timestamp=datetime.now(timezone.utc),
+        content="Welcome to your private help channel!\n  Enter a message here, and the Instructor(s) should see it.",
+        thread_uid = generate_alphanum(12),
+        parent_uid = generate_alphanum(12),
+        message_uid = generate_alphanum(12),
+        child_uid_array = [],
+        archive_id=generate_alphanum(8)
     )
     db_ses.add(first_message)
     db_ses.commit()

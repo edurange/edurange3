@@ -105,8 +105,11 @@ class LoginSchema(ma.SQLAlchemyAutoSchema):
 #         model = Users
 
 class RegistrationSchema(ma.SQLAlchemyAutoSchema):
-    banned_names = ["root", "ubuntu", "nobody", "ec2user", "user", "student", "guest", '' ]
     
+    db_ses = db.session
+    
+    banned_names = ["root", "ubuntu", "nobody", "ec2user", "user", "student", "guest", '' ]
+
     username = String(required=True, validate=[
         validate.Length(min=3, max=25, error="Username must be between 3 and 25 characters"),
         validate.ContainsNoneOf(banned_names, error="Nice try bucko, use a different name"),
@@ -155,6 +158,7 @@ class CreateGroupSchema(Schema):
 
     @validates_schema
     def validate_groupCreate(self, data, **kwargs):
+        db_ses = db.session
         group_name_input = data.get("group_name")
         existingGroup = db_ses.query(StudentGroups).filter_by(name=group_name_input).first()
         if existingGroup is not None:

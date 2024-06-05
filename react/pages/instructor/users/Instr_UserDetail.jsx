@@ -20,7 +20,7 @@ function Instr_UserDetail() {
     const thisUser = users_state.filter(user => user.id === parseInt(userID))?.[0]
                         
     if (!thisUser || !channelAccess_state || !chatObjs_UL_state) { return <>Required data not found.</> } 
-    
+    console.log('cassy',channelAccess_state)
     const user_channels = channelAccess_state[thisUser.id]
     if (!user_channels) { return <>user_channels not found.</> } 
 
