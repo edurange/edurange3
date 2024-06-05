@@ -9,8 +9,15 @@ import { generateAlphanum } from '../../../modules/utils/chat_modules.jsx';
 
 function Chat_Student({scenario_type, scenario_id}) {
 
+
     const { userData_state, chatData_state, set_chatData_state } = useContext (HomeRouter_context);
-    const { socket_ref, currentThreadUID_state, set_currentThreadUID_state } = useContext (StudentRouter_context);
+    const { 
+        socket_ref, 
+        currentThreadUID_state, 
+        set_currentThreadUID_state,
+        selectedChannel_state, set_selectedChannel_state,
+        selectedThread_state, set_selectedThread_state
+    } = useContext (StudentRouter_context);
     const [messageContent_state, set_messageContent_state] = useState('');
     const lastChat_ref = useRef(null);
 
@@ -37,12 +44,12 @@ function Chat_Student({scenario_type, scenario_id}) {
             sendMessage();
         }
     };
-
+    
     const sendMessage = () => {
-        console.log(currentThreadUID_state)
+        console.log('uds in send',userData_state)
         const chatMsg = new ChatMessage(
-            userData_state?.channel_data?.home_channel_id, 
-            currentThreadUID_state ?? generateAlphanum(12), // DEV_FIX
+            userData_state?.home_channel, 
+            selectedThread_state,
             lastParentUID_state,
             userData_state?.user_alias, 
             scenario_type, 
@@ -68,13 +75,26 @@ function Chat_Student({scenario_type, scenario_id}) {
         <div className='chatStu-frame'>
             
             <div className="chatStu-historyBox">
-            <Chat_HistoryBox chatData_state={chatData_state} lastChat_ref={lastChat_ref} />
+            <Chat_HistoryBox 
+            chatData_state={chatData_state} 
+            lastChat_ref={lastChat_ref}
+            selectedChannel_state={selectedChannel_state}
+            set_selectedChannel_state={set_selectedChannel_state}
+            selectedThread_state={selectedThread_state}
+            set_selectedThread_state={set_selectedThread_state}
+            />
         </div>
 
             <div className='chatStu-input-frame'>
                 <form className='chatStu-input-frame' onSubmit={handleSubmit}>
                     <div className='chatStu-input-item sender-frame'>
-                        <textarea className='sender-text' value={messageContent_state} onChange={handleInputChange} onKeyPress={handleKeyPress} placeholder="Enter your message"></textarea>
+                        <textarea 
+                            className='sender-text' 
+                            value={messageContent_state} 
+                            onChange={handleInputChange} 
+                            onKeyPress={handleKeyPress} 
+                            placeholder="Enter your message">
+                        </textarea>
                         <button className='sender-button connect-button' type="submit">Send</button>
                     </div>
                 </form>

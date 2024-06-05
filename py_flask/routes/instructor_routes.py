@@ -72,20 +72,17 @@ blueprint_instructor = Blueprint(
 
 @blueprint_instructor.errorhandler(SQLAlchemyError)
 def handle_sqlalchemy_error(error):
-    # Log full error, including traceback
+    # full error, including traceback
     current_app.logger.error(f"SQLAlchemy Error: {str(error)}\n{traceback.format_exc()}")
 
-    # Determine error message based on debug mode
-    if current_app.config['DEBUG']:
-        error_detail = f"Database error occurred: {str(error)}"
-    else:
-        error_detail = "Database error occurred."
+    # find error message based on debug mode
+    if current_app.config['DEBUG']: error_detail = f"Database error occurred: {str(error)}"
+    else: error_detail = "Database error occurred."
 
     # Return JSON error response with 500 status code
     response = jsonify({"error": error_detail})
     response.status_code = 500
     return response
-
 
 
 # catch-all handler
@@ -312,7 +309,7 @@ def scenario_interface():
             return Err_Custom_FullInfo("Required request property scenario_id was None", 400)
 
         scenario_id = requestJSON["scenario_id"]
-        
+
         return_obj = destroy_scenario_task \
             .delay(scenario_id) \
             .get(timeout=None)
