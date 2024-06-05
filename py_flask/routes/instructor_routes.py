@@ -112,7 +112,6 @@ def create_group():
     print(requestJSON)
     createGroup_schema = CreateGroupSchema()
     validatedJSON = createGroup_schema.load(requestJSON)    
-    print('VALIDATED OK')
     group_name = validatedJSON['group_name']
     new_code = grc()
 
@@ -120,12 +119,9 @@ def create_group():
 
     if (validatedJSON['should_generate']):
 
-        print('TRYING TO GEN1')
         newUsers_list = generateTestAccts(group_obj, validatedJSON['new_user_count'], new_code)
-        print('TRYING TO GEN2')
         return_groupDict = addGroupUsers(group_obj, newUsers_list)
 
-        print('TRYING TO GEN3')
         return {
             "result": "success",
             "group_obj": group_obj.to_dict(),
@@ -194,7 +190,7 @@ def scenario_interface():
     requestJSON = request.json
     if ('METHOD' not in requestJSON):
         return Err_Custom_FullInfo('METHOD property not supplied in request.', 400)
-
+    print('REQJSON: ',requestJSON)
     method = requestJSON['METHOD']
     if method not in ('LIST','CREATE', 'START', 'STOP', 'UPDATE', 'DESTROY'):
         return Err_Custom_FullInfo(f'Unrecognized METHOD property: {method}', 400)
@@ -316,7 +312,11 @@ def scenario_interface():
             return Err_Custom_FullInfo("Required request property scenario_id was None", 400)
 
         scenario_id = requestJSON["scenario_id"]
-        return_obj = destroy_scenario_task.delay(scenario_id).get(timeout=None)
+        
+        return_obj = destroy_scenario_task \
+            .delay(scenario_id) \
+            .get(timeout=None)
+        
         if (return_obj != None):
             return return_obj
         else: 
