@@ -9,11 +9,15 @@ Additional documentation can be found in the wiki
 ** We recommend using a new Ubuntu 22.04 LTS installation, using Python 3.10 **
 ** Support for other Operating Systems and Python versions is not currently offered. **
 
-First, clone this repository (choose ONE of these commands, if you don't know which is which, go with HTTPS)
+First, clone this repository (choose ONE of these commands, not both!)
 
+If you're using standard git auth (no key), then use the HTTPS clone:
 ```bash
-FOR HTTPS (default): git clone https://github.com/edurange/edurange3.git --recurse-submodules
-FOR SSH (key): git clone git@github.com:edurange/edurange3.git --recurse-submodules
+git clone https://github.com/edurange/edurange3.git --recurse-submodules
+```
+If you're using an ssh key to auth, then use the SSH clone:
+```bash
+git clone git@github.com:edurange/edurange3.git --recurse-submodules
 ```
 
 Then, run the installation script (./install.sh), and input credentials when prompted.
