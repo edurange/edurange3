@@ -34,15 +34,19 @@ function Scenario_controller2() {
         set_SliderNum_state(event.target.value);
     };
 
+    console.log('preguard1')
+    
     if (!scenarioID) return (<>Missing Scenario ID</>)
     if (!guideContent_state) return (<>Missing Content</>)
-    
+            
+    console.log('postguard1')
     const scenario_type = guideContent_state?.scenario_meta?.scenario_type;
 
     useEffect(() => {
         async function getYaml() {
             try {
                 const contentReturn = await axios.get(`get_yaml_content/${scenarioID}`);
+                console.log ('GYC ret: ', contentReturn)
                 const contentData = contentReturn.data;
                 set_guideContent_state(contentData);
 
@@ -68,9 +72,13 @@ function Scenario_controller2() {
         getResponses();
     }, []);
     
-
+    console.log('preguard2')
     if ((!meta)) { return (<>Scenario not found</>); }; // GUARD
-    if (!guideContent_state) {return}
+    if (!guideContent_state) {
+        console.log('missing guideContent_state')
+        return
+    }
+    console.log('postguard2')
 
     const saniname = userData_state?.username.replace(/-/g, '');
     const SSH_username = guideContent_state.credentialsJSON?.[saniname]?.[0]?.username;
@@ -78,6 +86,8 @@ function Scenario_controller2() {
     const SSH_IP = guideContent_state.SSH_IP;
 
     const thisContentYAML = guideContent_state.contentYAML;
+    console.log('GCS: ',guideContent_state)
+    console.log('THISCONTENTYAML: ',thisContentYAML)
     const theseChapters = thisContentYAML?.studentGuide?.chapters;
     
     const panes = {
@@ -103,7 +113,9 @@ function Scenario_controller2() {
     const leftPaneToShow = panes[leftPaneName_state];
     const rightPaneToShow = panes[rightPaneName_state];
     
+    console.log('preGuard3')
     if (!theseChapters) {return null};
+    console.log('postGuard3')
 
     const scenario_questions = theseChapters?.flatMap(chapter =>
         chapter.content_array?.filter(item => item.type === 'question')

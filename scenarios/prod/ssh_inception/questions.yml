@@ -1,4 +1,4 @@
-- Text: What is the value of the secret flag on the Starting Line?
+- Text: What is the WRONG value of the secret flag on the Starting Line?
   Type: String
   Answers:
     - Value: $RANDOM 
