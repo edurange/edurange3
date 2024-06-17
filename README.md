@@ -6,14 +6,14 @@ EDURange
 Additional documentation can be found in the wiki
 
 ## Installation
-We recommend using a new Ubuntu 22.04 LTS installation, using Python 3.10
+** We recommend using a new Ubuntu 22.04 LTS installation, using Python 3.10 **
+** Support for other Operating Systems and Python versions is not currently offered. **
 
-Support for other Operating Systems and Python versions is pending.
-
-First, clone this repository
+First, clone this repository (choose ONE of these commands, if you don't know which is which, go with HTTPS)
 
 ```bash
-git clone https://github.com/edurange/edurange3.git --recurse-submodules
+FOR HTTPS (default): git clone https://github.com/edurange/edurange3.git --recurse-submodules
+FOR SSH (key): git clone git@github.com:edurange/edurange3.git --recurse-submodules
 ```
 
 Then, run the installation script (./install.sh), and input credentials when prompted.
@@ -53,8 +53,22 @@ Login to the server using the administrator credentials set in the .env file
 FLASK_USERNAME = ...
 PASSWORD = ...
 ```
-### creating a student group
-As administrator, you can create a student group using the GUI.
-You can create default users in that group for testing purposes. You should save their credentials so that you can fully explore scenarios as a student.
-Those credentials are for the flask server, not for the Containers in the scanarios.
+
+### .env
+For developers, it is important to be aware of the .env file that is created and placed in the edurange3 root directory.
+This env will have values that are likely unique to YOUR installtion.  It is recommended to at least review the file.  
+This file is in the repo's .gitignore, which means it will not be added to your git commits.
+
+### Instructor orientation
+As an instructor, you can create student groups, create 'dummy accounts', and  create scenarios, all from the 'Dashboard' (click the nav link on the left sidebar).
+
+In order to create a Scenario, you must have at least 1 student group that will be assigned to it.
+If you do not already have a student group, create a Student Group on the Dashboard BEFORE you create the Scenario (optionally, create test users to go with it).
+
+Then, at the top of the 'Scenarios' table, use the dropdown menu to select a Student Group, the 'Type' of Scenario you want,
+and a UNIQUE scenario name (one that does not current exist in your database).  Hit create.
+
+Once your scenario has been created, it should automatically rest at the 'stopped' status.  Finally, press the START button to allow student access to the new Scenario.
+
+
 
