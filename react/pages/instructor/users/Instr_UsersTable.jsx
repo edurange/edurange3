@@ -283,10 +283,6 @@ function Instr_UsersTable() {
                     <div className="table-cell-item highlightable-cell col-small">Chats</div>
                 </div>
                 {users_state.map((user, index) => {
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes
                     const allowedMessages = compileMessages_byUser(user.id)
                     const totalMessages = allowedMessages?.length ?? 0;
                     const newMessagesCount = (allowedMessages

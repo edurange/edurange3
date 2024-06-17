@@ -23,13 +23,13 @@ echo -e "${GRN}Installing python3-pip, npm, redis-server,  unzip, postgresql, li
 
 sudo apt update
 # VOLATILE: CHECK NGINX INSTALL - CHECK CERTBOT TOO
-sudo apt install -y python3-pip redis-server unzip wget postgresql libpq-dev nginx
+sudo apt install -y python3-pip redis-server unzip wget postgresql libpq-dev nginx wget libnss3-tools certbot python3-certbot-nginx
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
 source ~/.nvm/nvm.sh
 cd $curDir
 
 pip3 install -r py_flask/config/requirements_prod.txt
-pip3 uninstall pyjwt
+pip3 uninstall --yes pyjwt
 pip3 install pyjwt==2.8.0
 
 nvm install 21
@@ -53,7 +53,7 @@ Use at your own risk; we offer limited support for external \n  configurations. 
 echo -e "${GRN}Please select one of the following options for networking configuration:${NC}"
 echo -e "  (1) Use your internal ip address (Recommended for Developer Instances)"
 echo -e "  (2) Use your public extern ip address (Advanced)"
-echo -e "  (3) Enter your public domain name (For production installations"
+echo -e "  (3) Enter your public domain name (For production installations)"
 
 #Gather potential IP/Address Options:
 
@@ -70,6 +70,7 @@ all=$(/sbin/ip -4 -o addr show scope global | awk '{gsub(/\/.*/,"",$4); print $4
 #echo "($eth0)"
 #echo "($wlan0)"
 
+sudo cp ./docs/nginx.conf.example /etc/nginx/nginx.conf
 
 hostAddress=''
 
@@ -102,17 +103,31 @@ do
         hostAddress="$option2"
       fi
     done
+    
     localDomain=''
-
     while [ -z "$localDomain" ]
     do
-    	echo " Please enter the domain you would like to use for your local installation "
+      echo " Please enter the domain you would like to use for your local installation (Ex: edurange.dev)"
     	read domainSelection
      	localDomain="$domainSelection"
     done
 
-    # Add localDomain to /etc/hosts (permission?)
-    # replace DOMAIN_TO_BE_REPLACED in /etc/nginx/sites-available/default
+    sudo echo "$hostAddress $localDomain" | sudo cat - /etc/hosts > tmp && sudo mv tmp /etc/hosts
+    
+    wget https://github.com/FiloSottile/mkcert/releases/download/v1.4.3/mkcert-v1.4.3-linux-amd64
+    sudo mv mkcert-v1.4.3-linux-amd64 /usr/bin/mkcert
+    sudo chmod +x /usr/bin/mkcert
+    mkcert -install
+    mkcert $localDomain localhost $hostAddress
+    
+    localCert=$(find ~+ -maxdepth 1 -name "$localDomain*" | grep -v key)
+    localKey=$(find ~+ -maxdepth 1 -name "$localDomain*" | grep key)
+
+    sudo cp ./docs/nginx.site.self_signing.example /etc/nginx/sites-available/default
+    sudo sed -i "s|listen 80;|listen 443 ssl;\n    ssl_certificate $localCert;\n    ssl_certificate_key $localKey;|g" /etc/nginx/sites-available/default
+    cat ./docs/nginx.port80Redirect.snippet | sudo tee -a /etc/nginx/sites-available/default
+    sudo sed -i "s/DOMAIN_TO_BE_REPLACED/${localDomain}/g" /etc/nginx/sites-available/default
+    sudo service nginx reload
     
   elif [ $promptnumber -eq 2 ]; then
     #echo $external_ip
@@ -120,22 +135,15 @@ do
     #echo "$hostAddress CHANGED"
   
   elif [ $promptnumber -eq 3 ]; then
+    # TODO certbot cannot be used for generation here, because the site must be running
+    # If certs are pre-existing, we can do the nginx config replacement for the user, but that's about it
+    #
+    echo "Once installation is complete, you will need to adjust your own nginx configs, see docs for help"
+    sudo cp ./docs/nginx.site.prod.example /etc/nginx/sites-available/default
     echo "Enter domain name: "
     read hostAddress
-    #echo "$hostAddress CHANGED"
-
-    # Ask if they have certs already
-    # Verify that they're using certbot?
-    # replace DOMAIN_TO_BE_REPLACED in /etc/nginx/sites-available/default
   fi
 done
-
-#echo "hostAddress changed to: $hostAddress "
-
-#exit
-
-# TODO: Copy an nginx template and replace network address values (domain)
-# Self signing a cert for developer installations
 
 
 if [ $# -eq 0 ];

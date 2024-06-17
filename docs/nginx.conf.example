@@ -1,23 +1,20 @@
+# This is an example /etc/nginx/nginx.conf for nginx reverse proxy.  
+# You WILL need to use some form of reverse proxy 
+# to use edurange3 out of the box.
 
-/*
-This is an example /etc/nginx/nginx.conf for nginx reverse proxy.  
-You WILL need to use some form of reverse proxy 
-to use edurange3 out of the box.
-
-***IMPORTANT***
-This is only the main config file for nginx.  you also need to update
-the site configuration file, which by default is /etc/nginx/sites-available/default
-*****
-
-This is only an example, and has not been 'vetted'
-to work universally; please review and revise.
-
-If you need help with self-signed certs, 
-see further documentation (# DEV_FIX)
-
-
-replace that file with your version.  you can find an example of that config in nginx.site.example in this directory
-*/
+# ***IMPORTANT***
+# This is only the main config file for nginx.  you also need to update
+# the site configuration file, which by default is /etc/nginx/sites-available/default
+# *****
+# 
+# This is only an example, and has not been 'vetted'
+# to work universally; please review and revise.
+# 
+# If you need help with self-signed certs, 
+# see further documentation (# DEV_FIX)
+# 
+# replace that file with your version  
+# you can find an example of that config in nginx.site.example in this directory
 
 user www-data;
 worker_processes auto;

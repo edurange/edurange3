@@ -90,3 +90,6 @@ assets/js/.Rhistory
 assets/css/.Rhistory
 
 .notes
+
+# certificates
+*.pem

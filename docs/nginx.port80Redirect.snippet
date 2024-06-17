@@ -1,0 +1,8 @@
+server {
+    if ($host = DOMAIN_TO_BE_REPLACED) {
+        return 301 https://$host$request_uri;
+    } 
+    listen 80;
+    server_name DOMAIN_TO_BE_REPLACED;
+    return 404; 
+}
