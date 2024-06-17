@@ -6,8 +6,10 @@ EDURange
 Additional documentation can be found in the wiki
 
 ## Installation
-** We recommend using a new Ubuntu 22.04 LTS installation, using Python 3.10 **
-** Support for other Operating Systems and Python versions is not currently offered. **
+**We strongly recommend using a new Ubuntu 22.04 LTS installation, using Python 3.10!**
+**Support for other Operating Systems and Python versions is not currently offered.**
+
+## Step 1: Clone the edurange3 github repo
 
 First, clone this repository (choose ONE of these commands, not both!)
 
@@ -20,7 +22,8 @@ If you're using an ssh key to auth, then use the SSH clone:
 git clone git@github.com:edurange/edurange3.git --recurse-submodules
 ```
 
-Then, run the installation script (./install.sh), and input credentials when prompted.
+## Step 2: Install edurange3 and dependencies
+Next, run the installation script from the project root (./install.sh), and input your NEW credentials when prompted.
 
 Please use unique responses for each prompt.
 ```bash
@@ -30,9 +33,9 @@ cd edurange3
 To verify that you're ready to launch the app, check that "flask" and "celery" are recognized bash commands, and whether "docker run hello-world" works.
 If any of these fail, simply log out and back in, and they should work then. 
 
-### Running Locally
+## Step 3: Running Locally
 
-Once installed, start the app using
+3) Once installed, start the app using
 ```bash
 cd edurange3 (if not in edurange3 root dir)
 npm run build
@@ -57,6 +60,8 @@ Login to the server using the administrator credentials set in the .env file
 FLASK_USERNAME = ...
 PASSWORD = ...
 ```
+
+## More Info
 
 ### .env
 For developers, it is important to be aware of the .env file that is created and placed in the edurange3 root directory.
