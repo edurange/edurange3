@@ -39,8 +39,6 @@ contentDefinitions:
       Can you figure out what these commands mean?
 
       Are there any helpful flags or options on the ssh man page, perhaps relating to ports?
-
-      <question 1>
   
   Reading3: &reading3
     type: reading
@@ -68,8 +66,6 @@ contentDefinitions:
 
       (Hint: If you don't know or you forgot your current IP address, you can always type `ifconfig` to see your current IP)
 
-      <question 2>
-
   Reading4: &reading4
     type: reading
     content: | 
@@ -89,8 +85,6 @@ contentDefinitions:
       Maybe there is a flag that will allow you to pass a file containing a private key to the next ip address?
 
       (Hint: perform another nmap scan of the subnet to find the next IP address)
-
-      <question 3>
 
 
   Reading5: &reading5
@@ -114,8 +108,6 @@ contentDefinitions:
       Ok, so you found the password and the next IP address, you used an nmap scan to find the next IP ... but when you try to login, you are blocked.
 
       Is there another IP address you can SSH from?
-
-      <question 4>
 
   Reading6: &reading6
     type: reading
@@ -155,9 +147,6 @@ contentDefinitions:
 
       (HINT: try a few of the different commands returned in your search. Read their man pages carefully and see if any flags or options will be helpful. You will know you successfully decoded betcha_cant_read_me when you see the directions to the next stop printed on your console.)
 
-
-      <question 6>
-
   Reading8: &reading8
     type: reading
     content: | 
@@ -188,8 +177,6 @@ contentDefinitions:
       [Try this one.](https://cryptii.com/pipes/caesar-cipher)
 
       Once your SSH Master title has been earned, submit your proof inside your browser opened to edurange!
-
-      <question 7>
    
   Question1: &question1
     question_num: 1
@@ -197,10 +184,9 @@ contentDefinitions:
     content: What is the value of the secret flag on the Starting Line?
     options: []
     answers:
-    - answer_type: string
-    - value: $RANDOM 
-      answer_type: String
-      points_possible: 15
+      - answer_type: string
+        value: $RANDOM 
+        points_possible: 15
     points_possible: 15
 
   Question2: &question2
@@ -210,7 +196,7 @@ contentDefinitions:
     options: []
     answers:
       - answer_type: string
-      - value: $RANDOM 
+        value: $RANDOM 
         points_possible: 15
     points_possible: 15
 
@@ -221,7 +207,7 @@ contentDefinitions:
     options: []
     answers:
       - answer_type: string
-      - value: $RANDOM 
+        value: $RANDOM 
         points_possible: 15
     points_possible: 15
 
@@ -232,7 +218,7 @@ contentDefinitions:
     options: []
     answers:
       - answer_type: string
-      - value: $RANDOM 
+        value: $RANDOM 
         points_possible: 15
     points_possible: 15
 
@@ -244,7 +230,7 @@ contentDefinitions:
     options: []
     answers:
       - answer_type: string
-      - value: $RANDOM 
+        value: $RANDOM 
         points_possible: 15
     points_possible: 15
 
@@ -255,7 +241,7 @@ contentDefinitions:
     options: []
     answers:
       - answer_type: string
-      - value: $RANDOM 
+        value: $RANDOM 
         points_possible: 15
     points_possible: 15
 
@@ -266,7 +252,7 @@ contentDefinitions:
     options: []
     answers:
       - answer_type: string
-      - value: $RANDOM 
+        value: $RANDOM 
         points_possible: 15
     points_possible: 15
 

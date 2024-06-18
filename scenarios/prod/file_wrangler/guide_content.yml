@@ -285,7 +285,7 @@ contentDefinitions:
     options: []
     answers:
       - answer_type: String
-        value: "$RANDOM_ONE"
+        value: $RANDOM
         points_possible: 15
     points_possible: 15
 
@@ -297,7 +297,7 @@ contentDefinitions:
     options: []
     answers:
       - answer_type: String
-        value: "$RANDOM_TWO"
+        value: $RANDOM
         points_possible: 15
     points_possible: 15
 
