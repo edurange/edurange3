@@ -9,6 +9,20 @@ Additional documentation can be found in the wiki
 **We strongly recommend using a new Ubuntu 22.04 LTS installation, using Python 3.10!**
 **Support for other Operating Systems and Python versions is not currently offered.**
 
+**NOTE:  If you are installing on a new Virtual Machine or Ubuntu 22.04 installation,
+it is likely you will need to install 'git' and 'curl' packages via apt.**
+To do so, enter the following in your bash cli:
+```
+sudo apt update
+sudo apt upgrade
+sudo apt install git
+sudo apt install curl
+```
+It is also recommended that you use 'minimal installation' option for the Ubuntu install,
+as well as skip updates.  You can update from the command line with the above sequence.
+
+Once you have your Ubuntu 22 set up, proceed to these steps...
+
 ## Step 1: Clone the edurange3 github repo
 
 First, clone this repository (choose ONE of these commands, not both!)
