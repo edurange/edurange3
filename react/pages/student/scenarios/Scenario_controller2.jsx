@@ -34,9 +34,10 @@ function Scenario_controller2() {
         set_SliderNum_state(event.target.value);
     };
 
+    
     if (!scenarioID) return (<>Missing Scenario ID</>)
     if (!guideContent_state) return (<>Missing Content</>)
-    
+            
     const scenario_type = guideContent_state?.scenario_meta?.scenario_type;
 
     useEffect(() => {
@@ -68,9 +69,11 @@ function Scenario_controller2() {
         getResponses();
     }, []);
     
-
     if ((!meta)) { return (<>Scenario not found</>); }; // GUARD
-    if (!guideContent_state) {return}
+    if (!guideContent_state) {
+        console.log('missing guideContent_state')
+        return
+    }
 
     const saniname = userData_state?.username.replace(/-/g, '');
     const SSH_username = guideContent_state.credentialsJSON?.[saniname]?.[0]?.username;

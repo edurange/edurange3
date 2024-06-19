@@ -84,7 +84,8 @@ def getYamlContent(user_role, scenario_id, username):
     if (not scenario_type or status != "Started"):     
         return Err_Custom_FullInfo("Scenario not in started state.  Arborting.", 400)
 
-    with open(f'scenarios/tmp/{unique_name}/guide_content.yml', 'r') as fp:
+    with open(f'scenarios/prod/{scenario_type}/guide_content.yml', 'r') as fp:
+    # with open(f'scenarios/tmp/{unique_name}/guide_content.yml', 'r') as fp:
         contentYAML = yaml.safe_load(fp)
 
     with open(f'scenarios/tmp/{unique_name}/students.json', 'r') as fp:

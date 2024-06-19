@@ -6,7 +6,7 @@ function distribute_flag() {
     done</usr/local/src/user_names.txt
 }
 
-if [ $(hostname) == "StartingLine" ]; then distribute_flag $1; fi
+if [ $(hostname) == "NAT" ]; then distribute_flag $1; fi
 if [ $(hostname) == "FirstStop" ]; then distribute_flag $2; fi
 if [ $(hostname) == "SecondStop" ]; then distribute_flag $3; fi
 if [ $(hostname) == "ThirdStop" ]; then distribute_flag $4; fi

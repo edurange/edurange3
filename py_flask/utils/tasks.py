@@ -85,25 +85,19 @@ def create_scenario_task(self, scen_name, scen_type, students_list, grp_id, scen
         with open("students.json", "w") as outfile:
             json.dump(students, outfile)
 
-        with open(f"../../../scenarios/prod/{scen_type}/questions.yml", "r+") as f:
-            questions = yaml.safe_load(f)
-            logger.info(f"Questions Type: {type(questions)}")
-        
         with open(f"../../../scenarios/prod/{scen_type}/guide_content.yml", "r+")as f:
             content = yaml.safe_load(f)
+            content_items = content['contentDefinitions']
             logger.info(f"Content Type: {type(content)}")
 
         flags = []
-        for q_num, q in enumerate(questions):
-            for a_num, a in enumerate(q["Answers"]):
-                if isinstance(a["Value"], str) and "$RANDOM" in a["Value"]:
+        for content_num, item_name in enumerate(content_items):
+            if content_items[item_name]["type"] == "question":
+                q_num = content_items[item_name]["question_num"]
+                if content_items[item_name]["answers"][0]["value"] == '$RANDOM':
                     rnd_ans = "".join(random.choice(string.ascii_letters + string.digits) for _ in range(8))
-                    content["contentDefinitions"]["Question" + str(q_num + 1)]["answers"][a_num]["value"] = rnd_ans
-                    a["Value"] = rnd_ans
+                    content["contentDefinitions"]["Question" + str(q_num)]["answers"][0]["value"] = rnd_ans
                     flags.append(rnd_ans)
-
-        with open("questions.yml", "w") as outfile:
-            yaml.dump(questions, outfile)
 
         with open("guide_content.yml", "w") as outfile:
             yaml.dump(content, outfile, indent=4)   
