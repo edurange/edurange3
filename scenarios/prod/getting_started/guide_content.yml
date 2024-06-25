@@ -176,7 +176,7 @@ contentDefinitions:
       When in a man page and you need to get out, just type `q`.
       
       TASK: Open the man page for `mv`. Can you give a brief description of what the command `mv` does?
-  Reading12: *reading12
+  Reading12: &reading12
     type: reading
     content: |
       ### Tip: command and file name completion
@@ -184,7 +184,7 @@ contentDefinitions:
       If you are typing a long filename or path, you can hit tab, and the shell will try to complete it. If the completion is not unique, the shell will only complete to the point of ambiguity. And unlike auto-correct, tab completion only happens when you ask for it.
       
       A note on filenames: Using spaces in a filename does not play well with the shell because the shell will try to interpret space-separated strings as separate names or command parameters. There are various solutions to handle this, including tab completion, but it is better not to create the problem in the first place.
-  Reading13: *reading13
+  Reading13: &reading13
     type: reading
     content: |
       ### `pwd`
