@@ -25,7 +25,8 @@ from py_flask.database.models import generate_registration_code as grc
 from py_flask.utils.instructor_utils import (
     clearGroups,
     deleteUsers,
-    NotifyCapture
+    NotifyCapture,
+    getLogs
     )
 from py_flask.utils.tasks import (
     create_scenario_task, 
@@ -122,16 +123,86 @@ def create_group():
             "group_obj": group_obj.to_dict(),
         }
 
+
+@blueprint_instructor.route("/get_logs", methods=['GET'])
+@jwt_and_csrf_required
+def get_logs():
+    instructor_only()
+
+    try:
+        logData = getLogs()
+        if logData is None:
+            raise Err_Custom_FullInfo({
+                'message': 'Error retrieving logs',
+                'status_code': 400
+            })
+        return jsonify(logData)
+    except Err_Custom_FullInfo as err:
+        return err.get_response()
+    except Exception as err:
+        # handle unexpected exceptions
+        generic_error = Err_Custom_FullInfo({'message': str(err), 'status_code': 500})
+        return generic_error.get_response()
+
+
+# @blueprint_instructor.route("/get_logs", methods=['GET'])
+# @jwt_and_csrf_required
+# def get_logs():
+#     instructor_only()
+
+#     try:
+#         logData = getLogs()
+#         if logData is None:
+
+#             newErr = {
+#                 'message': 'error retrieving logs',
+#                 'status_code': 400
+#             }
+#             raise Err_Custom_FullInfo(newErr)
+#         else:
+#             return logData
+#     except:
+#         return Exception
+
+
+
 @blueprint_instructor.route("/get_instructor_data", methods=['GET'])
 @jwt_and_csrf_required
 def get_instructor_data():
     instructor_only()
 
+    gd = get_group_data()
+    print ('gd: ',gd)
+    ud = get_user_data()
+    print ('ud: ',ud)
+    sd = get_scenario_data()
+    print ('sd: ',sd)
+
+    try:
+        logData = getLogs()
+        if logData is None:
+            raise Err_Custom_FullInfo({
+                'message': 'Error retrieving logs',
+                'status_code': 400
+            })
+    except Err_Custom_FullInfo as err:
+        return err.get_response()
+    except Exception as err:
+        # handle unexpected exceptions
+        generic_error = Err_Custom_FullInfo({'message': str(err), 'status_code': 500})
+        return generic_error.get_response()
+    
+    print ('ld: ',logData)
+
+
+
     return_obj = {
-        'groups': get_group_data(),
-        'users': get_user_data(),
-        'scenarios': get_scenario_data(),
+        'groups': gd,
+        'users': ud,
+        'scenarios': sd,
+        'logs' : logData
     }
+    print(return_obj)
     return jsonify(return_obj)
 
 

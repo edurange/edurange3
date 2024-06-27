@@ -1,0 +1,42 @@
+
+.dropdown-frame{
+    display: flex;
+    width: 100%;
+    height: 9dvh;
+    flex-direction: row;
+}
+
+.dropdown-carpet{
+    display: flex;
+    width: 100%;
+    height: 100%;
+    flex-direction: row;
+    border: 2px solid white;
+    border-radius: 15px;
+}
+
+.logsViewer-frame{
+    display: flex;
+    width: 100%;
+    height: 100%;
+}
+.logsViewer-carpet{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    gap: 1.5dvh;
+}
+.logsViewer-body{
+    display: flex;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.078);
+    flex-direction: column;
+    gap: 10px;
+}
+.logsViewer-item{
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+}
