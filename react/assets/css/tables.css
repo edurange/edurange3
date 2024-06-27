@@ -125,3 +125,8 @@
     align-self: flex-end;
     justify-self: flex-end;
 }
+
+.table-typerow{
+    display: flex;
+    
+}
