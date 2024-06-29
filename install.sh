@@ -129,13 +129,13 @@ do
     sudo sed -i "s/DOMAIN_TO_BE_REPLACED/${localDomain}/g" /etc/nginx/sites-available/default
     
     
-    # Start and kill firefox in the background so it automatically sets up its initial configuration
+    # Start and kill firefox so it automatically sets up its initial configuration
     firefox &
-    sleep 2
+    sleep 10
     pkill firefox
     # Add the created certificate to your Firefox profile's database. Different browsers and differently set up machines will need different commands (this is for Ubuntu 22.04.4 and Firefox)
     firefoxProfile=$(sudo grep -m 1 -Po '(?<=Path=).*' /$HOME/snap/firefox/common/.mozilla/firefox/profiles.ini)
-    sudo certutil -d sql:/$HOME/snap/firefox/common/.mozilla/firefox/${firefoxProfile} -A -t "C,," -n "EDURange" -i $localCert
+    sudo certutil -d sql:$HOME/snap/firefox/common/.mozilla/firefox/${firefoxProfile} -A -t "C,," -n "EDURange" -i $localCert
     
     
     sudo service nginx reload
