@@ -47,7 +47,7 @@ function GuideQuestion2({ scenario_id, questionObj, scenario_type }) {
                 //         ? `CORRECT! ✅ \nYou were awarded ${this_item.points_awarded} points!` 
                 //         : "INCORRECT! ❌" 
                 //     }.`);
-                console.log(`Submission for scenario ${scenario_id} question ${questionObj?.itemContentPointer}: "${inputText_state}". Correct answer was ${this_item.correct_response}. You were awarded ${this_item.points_awarded} points!`);
+                // console.log(`Submission for scenario ${scenario_id} question ${questionObj?.itemContentPointer}: "${inputText_state}". Correct answer was ${this_item.correct_response}. You were awarded ${this_item.points_awarded} points!`);
             }
 
             set_inputText_state('');

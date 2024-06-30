@@ -9,8 +9,12 @@ from py_flask.database.models import (
     GroupUsers, 
     ChannelUsers,
     Channels,
+    ChatMessages,
+    BashHistory,
+    Responses,
     generate_registration_code
     )
+from py_flask.database.db_classes import Edu3Mixin
 
 path_to_key = os.path.dirname(os.path.abspath(__file__))
 
@@ -142,3 +146,21 @@ def deleteUsers(users_to_delete):
         print('error deleting user: ', e)
         db_ses.rollback()
         return []
+
+def getLogs(optional_user_id=None):
+    method = "first" if optional_user_id else "all"
+
+    def get_logsTable(model):
+        query_result = model.query.filter_by(user_id=optional_user_id) if optional_user_id else model.query
+        return getattr(query_result, method)()
+
+    chatLogs = get_logsTable(ChatMessages)
+    bashLogs = get_logsTable(BashHistory)
+    responseLogs = get_logsTable(Responses)
+
+    returnDict = {
+        "chat": Edu3Mixin.to_list(chatLogs),
+        "bash": Edu3Mixin.to_list(bashLogs),
+        "responses": Edu3Mixin.to_list(responseLogs)
+    }
+    return returnDict

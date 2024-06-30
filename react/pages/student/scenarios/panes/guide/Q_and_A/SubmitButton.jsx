@@ -23,7 +23,7 @@ function SubmitButton({ scenario_id, question_num, scenario_type }) {
                 const testingItem = scoresArray[0];
                 const pointsAward = testingItem.points_awarded;
                 // dev_fix (don't show answer once working reliably)
-                console.log(`Submission for scenario ${scenario_id} question ${question_num}: "${inputText_state}". Correct answer was ${testingItem.correct_response}. You were awarded ${pointsAward} points!`)
+                // console.log(`Submission for scenario ${scenario_id} question ${question_num}: "${inputText_state}". Correct answer was ${testingItem.correct_response}. You were awarded ${pointsAward} points!`)
             }
         } catch (err) {
             console.log(`Submission error: ${err}`);
