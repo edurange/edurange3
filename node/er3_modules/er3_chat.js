@@ -296,7 +296,7 @@ chatSocketServer.on('connection', async (socketConnection, request) => {
         const this_timestamp = new Date().toISOString();
         const this_scenario_id = Number(this_message.scenario_id)
 
-        console.log(`got msg with message_type ${this_message_type}: `, this_message);
+        // console.log(`got msg with message_type ${this_message_type}: `, this_message);
 
         // handle messages by message_type
         const handlers = {

@@ -185,6 +185,10 @@ class BashHistory(Edu3Mixin, SurrogatePK, Model):
 
     archive_id = Column(db.String(8), nullable=False, unique=False)
 
+'''
+
+WIP
+
 class Feedback(Edu3Mixin, SurrogatePK, Model):
     """Feedback from users"""
     __tablename__ = "feedback"
@@ -209,3 +213,4 @@ class Feedback(Edu3Mixin, SurrogatePK, Model):
 
     archive_id = Column(db.String(8), nullable=False, unique=False)
 
+'''

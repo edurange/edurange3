@@ -12,7 +12,7 @@ import Instr_ScenDetail from './scenarios/Instr_ScenDetail';
 import Instr_UserDetail from './users/Instr_UserDetail';
 import { HomeRouter_context } from '../pub/Home_router';
 import Panopticon from './Panopticon';
-import Instr_LogsViewer from './dashboard/Instr_LogsViewer';
+import Instr_LogsViewer from './logs_dir/Instr_LogsViewer';
 
 export const InstructorRouter_context = React.createContext();
 
@@ -29,8 +29,8 @@ function Instructor_router() {
     const [tempUsers_state, set_tempUsers_state] = useState([]);
     const [selectedMessage_state, set_selectedMessage_state] = useState(null);
     const [logs_state, set_logs_state] = useState({
-        bash_histories: [],
-        chat_messages: [],
+        bash: [],
+        chat: [],
         responses: [],
     })
     const lastChat_ref = useRef(null);
@@ -77,7 +77,7 @@ function Instructor_router() {
         !scenarios_state
         || !groups_state
         || !scenarios_state
-        // || !logs_state
+        || !logs_state
         || !login_state
     ) { return <></> }
 
@@ -115,7 +115,6 @@ function Instructor_router() {
         const handleMessage = (event) => {
             const message = JSON.parse(event.data);
             if (message.message_type === 'chat_message_receipt') {
-                console.log('Instructor_router recv websocket message: ', message)
                 set_chatObjs_UL_state(prevHistory => [...prevHistory, message?.data]);
             } else if (message.message_type === 'chatError') {
                 console.error('Chat error:', message.data);

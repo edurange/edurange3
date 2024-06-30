@@ -12,16 +12,9 @@ function Panopticon() {
         selectedMessage_state, set_selectedMessage_state,
     } = useContext(InstructorRouter_context);
 
-    // if (!selectedMessage_state) {
-    //     console.log('selectedMessageState not found')
-    //     return <>MISSING selectedMessageState</>;
-    // }
-
     if (!chatObjs_UL_state) {
         return <>MISSING CHAT LIBRARY.</>;
     }
-
-    console.log('panopticon loaded successfully')
 
     return (
         <div className="table-frame">

@@ -3,11 +3,6 @@ import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '@assets/css/tables.css';
 
-// work in progress; meant to be polymorphic / generic
-
-// 'type_label' is a string that is meant to reflect things like "log_type"
-// 'type_value' is a string that is meant to be the actual type, such as "chat_logs"
-// use 'N/A' if it doesn't apply
 
 function Table({ columnData, rowData, use_crud, type_value, type_label }) {
 
@@ -23,9 +18,12 @@ function Table({ columnData, rowData, use_crud, type_value, type_label }) {
         <div className="table-frame">
             <div className="table-header">
                 {columnData.map((column) => (
-                    <div key={column.label} className={`table-cell-item ${column.css_class}`}>
-                        {column.label}
-                    </div>
+                    <>
+                        <div key={column.label} className={`table-cell-item ${column.css_class}`}>
+                            {column.label}
+                        </div>
+
+                    </>
                 ))}
             </div>
 
@@ -42,6 +40,7 @@ function Table({ columnData, rowData, use_crud, type_value, type_label }) {
                             </div>
                         );
                     })}
+                    
                 </div>
             ))}
         </div>

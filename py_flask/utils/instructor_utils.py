@@ -159,82 +159,8 @@ def getLogs(optional_user_id=None):
     responseLogs = get_logsTable(Responses)
 
     returnDict = {
-        "chatLogs": Edu3Mixin.to_list(chatLogs),
-        "bashLogs": Edu3Mixin.to_list(bashLogs),
-        "responseLogs": Edu3Mixin.to_list(responseLogs)
+        "chat": Edu3Mixin.to_list(chatLogs),
+        "bash": Edu3Mixin.to_list(bashLogs),
+        "responses": Edu3Mixin.to_list(responseLogs)
     }
     return returnDict
-
-# def getLogs(optional_user_id=None):
-#     method = "first" if optional_user_id else "all"
-
-#     def get_logsTable(model):
-#         query_result = model.query.filter_by(user_id=optional_user_id) if optional_user_id else model.query
-#         return getattr(query_result, method)()
-
-#     chatLogs = get_logsTable(ChatMessages)
-#     bashLogs = get_logsTable(BashHistory)
-#     responseLogs = get_logsTable(Responses)
-
-#     returnDict = {
-#         "chatLogs": chatLogs.to_dict() if not isinstance(chatLogs, list) else [c.to_dict() for c in chatLogs],
-#         "bashLogs": bashLogs.to_dict() if not isinstance(bashLogs, list) else [b.to_dict() for b in bashLogs],
-#         "responseLogs": responseLogs.to_dict() if not isinstance(responseLogs, list) else [r.to_dict() for r in responseLogs]
-#     }
-#     return returnDict
-
-
-# def getLogs(optional_user_id=None):
-#     #polymorphic; can get either logs for all users or single
-
-#     print('getLogs called')
-#     method = "first" if optional_user_id else "all"
-#     print('getLogs method: ', method)
-
-#     def get_logsTable(model):
-#         print('get_logsTable model: ', model)
-#         query_result = model.query.filter_by(user_id=optional_user_id) if optional_user_id else model.query
-#         print('get_logsTable queryResult: ', query_result)
-#         return getattr(query_result, method)()
-
-#     chatLogs = get_logsTable(ChatMessages)
-#     bashLogs = get_logsTable(BashHistory)
-#     responseLogs = get_logsTable(Responses)
-
-#     returnDict = {
-#         "chatLogs": chatLogs.to_dict(),
-#         "bashLogs": bashLogs.to_dict(),
-#         "responseLogs": responseLogs.to_dict()
-#     }
-#     print ('getLogs returnDict', returnDict)
-#     return returnDict
-
-# def getLogs(optional_user_id):
-
-#     if optional_user_id is None:
-#         # get logs for all users
-#         chatLogs = ChatMessages.query.filter_by(user_id=optional_user_id).all()
-#         bashLogs = BashHistory.query.filter_by(user_id=optional_user_id).all()
-#         responseLogs = Responses.query.filter_by(user_id=optional_user_id).all()
-
-#         returnDict = {
-#             "chatLogs": chatLogs.to_dict(),
-#             "bashLogs": bashLogs.to_dict(),
-#             "responseLogs": responseLogs.to_dict()
-#         }
-#         return returnDict
-    
-#     else:
-#         # get logs for specific user
-#         chatLogs = ChatMessages.query.filter_by(user_id=optional_user_id).first()
-#         bashLogs = BashHistory.query.filter_by(user_id=optional_user_id).first()
-#         responseLogs = Responses.query.filter_by(user_id=optional_user_id).first()
-
-#         returnDict = {
-#             "chatLogs": chatLogs.to_dict(),
-#             "bashLogs": bashLogs.to_dict(),
-#             "responseLogs": responseLogs.to_dict()
-#         }
-#         return returnDict
-
-
