@@ -147,7 +147,7 @@
 
 .grid-container {
     display: grid;
-    grid-template-columns: 4.5fr 1.3fr .9fr 1fr 3.6fr 2.2fr 8fr;
+    grid-template-columns: 4.5fr 1.3fr .9fr 1fr 3.6fr 2.2fr 8fr .8fr;
     gap: 3px;
     color: black;
     height: 100%;
