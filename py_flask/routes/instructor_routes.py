@@ -172,11 +172,8 @@ def get_instructor_data():
     instructor_only()
 
     gd = get_group_data()
-    print ('gd: ',gd)
     ud = get_user_data()
-    print ('ud: ',ud)
     sd = get_scenario_data()
-    print ('sd: ',sd)
 
     try:
         logData = getLogs()
@@ -191,9 +188,6 @@ def get_instructor_data():
         # handle unexpected exceptions
         generic_error = Err_Custom_FullInfo({'message': str(err), 'status_code': 500})
         return generic_error.get_response()
-    
-    print ('ld: ',logData)
-
 
 
     return_obj = {
