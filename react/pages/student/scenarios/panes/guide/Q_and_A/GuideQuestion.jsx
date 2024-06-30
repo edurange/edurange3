@@ -40,7 +40,7 @@ function GuideQuestion({ scenario_id, questionObj, scenario_type }) {
                     }));
                 }
 
-                console.log(`Submission for scenario ${scenario_id} question ${questionObj?.itemContentPointer}: "${inputText_state}". Correct answer was [ REDACTED ]. You were awarded ${this_item.points_awarded} points!`);
+                // console.log(`Submission for scenario ${scenario_id} question ${questionObj?.itemContentPointer}: "${inputText_state}". Correct answer was [ REDACTED ]. You were awarded ${this_item.points_awarded} points!`);
                 // console.log(`Submission for scenario ${scenario_id} question ${questionObj?.itemContentPointer}: "${inputText_state}". Correct answer was ${this_item.correct_response}. You were awarded ${this_item.points_awarded} points!`);
             }
 

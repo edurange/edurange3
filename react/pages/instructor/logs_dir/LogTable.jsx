@@ -2,6 +2,7 @@ import React from 'react';
 import '@assets/css/tables.css';
 import Placard from '../../../components/Placard';
 import { nanoid } from 'nanoid';
+import Copy_button_flex from '../../../components/Copy_button_flex';
 
 function LogTable({ rowData, use_crud, logType }) {
 
@@ -31,6 +32,7 @@ function LogTable({ rowData, use_crud, logType }) {
                         <div className="grid-header">Scenario Type</div>
                         <div className="grid-header">Archive ID</div>
                         <div className="grid-header">Content</div>
+                        <div className="grid-header">COPY DB ROW</div>
 
                         {rowData.map((item, index) => (
                             <React.Fragment key={nanoid(5)}>
@@ -44,6 +46,9 @@ function LogTable({ rowData, use_crud, logType }) {
                                     <div className='content-box'>
                                         {item.content}
                                     </div>
+                                </div>
+                                <div className='grid-item'>
+                                    <Copy_button_flex thingToCopy={item} textLabel={''} bg_is_light={true}/>
                                 </div>
                             </React.Fragment>
                         ))}
