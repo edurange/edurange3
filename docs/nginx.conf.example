@@ -16,10 +16,10 @@
 # replace that file with your version  
 # you can find an example of that config in nginx.site.example in this directory
 
-user www-data;
+user nobody;
 worker_processes auto;
-pid /run/nginx.pid;
-include /etc/nginx/modules-enabled/*.conf;
+pid /var/run/nginx.pid;
+include /opt/homebrew/etc/nginx/modules-enabled/*.conf;
 
 events {
         worker_connections 768;
@@ -40,7 +40,7 @@ http {
         # server_names_hash_bucket_size 64;
         # server_name_in_redirect off;
 
-        include /etc/nginx/mime.types;
+        include /opt/homebrew/etc/nginx/mime.types;
         default_type application/octet-stream;
 
         ##
@@ -54,8 +54,8 @@ http {
         # Logging Settings
         ##
 
-        access_log /var/log/nginx/access.log;
-        error_log /var/log/nginx/error.log;
+        access_log /Library/Logs/nginx/access.log;
+        error_log /Library/Logs/nginx/error.log;
 
         ##
         # Gzip Settings
@@ -74,8 +74,8 @@ http {
         # Virtual Host Configs
         ##
 
-        include /etc/nginx/conf.d/*.conf;
-        include /etc/nginx/sites-enabled/*;
+        include /opt/homebrew/etc/nginx/conf.d/*.conf;
+        include /opt/homebrew/etc/nginx/sites-enabled/*;
 }
 
 
