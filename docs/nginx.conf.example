@@ -20,6 +20,8 @@ user nobody;
 worker_processes auto;
 pid /var/run/nginx.pid;
 include /opt/homebrew/etc/nginx/modules-enabled/*.conf;
+include /opt/homebrew/etc/nginx/sites-enabled/*;
+
 
 events {
         worker_connections 768;

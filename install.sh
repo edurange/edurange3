@@ -131,10 +131,17 @@ do
     localCert=$(find ~+ -maxdepth 1 -name "$localDomain*" | grep -v key)
     localKey=$(find ~+ -maxdepth 1 -name "$localDomain*" | grep key)
 
-    sudo cp ./docs/nginx.conf.example /opt/homebrew/etc/nginx/nginx.conf
-    sudo sed -i "" "s|listen 80;|listen 443 ssl;\n    ssl_certificate $localCert;\n    ssl_certificate_key $localKey;|g" /opt/homebrew/etc/nginx/nginx.conf
-    cat ./docs/nginx.port80Redirect.snippet | sudo tee -a /opt/homebrew/etc/nginx/nginx.conf
-    sudo sed -i "" "s/DOMAIN_TO_BE_REPLACED/${localDomain}/g" /opt/homebrew/etc/nginx/nginx.conf
+    sudo mkdir /opt/homebrew/etc/nginx/sites-available
+    sudo mkdir /opt/homebrew/etc/nginx/sites-enabled
+
+    cd /opt/homebrew/etc/nginx/sites-available
+    sudo touch default
+    cd ~/edurange3
+
+    sudo cp ./docs/nginx.site.self_signing.example /opt/homebrew/etc/nginx/sites-available/default
+    sudo sed -i "" "s|listen 80;|listen 443 ssl;\n    ssl_certificate $localCert;\n    ssl_certificate_key $localKey;|g" /opt/homebrew/etc/nginx/sites-available/default
+    sudo sh -c 'cat ./docs/nginx.port80Redirect.snippet >> /opt/homebrew/etc/nginx/sites-available/default'
+    sudo sed -i "" "s/DOMAIN_TO_BE_REPLACED/${localDomain}/g" /opt/homebrew/etc/nginx/sites-available/default
     sudo nginx -s reload
     
   elif [ $promptnumber -eq 2 ]; then
@@ -168,8 +175,8 @@ then
 	read rootPass
 	# Generate secret string for cookie encryption
   # TODO: Replace JWT_SECRET_KEY as well
-	secretKey=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w ${1:-20} | head -n 1)
-  secretKeyJWT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w ${1:-20} | head -n 1)
+  secretKey=$(cat /dev/urandom | LC_ALL=C tr -dc '[:alpha:]' | fold -w ${1:-20} | head -n 1)
+  secretKeyJWT=$(cat /dev/urandom |LC_ALL=C tr -dc '[:alpha:]' | fold -w ${1:-20} | head -n 1)
 	cp ./.env.example ./.env
   sed -i '' -e "s/DBNAME_REPLACEME/${dbname}/g" \
           -e "s/DIFFERENT_SECRETKEY/${secretKeyJWT}/" \
@@ -196,7 +203,7 @@ brew install hashicorp/tap/terraform
 if ! [ -x "$(command -v docker)" ];
 then
 	echo -e "${GRN}Downloading and setting up docker${NC}"
-	curl -O https://desktop.docker.com/mac/main/amd64/Docker.dmg?utm_source=docker&utm_medium=webreferral&utm_campaign=docs-driven-download-mac-amd64&_gl=1*1gt6gz7*_ga*MTMwMTA0OTAyMy4xNzE5NTExMTMx*_ga_XJWPQMJYHQ*MTcxOTUxMTEzMS4xLjEuMTcxOTUxMzMxMS42MC4wLjA.
+  curl -O "https://desktop.docker.com/mac/main/amd64/Docker.dmg?utm_source=docker&utm_medium=webreferral&utm_campaign=docs-driven-download-mac-amd64&_gl=1*1gt6gz7*_ga*MTMwMTA0OTAyMy4xNzE5NTExMTMx*_ga_XJWPQMJYHQ*MTcxOTUxMTEzMS4xLjEuMTcxOTUxMzMxMS42MC4wLjA."
   sudo hdiutil attach Docker.dmg
   sudo /Volumes/Docker/Docker.app/Contents/MacOS/install
   sudo hdiutil detach /Volumes/Docker
@@ -207,7 +214,7 @@ fi
 
 mkdir ~/postgres_data
 initdb ~/postgres_data
-pg_ctl -D ~/postgres_data   
+pg_ctl -D ~/postgres_data start
 createuser postgres
 
 # Start PostgreSQL service
