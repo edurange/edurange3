@@ -5,7 +5,6 @@ YLW='\033[1;33m'
 NC='\033[0m'
 username=$(whoami)
 current_directory=$(pwd)
-dbpass="passwordfoo"
 dbname="namefoo"
 flaskUser="Administrator"
 flaskPass="flaskpass"
@@ -13,6 +12,29 @@ secretKey="not-so-secret"
 hostAddress="localhost"
 rootPass="change-me"
 curDir=$(pwd)
+
+
+# Prompts the user for Y/n input. Returns 0 if yes 1 if no
+yesNo(){
+    if [ "$2" = "1" ]; then
+        echo  -e "${GRN}$1 [N/y]:" "prompt"
+    else
+        echo -e "${GRN}$1 [Y/n]:" "prompt"
+    fi
+
+    read answer
+
+    if [ "$answer" = "Y" ] || [  "$answer" = "y" ]; then
+        return 0
+    elif [ "$answer" = "N" ] || [  "$answer" = "n" ]; then
+        return 1
+    elif [ "$answer" = "" ]; then
+        return $2
+    else
+        yesNo "$1"
+        return $?
+    fi
+}
 
 
 # Add pip-executables to the path if they aren't already
@@ -163,8 +185,6 @@ done
 
 if [ $# -eq 0 ];
 then
-	echo -e "${YLW}Please enter your database password:${NC}"
-	read dbpass
 	echo -e "${YLW}Please enter your database name ALL LOWERCASE:${NC}"
 	read dbname
 	echo -e "${YLW}Please enter your Flask (web interface) username NO SYMBOLS:${NC}"
@@ -202,8 +222,13 @@ brew install hashicorp/tap/terraform
 # Check to see if docker is already installed. If it is, skip this.
 if ! [ -x "$(command -v docker)" ];
 then
-	echo -e "${GRN}Downloading and setting up docker${NC}"
-  curl -O "https://desktop.docker.com/mac/main/amd64/Docker.dmg?utm_source=docker&utm_medium=webreferral&utm_campaign=docs-driven-download-mac-amd64&_gl=1*1gt6gz7*_ga*MTMwMTA0OTAyMy4xNzE5NTExMTMx*_ga_XJWPQMJYHQ*MTcxOTUxMTEzMS4xLjEuMTcxOTUxMzMxMS42MC4wLjA."
+	echo -e "${GRN}Downloading and setting up amd docker${NC}"
+  yesNo "Do you have an older Mac that needs Intel Chip compatibility?"
+	if [ "$?" = "0" ]; then
+      curl -0 "https://desktop.docker.com/mac/main/amd64/Docker.dmg?utm_source=docker&utm_medium=webreferral&utm_campaign=docs-driven-download-mac-amd64&_gl=1*wrts9m*_ga*MTMwMTA0OTAyMy4xNzE5NTExMTMx*_ga_XJWPQMJYHQ*MTcxOTkzNTYxMS4zLjAuMTcxOTkzNTYxMS42MC4wLjA."
+	else
+      curl -O "https://desktop.docker.com/mac/main/arm64/Docker.dmg?utm_source=docker&utm_medium=webreferral&utm_campaign=docs-driven-download-mac-arm64&_gl=1*51cku8*_ga*MTMwMTA0OTAyMy4xNzE5NTExMTMx*_ga_XJWPQMJYHQ*MTcxOTkzNTYxMS4zLjAuMTcxOTkzNTYxMS42MC4wLjA."
+	fi
   sudo hdiutil attach Docker.dmg
   sudo /Volumes/Docker/Docker.app/Contents/MacOS/install
   sudo hdiutil detach /Volumes/Docker
@@ -212,10 +237,8 @@ else
 	echo "Docker already installed. Skipping Docker installation."
 fi
 
-mkdir ~/postgres_data
-initdb ~/postgres_data
-pg_ctl -D ~/postgres_data start
-createuser postgres
+# Start Redis-Server
+brew services start redis-server
 
 # Start PostgreSQL service
 brew services start postgresql
@@ -223,6 +246,8 @@ brew services start postgresql
 # Initialize psql 
 sudo -Hiu postgres psql -U postgres -c "alter user postgres with password '"$dbpass"';"
 sudo -Hiu postgres psql -U postgres -c "CREATE DATABASE $dbname ;"
+
+psql postgres -U $username -c "CREATE DATABASE $dbname;" 
 
 
 # Fix the script dumping us to a different directory after installation
@@ -237,8 +262,7 @@ echo -e "${GRN}You may need to make sure that pip-executables are accessible${NC
 echo -e "${GRN}If the ${NC} flask ${GRN} or ${NC} celery ${GRN} commands are not recognized, try:"
 echo -e "${NC}source ~/.bash_profile ${GRN} or ${NC} export PATH=/home/$username/.local/bin:\$PATH ${NC}"
 echo -e "${GRN}Before starting remember to run: ${NC}source .venv/bin/activate"
-echo -e "${GRN}Before starting remember to run: ${NC}pg_ctl -D ~/postgres_data start"
-echo -e "${GRN}Before closing remember to run: ${NC}brew services stop postgresql"
+
 
 sudo su $USER --login
 cd $curDir
