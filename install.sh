@@ -5,8 +5,8 @@ YLW='\033[1;33m'
 NC='\033[0m'
 username=$(whoami)
 current_directory=$(pwd)
-dbpass="passwordfoo"
 dbname="namefoo"
+dbpass="passfoo"
 flaskUser="Administrator"
 flaskPass="flaskpass"
 secretKey="not-so-secret"
@@ -15,18 +15,60 @@ rootPass="change-me"
 curDir=$(pwd)
 
 
+# Prompts the user for Y/n input. Returns 0 if yes 1 if no
+yesNo(){
+    if [ "$2" = "1" ]; then
+        echo  -e "${GRN}$1 [N/y]:" "prompt"
+    else
+        echo -e "${GRN}$1 [Y/n]:" "prompt"
+    fi
+
+    read answer
+
+    if [ "$answer" = "Y" ] || [  "$answer" = "y" ]; then
+        return 0
+    elif [ "$answer" = "N" ] || [  "$answer" = "n" ]; then
+        return 1
+    elif [ "$answer" = "" ]; then
+        return $2
+    else
+        yesNo "$1"
+        return $?
+    fi
+}
+
+# Function to prompt for input and validate it as alphanumeric
+
+prompt_for_alphanumeric_input() {
+    local prompt_message="$1"
+    local input
+    while true; do
+        read -p "${YLW}$prompt_message:${NC} " input
+        if [[ "$input" =~ ^[[:alnum:]]+$ ]]; then
+            echo "$input"
+            break
+        else
+            echo "Error: Input must be alphanumeric (letters and digits only). Please try again."
+        fi
+    done
+}
+
 # Add pip-executables to the path if they aren't already
-grep -qxF 'export PATH=$PATH:/home/$(whoami)/.local/bin' ~/.bashrc || echo 'export PATH=$PATH:/home/$(whoami)/.local/bin' >> ~/.bashrc
-source ~/.bashrc
+grep -qxF 'export PATH=$PATH:/Users/$(whoami)/.local/bin' ~/.bash_profile || echo 'export PATH=$PATH:/Users/$(whoami)/.local/bin' >> ~/.bash_profile
+source ~/.bash_profile
 
-echo -e "${GRN}Installing python3-pip, npm, redis-server,  unzip, postgresql, lib-pq-dev, and wget${NC}"
+echo -e "${GRN}Installing python, npm, redis-server, unzip, postgresql, lib-pq-dev, and nginx${NC}"
 
-sudo apt update
-# VOLATILE: CHECK NGINX INSTALL - CHECK CERTBOT TOO
-sudo apt install -y python3-pip redis-server unzip wget postgresql libpq-dev nginx wget libnss3-tools certbot python3-certbot-nginx
+brew update
+
+brew install python3 npm, redis unzip pkg-config krb5 postgresql libpq nginx certbot
+
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
 source ~/.nvm/nvm.sh
 cd $curDir
+
+python3 -m venv .venv
+source .venv/bin/activate
 
 pip3 install -r py_flask/config/requirements_prod.txt
 pip3 uninstall --yes pyjwt
@@ -55,14 +97,14 @@ echo -e "  (1) Use your internal ip address (Recommended for Developer Instances
 echo -e "  (2) Use your public extern ip address (Advanced)"
 echo -e "  (3) Enter your public domain name (For production installations)"
 
-#Gather potential IP/Address Options:
+# Gather potential IP/Address Options:
 
-#wlo1=$(ip -4 addr show wlo1 | grep -oP '(?<=inet\s)\d+(.\d+){3}' 2>/dev/null)
-#eth0=$(ip -4 addr show eth0 | grep -oP '(?<=inet\s)\d+(.\d+){3}' 2>/dev/null)
-#enp1s0=$(ip -4 addr show enp1s0 | grep -oP '(?<=inet\s)\d+(.\d+){3}' 2>/dev/null)
-#wlan0=$(ip -4 addr show wlan0 | grep -oP '(?<=inet\s)\d+(.\d+){3}' 2>/dev/null)
+#wlo1=$(ifconfig wlo1 | grep -oE 'inet ([0-9]{1,3}\.){3}[0-9]{1,3}' | awk '{print $2}')
+#eth0=$(ifconfig eth0 | grep -oE 'inet ([0-9]{1,3}\.){3}[0-9]{1,3}' | awk '{print $2}')
+#enp1s0=$(ifconfig enp1s0 | grep -oE 'inet ([0-9]{1,3}\.){3}[0-9]{1,3}' | awk '{print $2}')
+#wlan0=$(ifconfig wlan0 | grep -oE 'inet ([0-9]{1,3}\.){3}[0-9]{1,3}' | awk '{print $2}')
 
-all=$(/sbin/ip -4 -o addr show scope global | awk '{gsub(/\/.*/,"",$4); print $4}')
+all=$(ifconfig | grep -oE 'inet ([0-9]{1,3}\.){3}[0-9]{1,3}' | awk '{print $2}')
 
 #echo "($all)"
 #echo "($wlo1)"
@@ -70,7 +112,12 @@ all=$(/sbin/ip -4 -o addr show scope global | awk '{gsub(/\/.*/,"",$4); print $4
 #echo "($eth0)"
 #echo "($wlan0)"
 
-sudo cp ./docs/nginx.conf.example /etc/nginx/nginx.conf
+sudo mkdir /Library/Logs/nginx/
+
+sudo touch /Library/Logs/nginx/access.log
+sudo touch /Library/Logs/nginx/error.log
+
+sudo cp ./docs/nginx.conf.example /opt/homebrew/etc/nginx/nginx.conf
 
 hostAddress=''
 
@@ -114,34 +161,27 @@ do
 
     sudo echo "$hostAddress $localDomain" | sudo cat - /etc/hosts > tmp && sudo mv tmp /etc/hosts
     
-    wget https://github.com/FiloSottile/mkcert/releases/download/v1.4.3/mkcert-v1.4.3-linux-amd64
-    sudo mv mkcert-v1.4.3-linux-amd64 /usr/bin/mkcert
-    sudo chmod +x /usr/bin/mkcert
+    brew install mkcert
+    brew install nss
     mkcert -install
     mkcert $localDomain localhost $hostAddress
     
     localCert=$(find ~+ -maxdepth 1 -name "$localDomain*" | grep -v key)
     localKey=$(find ~+ -maxdepth 1 -name "$localDomain*" | grep key)
 
-    sudo cp ./docs/nginx.site.self_signing.example /etc/nginx/sites-available/default
-    sudo sed -i "s|listen 80;|listen 443 ssl;\n    ssl_certificate $localCert;\n    ssl_certificate_key $localKey;|g" /etc/nginx/sites-available/default
-    cat ./docs/nginx.port80Redirect.snippet | sudo tee -a /etc/nginx/sites-available/default
-    sudo sed -i "s/DOMAIN_TO_BE_REPLACED/${localDomain}/g" /etc/nginx/sites-available/default
-    
-    
-    # Start and kill firefox so it automatically sets up its initial configuration
-    firefox &
-    sleep 10
-    pkill firefox
-    # Add the created certificate to your Firefox profile's database. Different browsers and differently set up machines will need different commands (this is for Ubuntu 22.04.4 and Firefox)
-    firefoxProfile=$(sudo grep -m 1 -Po '(?<=Path=).*' /$HOME/snap/firefox/common/.mozilla/firefox/profiles.ini)
-    sudo certutil -d sql:$HOME/snap/firefox/common/.mozilla/firefox/${firefoxProfile} -A -t "C,," -n "EDURange" -i $localCert
-    
-    
-    sudo service nginx reload
-    
-    
+    sudo mkdir /opt/homebrew/etc/nginx/sites-available
+    sudo mkdir /opt/homebrew/etc/nginx/sites-enabled
 
+    cd /opt/homebrew/etc/nginx/sites-available
+    sudo touch default
+    cd ~/edurange3
+
+    sudo cp ./docs/nginx.site.self_signing.example /opt/homebrew/etc/nginx/sites-available/default
+    sudo sed -i "" "s|listen 80;|listen 443 ssl;\n    ssl_certificate $localCert;\n    ssl_certificate_key $localKey;|g" /opt/homebrew/etc/nginx/sites-available/default
+    sudo sh -c 'cat ./docs/nginx.port80Redirect.snippet >> /opt/homebrew/etc/nginx/sites-available/default'
+    sudo sed -i "" "s/DOMAIN_TO_BE_REPLACED/${localDomain}/g" /opt/homebrew/etc/nginx/sites-available/default
+    sudo nginx -s reload
+    
   elif [ $promptnumber -eq 2 ]; then
     #echo $external_ip
     hostAddress="$external_ip"
@@ -152,7 +192,7 @@ do
     # If certs are pre-existing, we can do the nginx config replacement for the user, but that's about it
     #
     echo "Once installation is complete, you will need to adjust your own nginx configs, see docs for help"
-    sudo cp ./docs/nginx.site.prod.example /etc/nginx/sites-available/default
+    sudo cp ./docs/nginx.site.prod.example /opt/homebrew/etc/nginx/nginx.conf
     echo "Enter domain name: "
     read hostAddress
   fi
@@ -161,29 +201,24 @@ done
 
 if [ $# -eq 0 ];
 then
-	echo -e "${YLW}Please enter your database password:${NC}"
-	read dbpass
-	echo -e "${YLW}Please enter your database name ALL LOWERCASE:${NC}"
-	read dbname
-	echo -e "${YLW}Please enter your Flask (web interface) username NO SYMBOLS:${NC}"
-	read flaskUser
-	echo -e "${YLW}Please enter your Flask (web interface) password:${NC}"
-	read flaskPass
-	echo -e "${YLW}Please enter your root password for all containers:${NC}"
-	read rootPass
+	dbpass=$(prompt_for_alphanumeric_input "Please enter your database password (alphanumeric characters only):")
+  dbname=$(prompt_for_alphanumeric_input "Please enter your database name ALL LOWERCASE (alphanumeric characters only):")
+  flaskUser=$(prompt_for_alphanumeric_input "Please enter your Flask (web interface) username NO SYMBOLS (alphanumeric characters only):")
+  flaskPass=$(prompt_for_alphanumeric_input "Please enter your Flask (web interface) password (alphanumeric characters only):")
+  rootPass=$(prompt_for_alphanumeric_input "Please enter your root password for all containers (alphanumeric characters only):")
 	# Generate secret string for cookie encryption
   # TODO: Replace JWT_SECRET_KEY as well
-	secretKey=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w ${1:-20} | head -n 1)
-  secretKeyJWT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w ${1:-20} | head -n 1)
+  secretKey=$(cat /dev/urandom | LC_ALL=C tr -dc '[:alpha:]' | fold -w ${1:-20} | head -n 1)
+  secretKeyJWT=$(cat /dev/urandom |LC_ALL=C tr -dc '[:alpha:]' | fold -w ${1:-20} | head -n 1)
 	cp ./.env.example ./.env
-	sed -i "s/DBNAME_REPLACEME/${dbname}/g" .env
-  sed -i "s/DIFFERENT_SECRETKEY/${secretKeyJWT}/" .env
-	sed -i "s/DB_PASS_REPLACEME/${dbpass}/" .env
-	sed -i "s/someUser/${flaskUser}/" .env
-	sed -i "s/somePass/${flaskPass}/" .env
-	sed -i "s/YOURSECRETKEY/${secretKey}/" .env
-	sed -i "s/YOUR_URL_HERE/${hostAddress}/" .env
-	sed -i "s/someRootPass/${rootPass}/" .env
+  sed -i '' -e "s/DBNAME_REPLACEME/${dbname}/g" \
+          -e "s/DIFFERENT_SECRETKEY/${secretKeyJWT}/" \
+          -e "s/DB_PASS_REPLACEME/${dbpass}/" \
+          -e "s/someUser/${flaskUser}/" \
+          -e "s/somePass/${flaskPass}/" \
+          -e "s/YOURSECRETKEY/${secretKey}/" \
+          -e "s/YOUR_URL_HERE/${hostAddress}/" \
+          -e "s/someRootPass/${rootPass}/" .env
 
 # NOTE: This was for vagrant installations, investigate removing  
 elif [ $1 = "auto" ];
@@ -194,29 +229,38 @@ fi
 echo -e "${GRN}Downloading and setting up terraform${NC}"
 
 # Updated Terraform to newest release June 4 2022
-wget https://releases.hashicorp.com/terraform/1.2.2/terraform_1.2.2_linux_amd64.zip
-unzip terraform_1.2.2_linux_amd64.zip
-sudo mv terraform /usr/bin/terraform
+brew tap hashicorp/tap
+brew install hashicorp/tap/terraform
 
 # Check to see if docker is already installed. If it is, skip this.
 if ! [ -x "$(command -v docker)" ];
 then
-	echo -e "${GRN}Downloading and setting up docker${NC}"
-	wget -O docker.sh get.docker.com
-	chmod +x docker.sh
-	
-	echo -e "${GRN}Creating a user group for docker, and adding your account...${NC}"
-	sudo groupadd docker
-	sudo usermod -aG docker $username
+	echo -e "${GRN}Downloading and setting up amd docker${NC}"
+  yesNo "Do you have an older Mac that needs Intel Chip compatibility?"
+	if [ "$?" = "0" ]; then
+      curl -0 "https://desktop.docker.com/mac/main/amd64/Docker.dmg?utm_source=docker&utm_medium=webreferral&utm_campaign=docs-driven-download-mac-amd64&_gl=1*wrts9m*_ga*MTMwMTA0OTAyMy4xNzE5NTExMTMx*_ga_XJWPQMJYHQ*MTcxOTkzNTYxMS4zLjAuMTcxOTkzNTYxMS42MC4wLjA."
+	else
+      curl -O "https://desktop.docker.com/mac/main/arm64/Docker.dmg?utm_source=docker&utm_medium=webreferral&utm_campaign=docs-driven-download-mac-arm64&_gl=1*51cku8*_ga*MTMwMTA0OTAyMy4xNzE5NTExMTMx*_ga_XJWPQMJYHQ*MTcxOTkzNTYxMS4zLjAuMTcxOTkzNTYxMS42MC4wLjA."
+	fi
+  sudo hdiutil attach Docker.dmg
+  sudo /Volumes/Docker/Docker.app/Contents/MacOS/install
+  sudo hdiutil detach /Volumes/Docker
 
-	./docker.sh
 else
 	echo "Docker already installed. Skipping Docker installation."
 fi
 
+# Start Redis-Server
+brew services start redis-server
+
+# Start PostgreSQL service
+brew services start postgresql
+
 # Initialize psql 
 sudo -Hiu postgres psql -U postgres -c "alter user postgres with password '"$dbpass"';"
 sudo -Hiu postgres psql -U postgres -c "CREATE DATABASE $dbname ;"
+
+psql postgres -U $username -c "CREATE DATABASE $dbname;" 
 
 
 # Fix the script dumping us to a different directory after installation
@@ -224,13 +268,14 @@ cd $current_directory
 # npm run build # DEV_FIX build will be done w/ vite (not webpack) but disabled for now
 
 # Clean up
-rm ./terraform_1.2.2_linux_amd64.zip
-rm ./docker.sh
+rm ./Docker.dmg
 
 echo -e "${GRN}To run the app any time, use: ${NC} npm start"
 echo -e "${GRN}You may need to make sure that pip-executables are accessible${NC}"
 echo -e "${GRN}If the ${NC} flask ${GRN} or ${NC} celery ${GRN} commands are not recognized, try:"
-echo -e "${NC}source ~/.bashrc ${GRN} or ${NC} export PATH=/home/$username/.local/bin:\$PATH ${NC}"
+echo -e "${NC}source ~/.bash_profile ${GRN} or ${NC} export PATH=/home/$username/.local/bin:\$PATH ${NC}"
+echo -e "${GRN}Before starting remember to run: ${NC}source .venv/bin/activate"
+
 
 sudo su $USER --login
 cd $curDir

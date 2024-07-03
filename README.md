@@ -49,9 +49,10 @@ If any of these fail, simply log out and back in, and they should work then.
 
 ## Step 3: Running Locally
 
-3) Once installed, start the app using
+3) Once installed start the app using
 ```bash
 cd edurange3 (if not in edurange3 root dir)
+source .venv/bin/activate
 npm run build
 npm start
 ```
@@ -73,6 +74,10 @@ Login to the server using the administrator credentials set in the .env file
 ```
 FLASK_USERNAME = ...
 PASSWORD = ...
+```
+To close the virtual environment, enter
+```bash
+deactivate
 ```
 
 ## More Info
