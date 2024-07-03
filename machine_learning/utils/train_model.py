@@ -4,8 +4,8 @@
 # 
 # Author: Kristian Tkacik (some slight modifications to main and the type notations)
 #
-# Takes command arg of
-# python py_flask\utils\train_model.py py_flask\log\training_data.csv
+# Ensure your in the subdir of machine_learning, then takes a command arg
+# python .\machine_learning\utils\train_model.py .\machine_learning\logs\training_data.csv
 ####################################################################################################
 
 
@@ -130,8 +130,8 @@ def export_results(clf_name: str, tab: PrettyTable, fig: Any):
     """
     if not os.path.exists("training_results"):
         os.mkdir("training_results")
-    res_file = f"training_results/{clf_name.lower().replace(' ', '_')}_res.txt"
-    cm_file = f"training_results/{clf_name.lower().replace(' ', '_')}_cm.pdf"
+    res_file = f"machine_learning/training_results/{clf_name.lower().replace(' ', '_')}_res.txt"
+    cm_file = f"machine_learning/training_results/{clf_name.lower().replace(' ', '_')}_cm.pdf"
     print(
         f"Exporting training_results table for {clf_name} to: {res_file}",
         f"\nExporting confusion matrices for {clf_name} to: {cm_file}"
@@ -274,7 +274,7 @@ def train_and_eval(clf_name: str, features: DataFrame, labels: Series):
     #Exporting model
 
     if clf_name == "Naive Bayes":
-        model_filename = "model/trained_model.joblib"
+        model_filename = "machine_learning/model/trained_model.joblib"
         joblib.dump(grid.best_estimator_, model_filename)
 
 
@@ -307,7 +307,7 @@ def main(file_name: str):
     create_dataset_records(dataset, "file_wrangler", 13, log)
     dataset.print_stats()
     df = extract_features(dataset)
-    df.iloc[:, 11:].describe().transpose().to_csv("training_results/feature-descriptive-stats.csv")
+    df.iloc[:, 11:].describe().transpose().to_csv("machine_learning/training_results/feature-descriptive-stats.csv")
     # test
 
 
