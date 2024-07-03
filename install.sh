@@ -14,6 +14,20 @@ hostAddress="localhost"
 rootPass="change-me"
 curDir=$(pwd)
 
+# Function to prompt for input and validate it as alphanumeric
+prompt_for_alphanumeric_input() {
+    local prompt_message="$1"
+    local input
+    while true; do
+        read -p "${YLW}$prompt_message:${NC} " input
+        if [[ "$input" =~ ^[[:alnum:]]+$ ]]; then
+            echo "$input"
+            break
+        else
+            echo "Error: Input must be alphanumeric (letters and digits only). Please try again."
+        fi
+    done
+}
 
 # Add pip-executables to the path if they aren't already
 grep -qxF 'export PATH=$PATH:/home/$(whoami)/.local/bin' ~/.bashrc || echo 'export PATH=$PATH:/home/$(whoami)/.local/bin' >> ~/.bashrc
@@ -164,16 +178,11 @@ done
 
 if [ $# -eq 0 ];
 then
-	echo -e "${YLW}Please enter your database password:${NC}"
-	read dbpass
-	echo -e "${YLW}Please enter your database name ALL LOWERCASE:${NC}"
-	read dbname
-	echo -e "${YLW}Please enter your Flask (web interface) username NO SYMBOLS:${NC}"
-	read flaskUser
-	echo -e "${YLW}Please enter your Flask (web interface) password:${NC}"
-	read flaskPass
-	echo -e "${YLW}Please enter your root password for all containers:${NC}"
-	read rootPass
+	dbpass=$(prompt_for_alphanumeric_input "Please enter your database password (alphanumeric characters only):")
+  dbname=$(prompt_for_alphanumeric_input "Please enter your database name ALL LOWERCASE (alphanumeric characters only):")
+  flaskUser=$(prompt_for_alphanumeric_input "Please enter your Flask (web interface) username NO SYMBOLS (alphanumeric characters only):")
+  flaskPass=$(prompt_for_alphanumeric_input "Please enter your Flask (web interface) password (alphanumeric characters only):")
+  rootPass=$(prompt_for_alphanumeric_input "Please enter your root password for all containers (alphanumeric characters only):")
 	# Generate secret string for cookie encryption
   # TODO: Replace JWT_SECRET_KEY as well
 	secretKey=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w ${1:-20} | head -n 1)
