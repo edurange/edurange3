@@ -20,7 +20,7 @@ prompt_for_alphanumeric_input() {
     local input
     while true; do
         read -p "${YLW}$prompt_message:${NC} " input
-        if [[ "$input" =~ ^[[:alnum:]]+$ ]]; then
+        if [[ "$input" =~ ^[a-z0-9]+$ ]]; then
             echo "$input"
             break
         else
