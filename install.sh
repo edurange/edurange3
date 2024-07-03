@@ -28,6 +28,9 @@ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
 source ~/.nvm/nvm.sh
 cd $curDir
 
+python3 -m venv .venv
+source .venv/bin/activate
+
 pip3 install -r py_flask/config/requirements_prod.txt
 pip3 uninstall --yes pyjwt
 pip3 install pyjwt==2.8.0
