@@ -31,18 +31,21 @@ from log_parser import Dataset, DatasetRecord, create_dataset_records, read_file
 
 def get_rt_logs():
     rt_logs = getLogs()
-    print(rt_logs)
-    return rt_logs
+    rt_bash_logs = rt_logs["bash"]
+    rt_chat_logs = rt_logs["chat"]
+    rt_response_logs = rt_logs["responses"]
+    
+    return rt_bash_logs, rt_chat_logs, rt_response_logs
 
 
-def rt_classify_student(rt_logs, model_filename):
+def rt_classify_student(model_filename, rt_bash_logs):
 
     classifier_model = joblib.load(model_filename)
 
     dataset = Dataset()
 
     #Create dataset using log_parser.py module
-    log = read_file(rt_logs)
+    log = rt_bash_logs
     create_dataset_records(dataset, "file_wrangler", 13, log)
 
     #Extract features from feature_extractor.py module
@@ -72,8 +75,8 @@ def start_rt_classifier(model_filename, table_file, frequency):
     run_rt_classifier = True
 
     while run_rt_classifier:
-        rt_logs = get_rt_logs()
-        prediction_result = rt_classify_student(model_filename, rt_logs)
+        rt_bash_logs, rt_chat_logs, rt_responses_logs = get_rt_logs()
+        prediction_result = rt_classify_student(model_filename, rt_bash_logs)
         update_table(prediction_result, table_file)
         time.sleep(int(frequency))
     

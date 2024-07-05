@@ -163,4 +163,6 @@ def getLogs(optional_user_id=None):
         "bash": Edu3Mixin.to_list(bashLogs),
         "responses": Edu3Mixin.to_list(responseLogs)
     }
+
+    print(returnDict)
     return returnDict
