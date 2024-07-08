@@ -20,8 +20,7 @@ password = CREDENTIALS[0][1]
 
 def submit_command(command):
 	action = ActionChains(driver)
-	for letter in command:
-		action.key_down(letter).key_up(letter)
+	action.send_keys(command)
 	action.key_down(Keys.RETURN).key_up(Keys.RETURN).perform()
 
 
@@ -54,7 +53,7 @@ event_box.click()
 
 # Enter commands
 submit_command("iamfrustrated")
-time.sleep(1)
+time.sleep(2)
 submit_command("ls")
 
 
