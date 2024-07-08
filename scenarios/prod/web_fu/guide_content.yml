@@ -28,8 +28,6 @@ contentDefinitions:
   Reading4: &reading4
     type: reading
     content: |
-      ## Exercises
-
       ### Level 1 (SQL-1.php)
       The query being run on this page is:
 
@@ -39,6 +37,9 @@ contentDefinitions:
       <question>
       <question>
 
+  Reading5: &reading5
+    type: reading
+    content: |
       ### Level 2 (SQL-2.php)
       The query being run on this page is:
 
@@ -48,6 +49,9 @@ contentDefinitions:
       <question>
       <question>
 
+  Reading6: &reading6
+    type: reading
+    content: |
       ### Level 3 (SQL-3.php)
 
       Hint: First find a way to count the number of columns in the table
@@ -55,135 +59,209 @@ contentDefinitions:
       <question>
       <question>
 
+  Reading7: &reading7
+    type: reading
+    content: |
       ### Level 4 (XSS-reflected-1.php)
 
       [Hint](https://edurange.watzek.cloud:8443/XSS-reflected-1.php?parameter=value)
 
       <question>
 
+  Reading8: &reading8
+    type: reading
+    content: |
       ### Level 5 (XSS-reflected-2.php)
 
       Look at the source.
 
       <question>
 
+  Reading9: &reading9
+    type: reading
+    content: |
       ### Level 6 (XSS-stored-1.php)
 
       <question>
 
-
-question1: &question1
-  question_num: 1
-  content: Which database engine is being used in this scenario? SQLite, PostgreSQL, MongoDB, etc.
-  options: []
-  answers:
+  Question1: &question1
+    question_num: 1
+    type: question
+    content: Which database engine is being used in this scenario? SQLite, PostgreSQL,
+      MongoDB, etc.
+    answers:
     - answer_type: String
       value: MySQL
       points_possible: 5
-  points_possible: 5
-
-question2: &question2
-  question_num: 2
-  content: What are the 3 different types of "comment" symbol in this database type?
-  options: []
-  answers:
-    - answer_type: String
-      value: '--'
+    points_possible: 5
+  Question2: &question2
+    question_num: 2
+    type: question
+    content: What are the 3 different types of "comment" symbol in this database type?
+    answers:
+    - answer_type: Multi String
+      value: --
       points_possible: 5
-    - answer_type: String
+    - answer_type: Multi String
       value: '#'
       points_possible: 5
-    - answer_type: String
-      value: '/**/'
+    - answer_type: Multi String
+      value: /**/
       points_possible: 5
-  points_possible: 15
+    points_possible: 15
+  Question3: &question3
+    question_num: 3
+    type: question
+    content: What symbol is used to mark the end of a query?
+    answers:
+    - answer_type: String
+      value: ;
+      points_possible: 5
+    - answer_type: String
+      value: semicolon
+      points_possible: 5
+    points_possible: 5
+  Question4: &question4
+    question_num: 4
+    type: question
+    content: What technique could be used to avoid these types of SQL injection?
+    answers:
+    - answer_type: String
+      value: query parameterization
+      points_possible: 5
+    - answer_type: String
+      value: prepared statements
+      points_possible: 5
+    points_possible: 5
+  Question5: &question5
+    question_num: 5
+    type: question
+    content: What programming language is the scenario website built with?
+    answers:
+    - answer_type: String
+      value: PHP
+      points_possible: 5
+    points_possible: 5
+  Question6: &question6
+    question_num: 6
+    type: question
+    content: What boolean operator did you use to dump the table from level 1?
+    answers:
+    - answer_type: String
+      value: OR
+      points_possible: 15
+    points_possible: 15
+  Question7: &question7
+    question_num: 7
+    type: question
+    content: What is the flag for level 1 (SQL-1.php)?
+    answers:
+    - answer_type: String
+      value: FLAG{1NJ3CT10NS_4R3_N1C3!}
+      points_possible: 15
+    points_possible: 15
+  Question8: &question8
+    question_num: 8
+    type: question
+    content: What special character is the LIKE query using in level 2?
+    answers:
+    - answer_type: String
+      value: '%'
+      points_possible: 15
+    points_possible: 15
+  Question9: &question9
+    question_num: 9
+    type: question
+    content: What is the flag for level 2 (SQL-2.php)?
+    answers:
+    - answer_type: String
+      value: FLAG{Y0U_D0_L1K3_QU3R13S}
+      points_possible: 20
+    points_possible: 20
+  Question10: &question10
+    question_num: 10
+    type: question
+    content: What keyword could you use to query two combined tables?
+    answers:
+    - answer_type: String
+      value: UNION
+      points_possible: 10
+    points_possible: 10
+  Question11: &question11
+    question_num: 11
+    type: question
+    content: What is the flag for level 3 (SQL-3.php)?
+    answers:
+    - answer_type: String
+      value: FLAG{1M_N0T_4_H4SH3D_H4X0R}
+      points_possible: 25
+    points_possible: 25
+  Question12: &question12
+    question_num: 12
+    type: question
+    content: What is the password for user "backdoor"?
+    answers:
+    - answer_type: String
+      value: supersecreto
+      points_possible: 30
+    points_possible: 30
+  Question13: &question13
+    question_num: 13
+    type: question
+    content: What is the flag for level 4 (XSS-reflected-1.php)?
+    answers:
+    - answer_type: String
+      value: FLAG{4LW4Y5_54N71Z3_1NPU7}
+      points_possible: 15
+    points_possible: 15
+  Question14: &question14
+    question_num: 14
+    type: question
+    content: What is the flag for level 5 (XSS-reflected-2.php)?
+    answers:
+    - answer_type: String
+      value: FLAG{0NSUCC3SS_4L3R7(PWN)}
+      points_possible: 20
+    points_possible: 20
+  Question15: &question15
+    question_num: 15
+    type: question
+    content: What is the flag for level 6 (XSS-stored-1.php)?
+    answers:
+    - answer_type: String
+      value: FLAG{P4YL04D_1NJ3CT3D}
+      points_possible: 20
+    points_possible: 20
 
-- Text: What symbol is used to mark the end of a query?
-  Type: String
-  Options: []
-  Answers:
-  - Value: ';'
-    Points: 5
-  - Value: semicolon
-    Points: 5
-  Points: 5
-- Text: What technique could be used to avoid these types of SQL injection?
-  Type: String
-  Options: []
-  Answers:
-  - Value: query parameterization
-    Points: 5
-  - Value: prepared statements
-    Points: 5
-  Points: 5
-- Text: What programming language is the scenario website built with?
-  Type: String
-  Answers:
-  - Value: PHP
-    Points: 5
-  Points: 5
-- Text: What boolean operator did you use to dump the table from level 1?
-  Type: String
-  Answers:
-  - Value: OR
-    Points: 15
-  Points: 15
-- Text: What is the flag for level 1 (SQL-1.php)?
-  Type: String
-  Answers:
-  - Value: FLAG{1NJ3CT10NS_4R3_N1C3!}
-    Points: 15
-  Points: 15
-- Text: What special character is the LIKE query using in level 2?
-  Type: String
-  Answers:
-  - Value: '%'
-    Points: 15
-  Points: 15
-- Text: What is the flag for level 2 (SQL-2.php)?
-  Type: String
-  Answers:
-  - Value: FLAG{Y0U_D0_L1K3_QU3R13S}
-    Points: 20
-  Points: 20
-- Text: What keyword could you use to query two combined tables?
-  Type: String
-  Answers:
-  - Value: UNION
-    Points: 10
-  Points: 10
-- Text: What is the flag for level 3 (SQL-3.php)?
-  Type: String
-  Answers:
-  - Value: FLAG{1M_N0T_4_H4SH3D_H4X0R}
-    Points: 25
-  Points: 25
-- Text: What is the password for user "backdoor"?
-  Type: String
-  Answers:
-  - Value: supersecreto
-    Points: 30
-  Points: 30
-- Text: What is the flag for level 4 (XSS-reflected-1.php)?
-  Type: String
-  Answers:
-  - Value: FLAG{4LW4Y5_54N71Z3_1NPU7}
-    Points: 15
-  Points: 15
-- Text: What is the flag for level 5 (XSS-reflected-2.php)?
-  Type: String
-  Answers:
-  - Value: FLAG{0NSUCC3SS_4L3R7(PWN)}
-    Points: 20
-  Points: 20
-- Text: What is the flag for level 6 (XSS-stored-1.php)?
-  Type: String
-  Answers:
-  - Value: FLAG{P4YL04D_1NJ3CT3D}
-    Points: 20
-  Points: 20
 
+studentGuide:
+  chapters:
+    - chapter_num: 1
+      title: Introduction
+      content_array:
+        - *reading1
+        - *reading2
+        - *reading3
 
-
+    - chapter_num: 2
+      title: Exercises
+      content_array:
+        - *reading4
+        - *question1
+        - *question2
+        - *question3
+        - *reading5
+        - *question4
+        - *question5
+        - *question6
+        - *reading6
+        - *question7
+        - *question8
+        - *reading7
+        - *question9
+        - *reading8
+        - *question10
+        - *reading9
+        - *question11
 
 
