@@ -40,15 +40,16 @@ def get_rt_logs():
 
 def rt_classify_student(model_filename, rt_bash_logs):
 
+    #Load model using joblib
     classifier_model = joblib.load(model_filename)
 
     dataset = Dataset()
 
-    #Create dataset using log_parser.py module
+    #Create dataset records with log_parser.py
     log = rt_bash_logs
     create_dataset_records(dataset, "file_wrangler", 13, log)
 
-    #Extract features from feature_extractor.py module
+    #Extract features with feature_extractor.py module
     extracted_features = extract_features(dataset)
     
     #Map extracted features

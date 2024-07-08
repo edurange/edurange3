@@ -21,6 +21,9 @@ import joblib
 import matplotlib.pyplot as plt
 from pandas import DataFrame, Series
 
+import matplotlib.pyplot as plt
+from pandas import DataFrame, Series
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_selection import SelectFromModel
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import ConfusionMatrixDisplay
@@ -30,15 +33,13 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import RobustScaler
 from sklearn.preprocessing import QuantileTransformer
-
-
+from sklearn.svm import SVC
+from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import StratifiedKFold, GridSearchCV
 from sklearn import metrics
-
 from sklearn.ensemble import VotingClassifier
 
-
-
+from xgboost import XGBClassifier
 from tqdm import tqdm
 from prettytable import PrettyTable, ALL
 
@@ -51,12 +52,35 @@ RANDOM_STATE = 0
 GS_METRIC = "balanced_accuracy"
 INNER_CV_FOLDS = 5
 OUTER_CV_FOLDS = 5
+
+"""
+Given the use of a "leaderboard" which displays the  probabilities that a student belongs
+to the class of 50% completion or not. I plan to use only models that can provide probabilistic predictions for the student.
+Which reduces it down to  Logistic Regression, GB Naive Bayes, Random Forest and XGBoost. Will test further
+as we get more data. The default for now will be Logistic Regression.
+"""
+
+# Renamed CLF models in order to simplify naming for joblib saves.
 CLF = {
-   # "Logistic Regression": LogisticRegression(
-      #  solver='liblinear', class_weight='balanced', max_iter=1000
-   # ),
-    "Naive Bayes": GaussianNB(),
+
+    "logistic_regression": LogisticRegression(
+        solver='liblinear', class_weight='balanced', max_iter=1000
+    ),
+
+    "naive_bayes": GaussianNB(),
+
+
+    "random_forest": RandomForestClassifier(
+        class_weight='balanced', random_state=RANDOM_STATE
+    ),
+    "xgboost": XGBClassifier(
+        #for 6/13 threshold, 55 students pass and 14 struggled
+        objective='binary:logistic', scale_pos_weight=(54/13)
+    )
 }
+
+model_type_choices = list(CLF.keys())
+
 
 CLF_PARAM_GRIDS = {
    # "Logistic Regression": {
@@ -272,10 +296,8 @@ def train_and_eval(clf_name: str, features: DataFrame, labels: Series):
     export_results(clf_name, res_tab, cm_fig)
 
     #Exporting model
-
-    if clf_name == "Naive Bayes":
-        model_filename = "machine_learning/model/trained_model.joblib"
-        joblib.dump(grid.best_estimator_, model_filename)
+    model_filename = f"machine_learning/model/trained_model_{clf_name}.joblib"
+    joblib.dump(grid.best_estimator_, model_filename)
 
 
 
@@ -291,14 +313,34 @@ def train_and_eval(clf_name: str, features: DataFrame, labels: Series):
         )
 
 def main(file_name: str):
+
     """
     Main function. Parses training data and uses it to
     train and evaluate classifiers.
 
     :param path: Path to the directory with training data.
     :return: None
+
+    Includes CLI for user to select which model to train.
+
     """
+    print(" ________________________ ")
+    print("| EDURANGE MODEL TRAINER | ")
+    print("| ---------------------- | ")
+    print("| SELECT A MODEL TYPE    | ")
+    print("| 1. Logistic Regression | ")
+    print("| 2. Naive-Bayes GB      | ")
+    print("| 3. Random Forest       | ")
+    print("| 4. XGBoost             | ")
+    print("|________________________|  ")
+    print("\n")
+
     
+   
+    user_model_choice = int(input())
+    
+    selected_model_type = model_type_choices[user_model_choice - 1]
+
     plt.switch_backend('agg')
     
     dataset = Dataset()
@@ -314,10 +356,15 @@ def main(file_name: str):
     x = df.iloc[:,11:-1]
     y = df["struggled"]
 
-    for clf_name in CLF.keys():
-        train_and_eval(clf_name, x, y)
+    
+    train_and_eval(selected_model_type, x, y)
 
-        print("\n")    
+    print("\n")   
+    print("   _________________________________________________  ")
+    print("  | MODEL SAVED TO:                                 | ")
+    print("  | model/trained_model_{}.joblib                   | ".format(selected_model_type))
+    print("  |_________________________________________________| ")
+    print("\n")    
 
 if __name__ == "__main__":
         #proper arg check
@@ -326,7 +373,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     file_name = sys.argv[1] 
-
+    
     
 
     main(file_name)
