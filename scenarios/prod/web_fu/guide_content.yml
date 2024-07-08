@@ -1,0 +1,189 @@
+ScenarioTitle: Web Fu
+
+contentDefinitions:
+  Reading1: &reading1
+    type: reading
+    content: |
+      ## Learning objectives
+      1. Exploit vulnerable web pages using SQL injection
+      2. Retrieve information from other tables using the `UNION` operator
+      3. Bypass simple WAFs (Web Application Firewall)
+      4. Exploit vulnerable web pages using XSS (Cross-Site-Scripting)
+
+  Reading2: &reading2
+    type: reading
+    content: |
+      ## Connection Instructions
+
+      You can find the vulnerable webapp at port 8443 of the EDURange platform.
+
+  Reading3: &reading3
+    type: reading
+    content: |
+      ## Extra Resources
+      [OWASP SQLi Guide](https://owasp.org/www-project-web-security-testing-guide/stable/4-Web_Application_Security_Testing/07-Input_Validation_Testing/05-Testing_for_SQL_Injection.html)
+
+      [PortSwigger SQL Guide](https://portswigger.net/web-security/sql-injection)
+
+  Reading4: &reading4
+    type: reading
+    content: |
+      ## Exercises
+
+      ### Level 1 (SQL-1.php)
+      The query being run on this page is:
+
+      `SELECT * FROM countries WHERE name='<ARG>';`
+
+      <question>
+      <question>
+      <question>
+
+      ### Level 2 (SQL-2.php)
+      The query being run on this page is:
+
+      `SELECT * FROM books WHERE author LIKE '%<ARG>%';`
+
+      <question>
+      <question>
+      <question>
+
+      ### Level 3 (SQL-3.php)
+
+      Hint: First find a way to count the number of columns in the table
+
+      <question>
+      <question>
+
+      ### Level 4 (XSS-reflected-1.php)
+
+      [Hint](https://edurange.watzek.cloud:8443/XSS-reflected-1.php?parameter=value)
+
+      <question>
+
+      ### Level 5 (XSS-reflected-2.php)
+
+      Look at the source.
+
+      <question>
+
+      ### Level 6 (XSS-stored-1.php)
+
+      <question>
+
+
+question1: &question1
+  question_num: 1
+  content: Which database engine is being used in this scenario? SQLite, PostgreSQL, MongoDB, etc.
+  options: []
+  answers:
+    - answer_type: String
+      value: MySQL
+      points_possible: 5
+  points_possible: 5
+
+question2: &question2
+  question_num: 2
+  content: What are the 3 different types of "comment" symbol in this database type?
+  options: []
+  answers:
+    - answer_type: String
+      value: '--'
+      points_possible: 5
+    - answer_type: String
+      value: '#'
+      points_possible: 5
+    - answer_type: String
+      value: '/**/'
+      points_possible: 5
+  points_possible: 15
+
+- Text: What symbol is used to mark the end of a query?
+  Type: String
+  Options: []
+  Answers:
+  - Value: ';'
+    Points: 5
+  - Value: semicolon
+    Points: 5
+  Points: 5
+- Text: What technique could be used to avoid these types of SQL injection?
+  Type: String
+  Options: []
+  Answers:
+  - Value: query parameterization
+    Points: 5
+  - Value: prepared statements
+    Points: 5
+  Points: 5
+- Text: What programming language is the scenario website built with?
+  Type: String
+  Answers:
+  - Value: PHP
+    Points: 5
+  Points: 5
+- Text: What boolean operator did you use to dump the table from level 1?
+  Type: String
+  Answers:
+  - Value: OR
+    Points: 15
+  Points: 15
+- Text: What is the flag for level 1 (SQL-1.php)?
+  Type: String
+  Answers:
+  - Value: FLAG{1NJ3CT10NS_4R3_N1C3!}
+    Points: 15
+  Points: 15
+- Text: What special character is the LIKE query using in level 2?
+  Type: String
+  Answers:
+  - Value: '%'
+    Points: 15
+  Points: 15
+- Text: What is the flag for level 2 (SQL-2.php)?
+  Type: String
+  Answers:
+  - Value: FLAG{Y0U_D0_L1K3_QU3R13S}
+    Points: 20
+  Points: 20
+- Text: What keyword could you use to query two combined tables?
+  Type: String
+  Answers:
+  - Value: UNION
+    Points: 10
+  Points: 10
+- Text: What is the flag for level 3 (SQL-3.php)?
+  Type: String
+  Answers:
+  - Value: FLAG{1M_N0T_4_H4SH3D_H4X0R}
+    Points: 25
+  Points: 25
+- Text: What is the password for user "backdoor"?
+  Type: String
+  Answers:
+  - Value: supersecreto
+    Points: 30
+  Points: 30
+- Text: What is the flag for level 4 (XSS-reflected-1.php)?
+  Type: String
+  Answers:
+  - Value: FLAG{4LW4Y5_54N71Z3_1NPU7}
+    Points: 15
+  Points: 15
+- Text: What is the flag for level 5 (XSS-reflected-2.php)?
+  Type: String
+  Answers:
+  - Value: FLAG{0NSUCC3SS_4L3R7(PWN)}
+    Points: 20
+  Points: 20
+- Text: What is the flag for level 6 (XSS-stored-1.php)?
+  Type: String
+  Answers:
+  - Value: FLAG{P4YL04D_1NJ3CT3D}
+    Points: 20
+  Points: 20
+
+
+
+
+
