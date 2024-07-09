@@ -33,13 +33,12 @@ def check_hardware_specs():
             try:
                   platforms = cl.get_platforms()
                   num_gpus = 0
-                  return num_gpus
-                  """ 
+                  
                   for platform in platforms:
                         devices = platform.get_devices(device_type=cl.device_type.GPU)
                         num_gpus += len(devices)
                   return num_gpus
-                  """            
+                           
             except Exception as e:
                   return 0
       
@@ -115,7 +114,7 @@ async def generate_hint(gpu_enable, hardware_settings, question):
       )
 
       #This can be changed in the future easily, experimenting with prompting.
-      system_prompt = "Provide me a very short hint regarding my bash history: "
+      system_prompt = "I'm stuck, provide me a short  hint based on my bash history: "
       question_with_system_prompt = f"{system_prompt} {question} "
       
       output = slm(
