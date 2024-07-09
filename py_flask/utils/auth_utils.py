@@ -150,6 +150,6 @@ def register_user(validated_registration_data):
 
     retObj = {
         "user_id": this_user.id,
-        "channel": new_channel.id
+        "channel_id": new_channel.id
     }
     return retObj

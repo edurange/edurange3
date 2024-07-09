@@ -93,7 +93,7 @@ def getChatHistory_byUser(userID, username):
     channelData = getChannelDictList_byUser(userID, username)
     available_channel_ids = [channel['id'] for channel in channelData['available_channels']]
 
-    chatHistory_forUser = ChatMessages.query.filter(ChatMessages.channel.in_(available_channel_ids)).all()
+    chatHistory_forUser = ChatMessages.query.filter(ChatMessages.channel_id.in_(available_channel_ids)).all()
     chatHistory_dictList = [message.to_dict() for message in chatHistory_forUser]
 
     return chatHistory_dictList
