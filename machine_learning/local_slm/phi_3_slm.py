@@ -11,8 +11,6 @@
 import sys
 import os
 import math
-import pycuda.driver as cuda
-import pycuda.autoinit
 import pyopencl as cl
 
 import llama_cpp
