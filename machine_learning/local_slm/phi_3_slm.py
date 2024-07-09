@@ -13,6 +13,7 @@ import os
 import math
 import pycuda.driver as cuda
 import pycuda.autoinit
+import pyopencl as cl
 
 import llama_cpp
 from llama_cpp import Llama
@@ -29,6 +30,8 @@ def check_hardware_specs():
             else:
                   return int(num_cpus)
             
+      #Nvidia specific, gonna try a more general approach to account for non-Nvidia GPUs
+      """      
       def check_gpu_specs():
             try:
                   cuda.init()
@@ -40,9 +43,22 @@ def check_hardware_specs():
                   
             except cuda.RuntimeError:
                   return 0
-
+      """
+      #
+      def check_gpu_specs():
+            
+            platforms = cl.get_platforms()
+            num_gpus = 0 
+            for platform in platforms:
+                  devices = platform.get_devices(device_type=cl.device_type.GPU)
+                  num_gpus += len(devices)
+            
+            return num_gpus
+            
       num_cpus = check_cpu_specs()
       num_gpus = check_gpu_specs()
+      print(f"num of gpus {num_gpus}")
+   
       
       return num_cpus, num_gpus
 
@@ -59,12 +75,18 @@ def calculate_hardware_settings(resource_scaler, gpu_enable):
             "3": 0.75,
       }
 
-      set_cpu_resources = math.floor(num_cpus * performance_setting_dict[resource_scaler])
+      #Logic for setting GPU and CPU resources, additionally ensuring that if GPU rescources are enabled then no CPU resources should be used.
 
       if num_gpus != 0 and gpu_enable:
             set_gpu_resources = -1
       else: 
             set_gpu_resources = 0
+      
+      if set_gpu_resources == 0:
+            set_cpu_resources = math.floor(num_cpus * performance_setting_dict[resource_scaler])
+      else: 
+            set_cpu_resources = 0
+
 
       return set_cpu_resources, set_gpu_resources
 
@@ -81,9 +103,9 @@ async def generate_hint(hardware_settings, question):
       #The Phi-3 model is quantized and can be found as a .gguf file in the dir.
       slm = Llama(
       model_path="machine_learning/local_slm/Phi-3-mini-4k-instruct-q4.gguf", verbose=False,
-      n_ctx=4080, # Uncomment to increase the context window  
-      n_threads=hardware_settings[0], # Threads being used
-      n_gpu_layers=hardware_settings[1]# Uncomment to use GPU acceleration
+      n_ctx=4080, 
+      n_threads=hardware_settings[0], 
+      n_gpu_layers=hardware_settings[1]
       )
       """
 
@@ -92,9 +114,9 @@ async def generate_hint(hardware_settings, question):
             repo_id="microsoft/Phi-3-mini-4k-instruct-gguf",
             filename="Phi-3-mini-4k-instruct-q4.gguf",
             verbose=False,
-            n_ctx=4080, # Uncomment to increase the context window  
-            n_threads=hardware_settings[0], # Threads being used
-            n_gpu_layers=hardware_settings[1]# Uncomment to use GPU acceleration
+            n_ctx=4080, 
+            n_threads=hardware_settings[0], 
+            n_gpu_layers=hardware_settings[1]
       )
 
       #This can be changed in the future easily, experimenting with prompting.
@@ -102,13 +124,15 @@ async def generate_hint(hardware_settings, question):
       question_with_system_prompt = f"{system_prompt} {question} "
       
       output = slm(
-            f"<|user|>\n{question_with_system_prompt}<|end|>\n<|assistant|>", # Prompt  
+            #Prompt
+            f"<|user|>\n{question_with_system_prompt}<|end|>\n<|assistant|>",
             max_tokens=4080,
             stop=["<|end|>"], 
             echo=False, 
             temperature=0.8,
       ) 
 
+      #Answer
       return output["choices"][0]["text"]
 
 #This will be the main call function to generate the hint. Eventually it'll take studentID for param for pulling from DB.
