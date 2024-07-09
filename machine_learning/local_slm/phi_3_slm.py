@@ -30,14 +30,19 @@ def check_hardware_specs():
             
       #Checks for available graphics cards.
       def check_gpu_specs():
-            
-            platforms = cl.get_platforms()
-            num_gpus = 0 
-            for platform in platforms:
-                  devices = platform.get_devices(device_type=cl.device_type.GPU)
-                  num_gpus += len(devices)
-            
-            return num_gpus
+            try:
+                  platforms = cl.get_platforms()
+                  num_gpus = 0
+                  return num_gpus
+                  """ 
+                  for platform in platforms:
+                        devices = platform.get_devices(device_type=cl.device_type.GPU)
+                        num_gpus += len(devices)
+                  return num_gpus
+                  """            
+            except Exception as e:
+                  return 0
+      
             
       num_cpus = check_cpu_specs()
       num_gpus = check_gpu_specs()
@@ -76,12 +81,18 @@ def calculate_hardware_settings(resource_scaler, gpu_enable):
 
 
 #Generating the hint.
-async def generate_hint(hardware_settings, question):
+async def generate_hint(gpu_enable, hardware_settings, question):
 
       #Echo to user the recources being used.
       print(f"\nCPU cores being used: {hardware_settings[0]}")
-      print("GPU Enabled\n") if hardware_settings[1] == -1 else print("GPU Disabled\n")
-    
+      if gpu_enable:
+            if hardware_settings[1] == -1: 
+                  print("GPU Enabled\n")
+            else:
+                  print("GPU Enabled but no graphics device found\n")
+      else:
+            print("GPU Disabled\n")
+     
       #Direct file version
       """
       #The Phi-3 model is quantized and can be found as a .gguf file in the dir.
@@ -162,7 +173,7 @@ async def get_hint():
 
       #This will be replaced by a getLogs() call to the db for a given student.
       question = input()	
-      answer = await generate_hint(hardware_settings, question)
+      answer = await generate_hint(gpu_enable, hardware_settings, question)
       print(answer)
 
 def main():
