@@ -76,13 +76,25 @@ async def generate_hint(hardware_settings, question):
       print(f"\nCPU cores being used: {hardware_settings[0]}")
       print("GPU Enabled\n") if hardware_settings[1] == -1 else print("GPU Disabled\n")
     
-
+      #Direct file version
+      """
       #The Phi-3 model is quantized and can be found as a .gguf file in the dir.
       slm = Llama(
       model_path="machine_learning/local_slm/Phi-3-mini-4k-instruct-q4.gguf", verbose=False,
       n_ctx=4080, # Uncomment to increase the context window  
       n_threads=hardware_settings[0], # Threads being used
       n_gpu_layers=hardware_settings[1]# Uncomment to use GPU acceleration
+      )
+      """
+
+      #Import version
+      slm = Llama.from_pretrained(
+            repo_id="microsoft/Phi-3-mini-4k-instruct-gguf",
+            filename="Phi-3-mini-4k-instruct-q4.gguf",
+            verbose=False,
+            n_ctx=4080, # Uncomment to increase the context window  
+            n_threads=hardware_settings[0], # Threads being used
+            n_gpu_layers=hardware_settings[1]# Uncomment to use GPU acceleration
       )
 
       #This can be changed in the future easily, experimenting with prompting.
