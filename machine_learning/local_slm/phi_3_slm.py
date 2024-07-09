@@ -30,21 +30,7 @@ def check_hardware_specs():
             else:
                   return int(num_cpus)
             
-      #Nvidia specific, gonna try a more general approach to account for non-Nvidia GPUs
-      """      
-      def check_gpu_specs():
-            try:
-                  cuda.init()
-                  num_gpus = cuda.Device.count()
-                  if num_gpus == 0 or num_gpus is None:
-                        return 0
-                  else: 
-                        return num_gpus
-                  
-            except cuda.RuntimeError:
-                  return 0
-      """
-      #
+      #Checks for available graphics cards.
       def check_gpu_specs():
             
             platforms = cl.get_platforms()
@@ -57,7 +43,7 @@ def check_hardware_specs():
             
       num_cpus = check_cpu_specs()
       num_gpus = check_gpu_specs()
-      print(f"num of gpus {num_gpus}")
+      #print(f"num of gpus {num_gpus}")
    
       
       return num_cpus, num_gpus
