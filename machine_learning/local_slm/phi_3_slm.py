@@ -12,10 +12,12 @@ import sys
 import os
 import math
 import pyopencl as cl
+from memory_profiler import profile, memory_usage
 
 import llama_cpp
 from llama_cpp import Llama
 import asyncio
+
 
 #Checking user hardware specs, this also checks if the user has a local GPU as this allows offloading 
 # and accelerates generation drastically
@@ -58,15 +60,15 @@ def calculate_hardware_settings(resource_scaler, gpu_enable):
       num_gpus = hardware_specs[1]
 
       performance_setting_dict = {
-            "1": 0.25,
-            "2": 0.5,
-            "3": 0.75,
+            "1": 0.5,
+            "2": 0.6,
+            "3": 0.8,
       }
 
       #Logic for setting GPU and CPU resources, additionally ensuring that if GPU rescources are enabled then no CPU resources should be used.
-
-      if num_gpus != 0 and gpu_enable:
-            set_gpu_resources = -1
+      if gpu_enable:
+            if num_gpus != 0:
+                  set_gpu_resources = -1
       else: 
             set_gpu_resources = 0
       
@@ -80,7 +82,8 @@ def calculate_hardware_settings(resource_scaler, gpu_enable):
 
 
 #Generating the hint.
-async def generate_hint(gpu_enable, hardware_settings, question):
+@profile
+def generate_hint(gpu_enable, hardware_settings, question):
 
       #Echo to user the recources being used.
       print(f"\nCPU cores being used: {hardware_settings[0]}")
@@ -114,8 +117,8 @@ async def generate_hint(gpu_enable, hardware_settings, question):
       )
 
       #This can be changed in the future easily, experimenting with prompting.
-      system_prompt = "I'm stuck, provide me a short  hint based on my bash history: "
-      question_with_system_prompt = f"{system_prompt} {question} "
+      system_prompt = "You are an AI that assists a struggling student working on cyber-security simulation exercises, review their recent bash history and provide them a short hint"
+      question_with_system_prompt = f"{system_prompt}: {question}"
       
       output = slm(
             #Prompt
@@ -123,14 +126,14 @@ async def generate_hint(gpu_enable, hardware_settings, question):
             max_tokens=4080,
             stop=["<|end|>"], 
             echo=False, 
-            temperature=0.8,
+            temperature=0.7,
       ) 
 
       #Answer
       return output["choices"][0]["text"]
 
 #This will be the main call function to generate the hint. Eventually it'll take studentID for param for pulling from DB.
-async def get_hint():
+def get_hint():
 
       print(" ________________________ ")
       print("| EDURANGE PHI-3 SLM     | ")
@@ -172,11 +175,11 @@ async def get_hint():
 
       #This will be replaced by a getLogs() call to the db for a given student.
       question = input()	
-      answer = await generate_hint(gpu_enable, hardware_settings, question)
+      answer = generate_hint(gpu_enable, hardware_settings, question)
       print(answer)
 
 def main():
-    asyncio.run(get_hint())
+    get_hint()
 
 if __name__ == "__main__":
    main()
