@@ -44,7 +44,7 @@ prompt_for_alphanumeric_input() {
     local input
     while true; do
         read -p "${YLW}$prompt_message:${NC} " input
-        if [[ "$input" =~ ^[[:alnum:]]+$ ]]; then
+        if [[ "$input" =~ ^[a-z0-9]+$ ]]; then
             echo "$input"
             break
         else
@@ -274,7 +274,6 @@ echo -e "${GRN}To run the app any time, use: ${NC} npm start"
 echo -e "${GRN}You may need to make sure that pip-executables are accessible${NC}"
 echo -e "${GRN}If the ${NC} flask ${GRN} or ${NC} celery ${GRN} commands are not recognized, try:"
 echo -e "${NC}source ~/.bash_profile ${GRN} or ${NC} export PATH=/home/$username/.local/bin:\$PATH ${NC}"
-echo -e "${GRN}Before starting remember to run: ${NC}source .venv/bin/activate"
 
 
 sudo su $USER --login
