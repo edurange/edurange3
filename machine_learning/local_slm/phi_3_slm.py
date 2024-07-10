@@ -6,6 +6,7 @@
 # 
 #
 # Author: Taylor Wolff 
+# Run $python machine_learning/local_slm/phi_3_slm.py to be prompted to input bash commands.
 ####################################################################################################
 
 import sys

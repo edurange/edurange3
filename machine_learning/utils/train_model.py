@@ -5,7 +5,7 @@
 # Author: Kristian Tkacik (some slight modifications to main and the type notations)
 #
 # Ensure your in the subdir of machine_learning, then takes a command arg
-# python .\machine_learning\utils\train_model.py .\machine_learning\logs\training_data.csv
+# $python .\machine_learning\utils\train_model.py .\machine_learning\logs\training_data.csv
 ####################################################################################################
 
 
