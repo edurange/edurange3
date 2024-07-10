@@ -11,10 +11,19 @@ contentDefinitions:
       * Navigate file system to find specific files
       * Move and copy files.
       * Set permissions (access control) for files.
+
+      ## Example Code Block
+      ```python
+      def hello_world():
+          print("Hello, world!")
+
+      hello_world()
+      ```
     styles:
       - heading
       - justify-center
       - align-bottom
+
 
   Reading2: &reading2
     type: reading
