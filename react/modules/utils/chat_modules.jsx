@@ -32,6 +32,6 @@ export class ChatMessage {
         this.scenario_type = scenario_type;
         this.content = content || "I love edurange";
         this.user_alias = user_alias;
-        this.channel = Number(channel_id);
+        this.channel_id = Number(channel_id);
     }
 }

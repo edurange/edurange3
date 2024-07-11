@@ -32,7 +32,7 @@ function Msg_Bubble({ is_instructor, message_obj, user_id, is_outgoing }) {
                                 {is_outgoing ? "Me" : message_obj.user_id === 1 ? "Instructor" : message_obj?.user_alias ?? 'n/a'}
                             </div>
                             <div className="bubble-header-item">
-                                chnl: {message_obj?.channel ?? 'missing'}
+                                chnl: {message_obj?.channel_id ?? 'missing'}
                             </div>
                         </div>
 
