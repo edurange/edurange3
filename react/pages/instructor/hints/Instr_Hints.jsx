@@ -29,8 +29,6 @@ function Instr_Hints() {
         chatData_state, set_chatData_state
     } = useContext(HomeRouter_context);
 
-    console.log('Instr_Hints page loaded successfully')
-
     return (
         <div>
 

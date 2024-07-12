@@ -55,14 +55,6 @@ function Instructor_router() {
                 }
             });
 
-            console.log(
-                'DEV_ONLY: instr data: \n',
-                'users: ', responseData?.users, '\n',
-                'groups: ', responseData?.groups, '\n',
-                'scenarios: ', responseData?.scenarios,'\n',
-                'logs: ', responseData?.logs
-            )
-
             set_users_state(responseData?.users);
             set_groups_state(responseData?.groups);
             set_scenarios_state(responseData?.scenarios);
