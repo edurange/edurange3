@@ -42,7 +42,6 @@ function Instructor_router() {
         try {
             const response = await axios.get("/get_instructor_data");
             const responseData = response.data;
-
             // DEV_FIX (update for new list strategy (not dict))
 
             // recent_reply is compared to chat_message timestamp to determine
@@ -171,6 +170,7 @@ function Instructor_router() {
                         <Route path="/students/:userID/*" element={<Instr_UserDetail />} />
                         <Route path="/panopticon/" element={<Panopticon />} />
                         <Route path="/logs/" element={<Instr_LogsViewer />} />
+                        <Route path="/hints/" element={<Panopticon />} />
                     </Routes>
 
                 </InstructorRouter_context.Provider>

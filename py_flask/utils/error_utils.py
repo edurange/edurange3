@@ -1,40 +1,5 @@
 
 from flask import jsonify
-
-# import inspect (for error handling to find what function called an error)
-
-# class ErrorHandler:
-#     def __init__(self, message, status_code=500):
-#         self.message = message
-#         self.status_code = status_code
-
-#     def get_response(self):
-#         response = jsonify({"error": self.message})
-#         response.status_code = self.status_code
-#         response.content_type = "application/json"
-#         return response
-
-# # status_code = getattr(error, 'status_code', 500)
-# # message = getattr()
-
-# class Err_Custom_FullInfo(ErrorHandler):
-#     def __init__(self, error):
-
-#         message = "Unknown Error"
-#         status_code = 500
-
-#         if hasattr(error, 'message'):
-#             message = error.message
-#         elif hasattr(error, 'args') and error.args:
-#             message = error.args[0]
-
-#         if hasattr(error, 'status_code'):
-#             status_code = error.status_code
-
-#         super().__init__(message, status_code)
-
-from flask import jsonify
-
 class ErrorHandler(Exception):
     def __init__(self, message, status_code=500):
         super().__init__(message)
