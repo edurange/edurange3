@@ -232,7 +232,7 @@ function Instr_UsersTable() {
 
         const userAllowed_messageObjs_arr = userAllowed_chanID_intArr.map((allowed_channel_id) => {
             const filtered_messageObjs_arr = chatObjs_UL_state
-                .filter(( chat_obj ) => chat_obj.channel === allowed_channel_id)
+                .filter(( chat_obj ) => chat_obj.channel_id === allowed_channel_id)
             return filtered_messageObjs_arr
         });
         return userAllowed_messageObjs_arr;

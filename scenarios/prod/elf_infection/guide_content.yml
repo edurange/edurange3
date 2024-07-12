@@ -1,0 +1,14 @@
+ScenarioTitle: Elf Infection
+
+contentDefinitions:
+  Reading1: &reading1
+    type: reading
+    content: |
+      ### place holder
+
+studentGuide:
+  chapters:
+    - chapter_num: 1
+      title: Elf Infection
+      content_array:
+        - *reading1

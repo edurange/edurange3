@@ -59,7 +59,7 @@ class ChannelUsers(Edu3Mixin, SurrogatePK, Model):
     user_id = reference_col("users", nullable=False)
     channel_id = reference_col("channels", nullable=False)
     user = relationship("Users", backref="channel_users")
-    channel = relationship("Channels", backref="channel_users", viewonly=True)
+    # channel_id = relationship("Channels", backref="channel_users", viewonly=True)
 
 
 class Users(Edu3Mixin, SurrogatePK, Model):
@@ -137,8 +137,8 @@ class ChatMessages(Edu3Mixin, SurrogatePK, Model):
     scenario_id = reference_col("scenarios", nullable=False)
     scenario = relationship("Scenarios", backref="chat_messages", viewonly=True)
 
-    # CHANGED FROM 'channel' TO 'channel_id'
-    channel = reference_col("channels", nullable=False)
+    # CHANGED FROM 'channel' TO 'channel_id' 7/8/24 -exoriparian
+    channel_id = reference_col("channels", nullable=False)
     timestamp = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
     content = Column(db.String(5000), nullable=False, unique=False)
 

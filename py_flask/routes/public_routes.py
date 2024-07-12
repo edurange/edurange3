@@ -92,11 +92,12 @@ def registration():
 
     if existing_db_user is None:
         retObj = register_user(validated_data)
-        newChan = retObj['channel']
+        newChan = retObj['channel_id']
         newUser_id = retObj['user_id']
         return jsonify({
             "message":"account successfully registered",
             "user_id": newUser_id,
+            "channel_id": newChan.id
             })
     
     else: return (Err_Custom_FullInfo('User already exists.  Account NOT registered!', 409))
