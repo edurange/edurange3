@@ -106,7 +106,7 @@ function Instr_UsersTable() {
             });
 
             if (response.data.result === 'success') {
-                console.log('Users assigned to group:', response.data.assigned_user_ids);
+                // console.log('Users assigned to group:', response.data.assigned_user_ids);
 
                 const updatedUsersState = users_state.map(user => {
                     if (response.data.assigned_user_ids.includes(user.id)) {
@@ -147,7 +147,7 @@ function Instr_UsersTable() {
             });
 
             if (response.data.result === 'success') {
-                console.log('Users assigned to group:', response.data.assigned_user_ids);
+                // console.log('Users assigned to group:', response.data.assigned_user_ids);
 
                 const updatedUsersState = users_state.map(user => {
                     if (response.data.assigned_user_ids.includes(user.id)) {
@@ -191,7 +191,7 @@ function Instr_UsersTable() {
             });
 
             if (response.data.result === 'success') {
-                console.log('Users cleared from groups:', response.data.cleared_user_ids);
+                // console.log('Users cleared from groups:', response.data.cleared_user_ids);
 
                 const updatedUsersState = users_state.map(user => {
                     if (response.data.cleared_user_ids.includes(user.id)) {
@@ -287,7 +287,7 @@ function Instr_UsersTable() {
                     const totalMessages = allowedMessages?.length ?? 0;
                     const newMessagesCount = (allowedMessages
                         .filter(msg => {
-                            const dateString = msg.timestamp;  // Ensure msg.timestamp is converted to Date
+                            const dateString = msg.timestamp;
                             const dateObject = new Date(dateString);
                             const msg_timestamp_int = dateObject.getTime();
                             const recentReplyDate_int = user.recent_reply;

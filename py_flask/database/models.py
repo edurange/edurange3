@@ -184,3 +184,33 @@ class BashHistory(Edu3Mixin, SurrogatePK, Model):
     output = Column(db.String(10000), nullable=False, unique=False)
 
     archive_id = Column(db.String(8), nullable=False, unique=False)
+
+'''
+
+WIP
+
+class Feedback(Edu3Mixin, SurrogatePK, Model):
+    """Feedback from users"""
+    __tablename__ = "feedback"
+
+    feedback_uid = Column(db.String(12), unique=True, nullable=False)
+
+    timestamp = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
+
+    user_id = reference_col("users", nullable=False)
+    user = relationship("Users", backref="feedback")
+
+    feedback_type = Column(db.String(40), unique=False, nullable=False)
+
+    scenario_type = Column(db.String(40), unique=False, nullable=True)
+
+    stack_trace = Column(db.String(200), unique=False, nullable=False)
+    
+    current_directory = Column(db.String(200), nullable=False, unique=False)
+    container_name = Column(db.String(40), nullable=False, unique=False)
+    input = Column(db.String(250), nullable=False, unique=False)
+    output = Column(db.String(10000), nullable=False, unique=False)
+
+    archive_id = Column(db.String(8), nullable=False, unique=False)
+
+'''
