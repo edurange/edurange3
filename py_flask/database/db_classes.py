@@ -8,20 +8,15 @@ Column = db.Column
 relationship = db.relationship
 
 # custom methods for all models
-class Edu3Mixin:
-    def get_id(self):
-        """Return the user ID as a unicode string."""
-        return str(self.id)    
+from sqlalchemy.inspection import inspect
 
-    # def to_dict(self):
-    #     """Return a dictionary representation of the instance."""
-    #     return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
+class Edu3Mixin:
 
     # EXPERIMENTAL, more recursive w/ relationships:
-        # with this, we can get values from other sqlAlchemy raw objects,
-        # that also have to_dict, if they are 'related' by way of db
+    # with this, we can get values from other sqlAlchemy raw objects,
+    # that also have to_dict, if they are 'related' by way of db
     def to_dict(self, include_relationships=False):
-        """Return a dictionary representation of the instance, optionally including relationships."""
+        """Convert model instance to a dictionary, optionally including relationships."""
         result = {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
         if include_relationships:
             for key, value in result.items():
@@ -31,6 +26,14 @@ class Edu3Mixin:
                     result[key] = [item.to_dict(include_relationships=True) if hasattr(item, 'to_dict') else item for item in value]
         return result
 
+    @classmethod
+    def to_list(cls, query_result):
+        """Convert SQLAlchemy query results to a list of dictionaries."""
+        if not query_result:
+            return []
+        if not isinstance(query_result, list):
+            query_result = [query_result]  # cast to list if not
+        return [item.to_dict() for item in query_result if hasattr(item, 'to_dict')]
 
 class CRUDMixin(object):
     """Mixin that adds convenience methods for CRUD (create, read, update, delete) operations."""
@@ -65,9 +68,6 @@ class Model(CRUDMixin, db.Model):
 
     __abstract__ = True
 
-
-# From Mike Bayer's "Building the app" talk
-# https://speakerdeck.com/zzzeek/building-the-app
 class SurrogatePK(object):
     """A mixin that adds a surrogate integer 'primary key' column named ``id`` to any declarative-mapped class."""
 
