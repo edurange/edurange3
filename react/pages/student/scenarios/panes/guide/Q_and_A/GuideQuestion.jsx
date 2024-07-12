@@ -7,7 +7,7 @@ import { StudentRouter_context } from '../../../../Student_router';
 import ReactMarkdown from 'react-markdown';
 
 
-function GuideQuestion2({ scenario_id, questionObj, scenario_type }) {
+function GuideQuestion({ scenario_id, questionObj, scenario_type }) {
     if (!questionObj?.content) { return null; }
 
     const { responseData_state, set_responseData_state } = useContext(StudentRouter_context);
@@ -84,4 +84,4 @@ function GuideQuestion2({ scenario_id, questionObj, scenario_type }) {
         </div>
     );
 };
-export default GuideQuestion2;
+export default GuideQuestion;

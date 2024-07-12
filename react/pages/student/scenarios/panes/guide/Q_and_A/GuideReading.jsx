@@ -4,7 +4,7 @@ import ReactMarkdown from 'react-markdown';
 import './Q_and_A.css';
 import '@assets/css/markdown.css';
 
-function GuideReading2({ readingObj }) {
+function GuideReading({ readingObj }) {
 
     const this_content = readingObj?.content;
     const this_styles = readingObj?.styles || [];
@@ -26,4 +26,4 @@ function GuideReading2({ readingObj }) {
     );
 }
 
-export default GuideReading2;
+export default GuideReading;

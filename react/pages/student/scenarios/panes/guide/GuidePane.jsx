@@ -2,8 +2,8 @@ import React, { useState, useEffect, useContext } from 'react';
 import './GuidePane.css';
 import {nanoid} from 'nanoid';
 import HomeChapter from './Q_and_A/HomeChapter';
-import GuideReading2 from './Q_and_A/GuideReading2';
-import GuideQuestion2 from './Q_and_A/GuideQuestion2';
+import GuideReading from './Q_and_A/GuideReading';
+import GuideQuestion from './Q_and_A/GuideQuestion';
 import GuideTabs from './GuideTabs';
 
 function generate_thisChapter_reactArray(scenarioID, meta, thisChapter_contentArray) {
@@ -16,13 +16,13 @@ function generate_thisChapter_reactArray(scenarioID, meta, thisChapter_contentAr
             if (content_item?.type === 'reading') {
                 tempItem = (
                     <div key={index + 1000}>
-                        <GuideReading2 scenario_id={scenarioID} readingObj={content_item} scenario_type={meta?.scenario_type} />
+                        <GuideReading scenario_id={scenarioID} readingObj={content_item} scenario_type={meta?.scenario_type} />
                     </div>
                 );
             } else if (content_item?.type === 'question') {
                 tempItem = (
                     <div key={index + 2000}>
-                        <GuideQuestion2 scenario_id={scenarioID} questionObj={content_item} scenario_type={meta?.scenario_type} />
+                        <GuideQuestion scenario_id={scenarioID} questionObj={content_item} scenario_type={meta?.scenario_type} />
                     </div>
                 );
             } else {

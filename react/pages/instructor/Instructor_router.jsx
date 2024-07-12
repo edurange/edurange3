@@ -13,6 +13,7 @@ import Instr_UserDetail from './users/Instr_UserDetail';
 import { HomeRouter_context } from '../pub/Home_router';
 import Panopticon from './Panopticon';
 import Instr_LogsViewer from './logs_dir/Instr_LogsViewer';
+import Instr_Hints from './hints/Instr_Hints';
 
 export const InstructorRouter_context = React.createContext();
 
@@ -162,7 +163,7 @@ function Instructor_router() {
                         <Route path="/students/:userID/*" element={<Instr_UserDetail />} />
                         <Route path="/panopticon/" element={<Panopticon />} />
                         <Route path="/logs/" element={<Instr_LogsViewer />} />
-                        <Route path="/hints/" element={<Panopticon />} />
+                        <Route path="/hints/" element={<Instr_Hints />} />
                     </Routes>
 
                 </InstructorRouter_context.Provider>
