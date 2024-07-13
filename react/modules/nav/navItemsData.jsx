@@ -151,7 +151,7 @@ const instr_hints = {
 
 const issues = {
     title: "Issues",
-    icon: edurange_icons.light_bulb,
+    icon: edurange_icons.gitHub,
     path: `https://github.com/edurange/edurange3/issues`,
     navStub: 'dash',
     external: true

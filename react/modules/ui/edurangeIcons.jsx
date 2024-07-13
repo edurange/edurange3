@@ -34,8 +34,9 @@ import {
     FaRegCopy,
     FaCheck,
     FaHatWizard,
-    FaTrashCan ,
-    FaTowerObservation
+    FaTrashCan,
+    FaTowerObservation,
+    FaGithub
 } from "react-icons/fa6";
 
 import { 
@@ -66,7 +67,7 @@ import {
     home : <FaHouseChimney />,
     file : <FaFileLines />,
     book : <FaBook/>,
-    
+    gitHub : <FaGithub />,
     id_card : <FaAddressCard />,
     chess_knight : <FaChessKnight />,
     account : <FaCircleUser />,
