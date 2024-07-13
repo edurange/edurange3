@@ -107,7 +107,7 @@ do
     localDomain=''
     while [ -z "$localDomain" ]
     do
-      echo " Please enter the domain you would like to use for your local installation (Ex: edurange.dev)"
+      echo " Please enter the domain you would like to use for your local installation (Ex: edurange.local)"
     	read domainSelection
      	localDomain="$domainSelection"
     done
