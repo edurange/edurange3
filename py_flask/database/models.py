@@ -182,5 +182,4 @@ class BashHistory(Edu3Mixin, SurrogatePK, Model):
     current_directory = Column(db.String(200), nullable=False, unique=False)
     input = Column(db.String(250), nullable=False, unique=False)
     output = Column(db.String(10000), nullable=False, unique=False)
-
     archive_id = Column(db.String(8), nullable=False, unique=False)

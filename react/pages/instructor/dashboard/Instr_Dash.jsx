@@ -14,7 +14,8 @@ function Instr_Dash() {
 
     const {
         scenarios_state,
-        set_scenarioDetail_state, tempUsers_state } = useContext(InstructorRouter_context);
+        set_scenarioDetail_state, 
+        tempUsers_state } = useContext(InstructorRouter_context);
 
     if (!scenarios_state) { return <></> }
 
@@ -24,19 +25,31 @@ function Instr_Dash() {
             <div className='instructor-dash-column-main'>
 
                 <div className='instructor-dash-section'>
-                    <Placard placard_text='STUDENT GROUPS' navMetas={['/instructor/groups', 'dash']} is_button={true} />
+                    <Placard 
+                        placard_text='STUDENT GROUPS' 
+                        navMetas={['/instructor/groups', 'dash']} 
+                        is_button={true} 
+                        textSize={'large'}/>
                     <CreateGroup />
                     <Instr_GroupsTable />
                 </div>
 
                 <div className='instructor-dash-section'>
-                    <Placard placard_text='SCENARIOS' navMetas={['/instructor/scenarios', 'dash']} is_button={true} />
+                    <Placard 
+                        placard_text='SCENARIOS' 
+                        textSize={'large'}
+                        navMetas={['/instructor/scenarios', 'dash']} 
+                        is_button={true} />
                     <CreateScenario />
                     <Instr_ScenTable set_scenarioDetail_state={set_scenarioDetail_state} />
                 </div>
 
                 <div className='instructor-dash-section'>
-                    <Placard placard_text='STUDENTS' navMetas={['/instructor/students', 'dash']} is_button={true} />
+                    <Placard 
+                        placard_text='STUDENTS'
+                        textSize={'large'} 
+                        navMetas={['/instructor/students', 'dash']} 
+                        is_button={true} />
                     <Instr_UsersTable set_scenarioDetail_state={set_scenarioDetail_state} />
                 </div>
                 

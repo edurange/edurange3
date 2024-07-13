@@ -12,6 +12,8 @@ import Instr_ScenDetail from './scenarios/Instr_ScenDetail';
 import Instr_UserDetail from './users/Instr_UserDetail';
 import { HomeRouter_context } from '../pub/Home_router';
 import Panopticon from './Panopticon';
+import Instr_LogsViewer from './logs_dir/Instr_LogsViewer';
+import Instr_Hints from './hints/Instr_Hints';
 
 export const InstructorRouter_context = React.createContext();
 
@@ -27,6 +29,11 @@ function Instructor_router() {
     const [userDetail_state, set_userDetail_state] = useState({})
     const [tempUsers_state, set_tempUsers_state] = useState([]);
     const [selectedMessage_state, set_selectedMessage_state] = useState(null);
+    const [logs_state, set_logs_state] = useState({
+        bash: [],
+        chat: [],
+        responses: [],
+    })
     const lastChat_ref = useRef(null);
     const socket_ref = useRef(null);
     const socket_protocol = (window.location.protocol === "https:") ? "wss" : "ws";
@@ -36,29 +43,35 @@ function Instructor_router() {
         try {
             const response = await axios.get("/get_instructor_data");
             const responseData = response.data;
-            const currentUsers = responseData?.users;
+            // DEV_FIX (update for new list strategy (not dict))
 
             // recent_reply is compared to chat_message timestamp to determine
             // whether message is considered new (Instr_UserTable.jsx).
             // the prop is also updated when an instructor sends reply (ea instr has their own record)
             // this record is only persistent in memory; full refresh effectively sets all to 'old'
-            currentUsers.forEach(user => {
 
+            responseData?.users?.forEach(user => {
                 if (!user.recent_reply) {
                     user.recent_reply = Date.now()
                 }
             });
 
-            set_users_state(currentUsers);
+            set_users_state(responseData?.users);
             set_groups_state(responseData?.groups);
             set_scenarios_state(responseData?.scenarios);
+            set_logs_state(responseData?.logs)
         }
         catch (error) { console.log('get_instructorData error:', error); };
     };
     useEffect(() => { get_instructorData(); }, []);
 
-    if (!scenarios_state) { return <></> }
-    if (!login_state) { return <></> }
+    if (
+        !scenarios_state
+        || !groups_state
+        || !scenarios_state
+        || !logs_state
+        || !login_state
+    ) { return <></> }
 
     // INITIALIZE ONLY SOCKET REF
     useEffect(() => {
@@ -94,7 +107,6 @@ function Instructor_router() {
         const handleMessage = (event) => {
             const message = JSON.parse(event.data);
             if (message.message_type === 'chat_message_receipt') {
-                console.log('Instructor_router recv websocket message: ', message)
                 set_chatObjs_UL_state(prevHistory => [...prevHistory, message?.data]);
             } else if (message.message_type === 'chatError') {
                 console.error('Chat error:', message.data);
@@ -136,7 +148,8 @@ function Instructor_router() {
                     chatObjs_UL_state, set_chatObjs_UL_state,
                     channelAccess_state, set_channelAccess_state,
                     selectedMessage_state, set_selectedMessage_state,
-                    socket_ref, lastChat_ref
+                    socket_ref, lastChat_ref,
+                    logs_state, set_logs_state
                 }}>
 
                     <Routes>
@@ -149,6 +162,8 @@ function Instructor_router() {
                         <Route path="/students/*" element={<Instr_Users />} />
                         <Route path="/students/:userID/*" element={<Instr_UserDetail />} />
                         <Route path="/panopticon/" element={<Panopticon />} />
+                        <Route path="/logs/" element={<Instr_LogsViewer />} />
+                        <Route path="/hints/" element={<Instr_Hints />} />
                     </Routes>
 
                 </InstructorRouter_context.Provider>

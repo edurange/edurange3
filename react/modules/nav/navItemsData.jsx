@@ -136,6 +136,18 @@ const panopticon = {
     path: `/instructor/panopticon`,
     navStub: 'dash'
 };
+const logs = {
+    title: "Logs",
+    icon: edurange_icons.book,
+    path: `/instructor/logs`,
+    navStub: 'dash'
+};
+const instr_hints = {
+    title: "Hints",
+    icon: edurange_icons.light_bulb,
+    path: `/instructor/hints`,
+    navStub: 'dash'
+};
 
 
 export const navArrays = {
@@ -170,7 +182,7 @@ export const navArrays = {
         },
         dash: {
             top: [instructor, logout],
-            side: [instructor, studentGroups, instr_scenarios, students, panopticon]
+            side: [instructor, studentGroups, instr_scenarios, students, panopticon, instr_hints, logs]
         },
         account: {
             top: [instructor, logout],
@@ -201,8 +213,7 @@ export const navArrays = {
         },
         dash: {
             top: [instructor, logout],
-            side: [instructor, studentGroups, instr_scenarios, students, panopticon]
-
+            side: [instructor, studentGroups, instr_scenarios, students, panopticon, instr_hints, logs]
         },
         account: {
             top: [instructor, logout],

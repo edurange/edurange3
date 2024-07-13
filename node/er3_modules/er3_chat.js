@@ -12,7 +12,6 @@ const Joi = require('joi');
 const { Pool } = pg;
 const fs = require('fs').promises;
 
-
 // root project env
 dotenv.config({ path: path.join(__dirname, '..', '..', '.env') });
 
@@ -27,11 +26,8 @@ async function updateLogsID() {
     }
 }
 
-
 const userDict = {}
 
-
-// register a user and add them to groups
 function updateUserDict(user_id, username, user_role, socketConnection) {
 
     if (!userDict.hasOwnProperty(Number(user_id))) {
@@ -42,11 +38,9 @@ function updateUserDict(user_id, username, user_role, socketConnection) {
             connection: socketConnection,
             channel_id: Number(user_id)
         };
-        console.log(`Added user ${username} with role of ${(user_role === 'admin' || user_role === 'instructor') ? "instructor" : "student"} to chat userDict.`);
     }
     else {
         userDict[Number(user_id)].connection = socketConnection;
-        console.log(`User ${username} already exists in dict. Refreshing connection info and continuing...`);
     };
 }
 
@@ -124,12 +118,10 @@ async function echoMessage_toInstructors(messageReceipt) {
     instructors.forEach(instructor => {
         if (instructor.connection.readyState === 1) {
             instructor.connection.send(JSON.stringify(messageReceipt));
-            console.log(`Message sent to instructor ${instructor.username}.`);
         } else if (instructor.connection.readyState === 0) {
             // listen for channel to open if not open
             instructor.connection.addEventListener('open', () => {
                 instructor.connection.send(JSON.stringify(messageReceipt));
-                console.log(`Message sent to instructor ${instructor.username} after connection opened.`);
             }, { once: true });
         } else {
             console.log(`Could not send message to instructor ${instructor.username}: Connection not ready (state: ${instructor.connection.readyState}).`);
@@ -143,12 +135,10 @@ async function echoMessage_all(messageReceipt) {
     all_users.forEach(user => {
         if (user.connection.readyState === 1) {
             user.connection.send(JSON.stringify(messageReceipt));
-            console.log(`Message sent to user ${user.username}.`);
         } else if (user.connection.readyState === 0) {
             // listen for channel to open if not open
             user.connection.addEventListener('open', () => {
                 user.connection.send(JSON.stringify(messageReceipt));
-                console.log(`Message sent to user ${user.username} after connection opened.`);
             }, { once: true });
         } else {
             console.log(`Could not send message to user ${user.username}: Connection not ready (state: ${user.connection.readyState}).`);
@@ -169,8 +159,6 @@ async function insertMessageIntoDB(senderId, messageData, timestamp, archive_id)
 }
 
 async function handleChatMessage(message, socketConnection, user_id, timestamp, archive_id) {
-
-    console.log('handling chat message: ', message)
 
     const { error, value } = ChatMessage_schema.validate(message.data);
     if (error) {
@@ -193,7 +181,6 @@ async function handleChatMessage(message, socketConnection, user_id, timestamp, 
 }
 async function handleAnnouncement(message, socketConnection, user_id, timestamp, archive_id) {
 
-    console.log('Handling announcement from instructor with ID: ', user_id)
     const { error, value } = ChatMessage_schema.validate(message.data);
     if (error) {
         socketConnection.send(JSON.stringify({ error: error.details[0].message }));
@@ -212,8 +199,6 @@ async function handleAnnouncement(message, socketConnection, user_id, timestamp,
         socketConnection.send(JSON.stringify({ error: 'Internal Server Error' }));
     }
 }
-
-
 
 ///////
 // server 
@@ -263,12 +248,6 @@ async function handleConnection(socketConnection, request) {
         return;
     }
 
-    console.log(
-        `User connected to chat server w/ jwt id: ${user_id}`,
-        `username: ${username}`,
-        `user_role: ${user_role}`
-    );
-
     try {
 
         await updateLogsID(); // Wait for updateLogsID to complete
@@ -280,11 +259,8 @@ async function handleConnection(socketConnection, request) {
     }
 }
 
-
 ///////
 // main 
-
-
 chatSocketServer.on('connection', async (socketConnection, request) => {
 
     await handleConnection(socketConnection, request);
@@ -296,8 +272,6 @@ chatSocketServer.on('connection', async (socketConnection, request) => {
         const this_message_type = this_message.message_type;
         const this_timestamp = new Date().toISOString();
         const this_scenario_id = Number(this_message.scenario_id)
-
-        console.log(`got msg with message_type ${this_message_type}: `, this_message);
 
         // handle messages by message_type
         const handlers = {

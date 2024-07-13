@@ -2,8 +2,8 @@ import React, { useState, useEffect, useContext } from 'react';
 import './GuidePane.css';
 import {nanoid} from 'nanoid';
 import HomeChapter from './Q_and_A/HomeChapter';
-import GuideReading2 from './Q_and_A/GuideReading2';
-import GuideQuestion2 from './Q_and_A/GuideQuestion2';
+import GuideReading from './Q_and_A/GuideReading';
+import GuideQuestion from './Q_and_A/GuideQuestion';
 import GuideTabs from './GuideTabs';
 
 function generate_thisChapter_reactArray(scenarioID, meta, thisChapter_contentArray) {
@@ -16,13 +16,13 @@ function generate_thisChapter_reactArray(scenarioID, meta, thisChapter_contentAr
             if (content_item?.type === 'reading') {
                 tempItem = (
                     <div key={index + 1000}>
-                        <GuideReading2 scenario_id={scenarioID} readingObj={content_item} scenario_type={meta?.scenario_type.toLowerCase()} />
+                        <GuideReading scenario_id={scenarioID} readingObj={content_item} scenario_type={meta?.scenario_type} />
                     </div>
                 );
             } else if (content_item?.type === 'question') {
                 tempItem = (
                     <div key={index + 2000}>
-                        <GuideQuestion2 scenario_id={scenarioID} questionObj={content_item} scenario_type={meta?.scenario_type.toLowerCase()} />
+                        <GuideQuestion scenario_id={scenarioID} questionObj={content_item} scenario_type={meta?.scenario_type} />
                     </div>
                 );
             } else {
@@ -36,7 +36,6 @@ function generate_thisChapter_reactArray(scenarioID, meta, thisChapter_contentAr
     });
     return react_arr;
 }
-
 
 function GuidePane({chapter_num, meta, guideContent, scenarioID, pageID}) {
 
@@ -76,58 +75,4 @@ function GuidePane({chapter_num, meta, guideContent, scenarioID, pageID}) {
         </div>
     );
 };
-
-
 export default GuidePane;
-
-
-    // function selectChapter () {
-
-    //     console.log('selchap1')
-    //     if (Number(chapter_num) === 0) { return <HomeChapter />; }
-    //     else if (Number(chapter_num) === 1337) { return <HomeChapter />; }
-    //     else {
-            
-            
-    //         const thisChapterData = guideContent?.contentYAML?.studentGuide?.chapters?.[chapter_num];
-    //         const thisChapter_contentArray = thisChapterData?.content_array;
-            
-    //         console.log('selchap3')
-
-    //         // const this_guideItem = thisChapter_contentArray [Number(pageID) - 1];
-    //         // const thisChapter_contentArray = this_guideItem?.content_array;
-
-    //         console.log("TCCA: ",thisChapter_contentArray)
-            
-    //         const react_arr = []
-            
-    //         thisChapter_contentArray.map((item, index) => {
-                
-    //             console.log(`TGI_arr item index ${index}: `,item)
-    //             if (item?.type){
-    //                 let tempItem
-    //                 if (item?.type === 'reading') {
-    //                     // console.log('isreading: ', item.content)
-    //                     tempItem = (
-    //                         <div key={nanoid(5)}>
-    //                             <GuideReading2 readingObj={item} />
-    //                         </div>
-    //                 )
-                        
-    //                 }
-    //                 else {
-    //                     // console.log('isquestion: ', item.content)
-    //                     tempItem = (
-    //                         <div key={nanoid(5)}>
-    //                             <GuideQuestion2 scenario_id={scenarioID} questionObj={item} scenario_type={meta?.scenario_type}/>
-    //                         </div>
-    //                     )
-    //                 }
-    //                 react_arr.push(tempItem)
-    //             }
-    //         }   
-    //         )
-    //         return react_arr;
-    //     }
-    // };
-    // const current_chapter_arr = selectChapter()
