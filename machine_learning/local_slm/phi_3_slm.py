@@ -113,7 +113,7 @@ def retrieve_and_parse_scenario_guide(scenario):
 
 
 
-def input_context_system(scenario):
+def input_context_system(scenario, username):
 
       #Will be a function call to getLogs()
       bash_history = "1. $gcc -o empty empty.c 2. gcc: error: empty.c: No such file or directory 3. gcc: fatal error: no input files 4. compilation terminated. 5. $ls 6. $ls"
@@ -140,9 +140,9 @@ def input_context_system(scenario):
 
 #Generating the hint.
 @profile
-def generate_hint(slm, scenario):
+def generate_hint(slm, scenario_name, username):
 
-      finalized_prompt = input_context_system(scenario)
+      finalized_prompt = input_context_system(scenario, username)
       answer = prompt_model(slm, finalized_prompt)
 
       #Answer
@@ -151,11 +151,6 @@ def generate_hint(slm, scenario):
 
 
 
-
-def run_model_manager(scenario):
-
-      slm = initialize_model(True, 12)
-      
 
 
 #This will be the main call function to generate the hint. Eventually it'll take studentID for param for pulling from DB.
