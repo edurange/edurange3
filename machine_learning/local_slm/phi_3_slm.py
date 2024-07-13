@@ -8,31 +8,29 @@
 # Author: Taylor Wolff 
 # Run $python machine_learning/local_slm/phi_3_slm.py to be prompted to input bash commands.
 ####################################################################################################
-
+import llama_cpp
+from llama_cpp import Llama
 import sys
 import os
 import math
 import pyopencl as cl
 from memory_profiler import profile, memory_usage
-
-import llama_cpp
-from llama_cpp import Llama
+from llama_index.core import Settings
+from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 import asyncio
-
+import yaml
 
 #Checking user hardware specs, this also checks if the user has a local GPU as this allows offloading 
 # and accelerates generation drastically
 def check_hardware_specs():
 
-      def check_cpu_specs():
+      #I can't imagine the CPU not existing if they're running the program right?....right?...
+      def get_cpu_specs():
             num_cpus = os.cpu_count()
-            if num_cpus == 0 or num_cpus is None:
-                  raise ValueError("No CPU cores detected... how's this possible?")
-            else:
-                  return int(num_cpus)
+            return int(num_cpus)
             
       #Checks for available graphics cards.
-      def check_gpu_specs():
+      def get_gpu_specs():
             try:
                   platforms = cl.get_platforms()
                   num_gpus = 0
@@ -42,145 +40,109 @@ def check_hardware_specs():
                         num_gpus += len(devices)
                   return num_gpus
                            
-            except Exception as e:
+            except Exception as GPU_NOT_FOUND:
                   return 0
       
             
-      num_cpus = check_cpu_specs()
-      num_gpus = check_gpu_specs()
-      #print(f"num of gpus {num_gpus}")
+      num_cpus = get_cpu_specs()
+      num_gpus = get_gpu_specs()
+      
+      print(num_gpus)
+      print(num_cpus)
    
       
       return num_cpus, num_gpus
 
 #Calculates scaled core usage, also enables GPU offloading.
-def calculate_hardware_settings(resource_scaler, gpu_enable):
+def set_cpu_gpu_resources():
 
-      hardware_specs = check_hardware_specs()
-      num_cpus = hardware_specs[0]
-      num_gpus = hardware_specs[1]
+      num_cpus, num_gpus= check_hardware_specs()
 
-      performance_setting_dict = {
-            "1": 0.5,
-            "2": 0.6,
-            "3": 0.8,
-      }
-
-      #Logic for setting GPU and CPU resources, additionally ensuring that if GPU rescources are enabled then no CPU resources should be used.
-      if gpu_enable:
-            if num_gpus != 0:
-                  set_gpu_resources = -1
-      else: 
-            set_gpu_resources = 0
+      #Logic for setting GPU and CPU resources
+      cpu_resources = num_cpus
+      gpu_resources = 0 if num_gpus == 0 or num_gpus is None else 12
       
-      if set_gpu_resources == 0:
-            set_cpu_resources = math.floor(num_cpus * performance_setting_dict[resource_scaler])
-      else: 
-            set_cpu_resources = 0
+      return cpu_resources, gpu_resources
 
-
-      return set_cpu_resources, set_gpu_resources
-
-
-#Generating the hint.
-@profile
-def generate_hint(gpu_enable, hardware_settings, question):
-
-      #Echo to user the recources being used.
-      print(f"\nCPU cores being used: {hardware_settings[0]}")
-      if gpu_enable:
-            if hardware_settings[1] == -1: 
-                  print("GPU Enabled\n")
-            else:
-                  print("GPU Enabled but no graphics device found\n")
-      else:
-            print("GPU Disabled\n")
-     
-      #Direct file version
-      """
-      #The Phi-3 model is quantized and can be found as a .gguf file in the dir.
-      slm = Llama(
-      model_path="machine_learning/local_slm/Phi-3-mini-4k-instruct-q4.gguf", verbose=False,
-      n_ctx=4080, 
-      n_threads=hardware_settings[0], 
-      n_gpu_layers=hardware_settings[1]
-      )
-      """
-
-      #Import version
-      slm = Llama.from_pretrained(
-            repo_id="microsoft/Phi-3-mini-4k-instruct-gguf",
-            filename="Phi-3-mini-4k-instruct-q4.gguf",
-            verbose=False,
-            n_ctx=4080, 
-            n_threads=hardware_settings[0], 
-            n_gpu_layers=hardware_settings[1]
-      )
-
-      #This can be changed in the future easily, experimenting with prompting.
-      system_prompt = "You are an AI that assists a struggling student working on cyber-security simulation exercises, review their recent bash history and provide them a short hint"
-      question_with_system_prompt = f"{system_prompt}: {question}"
-      
+def prompt_model(slm, prompt):
+          
       output = slm(
             #Prompt
-            f"<|user|>\n{question_with_system_prompt}<|end|>\n<|assistant|>",
+            f"<|user|>\n{prompt}<|end|>\n<|assistant|>",
             max_tokens=4080,
             stop=["<|end|>"], 
             echo=False, 
             temperature=0.7,
       ) 
 
-      #Answer
       return output["choices"][0]["text"]
-
-#This will be the main call function to generate the hint. Eventually it'll take studentID for param for pulling from DB.
-def get_hint():
-
-      print(" ________________________ ")
-      print("| EDURANGE PHI-3 SLM     | ")
-      print("| ---------------------- | ")
-      print("| ENABLE GPU OFFLOAD?    | ")
-      print("| (Highly recommended)   | ")
-      print("|                        | ")
-      print("| 1. ENABLE              | ")
-      print("| 2. DISABLE             | ")
-      print("|________________________|  ")
-      print("\n")
-
-      #Prompt if GPU should be enabled, if not default to disabled.
-      gpu_enable_setting = int(input())
-      gpu_enable = True if gpu_enable_setting == 1 else False
-
       
 
-      print(" ________________________ ")
-      print("| EDURANGE PHI-3 SLM     | ")
-      print("| ---------------------- | ")
-      print("| PERFORMANCE SETTING    | ")
-      print("| (MEDIUM is reccomended)| ")
-      print("|                        | ")
-      print("| 1. LOW (.25 of cores)  | ")
-      print("| 2. MEDIUM (.5 of cores)| ")
-      print("| 3. HIGH (.75 of cores) | ")
-      print("|________________________|  ")
-      print("\n")
+def initialize_model():
+         
+      cpu_resources, gpu_resources = set_cpu_gpu_resources()
 
-      #Prompt what performance settings should be used.
-      performance_setting = input()
+      slm = Llama.from_pretrained(
+            repo_id="microsoft/Phi-3-mini-4k-instruct-gguf",
+            filename="Phi-3-mini-4k-instruct-q4.gguf",
+            verbose=False,
+            n_ctx=4086, 
+            n_threads=cpu_resources, 
+            n_gpu_layers=gpu_resources
+      )
+         
+      return slm
 
-      #Make function call to calculate exact values.
-      hardware_settings = calculate_hardware_settings(performance_setting, gpu_enable)
+def retrieve_and_parse_scenario_guide(scenario):
 
-      #Prompt for user question
-      print("Enter Bash History Line: ")
+      scenario_guide_path = f'scenarios/prod/{scenario}/guide_content.yml' 
 
-      #This will be replaced by a getLogs() call to the db for a given student.
-      question = input()	
-      answer = generate_hint(gpu_enable, hardware_settings, question)
+      with open(scenario_guide_path, 'r', encoding='utf-8') as file:
+            parsed_scenario_guide = file.read()
+
+      return parsed_scenario_guide
+
+
+
+def input_context_system(scenario):
+
+      #Additional system and context prompts
+      system_prompt = "You are an AI that assists a struggling student working on a cyber-security scenario, a student interacts with the exercise using the command line terminal. Additionally they may be asked to fill in their answers to questions with forms, you review their recent bash, chat and question answer history and provide them a very short hint relevant to the scenario guide I will provide you now, "
+      scenario_guide_context_preface = " The following is the answers to the questions, do not reveal it's contents to the student. "
+      parsed_scenario_guide = retrieve_and_parse_scenario_guide(scenario) + ". You have now reached the end of the scenario guide. "
+      logs_context_preface = ". Now I will provide you the recent bash, chat and answer history of the student, taking into account the scenario's answers, provide them a hint on what to do next, or how to fix the current errors:  "
+
+      #Current
+      bash_history = "1. $gcc -o empty empty.c 2. gcc: error: empty.c: No such file or directory 3. gcc: fatal error: no input files 4. compilation terminated. 5. $ls 6. $ls"
+      chat_history = "NO MESSAGES RECORDED YET" 
+      answer_history = "NO QUESTIONS ANSWERED YET"
+
+      bash_history_prompt = "These are the student's recent bash commands: {bash_history}. "
+      chat_history_prompt = "These are the student's recent chat messages: {bash_history}. "
+      answer_history_prompt = "These are the student's recent answers to the question forms: {bash_history}. "
+
+      #ending_prompt_reiteration = ". Using the context provided by the scenario guide and the student's recent logs, provide a very short hint considering what part of the scenario they may be at and what they may be struggling with."
+
+      finalized_prompt = system_prompt + scenario_guide_context_preface + parsed_scenario_guide + bash_history_prompt + chat_history_prompt + answer_history_prompt
+
+      return finalized_prompt
+
+#Generating the hint.
+@profile
+def generate_hint(slm, scenario):
+
+      finalized_prompt = input_context_system(scenario)
+      answer = prompt_model(slm, finalized_prompt)
+
+      #Answer
       print(answer)
 
+
+#This will be the main call function to generate the hint. Eventually it'll take studentID for param for pulling from DB.
 def main():
-    get_hint()
+    scenario = "strace"
+    slm = initialize_model()
+    generate_hint(slm, scenario)
 
 if __name__ == "__main__":
    main()
