@@ -34,23 +34,13 @@ function AxiosConfig({ children }) {
         };
 
         csrfToken = getCSRFfromCookie();
-
-        if (!csrfToken) { 
-            console.error('Axios: CSRF cookie not found');
-        }
-        if (!axios.defaults) { 
-            console.error('Axios: defaults not found');
-        }
-        
         axios.defaults.baseURL = '/api'; 
-        console.log('checking base url: ', axios?.defaults?.baseURL)
-        
+
+        // force re-render if .baseURL has not yet been correctly assigned
         if (!axios?.defaults?.baseURL !== "/api") { 
             return
         }
-        if (!axios?.defaults?.baseURL !== "/api") { 
-            console.error('Axios: axios baseURL should be "/api" but is not');
-        }
+        
         // IMPORTANT NOTES
         // - NO trailing slash on the baseURL 
         // - ASSUMES domain, not numeric IP 
