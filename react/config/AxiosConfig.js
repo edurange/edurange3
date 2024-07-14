@@ -17,7 +17,11 @@ import React, { useEffect } from 'react';
 import axios from 'axios';
 
 function AxiosConfig({ children }) {
+
+    let csrfToken = "";
+
     useEffect(() => {
+
         function getCSRFfromCookie() {
             const name = 'X-XSRF-TOKEN';
             const value = `; ${document.cookie}`;
@@ -28,11 +32,25 @@ function AxiosConfig({ children }) {
             };
             return null;
         };
-        const csrfToken = getCSRFfromCookie();
-        if (!csrfToken) { console.error('Axios: CSRF cookie not found'); } // DEV_ONLY
 
+        csrfToken = getCSRFfromCookie();
+
+        if (!csrfToken) { 
+            console.error('Axios: CSRF cookie not found');
+        }
+        if (!axios.defaults) { 
+            console.error('Axios: defaults not found');
+        }
+        
         axios.defaults.baseURL = '/api'; 
-
+        console.log('checking base url: ', axios?.defaults?.baseURL)
+        
+        if (!axios?.defaults?.baseURL !== "/api") { 
+            return
+        }
+        if (!axios?.defaults?.baseURL !== "/api") { 
+            console.error('Axios: axios baseURL should be "/api" but is not');
+        }
         // IMPORTANT NOTES
         // - NO trailing slash on the baseURL 
         // - ASSUMES domain, not numeric IP 
@@ -55,7 +73,7 @@ function AxiosConfig({ children }) {
             }
             return Promise.reject(error);
         });
-    }, []);
+    }, [csrfToken]);
 
     return children;
 }
