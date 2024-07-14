@@ -33,7 +33,7 @@ function Instr_SenderBox() {
         }
 
         const chatMsg = new ChatMessage(
-            selectedMessage_state?.channel, 
+            selectedMessage_state?.channel_id, 
             userData_state?.user_alias, 
             selectedMessage_state?.scenario_type, 
             messageContent_state.trim(),

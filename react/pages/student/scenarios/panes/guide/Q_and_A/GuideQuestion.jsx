@@ -4,13 +4,16 @@ import React, { useContext, useState } from 'react';
 import './Q_and_A.css';
 import ResponseStatus from './ResponseStatus';
 import { StudentRouter_context } from '../../../../Student_router';
+import ReactMarkdown from 'react-markdown';
+
 
 function GuideQuestion({ scenario_id, questionObj, scenario_type }) {
-    if (!questionObj?.itemContent) { return null; }
+    if (!questionObj?.content) { return null; }
+
     const { responseData_state, set_responseData_state } = useContext(StudentRouter_context);
     const [inputText_state, set_inputText_state] = useState('');
 
-    const points_possible = questionObj?.itemContent?.Points ?? '?';
+    const points_possible = questionObj?.points_possible ?? '?';
 
     const handleKeyPress = (event) => {
         if (event.key === 'Enter' && !event.shiftKey) {
@@ -19,29 +22,25 @@ function GuideQuestion({ scenario_id, questionObj, scenario_type }) {
         }
     };
     
-
     async function handleSubmit() {
         try {
             const evaluated = await axios.post('/check_response', {
                 scenario_id: scenario_id,
-                question_num: questionObj?.itemContentPointer,
                 scenario_type: scenario_type,
-                student_response: inputText_state
+                student_response: inputText_state,
+                question_num: questionObj.question_num
             });
             if (evaluated && evaluated.data?.[0]) {
                 const this_item = evaluated.data[0];
                 const new_score = this_item?.points_awarded ?? 0;
-                const current_score = responseData_state[questionObj?.itemContentPointer]?.points_awarded ?? 0;
+                const current_score = responseData_state[questionObj?.question_num]?.points_awarded ?? 0;
 
                 if (new_score > current_score) {
                     set_responseData_state(prevState => ({
                         ...prevState,
-                        [questionObj?.itemContentPointer]: this_item
+                        [questionObj?.question_num]: this_item
                     }));
                 }
-
-                // console.log(`Submission for scenario ${scenario_id} question ${questionObj?.itemContentPointer}: "${inputText_state}". Correct answer was [ REDACTED ]. You were awarded ${this_item.points_awarded} points!`);
-                // console.log(`Submission for scenario ${scenario_id} question ${questionObj?.itemContentPointer}: "${inputText_state}". Correct answer was ${this_item.correct_response}. You were awarded ${this_item.points_awarded} points!`);
             }
 
             set_inputText_state('');
@@ -55,7 +54,9 @@ function GuideQuestion({ scenario_id, questionObj, scenario_type }) {
         <div className='edu3-question-frame' key={scenario_id}>
             <div className='edu-question-carpet'>
                 <div className='edu3-question-text-row'>
-                    {questionObj?.itemContent?.Text}
+                <ReactMarkdown className='edu-reading-text'>
+                    {questionObj?.content}
+                </ReactMarkdown>
                 </div>
                 <div className='edu3-response-row'>
                     <div className='edu3-response-row-top'>
@@ -76,7 +77,7 @@ function GuideQuestion({ scenario_id, questionObj, scenario_type }) {
                         </div>
                     </div>
                     <div className='edu3-response-row-bottom'>
-                        <ResponseStatus points_possible={points_possible} question_num={questionObj?.itemContentPointer} />
+                        <ResponseStatus points_possible={points_possible} question_num={questionObj?.question_num} />
                     </div>
                 </div>
             </div>

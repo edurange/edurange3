@@ -136,7 +136,6 @@ def input_context_system(scenario, username):
       print(f"\n\n{finalized_prompt}\n")
       return finalized_prompt
 
-@profile  # DEV_ONLY
 def generate_hint(scenario_type, username):
 
       scenario_type="file_wrangler"

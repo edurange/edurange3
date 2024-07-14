@@ -11,10 +11,12 @@ contentDefinitions:
       * Navigate file system to find specific files
       * Move and copy files.
       * Set permissions (access control) for files.
+
     styles:
       - heading
       - justify-center
       - align-bottom
+
 
   Reading2: &reading2
     type: reading

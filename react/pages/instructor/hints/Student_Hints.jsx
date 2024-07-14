@@ -3,7 +3,7 @@ import { InstructorRouter_context } from '../Instructor_router';
 import { HomeRouter_context } from '../../pub/Home_router';
 import axios from 'axios';
 
-function Instr_Hints() {
+function Student_Hints() {
     const {
         users_state, set_users_state,
         groups_state, set_groups_state,
@@ -53,23 +53,13 @@ function Instr_Hints() {
     console.log("hint request response: ", hint_state)
     
 
-
-
-
-
-
-
-
-
-
-
     return (
         <div>
 
-            Instr_Hints PAGE PLACEHOLDER LOADED
+            Student_Hints PAGE PLACEHOLDER LOADED
             
         </div>
     );
 }
 
-export default Instr_Hints;
+export default Student_Hints;

@@ -19,7 +19,7 @@ from py_flask.utils.guide_utils import (
     getContent, 
     getScenarioMeta,
     )
-from machine_learning.local_slm.phi_3_slm import generate_hint
+
 from py_flask.utils.auth_utils import jwt_and_csrf_required, instructor_only
 from py_flask.utils.instructor_utils import generateTestAccts, addGroupUsers
 from py_flask.database.models import generate_registration_code as grc
@@ -141,31 +141,8 @@ def get_logs():
     except Err_Custom_FullInfo as err:
         return err.get_response()
     except Exception as err:
-        # handle unexpected exceptions
         generic_error = Err_Custom_FullInfo({'message': str(err), 'status_code': 500})
         return generic_error.get_response()
-
-
-# @blueprint_instructor.route("/get_logs", methods=['GET'])
-# @jwt_and_csrf_required
-# def get_logs():
-#     instructor_only()
-
-#     try:
-#         logData = getLogs()
-#         if logData is None:
-
-#             newErr = {
-#                 'message': 'error retrieving logs',
-#                 'status_code': 400
-#             }
-#             raise Err_Custom_FullInfo(newErr)
-#         else:
-#             return logData
-#     except:
-#         return Exception
-
-
 
 @blueprint_instructor.route("/get_instructor_data", methods=['GET'])
 @jwt_and_csrf_required
@@ -186,7 +163,6 @@ def get_instructor_data():
     except Err_Custom_FullInfo as err:
         return err.get_response()
     except Exception as err:
-        # handle unexpected exceptions
         generic_error = Err_Custom_FullInfo({'message': str(err), 'status_code': 500})
         return generic_error.get_response()
 
@@ -477,7 +453,7 @@ def clear_groups():
 def get_chat_library():
     instructor_only()
 
-    # chatHistoryData_dict containins: "unordered_messages_list", "user_channels_dict"
+    # chatHistoryData_dict contains: "unordered_messages_list", "user_channels_dict"
     chatHistoryData_dict = getChatLibrary()
     return jsonify(chatHistoryData_dict)
 
@@ -500,21 +476,3 @@ def add_user_to_container():
         # internal_command = f"useradd --home-dir /home/USERNAME --create-home --shell /bin/bash --password $(echo PASSWORD | openssl passwd -1 -stdin) USERNAME"
         # os.system(f"docker exec {internal_command} {c}")
 
-@blueprint_instructor.route("/get_hint", methods=['GET'])
-#@jwt_and_csrf_required
-def get_hint():
-    #instructor_only()
-
-    requestJSON=request.json
-    this_scenario_name=requestJSON["scenario_name"]
-    this_username=requestJSON["username"]
-
-
-    #return {"response": "test response"}
-
-
-    #this_username=g.current_username
-    #this_user_id=g.current_user_id
-    #this_user_role=g.current_user_role
-
-    #generated_hint = generate_hint({}, this_scenario_name, this_username)

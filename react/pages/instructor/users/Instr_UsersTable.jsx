@@ -72,7 +72,6 @@ function Instr_UsersTable() {
                 await clearGroups();
                 break;
             default:
-                console.log('No action selected');
         }
     }
 
@@ -93,7 +92,6 @@ function Instr_UsersTable() {
         }
     }
 
-
     async function assignToGroup() {
         const usersToAssignIds = Object.keys(selectedUsers_state)
             .filter((userId) => selectedUsers_state[userId])
@@ -106,8 +104,6 @@ function Instr_UsersTable() {
             });
 
             if (response.data.result === 'success') {
-                // console.log('Users assigned to group:', response.data.assigned_user_ids);
-
                 const updatedUsersState = users_state.map(user => {
                     if (response.data.assigned_user_ids.includes(user.id)) {
                         return { ...user, membership: parseInt(selectedGroupId_state, 10) };
@@ -133,7 +129,6 @@ function Instr_UsersTable() {
             console.error('Error assigning users to group:', error);
         }
     }
-
     
     async function assignToGroup() {
         const usersToAssignIds = Object.keys(selectedUsers_state)
@@ -147,8 +142,6 @@ function Instr_UsersTable() {
             });
 
             if (response.data.result === 'success') {
-                // console.log('Users assigned to group:', response.data.assigned_user_ids);
-
                 const updatedUsersState = users_state.map(user => {
                     if (response.data.assigned_user_ids.includes(user.id)) {
                         return { ...user, membership: parseInt(selectedGroupId_state, 10) };
@@ -191,8 +184,6 @@ function Instr_UsersTable() {
             });
 
             if (response.data.result === 'success') {
-                // console.log('Users cleared from groups:', response.data.cleared_user_ids);
-
                 const updatedUsersState = users_state.map(user => {
                     if (response.data.cleared_user_ids.includes(user.id)) {
                         return { ...user, membership: null };
@@ -228,11 +219,11 @@ function Instr_UsersTable() {
 
     function compileMessages_byUser(user_id) {
 
-        const userAllowed_chanID_intArr = channelAccess_state[user_id];
+        const userAllowed_chanID_intArr = channelAccess_state[user_id] ?? [];
 
         const userAllowed_messageObjs_arr = userAllowed_chanID_intArr.map((allowed_channel_id) => {
             const filtered_messageObjs_arr = chatObjs_UL_state
-                .filter(( chat_obj ) => chat_obj.channel === allowed_channel_id)
+                .filter(( chat_obj ) => chat_obj.channel_id === allowed_channel_id)
             return filtered_messageObjs_arr
         });
         return userAllowed_messageObjs_arr;
