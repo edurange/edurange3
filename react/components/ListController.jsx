@@ -23,7 +23,7 @@ function ListController({
             </select>
             <select value={primarySortProperty_state} onChange={handleSortPropertyChange}>
                 <option value="timestamp">Timestamp</option>
-                <option value="channel">Channel ID</option>
+                <option value="channel_id">Channel ID</option>
                 <option value="scenario">Scenario ID</option>
             </select>
         </div>

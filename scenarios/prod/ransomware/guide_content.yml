@@ -1,0 +1,14 @@
+ScenarioTitle: Ransomware
+
+contentDefinitions:
+  Reading1: &reading1
+    type: reading
+    content: |
+      ### place holder
+
+studentGuide:
+  chapters:
+    - chapter_num: 1
+      title: Ransomware
+      content_array:
+        - *reading1

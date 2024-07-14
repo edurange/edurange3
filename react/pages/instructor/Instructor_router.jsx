@@ -13,6 +13,7 @@ import Instr_UserDetail from './users/Instr_UserDetail';
 import { HomeRouter_context } from '../pub/Home_router';
 import Panopticon from './Panopticon';
 import Instr_LogsViewer from './logs_dir/Instr_LogsViewer';
+import Instr_Hints from './hints/Instr_Hints';
 
 export const InstructorRouter_context = React.createContext();
 
@@ -42,7 +43,6 @@ function Instructor_router() {
         try {
             const response = await axios.get("/get_instructor_data");
             const responseData = response.data;
-
             // DEV_FIX (update for new list strategy (not dict))
 
             // recent_reply is compared to chat_message timestamp to determine
@@ -55,14 +55,6 @@ function Instructor_router() {
                     user.recent_reply = Date.now()
                 }
             });
-
-            console.log(
-                'DEV_ONLY: instr data: \n',
-                'users: ', responseData?.users, '\n',
-                'groups: ', responseData?.groups, '\n',
-                'scenarios: ', responseData?.scenarios,'\n',
-                'logs: ', responseData?.logs
-            )
 
             set_users_state(responseData?.users);
             set_groups_state(responseData?.groups);
@@ -171,6 +163,7 @@ function Instructor_router() {
                         <Route path="/students/:userID/*" element={<Instr_UserDetail />} />
                         <Route path="/panopticon/" element={<Panopticon />} />
                         <Route path="/logs/" element={<Instr_LogsViewer />} />
+                        <Route path="/hints/" element={<Instr_Hints />} />
                     </Routes>
 
                 </InstructorRouter_context.Provider>

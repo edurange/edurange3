@@ -1,6 +1,8 @@
 
 import React from "react";
 
+import { RiLightbulbFlashLine } from "react-icons/ri";
+
 import {
     FaHouseChimney,
     FaAddressCard,
@@ -32,8 +34,9 @@ import {
     FaRegCopy,
     FaCheck,
     FaHatWizard,
-    FaTrashCan ,
-    FaTowerObservation
+    FaTrashCan,
+    FaTowerObservation,
+    FaGithub
 } from "react-icons/fa6";
 
 import { 
@@ -64,6 +67,7 @@ import {
     home : <FaHouseChimney />,
     file : <FaFileLines />,
     book : <FaBook/>,
+    gitHub : <FaGithub />,
     id_card : <FaAddressCard />,
     chess_knight : <FaChessKnight />,
     account : <FaCircleUser />,
@@ -73,6 +77,7 @@ import {
     questionmark : <FaCircleQuestion/>,
     hamburger: <FaBars/>,
     terminal_prompt: <FaTerminal/>,
+    light_bulb: <RiLightbulbFlashLine/>, 
     eye: <FaEye/>,
     userGroup: <FaPeopleGroup/>,
     scenarioGroup: <FaChess/>,
