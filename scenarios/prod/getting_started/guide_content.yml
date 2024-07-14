@@ -449,7 +449,7 @@ contentDefinitions:
       
       Here at CyberSec you have been well trained, recruit. Now let's put your training to test! This is a mission of the utmost importance. Complete this and you are assured a spot on our team.
       
-      TASK: Our intelligence indicates that somewhere in your computer is an image file that is vital to our organization. This image has a weird name - we know for certain that it contains the word `cowFJS` in it. The file is somewhere on this system, but it is _not_ in your home directory. Through our sources we also know that there is another crucial file in that folder. Copy _both_ the image and second file to a new folder in your home directory, called `final-mission`. Finally, create a new file called `cowsay.file` in the folder, `final-mission`, with the contents of the `cowboy` man file in it.
+      TASK: Our intelligence indicates that somewhere in your computer is an image file that is vital to our organization. This image has a weird name - we know for certain that it contains the word `cowFJS` in it. The file is somewhere on this system, but it is _not_ in your home directory. Through our sources we also know that there is another crucial file in that folder. Copy _both_ the image and second file to a new folder in your home directory, called `final-mission`. Finally, create a new file called `cowsay.file` in the folder, `final-mission`, with the contents of the `cowsay` man file in it.
   
   Question1: &question1
     question_num: 1
