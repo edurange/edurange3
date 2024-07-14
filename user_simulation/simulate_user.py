@@ -17,21 +17,14 @@ def submit_command(command, driver):
 	action = ActionChains(driver)
 	action.send_keys(command)
 	action.key_down(Keys.RETURN).key_up(Keys.RETURN).perform()
+
 	
 	
-def simulate_user(credentials):
+def simulate_user(credentials, driver):
 
-	print("entered user function")
-
-	# Connect to Firefox
-	service = Service("geckodriver")
-	options = Options()
-	options.add_argument("-profile")
-	options.add_argument(FIREFOX_PROFILE_PATH)
-	driver = webdriver.Firefox(service=service, options=options)
-
+	
 	# Open EDURange and log in
-	driver.maximize_window()
+	#driver.maximize_window()
 	driver.get("https://edurange.dev")
 	time.sleep(1)
 	login_button = driver.find_element(By.CLASS_NAME, "edu3-nav-link")
@@ -42,7 +35,9 @@ def simulate_user(credentials):
 	username_field.send_keys(credentials[0])
 	password_field.send_keys(credentials[1])
 	password_field.send_keys(Keys.RETURN)
-	time.sleep(1)
+	time.sleep(2)
+	
+	
 	
 	# Select specific scenario, open the Web SSH, and click on text area
 	most_boxes = driver.find_elements(By.CLASS_NAME, "table-cell-item.highlightable-cell.col-small")
@@ -56,27 +51,40 @@ def simulate_user(credentials):
 	time.sleep(1)
 	event_box = driver.find_element(By.CLASS_NAME, "terminal.xterm.xterm-dom-renderer-owner-1")
 	event_box.click()
-	
+
+
+
 	# Enter commands
-	submit_command("iamfrustrated", driver)
-	time.sleep(1)
-	submit_command("ls", driver)
-	time.sleep(1)
-	submit_command("iamfrustrated", driver)
+	for i in range(3):
+		submit_command("iamfrustrated", driver)
+		time.sleep(1)
+		submit_command("ls", driver)
+		time.sleep(1)
 
-	time.sleep(4)
 
-	driver.close()
+	time.sleep(3)
+	driver.quit()
+	
+	
 	
 	
 # Try running multiple at once :0
 threads = []
 for user in CREDENTIALS:
-	print(user)
-	thread = threading.Thread(target=simulate_user, args=(user,))
+
+
+	# Connect to Firefox -- will see if commented lines are useless when I test on another VM
+	service = Service("geckodriver")
+	
+	#options = Options()
+	#options.add_argument("-profile")
+	#options.add_argument(FIREFOX_PROFILE_PATH)
+	
+	driver = webdriver.Firefox(service=service)#, options=options)
+	
+	thread = threading.Thread(target=simulate_user, args=(user, driver,))
 	threads.append(thread)
 	thread.start()
-	print("Here we are!")
 	
 for thread in threads:
 	thread.join()
