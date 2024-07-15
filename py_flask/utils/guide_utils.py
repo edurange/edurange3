@@ -4,7 +4,7 @@ import yaml
 import ast
 import docker
 from py_flask.utils.error_utils import (
-    Err_Custom_FullInfo
+    custom_abort
 )
 from py_flask.config.extensions import db
 from py_flask.database.models import Scenarios, Users, Responses
@@ -34,7 +34,7 @@ def getContent(user_role, scenario_id, username):
     if (not unique_name
         
     or status != "Started"):     
-        return Err_Custom_FullInfo("Scenario not in started state.  Arborting.", 400)
+        custom_abort("Scenario not in started state.  Arborting.", 400)
 
     unique_name = "".join(e for e in unique_name if e.isalnum())
     
@@ -47,7 +47,7 @@ def getContent(user_role, scenario_id, username):
         saniName = username.replace('-','')
         user_creds = credentialsJSON[saniName][0]
         if not user_creds:
-            return Err_Custom_FullInfo("Error retrieving user credentials.  Arborting.", 500)
+            return custom_abort("Error retrieving user credentials.  Arborting.", 500)
     else: 
         user_creds = credentialsJSON
 
@@ -73,7 +73,7 @@ def getYamlContent(user_role, scenario_id, username):
     if (not unique_name
         
     or status != "Started"):     
-        return Err_Custom_FullInfo("Scenario not in started state.  Arborting.", 400)
+        return custom_abort("Scenario not in started state.  Arborting.", 400)
 
     unique_name = "".join(e for e in unique_name if e.isalnum())
 
@@ -82,7 +82,7 @@ def getYamlContent(user_role, scenario_id, username):
     if scenario_type: scenario_type = scenario_type[0].lower()
  
     if (not scenario_type or status != "Started"):     
-        return Err_Custom_FullInfo("Scenario not in started state.  Arborting.", 400)
+        return custom_abort("Scenario not in started state.  Arborting.", 400)
 
     with open(f'scenarios/prod/{scenario_type}/guide_content.yml', 'r') as fp:
     # with open(f'scenarios/tmp/{unique_name}/guide_content.yml', 'r') as fp:
@@ -95,7 +95,7 @@ def getYamlContent(user_role, scenario_id, username):
         saniName = username.replace('-','')
         user_creds = credentialsJSON[saniName][0]
         if not user_creds:
-            return Err_Custom_FullInfo("Error retrieving user credentials.  Arborting.", 500)
+            return custom_abort("Error retrieving user credentials.  Arborting.", 500)
     else: 
         user_creds = credentialsJSON
 

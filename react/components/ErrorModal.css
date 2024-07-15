@@ -1,0 +1,96 @@
+.modal-backdrop{
+    display: flex;
+    width: 100%;
+    height: 100%;
+    position:absolute;
+    left: 0;
+    top:0;
+    z-index: 1;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.487);
+}
+.modal-frame{
+    display: flex;
+    width: 50%;
+    height: auto;
+    background-color: rgb(72, 72, 72);
+    flex-direction: column;
+    padding: 10px;
+    z-index: 2;
+    border: 4px solid rgb(255, 0, 0);
+    position: relative;
+}
+.modal-carpet{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    background-color: white;
+    z-index: 2;
+    align-items: center;
+    justify-content: center;
+}
+.modal-topBar{
+    width: 100%;
+    height: 50px;
+    background-color: rgb(255, 196, 0);
+    display: flex;
+}
+.modal-topBar-main{
+    width: 55%;
+    height: 100%;
+    justify-content: space-between;
+    display: flex;
+    padding: 0 10px;
+    box-sizing: border-box;
+    flex-direction: row;
+}
+.modal-shortMessage{
+    display: flex;
+    font-size: medium;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+}
+.modal-longMessage{
+    display: flex;
+    font-size: medium;
+    /* text-align: center; */
+    justify-content: center;
+    align-items: flex-start;
+    padding: 10px;
+    box-sizing: border-box;
+}
+.closeButton-frame{
+    /* display:flex; */
+    position: absolute;
+    /* flex-direction: row-reverse; */
+    /* justify-self: flex-end; */
+    /* align-self: flex-end; */
+    right: 0px;
+    top: 0px;
+    /* top: -15px; */
+    background-color: white;
+    color:black;
+    z-index: 3;
+    width: 40px;
+    height: 40px;
+    align-items: center;
+    align-content: center;
+    border: black solid 2px;
+    font-size:xx-large;
+}
+.closeButton-x{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+}
+.closeButton-x:hover{
+    background-color: black;
+    color: white;
+}

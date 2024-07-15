@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { Route, Routes, useNavigate } from 'react-router-dom';
 import { navArrays } from '@modules/nav/navItemsData';
 import Home from './Home';
@@ -16,6 +16,9 @@ import Frame_head from '../../frame/head/Frame_head';
 import Frame_foot from '../../frame/foot/Frame_foot';
 import Account from '../student/account/Account';
 import './Home.css';
+import axios from 'axios';
+import ErrorModal from '../../components/ErrorModal';
+import { AppContext } from '../../config/AxiosConfig';
 
 export const HomeRouter_context = React.createContext();
 
@@ -26,15 +29,17 @@ const loginExpiry = ((1000 * 60 * 60) * 11.5); // 11.5 hrs in milliseconds
 function Home_router() {
 
   const [navArraysObj_state, set_navArraysObj_state] = useState(navArrays.logout.home);
-  const [clipboard_state, set_clipboard_state] = useState('');
   const [sideNav_isVisible_state, set_sideNav_isVisible_state] = useState(true);
   const [sideNav_isSmall_state, set_sideNav_isSmall_state] = useState(false);
   const [userData_state, set_userData_state] = useState();
   const [chatData_state, set_chatData_state] = useState([]);
-  const [desiredNavMetas_state, set_desiredNavMetas_state] = useState(['/', 'home'])
   const [login_state, set_login_state] = useState(false);
   const [chatSocket_state, set_chatSocket_state] = useState();
-
+  const {
+    errorModal_state, set_errorModal_state,
+    desiredNavMetas_state, set_desiredNavMetas_state,
+    clipboard_state, set_clipboard_state
+} = useContext(AppContext);
   const navigate = useNavigate();
 
 
@@ -66,6 +71,8 @@ function Home_router() {
   };
   useEffect(() => {begin_nav(desiredNavMetas_state);}, [desiredNavMetas_state]); 
 
+
+
   return (
     <div id='edurange-appframe'>
 
@@ -79,7 +86,7 @@ function Home_router() {
         navArraysObj_state,
         desiredNavMetas_state, set_desiredNavMetas_state,
         chatSocket_state, set_chatSocket_state,
-        chatData_state, set_chatData_state
+        chatData_state, set_chatData_state,
       }}>
         <SessionKeeper/>
         <Frame_head />
@@ -88,7 +95,6 @@ function Home_router() {
           <div className='universal-outer'>
             <div className='universal-mid'>
               <div className='universal-inner'>
-
                 <Routes>
                   <Route path="/" element={<Home />} />
                   <Route path="/login" element={<Login />} />

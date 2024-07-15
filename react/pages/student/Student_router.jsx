@@ -8,7 +8,7 @@ import Frame_side from '@frame/sidenav/Frame_side';
 export const StudentRouter_context = React.createContext();
 import '@assets/css/dashboard.css';
 import { HomeRouter_context } from '../pub/Home_router';
-import Scenario_controller2 from './scenarios/Scenario_controller2';
+import Scenario_controller from './scenarios/Scenario_controller';
 
 function Student_router() {
 
@@ -33,24 +33,36 @@ function Student_router() {
     const proto = (window.location.protocol === "https:") ? "wss" : "ws";
     const socketURL = `${proto}://${window.location.host}/chat`;
 
-    if (!scenarioList_state) { return <></> }
-    if (!login_state) { return <></> }
+    useEffect(() => {
+        async function test_error(){
+                try{
+                    const test1 = await axios.post('error_test', {});
+                    console.log(test1);
+            } catch (err) {
+                console.log({'test_errorizer': err});
+            }
+            }
+            test_error();
+    }, []); 
 
-    async function fetchScenarioList() {
-        try {
-            const response = await axios.get("/get_group_scenarios");
-            if (response.data.scenarioTable) {
-                set_scenarioList_state(response.data.scenarioTable);
-            };
-        }
-        catch (error) { console.log('get_scenarios_list error:', error); };
-    };
 
+    
     const updateChatHistory = (message) => {
         set_chatData_state(prevHistory => [...prevHistory, message]);
     };
-
-    useEffect(() => { fetchScenarioList(); }, []);
+    
+    useEffect(() => { 
+        async function fetchScenarioList() {
+            try {
+                const response = await axios.get("/get_group_scenarios");
+                if (response.data.scenarioTable) {
+                    set_scenarioList_state(response.data.scenarioTable);
+                };
+            }
+            catch (error) { console.log('get_scenarios_list error:', error); };
+        };
+        fetchScenarioList(); 
+    }, []);
 
     // INITIALIZE ONLY SOCKET REF
     useEffect(() => {
@@ -110,6 +122,8 @@ function Student_router() {
             lastChat_ref.current.scrollIntoView({ behavior: 'smooth' });
         }
     }, [chatData_state]);
+    if (!scenarioList_state) { return <></> }
+    if (!login_state) { return <></> }
 
     return (
 
@@ -131,8 +145,8 @@ function Student_router() {
                         }}>
                             <Routes>
                                 <Route path="/" element={<Scenarios_home />} />
-                                <Route path="/:scenarioID" element={<Scenario_controller2 />} />
-                                <Route path="/:scenarioID/:pageID" element={<Scenario_controller2 />} />
+                                <Route path="/:scenarioID" element={<Scenario_controller />} />
+                                <Route path="/:scenarioID/:pageID" element={<Scenario_controller />} />
                                 <Route path="/:scenarioID/chat" element={<Chat_Student />} />
                             </Routes>
                         </StudentRouter_context.Provider>
