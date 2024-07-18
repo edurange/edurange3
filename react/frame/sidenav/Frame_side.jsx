@@ -26,6 +26,9 @@ function Frame_side() {
     return (
         <div className='newdash-sidebar-frame'>
             {navArrayToShow.map((val, key) => {
+
+                
+
                 return val.external ? (
                     <a key={key} href={val.path} target="_blank" rel="noopener noreferrer" className='newdash-sidebar-row'>
                         <div className='newdash-sidebar-item'>
@@ -36,7 +39,7 @@ function Frame_side() {
                         </div>
                     </a>
                 ) : (
-                    <Link key={nanoid(3)} to={val.path} className='newdash-sidebar-row' onClick={() => set_desiredNavMetas_state([val.path, val.navStub])}>
+                    <Link key={nanoid(3)} to={val.extension ? '/dashboard/scenarios/1' + val.path : val.path} className='newdash-sidebar-row' onClick={() => set_desiredNavMetas_state([val.path, val.navStub])}>
                         <div className='newdash-sidebar-item'>
                             <div className='newdash-sidebar-icon'>{val.icon}</div>
                             {sideNav_isSmall_state ? null : (

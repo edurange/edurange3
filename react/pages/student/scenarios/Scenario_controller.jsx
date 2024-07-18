@@ -11,6 +11,7 @@ import './Scenario_controller.css';
 import "@frame/frame.css";
 import { StudentRouter_context } from '../Student_router';
 import ErrorModal from '../../../components/ErrorModal';
+import Student_Hints from '../../instructor/hints/Student_Hints';
 
 function Scenario_controller() {
 
@@ -100,7 +101,12 @@ function Scenario_controller() {
                 SSH_username={SSH_username}
                 SSH_password={SSH_password}
             />
-        )
+        ),
+        hint: (
+            <Student_Hints
+            scenario_type={scenario_type}
+            />
+        ),
     };
 
     const leftPaneToShow = panes[leftPaneName_state];

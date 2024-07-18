@@ -32,21 +32,7 @@ function Student_router() {
 
     const proto = (window.location.protocol === "https:") ? "wss" : "ws";
     const socketURL = `${proto}://${window.location.host}/chat`;
-
-    useEffect(() => {
-        async function test_error(){
-                try{
-                    const test1 = await axios.post('error_test', {});
-                    console.log(test1);
-            } catch (err) {
-                console.log({'test_errorizer': err});
-            }
-            }
-            test_error();
-    }, []); 
-
-
-    
+  
     const updateChatHistory = (message) => {
         set_chatData_state(prevHistory => [...prevHistory, message]);
     };

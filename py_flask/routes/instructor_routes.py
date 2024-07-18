@@ -19,6 +19,7 @@ from py_flask.utils.guide_utils import (
     getContent, 
     getScenarioMeta,
     )
+
 from py_flask.utils.auth_utils import jwt_and_csrf_required, instructor_only
 from py_flask.utils.instructor_utils import generateTestAccts, addGroupUsers
 from py_flask.database.models import generate_registration_code as grc
@@ -466,3 +467,4 @@ def add_user_to_container():
         # do not use - pseudocode
         # internal_command = f"useradd --home-dir /home/USERNAME --create-home --shell /bin/bash --password $(echo PASSWORD | openssl passwd -1 -stdin) USERNAME"
         # os.system(f"docker exec {internal_command} {c}")
+

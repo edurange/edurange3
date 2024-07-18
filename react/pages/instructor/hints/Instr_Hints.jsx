@@ -1,6 +1,8 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { InstructorRouter_context } from '../Instructor_router';
 import { HomeRouter_context } from '../../pub/Home_router';
+import axios from 'axios';
+import { AppContext } from '../../../config/AxiosConfig';
 
 function Instr_Hints() {
     const {
@@ -32,6 +34,9 @@ function Instr_Hints() {
         desiredNavMetas_state, set_desiredNavMetas_state,
         clipboard_state, set_clipboard_state
     } = useContext(AppContext);
+
+
+    
 
     return (
         <div>

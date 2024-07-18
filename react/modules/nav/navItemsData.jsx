@@ -148,6 +148,13 @@ const instr_hints = {
     path: `/instructor/hints`,
     navStub: 'dash'
 };
+const student_hint = {
+    title: "Hints",
+    icon: edurange_icons.light_bulb,
+    path: `/hints`,
+    extension: true,
+    navStub: 'guide'
+};
 
 const issues = {
     title: "Issues",
@@ -180,7 +187,12 @@ export const navArrays = {
             top: [scenarios, logout],
             side: [scenarios, issues, logout]
         },
-
+        // only exists in the context of a specific scenario
+        // e.g. /dashboard/scenarios/5
+        guide: {
+            top: [scenarios, logout],
+            side: [scenarios, student_hint, issues, logout]
+        }
     },
 
     instructor: {
