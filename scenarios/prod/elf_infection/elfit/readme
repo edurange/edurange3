@@ -1,0 +1,52 @@
+A collection of ELF injectors and redirectors written for educational purposes.
+
+Within the scope of this toolset 'redirecting' is the process of inserting code into an ELF executable which passes control to malicious instructions.
+
+'Injection' is the process of inserting and smuggling a malicious payload into an ELF executable without breaking the executable's integrity.
+
+Redirection Techniques:
+o  .ctors
+o  .dtors
+x  entrypoint
+x  got poisoning
+o  arbitry function hooking
+x  __libc_start_main argument hijacking [BRAND NEW]
+
+Injection Techniques:
+x post-text padding
+x pre-text (reverse) padding
+o data segment 
+o shared object injection
+o et_rel injection
+
+Parasite Options:
+x Apply primitive in-segment polymorphism (only x86 support)
+o Apply primitive in-mmap'd region polymorphism (only x86 support)
+
+usage example:
+
+$ elfit --parasite shellsocket --text --entry /bin/ls
+
+This will infect the binary 'ls' with a payload shellsocket (the source to this parasites can be found in in the parasites directory). It will use the text padding inject technique specified by '--text' and the entrypoint redirection technique specified by '--entry'.
+
+New Technique:
+
+This infection toolkit offers a new redirection technique that is not implemented in other elf infection tools that this author has seen. This new technique is __libc_start_main argument hijacking. It's very simple and stealthy, particularly because I haven't seen any Linux AV software which would detect this kind of redirection attack. It works by overwriting a pointer that's passed to the __libc_start_main function, the parasite code is now responsible for restoring any clobbered registers (this is critical!) and jumping to the body of code the original argument pointed to.
+
+As far as .ctors, .dtors, and entry point redirection goes, this author can testify to seeing implementations of Linux AV which easily detect those kinds of redirections. Although it does not seem it would be extraordinarily difficult to detect and disinfect this new method, its worth lies in its novelty.
+
+Smart Patching:
+
+Elfit makes parasite patching easy and allows you to craft truly generic parasites! At the time of injection the parasite often won't know where to return execution after its code has run, Elfit solves this problem by picking the parasite return address for you, it determines the patch address through the chosen redirection method. Elfit will determine where in the parasite code needs to be patched by looking for the following sequence, 0x00112233, (0x0011223344556677 for 64bit). For example, to have Elfit patch your parasite simply include the following line in your assembly:
+    
+    ...
+    mov rax, 0x0011223344556677
+    jmp rax
+
+The parasite is now ready to be patched!
+
+Gotchas:
+    GOT redirection hijacks a function call for one invokation of the hijacked function, meaning on subsequent calls to this function will not invoke the parasite code. The parasite code is also responsible for preserving the original arguments to the invokation.
+
+    To patch a 64bit parasite it is critical that the parasite includes the entire signature, otherwise Elfit may overwrite code.
+
