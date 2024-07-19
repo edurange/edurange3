@@ -4,7 +4,7 @@ The original version of analyzer.py was 880 lines long and one long script
 ## Version 2 
 ### What was the problem?
 
-There are serveral problems with analyzer.py. 
+There are serveral problems with analyze.py. 
 1. It was very difficult to read. 
 2. it was difficult to maintain.
 3. had multiple bugs

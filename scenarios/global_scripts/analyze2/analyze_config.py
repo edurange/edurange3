@@ -25,3 +25,4 @@ user_prompt = ''
 host_pattern = ''
 ttylog = ''
 csv_output_file = ''
+ttylog_lines = []

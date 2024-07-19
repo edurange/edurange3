@@ -1,0 +1,303 @@
+edulog:1721073619:0,gateway,1721073618,/home/devuser10,,,devuser10@nat
+edulog:1721073619:1,NAT,1721073618,/home/devuser10,clear,%
+%,devuser10@NAT:~
+edulog:1721073619:2,NAT,1721073618,/home/devuser10,ls,%
+%,devuser10@NAT:~
+edulog:1721073619:3,NAT,1721073618,/home/devuser10,w,%
+ 20:45:07 up 7 min,  1 user,  load average: 0.11, 0.30, 0.17
+USER     TTY      FROM             LOGIN@   IDLE   JCPU   PCPU WHAT
+devuser1 pts/0    10.12.0.4        20:45    2.00s  0.00s  0.00s w
+%,devuser10@NAT:~
+edulog:1721073619:4,NAT,1721073618,/home/devuser10,ll,%
+total 20
+drwxr-xr-x 2 devuser10 devuser10 4096 Jan 14 20:41 ./
+drwxr-xr-x 1 root      root      4096 Jan 14 20:41 ../
+-rw-r--r-- 1 devuser10 devuser10  220 Aug 31  2015 .bash_logout
+-rw-r--r-- 1 devuser10 devuser10 3771 Aug 31  2015 .bashrc
+-rw-r--r-- 1 devuser10 devuser10  655 May 16  2017 .profile
+%,devuser10@NAT:~
+edulog:1721073619:5,NAT,1721073618,/home/devuser10,man cd,%
+
+CD(1POSIX)                        POSIX Programmer's Manual                        CD(1POSIX)
+
+PROLOG
+       This  manual  page is part of the POSIX Programmer's Manual.  The Linux implementation
+       of this interface may differ (consult the corresponding Linux manual page for  details
+       of Linux behavior), or the interface may not be implemented on Linux.
+
+NAME
+       cd — change the working directory
+
+SYNOPSIS
+       cd [−L|−P] [directory]
+
+       cd −
+
+DESCRIPTION
+       The cd util%,devuser10@NAT:~
+edulog:1721073619:6,NAT,1721073618,/home/devuser10,cd /home,%
+%,devuser10@NAT:~
+edulog:1721073619:7,NAT,1721073618,/home,cd ~,%
+%,devuser10@NAT:/home
+edulog:1721073619:8,NAT,1721073618,/home/devuser10,clear,%
+%,devuser10@NAT:~
+edulog:1721073619:9,NAT,1721073618,/home/devuser10,man netstat,%
+
+NETSTAT(8)                        Linux Programmer's Manual                        NETSTAT(8)
+
+NAME
+       netstat  - Print network connections, routing tables, interface statistics, masquerade
+       connections, and multicast memberships
+
+SYNOPSIS
+       netstat [address_family_options]  [--tcp|-t]  [--udp|-u]  [--raw|-w]  [--listening|-l]
+       [--all|-a]   [--numeric|-n]   [--numeric-hosts]   [--numeric-ports]  [--numeric-users]
+       [--symbolic|-N] [--extend|-e[--extend|-e]] [--timers|%,devuser10@NAT:~
+edulog:1721073619:10,NAT,1721073618,/home/devuser10,clear,%
+%,devuser10@NAT:~
+edulog:1721073619:11,NAT,1721073618,/home/devuser10,]0;devuser10@NAT: ~devuser10@NAT:~$ cat /etc/motd,%
+                ____    ____    __  __
+               /\  _`\ /\  _`\ /\ \/\ \
+               \ \,\L\_\ \,\L\_\ \ \_\ \
+                \/_\__ \\/_\__ \\ \  _  \
+                  /\ \L\ \/\ \L\ \ \ \ \ \
+                  \ `\____\ `\____\ \_\ \_\
+                   \/_____/\/_____/\/_/\/_/
+  ______                                 __
+ /\__  _\                               /\ \__  __
+ \/_/\ \/     ___     ___     __   _____\ \ ,_\/\_\    ___     ___
+    \ \ \   /' _ `\  /'___\ /'__`\/\ '__`\ \%,devuser10@NAT:~
+edulog:1721073619:12,NAT,1721073618,/home/devuser10,ssh 10.12.0.7 -p 123,%
+The authenticity of host '[10.12.0.7]:123 ([10.12.0.7]:123)' can't be established.
+ECDSA key fingerprint is SHA256:4utoWe5uVp79ImYqkPPukjmrGIfvDC5demc1sx8sY9c.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added '[10.12.0.7]:123' (ECDSA) to the list of known hosts.
+
+devuser10@10.12.0.7's password: 
+ ███████╗██╗██████╗ ███████╗████████╗    ███████╗████████╗ ██████╗ ██████╗
+ ██╔════╝██║██╔══██╗██╔════╝╚══██╔══╝    ██╔════╝╚══██╔══╝██╔═══██╗██╔══██╗
+ █████╗  ██║██%,devuser10@NAT:~
+edulog:1721073619:13,FirstStop,1721073618,/home/devuser10,ll,%
+total 24
+drwxr-xr-x 2 devuser10 devuser10 4096 Jan 14 20:41 ./
+drwxr-xr-x 1 root      root      4096 Jan 14 20:41 ../
+-rw-r--r-- 1 devuser10 devuser10  220 Aug 31  2015 .bash_logout
+-rw-r--r-- 1 devuser10 devuser10 3771 Aug 31  2015 .bashrc
+-rw-r--r-- 1 devuser10 devuser10  655 May 16  2017 .profile
+-rw-r--r-- 1 root      root         9 Jan 14 20:41 secret%,devuser10@FirstStop:~
+edulog:1721073619:14,FirstStop,1721073618,/home/devuser10,nmap 10.12.0.7-30,%
+
+Starting Nmap 7.01 ( https://nmap.org ) at 2024-01-14 20:46 UTC
+Nmap scan report for FirstStop (10.12.0.7)
+Host is up (0.00059s latency).
+All 1000 scanned ports on FirstStop (10.12.0.7) are closed
+
+Nmap scan report for SSHData_SecondStop.SSHData_PLAYER (10.12.0.10)
+Host is up (0.00065s latency).
+Not shown: 999 closed ports
+PORT   STATE SERVICE
+22/tcp open  ssh
+
+Nmap scan report for SSHData_ThirdStop.SSHData_PLAYER (10.12.0.13)
+Host is up (0.00068s latency).
+Not shown: 999 closed ports
+PORT   S%,devuser10@FirstStop:~
+edulog:1721073619:15,FirstStop,1721073618,/home/devuser10,nmap 10.12.0.7/28,%
+
+Starting Nmap 7.01 ( https://nmap.org ) at 2024-01-14 20:46 UTC
+Nmap scan report for 10.12.0.1
+Host is up (0.00023s latency).
+Not shown: 982 closed ports
+PORT      STATE    SERVICE
+22/tcp    open     ssh
+80/tcp    open     http
+443/tcp   open     https
+3001/tcp  open     nessus
+5000/tcp  open     upnp
+5050/tcp  open     mmcc
+5555/tcp  open     freeciv
+32768/tcp filtered filenet-tms
+32769/tcp filtered filenet-rpc
+32770/tcp filtered sometimes-rpc3
+32771/tcp filtered sometimes-rpc5
+32772/tcp filt%,devuser10@FirstStop:~
+edulog:1721073619:16,FirstStop,1721073618,/home/devuser10,nmap localhost,%
+
+Starting Nmap 7.01 ( https://nmap.org ) at 2024-01-14 20:46 UTC
+Nmap scan report for localhost (127.0.0.1)
+Host is up (0.00015s latency).
+Other addresses for localhost (not scanned): ::1
+All 1000 scanned ports on localhost (127.0.0.1) are closed
+
+Nmap done: 1 IP address (1 host up) scanned in 0.05 seconds%,devuser10@FirstStop:~
+edulog:1721073619:17,FirstStop,1721073618,/home/devuser10,ifconfig,%
+eth0      Link encap:Ethernet  HWaddr 02:42:0a:0c:01:07  
+          inet addr:10.12.1.7  Bcast:10.12.1.31  Mask:255.255.255.224
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:434 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:359 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0 
+          RX bytes:62333 (62.3 KB)  TX bytes:60568 (60.5 KB)
+
+eth1      Link encap:Ethernet  HWaddr 02:42:0a:0c:00:07  
+          inet addr:10.12%,devuser10@FirstStop:~
+edulog:1721073619:18,FirstStop,1721073618,/home/devuser10,ipcalc,%
+-bash: ipcalc: command not found%,devuser10@FirstStop:~
+edulog:1721073619:19,FirstStop,1721073618,/home/devuser10,ls,%
+secret%,devuser10@FirstStop:~
+edulog:1721073619:20,FirstStop,1721073618,/home/devuser10,cat secret ,%
+ELWnnFsK%,devuser10@FirstStop:~
+edulog:1721073619:21,FirstStop,1721073618,/home/devuser10,ssh SecondStop,%
+The authenticity of host 'secondstop (10.12.1.10)' can't be established.
+ECDSA key fingerprint is SHA256:4utoWe5uVp79ImYqkPPukjmrGIfvDC5demc1sx8sY9c.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added 'secondstop,10.12.1.10' (ECDSA) to the list of known hosts.
+
+devuser10@secondstop's password: 
+Permission denied, please try again.
+
+devuser10@secondstop's password: 
+      ::::::::  :::::::::: ::::::::   ::::::::  ::::    ::: :::::::::          :::::::: ::::::::%,devuser10@FirstStop:~
+edulog:1721073619:22,FirstStop,1721073618,/home/devuser10,ls,%
+secret%,devuser10@FirstStop:~
+edulog:1721073619:23,FirstStop,1721073618,/home/devuser10,ssh 10.12.0.17,%
+The authenticity of host '10.12.0.17 (10.12.0.17)' can't be established.
+ECDSA key fingerprint is SHA256:4utoWe5uVp79ImYqkPPukjmrGIfvDC5demc1sx8sY9c.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added '10.12.0.17' (ECDSA) to the list of known hosts.
+
+devuser10@10.12.0.17's password: 
+ ___________    ___________                                                                  ______                
+|            | |            `````|````` |         |            %,devuser10@FirstStop:~
+edulog:1721073619:24,FirstStop,1721073618,/home/devuser10,exit,%
+logout
+Connection to 10.12.0.7 closed.
+
+%,devuser10@FirstStop:~
+edulog:1721073619:25,NAT,1721073618,/home/devuser10,ls,%
+%,devuser10@NAT:~
+edulog:1721073619:26,NAT,1721073618,/home/devuser10,ssh 10.12.0.7,%
+ssh: connect to host 10.12.0.7 port 22: Connection refused
+
+%,devuser10@NAT:~
+edulog:1721073619:27,NAT,1721073618,/home/devuser10,ssh 10.12.0.7 -p 123,%
+devuser10@10.12.0.7's password: 
+Last login: Sun Jan 14 20:56:38 2024 from 10.12.0.2
+
+ ███████╗██╗██████╗ ███████╗████████╗    ███████╗████████╗ ██████╗ ██████╗
+ ██╔════╝██║██╔══██╗██╔════╝╚══██╔══╝    ██╔════╝╚══██╔══╝██╔═══██╗██╔══██╗
+ █████╗  ██║██████╔╝███████╗   ██║       ███████╗   ██║   ██║   ██║██████╔╝
+ ██╔══╝  ██║██╔══██╗╚════██║   ██║       ╚════██║   ██║   ██║   ██║██╔═══╝
+ ██║     ██║██║  ██║███████║   ██║       ███████║   ██║   ╚██████╔╝██║
+ ╚═╝     ╚═╝╚═╝  ╚═╝╚══════╝   ╚═╝      %,devuser10@NAT:~
+edulog:1721073619:28,FirstStop,1721073618,/home/devuser10,nmap 10.12.0.1-20,%
+
+Starting Nmap 7.01 ( https://nmap.org ) at 2024-01-14 21:02 UTC
+Nmap scan report for 10.12.0.1
+Host is up (0.00044s latency).
+Not shown: 982 closed ports
+PORT      STATE    SERVICE
+22/tcp    open     ssh
+80/tcp    open     http
+443/tcp   open     https
+3001/tcp  open     nessus
+5000/tcp  open     upnp
+5050/tcp  open     mmcc
+5555/tcp  open     freeciv
+32768/tcp filtered filenet-tms
+32769/tcp filtered filenet-rpc
+32770/tcp filtered sometimes-rpc3
+32771/tcp filtered sometimes-rpc5
+32772/tcp filt%,devuser10@FirstStop:~
+edulog:1721073619:29,FirstStop,1721073618,/home/devuser10,ls,%
+secret%,devuser10@FirstStop:~
+edulog:1721073619:30,FirstStop,1721073618,/home/devuser10,ssh SecondStop,%
+devuser10@secondstop's password: 
+Last login: Sun Jan 14 20:59:51 2024 from 10.12.0.7
+
+      ::::::::  :::::::::: ::::::::   ::::::::  ::::    ::: :::::::::          :::::::: ::::::::::: ::::::::  ::::::::: 
+    :+:    :+: :+:       :+:    :+: :+:    :+: :+:+:   :+: :+:    :+:        :+:    :+:    :+:    :+:    :+: :+:    :+: 
+   +:+        +:+       +:+        +:+    +:+ :+:+:+  +:+ +:+    +:+        +:+           +:+    +:+    +:+ +:+    +:+  
+  +#++:++#++ +#++:++#  +#+        +#+    +:+ +#+ %,devuser10@FirstStop:~
+edulog:1721073619:31,FirstStop,1721073618,/home/devuser10,exit,%
+logout
+Connection to 10.12.0.7 closed.
+
+%,devuser10@FirstStop:~
+edulog:1721073619:32,NAT,1721073618,/home/devuser10,exit,%
+logout
+Connection to 10.12.0.2 closed.
+test
+%,devuser10@NAT:~
+edulog:1721073619:32,NAT,1721073618,/home/devuser10,exit,%
+logout
+Connection to 10.12.0.2 closed.
+test
+
+
+
+
+shed.
+ECDSA key fingerprint is SHA256:4utoWe5uVp79ImYqkPPukjmrGIfvDC5demc1sx8sY9c.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added '[satanspalace]:666,[10.12.1.19]:666' (ECDSA) to the list of known hosts.
+
+devuser10@satanspalace's password: 
+  ██████  ▄▄▄     ▄▄▄█████▓ ▄▄▄       ███▄    █   ██████     ██▓███   ▄▄▄       ██▓    ▄▄▄       ▄████▄  ▓█████ 
+▒██    ▒ ▒████▄   ▓  ██▒ ▓▒▒████▄     ██ ▀█   █ ▒██    ▒  %,devuser10@NAT:~
+edulog:1721073619:33,FirstStop,1721073618,/home/devuser10,exit,%
+logout
+Connection to 10.12.0.7 closed.
+
+%,devuser10@FirstStop:~
+edulog:1721073619:34,NAT,1721073618,/home/devuser10,exit,%
+logout
+Connection to 10.12.0.2 closed.
+test
+%,devuser10@NAT:~
+edulog:1721073619:34,NAT,1721073618,/home/devuser10,exit,%
+logout
+Connection to 10.12.0.2 closed.
+test
+
+
+
+
+▒  ▓██▒ 
+░▒▓███▀▒░▒████▒ ▒██▒ ░    ░ ████▓▒░▒▒█████▓   ▒██▒ ░  ▒▄▄   ▒▄▄   ▒▄▄   ▒▄▄   ▒▄▄  
+ ░▒   ▒ ░░ ▒░ ░ ▒ ░░      ░ ▒░▒░▒░ ░▒▓▒ ▒ ▒   ▒ ░░    ░▀▀▒  ░▀▀▒  ░▀▀▒  ░▀▀▒  ░▀▀▒ 
+  ░   ░  ░ ░  ░   ░         ░ ▒ ▒░ ░░▒░ ░ ░     ░     ░  ░  ░  ░  ░  ░  ░  ░  ░  ░ 
+░ ░   ░    ░    ░         ░ ░ ░ ▒   ░░░ ░ ░   ░          ░     ░     ░     ░     ░ 
+      ░    ░  ░               ░ ░     ░               ░     ░     ░     ░     ░    
+Connection to satanspa%,devuser10@NAT:~
+edulog:1721073619:35,FirstStop,1721073618,/home/devuser10,exit,%
+logout
+Connection to 10.12.0.7 closed.
+
+%,devuser10@FirstStop:~
+edulog:1721073619:36,NAT,1721073618,/home/devuser10,exit,%
+logout
+Connection to 10.12.0.2 closed.
+test
+%,devuser10@NAT:~
+edulog:1721073619:36,NAT,1721073618,/home/devuser10,exit,%
+logout
+Connection to 10.12.0.2 closed.
+test
+
+
+
+
+
+Connection to secondstop closed.
+%,devuser10@NAT:~
+edulog:1721073619:37,FirstStop,1721073619,/home/devuser10,exit,%
+logout
+Connection to 10.12.0.7 closed.
+
+%,devuser10@FirstStop:~
+edulog:1721073619:38,NAT,1721073619,/home/devuser10,exit,%
+logout
+Connection to 10.12.0.2 closed.
+test
+%,devuser10@NAT:~
