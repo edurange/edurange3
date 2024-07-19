@@ -109,19 +109,22 @@ def get_chat_history():
 def get_hint():
 
     requestJSON = request.json
+    
     print('reqJSON: ', requestJSON)
-    this_scenario_type = requestJSON["scenario_type"]
+    this_scenario_type = "file_wrangler"
+    # this_scenario_type = requestJSON["scenario_type"]
     this_username=g.current_username
 
     print('get_hint using scenario type: ', this_scenario_type)
 
-    # generated_hint = generate_hint(this_scenario_type, this_username)
-    # print('generated hint: ',generated_hint)
+    generated_hint = generate_hint(this_scenario_type, this_username)
+    
+    print('generated hint: ',generated_hint)
     return jsonify(
         {
-            "scen_type": this_scenario_type, 
+            "scen_type": this_scenario_type,
             "username": this_username,
-            # "generated_hint": generated_hint
+            "generated_hint": generated_hint
         }
     )
 

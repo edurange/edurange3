@@ -38,17 +38,30 @@ function Student_Hints() {
 
     console.log('scenario detail: ', scenarioPage_state)
 
+    
     const requestHint = async () => {
+      const reqJSON = {
+        // use null instead of undefined because otherwise the request omits the key:value
+        scenario_type: scenarioPage_state?.scen_type ?? null,
+        scen_type: "some_scen_type",
+      };
       try {
-        const response = await axios.post("get_hint", {
-          scenario_type: scenarioPage_state?.scen_type,  // DEV_FIX
-        });
+        const response = await axios.post(
+          "get_hint",
+          reqJSON,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            }
+          }
+        );
         console.log('hint response: ', response);
         set_hint_state(response.data);
       } catch (error) {
         console.error("Error fetching hint:", error);
       }
     };
+    
     if (!scenarioPage_state) return  <></>
     useEffect(() => {
         requestHint();

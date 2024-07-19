@@ -122,7 +122,7 @@ def input_context_system(scenario, username):
             "system_prompt" : "You are an instruction AI that assists a struggling student working on a cyber-security scenario. You will be provided an answer key to the question their currently completing, as well as the recent bash, chat and answer history of the student. Provide them a hint on what to do next, but prioritize asssisting them with debugging current bash errors they're experiencing. Do not ask them questions",
             "scenario_guide_context_preface" : " This is the answer do not reveal it's contents directly in any hint. ",
             "parsed_scenario_guide_end" : ". You the AI have now reached the end of the answer key, you the AI do not reveal it's contents to the student. ",
-            "parsed_scenario_guide": retrieve_and_parse_scenario_guide(scenario),
+            # "parsed_scenario_guide": retrieve_and_parse_scenario_guide(scenario), # DEV_FIX 
             "logs_context_preface" : ". Now I will provide you the recent bash, chat and answer history of the student: ",
             "bash_history_prompt" : f"These are the student's recent bash commands: {bash_history}. ",
             "chat_history_prompt" : f"These are the student's recent chat messages: {chat_history}. ",
@@ -140,7 +140,7 @@ def generate_hint(scenario_type, username):
 
       scenario_type = scenario_type
 
-      language_model = initialize_model(True, 12)
+      language_model = initialize_model(True, 1)
       generate_hint(language_model, scenario_type)
       finalized_prompt = input_context_system(scenario_type, username)
       answer = prompt_model(language_model, finalized_prompt)
