@@ -136,13 +136,3 @@ def input_context_system(scenario, username):
       print(f"\n\n{finalized_prompt}\n")
       return finalized_prompt
 
-def generate_hint(scenario_type, username):
-
-      scenario_type = scenario_type
-
-      language_model = initialize_model(True, 1)
-      generate_hint(language_model, scenario_type)
-      finalized_prompt = input_context_system(scenario_type, username)
-      answer = prompt_model(language_model, finalized_prompt)
-
-      return answer

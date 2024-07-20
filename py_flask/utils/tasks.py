@@ -12,6 +12,7 @@ from flask import current_app, flash, jsonify
 from py_flask.utils.terraform_utils import adjust_network, find_and_copy_template, write_resource
 from py_flask.config.settings import CELERY_BROKER_URL, CELERY_RESULT_BACKEND
 from py_flask.utils.scenario_utils import claimOctet
+from py_flask.utils.ml_utils import check_hardware_specs, set_cpu_gpu_resources, prompt_model, initialize_model, input_context_system
 
 logger = get_task_logger(__name__)
 path_to_directory = os.path.dirname(os.path.abspath(__file__))
@@ -425,3 +426,13 @@ def scenarioCollectLogs(self, arg):
 @celery.on_after_configure.connect
 def setup_periodic_tasks(sender, **kwargs):
     sender.add_periodic_task(60.0, scenarioCollectLogs.s(''))
+
+@celery.task(bind=True)
+def request_and_generate_hint(self, scenario_type, username):
+
+      scenario_type = scenario_type
+      language_model = initialize_model(True, 1)
+      finalized_prompt = input_context_system(scenario_type, username)
+      answer = prompt_model(language_model, finalized_prompt)
+
+      return {'generated_hint': answer}

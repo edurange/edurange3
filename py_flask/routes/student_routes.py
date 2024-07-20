@@ -15,7 +15,7 @@ from py_flask.utils.auth_utils import jwt_and_csrf_required
 from py_flask.utils.chat_utils import getChannelDictList_byUser, getChatHistory_byUser
 from sqlalchemy.exc import SQLAlchemyError
 # from machine_learning.local_slm.phi_3_slm import generate_hint
-from py_flask.utils.ml_utils import generate_hint
+from py_flask.utils.tasks import request_and_generate_hint
 
 from py_flask.utils.error_utils import (
     custom_abort,
@@ -117,14 +117,16 @@ def get_hint():
 
     print('get_hint using scenario type: ', this_scenario_type)
 
-    generated_hint = generate_hint(this_scenario_type, this_username)
+    generated_hint = request_and_generate_hint.delay(this_scenario_type, this_username).get(timeout=None)
     
+    generated_hint = generated_hint['generated_hint']
     print('generated hint: ',generated_hint)
-    return jsonify(
-        {
-            "scen_type": this_scenario_type,
-            "username": this_username,
-            "generated_hint": generated_hint
-        }
-    )
+
+    return jsonify({'generated_hint': generated_hint})
+    # return {
+    #         "scen_type": this_scenario_type,
+    #         "username": this_username,
+    #         "generated_hint": generated_hint
+    #     }
+    
 
