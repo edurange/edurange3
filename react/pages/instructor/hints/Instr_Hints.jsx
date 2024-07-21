@@ -34,15 +34,40 @@ function Instr_Hints() {
         desiredNavMetas_state, set_desiredNavMetas_state,
         clipboard_state, set_clipboard_state
     } = useContext(AppContext);
+    
+    const [hint_state, set_hint_state] = useState(null);
 
+    
 
+    
+    const requestHint = async () => {
+      const reqJSON = {
+        // use null instead of undefined because otherwise the request omits the key:value
+      
+      };
+      try {
+        const response = await axios.post(
+          "get_hint",
+          reqJSON,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            }
+          }
+        );
+        console.log('hint response: ', response);
+        set_hint_state(response.data);
+      } catch (error) {
+        console.error("Error fetching hint:", error);
+      }
+    };
+ 
+    console.log("hint request response: ", hint_state)
     
 
     return (
         <div>
-
-            Instr_Hints PAGE PLACEHOLDER LOADED
-            
+            <button onClick={requestHint}>Request Hint</button>
         </div>
     );
 }

@@ -468,3 +468,27 @@ def add_user_to_container():
         # internal_command = f"useradd --home-dir /home/USERNAME --create-home --shell /bin/bash --password $(echo PASSWORD | openssl passwd -1 -stdin) USERNAME"
         # os.system(f"docker exec {internal_command} {c}")
 
+@blueprint_instructor.route("/get_hint", methods=['POST'])
+@jwt_and_csrf_required
+def get_hint():
+
+    requestJSON = request.json
+    
+    print('reqJSON: ', requestJSON)
+    this_scenario_type = "file_wrangler"
+    # this_scenario_type = requestJSON["scenario_type"]
+    this_username=g.current_username
+
+    print('get_hint using scenario type: ', this_scenario_type)
+
+    generated_hint = request_and_generate_hint.delay(this_scenario_type, this_username).get(timeout=None)
+    
+    generated_hint = generated_hint['generated_hint']
+    print('generated hint: ',generated_hint)
+
+    return jsonify({'generated_hint': generated_hint})
+    # return {
+    #         "scen_type": this_scenario_type,
+    #         "username": this_username,
+    #         "generated_hint": generated_hint
+    #     }
