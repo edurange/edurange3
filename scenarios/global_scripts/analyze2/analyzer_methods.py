@@ -9,7 +9,12 @@
 # output, enclosed in % characters, could be multi-line
 # username@node
 
-# Not all methods are in use, removed from the orignal main script
+# pswish changelog:
+    #1 The functions in this script were helper funtions in the original script. (above the "if __name__" code block)
+    #2 Not all the functions in the orig script were being used bloating the memory usage. Moved here to call them when they are implemented but not before.
+    #3 These funcitons are called by the new_analyzer module. 
+    #4 Refacoring to improve readbility not yet done.
+
 
 import csv
 import string
@@ -21,9 +26,6 @@ import shutil
 import queue
 import subprocess
 import logging
-
-def get_this_stupid_func():
-    pass
 
 def starting_index_timestamp(line):
     """Return the index where the timestamp starts, in a line. If timestamp does not exist, return None"""
@@ -549,13 +551,6 @@ def _process_files_from_queue():
 
         files_list_queue.task_done()
 
-
-# def write_to_csv(line, csv_output_file):
-#     csvfile = open(csv_output_file,'a', newline='')
-#     csvwriter = csv.writer(csvfile, delimiter=',', quotechar='%', quoting=csv.QUOTE_MINIMAL)
-#     csvwriter.writerow([line['id'],line['node_name'],line['timestamp'],line['cwd'], line['cmd'], line['output'], line['prompt']])
-#     csvfile.close()
-
 def write_to_csv(data, csv_output_file):
     """Write data to a CSV file."""
     try:
@@ -600,66 +595,3 @@ def get_unique_id_dict():
         unique_id_dict['exp_name'] = exp_name
 
     return unique_id_dict
-
-# def starting_index_timestamp():
-#     """Return the index where the timestamp starts, in a line. If timestamp does not exist, return None"""
-#     match = re.search(r';\d+$, line')
-#     return match.start() if match else None
-
-# def get_ttylog_sessions(self, line, first_ttylog_line, current_session_id, logger):
-#     input_cmd = line
-#     self.unique_id_dict['counter'] +=1
-#     # unique_row_id = "{}:{}:{}".format(self.unique_id_dict['exp_name'],self.unique_id_dict['start_time'],self.unique_id_dict['counter'])
-    
-#     # Save previous output
-#     if not first_ttylog_line:
-#         if len(output_txt) > 500:
-#             output_txt = output_txt[:500]
-
-#         # unique_row_pid = "{}:{}:{}".format(self.unique_id_dict['exp_name'],self.unique_id_dict['start_time'],self.unique_id_dict['counter']-1) # unused
-#         cline = len(self.ttylog_sessions[current_session_id]['lines']) - 1
-#         if cline >=0:
-#             logger.info("Cline ", cline, " output ", output_txt, " prompt ", self.ttylog_sessions[current_session_id]['lines'][cline]['prompt'])
-#             self.ttylog_sessions[current_session_id]['lines'][cline]['output'] = output_txt
-#             write_to_csv(self.ttylog_sessions[current_session_id]['lines'][cline], self.csv_output_file)
-#             #logfile = open(r"/tmp/acont.log", "a")
-#             logger.info("Logged input "+self.ttylog_sessions[current_session_id]['lines'][cline]['cmd']+"\n")
-#             logger.info("Logged output "+self.ttylog_sessions[current_session_id]['lines'][cline]['output']+"\n")
-    
-#     logger.info("Found input "+input_cmd+"\n")
-
-# # current_home_dir = self.ttylog_sessions[current_session_id]['home_dir']  # unused
-#     output_txt = ''
-
-# def check_and_remove_ctl(root_prompt,user_initial_prompt, host_pattern):
-
-#     # Check for ctrl c and remove
-#     rexp = re.compile('.*\^C')
-#     m = rexp.search(line)
-#     if m is not None:
-#         tline = rexp.sub('', line)
-#         line = tline
-
-#     command_pattern_user_prompt = re.compile("{user}@{host}:.*?".format(user=user_initial_prompt.split('@')[0].casefold(), host=host_pattern))
-#     command_pattern_root_prompt = re.compile("{}:.*?".format(root_prompt.casefold()))
-#     tstampre = re.compile(";\d{9}")
-    
-#     # Check if there is a prompt
-#     res = command_pattern_user_prompt.search(line.casefold())
-#     if (res or command_pattern_root_prompt.search(line.casefold())):
-#         if (res):
-#             user_prompt = res.group(0).split(':')[0]
-#         else:
-#             user_prompt = root_prompt
-#         prompt = True
-#     else:
-#         prompt = False
-
-#     # Check if there is a timestamp
-#     tmatch = tstampre.search(line)
-#     if tmatch:
-#         haststamp = True
-#     else:
-#         haststamp = False
-
-#     return prompt, haststamp
