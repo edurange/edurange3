@@ -6,6 +6,7 @@ import Login from './login/Login';
 import Register from './login/Register';
 import InfoRouter from './info/Info_router';
 import SessionKeeper from './SessionKeeper';
+import Feedback from '../feedback/Feedback';
 import Logout from './login/Logout';
 import Instructor_router from '../instructor/Instructor_router';
 import { Instructor_context } from '../../modules/context/Instructor_context';
@@ -95,6 +96,7 @@ function Home_router() {
                   <Route path="/register" element={<Register />} />
                   <Route path="/logout" element={<Logout />} />
                   <Route path="/options/*" element={<Options_controller />} />
+                  <Route path="/feedback" element={<Feedback />} />
                   <Route path="/info/*" element={<InfoRouter />} />
                   <Route path="/account" element={<Account />} />
                   <Route path="/scenarios/*" element={
