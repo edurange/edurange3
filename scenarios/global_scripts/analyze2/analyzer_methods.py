@@ -14,10 +14,10 @@
     #2 Not all the functions in the orig script were being used bloating the memory usage. Moved here to call them when they are implemented but not before.
     #3 These funcitons are called by the new_analyzer module. 
     #4 Refacoring to improve readbility not yet done.
+    #5 Moved decode to it's own module due to size of function for reability
 
 
 import csv
-import string
 import os
 import re
 import datetime
@@ -63,214 +63,6 @@ def get_ttylog_lines_from_file(ttylog, ttylog_seek_pointer):
 
     return ttylog_lines_file, ttylog_bytes_read
 
-
-def decode(lines, current_user_prompt, current_root_prompt):
-    if len(lines) == 0:
-        return []
-
-    escape_sequence_dict = {
-        'osc_reg_expr': re.compile(r'\x1B][0-9]*;[\x20-\x7e]*\x07'),
-        'csi_cursor_position': re.compile(r'^[0-9]*;?[0-9]*H'),
-        'csi_dec_private_mode_set': re.compile(r'^\?(?:[0-9]*;?)*h'),
-        'csi_dec_private_mode_reset': re.compile(r'^\?(?:[0-9]*;?)*l'),
-        'csi_character_attributes': re.compile(r'^(?:[0-9]*;?)*m'),
-        'csi_window_manipulation': re.compile(r'^[0-9]*(?:;[0-9]*){2}t'),
-        'csi_delete_n_chars': re.compile(r'^\d*P'),
-        'csi_tab': re.compile(r'23@'),
-        'csi_ctrlc': re.compile(r'.*\^C.*'),
-        'csi_cursor_up': re.compile(r'^\d*A'),
-        'controls_c1_esc_single_char': re.compile(r'^[6789=>Fclmno|}~]')
-    }
-
-    buf = []
-    i_line = 0
-    decode_line_timestamp = ''
-    current_user_prompt = current_user_prompt.casefold()
-    current_root_prompt = current_root_prompt.casefold()
-
-    for count, line in enumerate(lines):
-        line = str(line)  # Ensure line is treated as a string
-        i_stream_line = 0
-        cursor_pointer = 0
-        length_before_carriage_return = -1
-        encountered_carriage_return = False
-        buf.append([])
-
-        if escape_sequence_dict['osc_reg_expr'].findall(line):
-            line = escape_sequence_dict['osc_reg_expr'].sub('', line)
-
-        if (line.casefold().find(current_user_prompt) > 0) or (line.casefold().find(current_root_prompt) > 0):
-            if (line.casefold().find(current_user_prompt) > 0):
-                line_prompt_index = line.casefold().find(current_user_prompt)
-            elif (line.casefold().find(current_root_prompt) > 0):
-                line_prompt_index = line.casefold().find(current_root_prompt)
-            next_line = line[line_prompt_index:]
-            line = line[:line_prompt_index]
-            lines.insert(count + 1, next_line)
-
-        timestamp_index = starting_index_timestamp(line)
-        if timestamp_index is not None:
-            decode_line_timestamp = line[timestamp_index:]
-            line = line[:timestamp_index]
-
-        if (len(current_user_prompt) > 0 or len(current_root_prompt) > 0) and (
-                (line.casefold().find(current_user_prompt) == 0) or (line.casefold().find(current_root_prompt) == 0)) and timestamp_index is None and (count < len(lines) - 1):
-            command_line_editors = ['vim', 'vi', 'nano', 'pico', 'emacs']
-            Found = False
-            for command_line_editor in command_line_editors:
-                editor_position = line.find(command_line_editor)
-                if editor_position > -1:
-                    Found = True
-            if not Found:
-                start_ind = count + 1
-                while start_ind < len(lines):
-                    next_timestamp_index = starting_index_timestamp(lines[start_ind])
-                    next_line = lines[start_ind]
-                    if next_timestamp_index is not None:
-                        decode_line_timestamp = next_line[next_timestamp_index:]
-                        next_line = next_line[:next_timestamp_index]
-                        line += next_line
-                        lines.pop(start_ind)
-                        break
-                    else:
-                        line += next_line
-                        lines.pop(start_ind)
-
-        len_line = len(line)
-        while i_stream_line < len_line:
-            if line[i_stream_line] == '\x07':
-                i_stream_line += 1
-            elif line[i_stream_line] == '\r':
-                i_stream_line += 1
-                encountered_carriage_return = True
-            elif line[i_stream_line] == '\x08':
-                if cursor_pointer > 0:
-                    cursor_pointer -= 1
-                i_stream_line += 1
-            elif line[i_stream_line] == '\x1b' and line[i_stream_line + 1] == '[':
-                i_stream_line += 2
-                if i_stream_line >= len_line:
-                    break
-
-                if line[i_stream_line] == 'K' or (line[i_stream_line] in string.digits and line[i_stream_line + 1] == 'K'):
-                    n = int(line[i_stream_line]) if line[i_stream_line] in string.digits else 0
-                    if n == 0:
-                        buf[i_line] = buf[i_line][:cursor_pointer]
-                    elif n == 1:
-                        buf[i_line] = buf[i_line][cursor_pointer:]
-                        cursor_pointer = 0
-                    elif n == 2:
-                        buf[i_line].clear()
-                        cursor_pointer = 0
-                    i_stream_line += 2 if line[i_stream_line] in string.digits else 1
-
-                elif (line[i_stream_line] == '@') or (line[i_stream_line] in string.digits and line[i_stream_line + 1] == '@'):
-                    n = int(line[i_stream_line]) if line[i_stream_line] in string.digits else 1
-                    i_stream_line += 2 if line[i_stream_line] in string.digits else 1
-
-                    if encountered_carriage_return is True:
-                        remaining_line = line[i_stream_line:]
-                        if (remaining_line.find(current_user_prompt) == 0) or (remaining_line.find(current_root_prompt) == 0):
-                            cursor_pointer = 0
-                        elif cursor_pointer > 0:
-                            length_before_carriage_return = cursor_pointer
-                        encountered_carriage_return = False
-
-                    i = 0
-                    while i < n and i_stream_line < len_line and cursor_pointer < i_stream_line:
-                        buf[i_line].insert(cursor_pointer, line[i_stream_line])
-                        cursor_pointer += 1
-                        i_stream_line += 1
-                        i += 1
-
-                elif (line[i_stream_line] == 'C') or (line[i_stream_line] in string.digits and line[i_stream_line + 1] == 'C'):
-                    n = int(line[i_stream_line]) if line[i_stream_line] in string.digits else 1
-                    cursor_pointer += n
-                    i_stream_line += 2 if line[i_stream_line] in string.digits else 1
-
-                elif line[i_stream_line] == 'J' or (line[i_stream_line] in string.digits and (
-                        (line[i_stream_line + 1] == ';' and line[i_stream_line + 2] == 'J') or (line[i_stream_line + 1] == 'J'))):
-                    cursor_pointer = 0
-                    buf[i_line].clear()
-                    if line[i_stream_line] == 'J':
-                        i_stream_line += 1
-                    elif line[i_stream_line] in string.digits:
-                        if line[i_stream_line + 1] == ';' and line[i_stream_line + 2] == 'J':
-                            i_stream_line += 3
-                        elif line[i_stream_line + 1] == 'J':
-                            i_stream_line += 2
-
-                elif escape_sequence_dict['csi_delete_n_chars'].match(line[i_stream_line:]):
-                    move_cursor_control_characters = escape_sequence_dict['csi_delete_n_chars'].match(line[i_stream_line:]).span()[1]
-                    n = int(line[i_stream_line:(i_stream_line + move_cursor_control_characters - 1)]) if move_cursor_control_characters > 1 else 1
-                    if n >= 1:
-                        buf[i_line] = buf[i_line][:cursor_pointer] + buf[i_line][cursor_pointer + n:]
-                        i_stream_line += move_cursor_control_characters
-
-                elif escape_sequence_dict['csi_tab'].match(line[i_stream_line:]):
-                    i_stream_line += 3
-                elif escape_sequence_dict['csi_cursor_up'].match(line[i_stream_line:]):
-                    move_cursor_control_characters = escape_sequence_dict['csi_cursor_up'].match(line[i_stream_line:]).span()[1]
-                    i_stream_line += move_cursor_control_characters
-
-                    if length_before_carriage_return > -1:
-                        cursor_pointer -= length_before_carriage_return
-                        if cursor_pointer < 0:
-                            cursor_pointer = 0
-
-                elif escape_sequence_dict['csi_cursor_position'].match(line[i_stream_line:]):
-                    move_cursor_control_characters = escape_sequence_dict['csi_cursor_position'].match(line[i_stream_line:]).span()[1]
-                    i_stream_line += move_cursor_control_characters
-
-                elif escape_sequence_dict['csi_character_attributes'].match(line[i_stream_line:]):
-                    move_cursor_control_characters = escape_sequence_dict['csi_character_attributes'].match(line[i_stream_line:]).span()[1]
-                    i_stream_line += move_cursor_control_characters
-
-                elif escape_sequence_dict['csi_window_manipulation'].match(line[i_stream_line:]):
-                    move_cursor_control_characters = escape_sequence_dict['csi_window_manipulation'].match(line[i_stream_line:]).span()[1]
-                    i_stream_line += move_cursor_control_characters
-
-                elif escape_sequence_dict['csi_dec_private_mode_set'].match(line[i_stream_line:]):
-                    move_cursor_control_characters = escape_sequence_dict['csi_dec_private_mode_set'].match(line[i_stream_line:]).span()[1]
-                    i_stream_line += move_cursor_control_characters
-
-                elif escape_sequence_dict['csi_dec_private_mode_reset'].match(line[i_stream_line:]):
-                    move_cursor_control_characters = escape_sequence_dict['csi_dec_private_mode_reset'].match(line[i_stream_line:]).span()[1]
-                    i_stream_line += move_cursor_control_characters
-
-            elif line[i_stream_line] == '\x1b' and escape_sequence_dict['controls_c1_esc_single_char'].match(line[(i_stream_line + 1):]):
-                i_stream_line += 2
-
-            else:
-                if encountered_carriage_return is True:
-                    remaining_line = line[i_stream_line:]
-                    if (remaining_line.find(current_user_prompt) == 0) or (remaining_line.find(current_root_prompt) == 0):
-                        cursor_pointer = 0
-                    elif cursor_pointer > 0:
-                        cursor_pointer -= 1
-                        length_before_carriage_return = cursor_pointer
-
-                    encountered_carriage_return = False
-
-                if 0 <= cursor_pointer < len(buf[i_line]):
-                    buf[i_line][cursor_pointer] = line[i_stream_line]
-                    cursor_pointer += 1
-
-                elif cursor_pointer == len(buf[i_line]):
-                    buf[i_line].append(line[i_stream_line])
-                    cursor_pointer += 1
-
-                i_stream_line += 1
-
-        buf[i_line] = ''.join(buf[i_line])
-        buf[i_line] += decode_line_timestamp
-        decode_line_timestamp = ''
-
-        i_line += 1
-
-    return buf
-
-
 def get_ttylog_lines_to_decode(ttylog_lines_read_next, ttylog_lines_from_file, known_prompts, current_root_prompt):
     # Return two lists
     # The first list contains the ttylog lines that should be read in next iteration of infinite loop.
@@ -313,12 +105,12 @@ def get_ttylog_lines_to_decode(ttylog_lines_read_next, ttylog_lines_from_file, k
             index_ttylog_lines_file = len(ttylog_lines_read_next) - 1 - count
 
             # Find the last user prompt. Get data starting from 0th index to ending of last user prompt from the line
-            #for p in known_prompts:
-            #    if (line.casefold().rfind(p.casefold()) > -1):
-            #        line_prompt_end_index = line.casefold().rfind(p.casefold())
-            #        line_prompt_end_index = line_prompt_end_index + len(p.casefold())
-            #        break
-            #line_to_append = line[:line_prompt_end_index]
+            for p in known_prompts:
+               if (line.casefold().rfind(p.casefold()) > -1):
+                   line_prompt_end_index = line.casefold().rfind(p.casefold())
+                   line_prompt_end_index = line_prompt_end_index + len(p.casefold())
+                   break
+            line_to_append = line[:line_prompt_end_index]
 
     if index_ttylog_lines_file is not None and no_of_prompts_in_ttylog_read_next >= 2:
 
@@ -326,8 +118,8 @@ def get_ttylog_lines_to_decode(ttylog_lines_read_next, ttylog_lines_from_file, k
 
         # Add the line containing user/root prompt to ttylog_lines_to_decode so that the most recently executed command can be parsed.
         # The characters from 0th index till ending of last user prompt is included is contained in line_to_append
-        #if len(line_to_append) > 0:
-        #    ttylog_lines_to_decode.append(line_to_append)
+        if len(line_to_append) > 0:
+           ttylog_lines_to_decode.append(line_to_append)
 
         ttylog_lines_read_next = ttylog_lines_read_next[index_ttylog_lines_file:]
         return ttylog_lines_to_decode, ttylog_lines_read_next

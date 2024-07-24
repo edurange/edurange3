@@ -14,17 +14,18 @@
     # Added a class to manage the functions.
     # Split serial methods into functions.
     # Loop function was way to long, split it into smaller functions.
+    # BUG fixed: 'NAT' was what I manually added to my known_hosts file but 'nat' was required in get_ttylog_lines_to_decode.
+    # Moved decode() to a module, added comments explaining it does.
 
-import sys
-import re
-import time
-import sys
-import time
-import re
 import analyze_config as config
+import decode as decode
 import logging
 import os
-from analyzer_methods import write_to_csv, get_unique_id_dict, get_ttylog_lines_from_file, get_ttylog_lines_to_decode, decode
+import re
+import sys
+import time
+
+from analyzer_methods import write_to_csv, get_unique_id_dict, get_ttylog_lines_from_file, get_ttylog_lines_to_decode
 
 logger = logging.getLogger()
 
@@ -34,6 +35,7 @@ file_handler.setLevel(logging.DEBUG)
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
+
     
 class LogAnalyzerMain:
     def __init__(self) -> None:
@@ -47,6 +49,7 @@ class LogAnalyzerMain:
         self.skip_reading_in_first_iteration = config.skip_reading_in_first_iteration
         self.ttylog_lines_read_next = config.ttylog_lines_read_next
         self.ttylog_lines = config.ttylog_lines
+        self.output_txt = config.output_txt
 
     def get_ttylog_init(self):
         # This function is used to get the initial ttylog file path and output CSV file path from command line arguments
@@ -139,21 +142,25 @@ class LogAnalyzerMain:
 
     def get_host_names(self):
         # Read the host_names file and construct a regex pattern for possible hosts
+        # Version 1.2. this might crash the program if the file is malformed
         user_initial_prompt = self.user_initial_prompt
-        nodes = []
         try:
-            file = open('/usr/local/src/ttylog/host_names', 'r')
-            nodes = file.read().splitlines()
-            file.close()
+            with open('/usr/local/src/ttylog/host_names', 'r') as file:
+                nodes = file.read().splitlines()
             self.host_pattern = '(' + '|'.join(n for n in nodes) + ')'
+
             for node in nodes:
                 self.known_prompts.append(user_initial_prompt.split('@')[0] + '@' + node)
+
         except FileNotFoundError:
             user_prompt = user_initial_prompt.split('@')[0] + '@nat'
             self.known_prompts.append(user_prompt)
             self.known_prompts.append(user_initial_prompt.split('@')[0] + '@FirstStop')
             self.host_pattern = "(nat|firststop)"
-            logger.error(self.host_pattern, "Failed to read host_names file")
+            logger.error("Failed to read host_names file")
+        except Exception as e:
+            logger.error(f"An error occurred: {e}")
+
     
     def loop_function(self):
         # This function is the main loop that reads the ttylog file, processes the lines, and generates the CSV output.
@@ -166,7 +173,6 @@ class LogAnalyzerMain:
 
         try:
             while not self.exit_flag:
-
                 # Skip reading ttylog in the first iteration
                 if not self.skip_reading_in_first_iteration:
                     self.ttylog_lines_from_file, ttylog_bytes_read = get_ttylog_lines_from_file(ttylog, self.ttylog_seek_pointer)
@@ -179,7 +185,9 @@ class LogAnalyzerMain:
                 if len(self.ttylog_lines_to_decode) == 0:
                     time.sleep(0.1)
                     continue
-                ttylog_lines = decode(self.ttylog_lines_to_decode, user_prompt, root_prompt)
+
+                # This does the heavy lifting
+                ttylog_lines = decode.decode(self.ttylog_lines_to_decode, user_prompt, root_prompt)
 
                 for line in ttylog_lines:
                     line = self.process_line(line)
@@ -199,9 +207,7 @@ class LogAnalyzerMain:
                         self.output_txt += '\n' + line
                     else:
                         self.save_output(csv_output_file, current_session_id)
-                    
                     self.first_ttylog_line = False
-
                 time.sleep(0.1)
 
                 if self.exit_flag:
@@ -215,10 +221,10 @@ class LogAnalyzerMain:
         return line
 
     def is_prompt(self, line):
-        # Check if the line is a prompt
-        command_pattern_user_prompt = re.compile(f"{self.user_initial_prompt.split('@')[0].casefold()}@{self.host_pattern}:.*?")
-        command_pattern_root_prompt = re.compile(f"{self.root_prompt.casefold()}:.*?")
-        return command_pattern_user_prompt.search(line.casefold()) or command_pattern_root_prompt.search(line.casefold())
+            # Check if the line is a prompt
+            command_pattern_user_prompt = re.compile(f"{self.user_initial_prompt.split('@')[0].casefold()}@{self.host_pattern}:.*?")
+            command_pattern_root_prompt = re.compile(f"{self.root_prompt.casefold()}:.*?")
+            return command_pattern_user_prompt.search(line.casefold()) or command_pattern_root_prompt.search(line.casefold())
 
     def handle_prompt(self, line, user_prompt, root_prompt, home_directory, current_session_id):
         # Handle different prompts and extract relevant information
@@ -281,6 +287,7 @@ class LogAnalyzerMain:
 
     def save_output(self, csv_output_file, current_session_id):
         # Write the current session's output to the CSV file
+
         if len(self.output_txt) > 500:
             self.output_txt = self.output_txt[:500]
 
