@@ -3,7 +3,7 @@
         {
             "docker_container": [
                 {
-                    "SNAME_nat": [
+                    "SNAME_StartingLine": [
                         {
                             "capabilities": [
                                 {
@@ -26,9 +26,9 @@
                                     "user": "root"
                                 }
                             ],
-                            "hostname": "NAT",
-                            "image": "edurange2/webfu:latest",
-                            "name": "SNAME_nat",
+                            "hostname": "StartingLine",
+                            "image": "edurange2/ubuntu-sshd:16.04",
+                            "name": "SNAME_StartingLine",
                             "networks_advanced": [
                                 {
                                     "ipv4_address": "10.OCTET.1.2",
@@ -42,22 +42,8 @@
                             "ports": [
                                 {
                                     "internal": 22
-                                },
-                                {
-                                    "internal": 80,
-                                    "external": 8080
-                                },
-                                {
-                                    "internal": 443,
-                                    "external": 8443
                                 }
                             ],
-                            "mounts": {
-                                "source": "/etc/letsencrypt/archive/EXTERN_HOST",
-                                "target": "/etc/ssl/webfu",
-                                "type": "bind",
-                                "read_only": true
-                            },
                             "provisioner": [
                                 {
                                     "remote-exec": [
@@ -79,17 +65,17 @@
     ],
     "locals": [
         {
-            "SNAME_nat_extern": "HIDDEN"
+            "SNAME_StartingLine_extern": "HIDDEN"
         }
     ],
     "output": [
         {
-            "SNAME_nat": [
+            "SNAME_StartingLine": [
                 {
                     "value": [
                         {
-                            "ip_address_public": "${join(\":\", [\"EXTERN_HOST\", local.SNAME_nat_extern])}",
-                            "name": "SNAME_nat"
+                            "ip_address_public": "${join(\":\", [\"EXTERN_HOST\", local.SNAME_StartingLine_extern])}",
+                            "name": "SNAME_StartingLine"
                         }
                     ]
                 }
