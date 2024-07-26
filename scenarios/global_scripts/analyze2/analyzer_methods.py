@@ -347,7 +347,18 @@ def write_to_csv(data, csv_output_file):
     """Write data to a CSV file."""
     try:
         with open(csv_output_file, 'a', newline='') as csvfile:
-            csvwriter = csv.writer(csvfile)
+
+
+            #Header logic
+            fieldnames = ['id' , 'timestamp', 'node_name', 'data', 'cmd', 'output' ]
+            csvreader = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            
+            if csvfile.tell() == 0:
+                csvreader.writeheader()
+
+            # Write rows in specific order to csv, change or add to modify output to csv
+            # Specific delimeter and quote character
+            csvwriter = csv.writer(csvfile, delimiter=',', quotechar='%', quoting=csv.QUOTE_MINIMAL)
             csvwriter.writerow([data['id'], data['timestamp'], data['node_name'], data['cwd'], data['cmd'], data['output']])
             logging.info("Data written to CSV: %s", data)
     except Exception as e:

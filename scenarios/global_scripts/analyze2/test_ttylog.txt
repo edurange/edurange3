@@ -1,0 +1,2337 @@
+starting session w tty_sid:0
+User prompt is devuser10@gateway
+Home directory is /home/devuser10
+[3;J[H[2J]0;devuser10@NAT: ~[01;32mdevuser10@NAT[00m:[01;34m~[00m$ clear;1705265107
+[3;J[H[2J]0;devuser10@NAT: ~[01;32mdevuser10@NAT[00m:[01;34m~[00m$ ls;1705265107
+]0;devuser10@NAT: ~[01;32mdevuser10@NAT[00m:[01;34m~[00m$ w;1705265107
+ 20:45:07 up 7 min,  1 user,  load average: 0.11, 0.30, 0.17
+USER     TTY      FROM             LOGIN@   IDLE   JCPU   PCPU WHAT
+devuser1 pts/0    10.12.0.4        20:45    2.00s  0.00s  0.00s w
+]0;devuser10@NAT: ~[01;32mdevuser10@NAT[00m:[01;34m~[00m$ ll;1705265109
+total 20
+drwxr-xr-x 2 devuser10 devuser10 4096 Jan 14 20:41 [0m[01;34m.[0m/
+drwxr-xr-x 1 root      root      4096 Jan 14 20:41 [01;34m..[0m/
+-rw-r--r-- 1 devuser10 devuser10  220 Aug 31  2015 .bash_logout
+-rw-r--r-- 1 devuser10 devuser10 3771 Aug 31  2015 .bashrc
+-rw-r--r-- 1 devuser10 devuser10  655 May 16  2017 .profile
+]0;devuser10@NAT: ~[01;32mdevuser10@NAT[00m:[01;34m~[00m$ man cd;1705265113
+[?1049h[?1h=
+CD(1POSIX)                        POSIX Programmer's Manual                        CD(1POSIX)[m
+[m
+[1mPROLOG[0m[m
+       This  manual  page is part of the POSIX Programmer's Manual.  The Linux implementation[m
+       of this interface may differ (consult the corresponding Linux manual page for  details[m
+       of Linux behavior), or the interface may not be implemented on Linux.[m
+[m
+[1mNAME[0m[m
+       cd — change the working directory[m
+[m
+[1mSYNOPSIS[0m[m
+       cd [1m[[0m−L|−P[1m][0m [1m[[0m[4mdirectory[24m[1m][0m[m
+[m
+       cd −[m
+[m
+[1mDESCRIPTION[0m[m
+       The [4mcd[24m utility shall change the working directory of the current shell execution envi‐[m
+       ronment (see [4mSection[24m [4m2.12[24m, [4mShell[24m [4mExecution[24m [4mEnvironment[24m)  by  executing  the  following[m
+       steps  in sequence. (In the following steps, the symbol [1mcurpath[0m represents an interme‐[m
+       diate value used to simplify the description of the algorithm used by [4mcd[24m.  There is no[m;1705265113
+       requirement that [1mcurpath[0m be made visible to the application.)[m;1705265113
+[m;1705265113
+        1. If  no  [4mdirectory[24m  operand  is given and the [4mHOME[24m environment variable is empty or[m;1705265113
+           undefined, the default behavior is implementation-defined  and  no  further  steps[m
+           shall be taken.[m
+[m
+        2. If  no  [4mdirectory[24m  operand  is given and the [4mHOME[24m environment variable is set to a[m
+           non-empty value, the [4mcd[24m utility shall behave as if the directory named in the [4mHOME[24m[m
+           environment variable was specified as the [4mdirectory[24m operand.[m
+[m
+        3. If the [4mdirectory[24m operand begins with a <slash> character, set [1mcurpath[0m to the oper‐[m;1705265113
+           and and proceed to step 7.[m
+[m
+        4. If the first component of the [4mdirectory[24m operand is dot or dot-dot, proceed to step[m
+           6.[m
+[m
+        5. Starting with the first pathname in the <colon>-separated pathnames of [4mCDPATH[24m (see[m
+           the ENVIRONMENT VARIABLES section) if the pathname is non-null, test if  the  con‐[m
+           catenation of that pathname, a <slash> character if that pathname did not end with[m
+           a <slash> character, and the [4mdirectory[24m operand names a directory. If the  pathname[m
+           is  null,  test  if the concatenation of dot, a <slash> character, and the operand[m
+           names a directory. In either case, if  the  resulting  string  names  an  existing[m
+           directory,  set  [1mcurpath[0m  to  that string and proceed to step 7. Otherwise, repeat[m
+           this step with the next pathname in [4mCDPATH[24m until all pathnames have been tested.[m
+[m
+        6. Set [1mcurpath[0m to the [4mdirectory[24m operand.[m
+[7m Manual page cd(1posix) line 1 (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K66[K~~
+[K[m
+        7. If the [1m−P[0m option is in effect, proceed to step 10. If [1mcurpath[0m does not begin  with[m
+           a  <slash> character, set [1mcurpath[0m to the string formed by the concatenation of the[m
+           value of [4mPWD[24m, a <slash> character if the value of [4mPWD[24m did not end with  a  <slash>[m
+           character, and [1mcurpath[0m.[m
+[m
+        8. The  [1mcurpath[0m value shall then be converted to canonical form as follows, consider‐[m
+           ing each component from beginning to end, in sequence:[m
+[m
+            a. Dot components and any <slash> characters that separate  them  from  the  next[m
+               component shall be deleted.[m
+[m
+            b. For  each  dot-dot component, if there is a preceding component and it is nei‐[m
+               ther root nor dot-dot, then:[m
+[m
+                i.  If the preceding component does not refer (in  the  context  of  pathname[m
+                    resolution  with  symbolic  links  followed)  to a directory, then the [4mcd[24m[m
+                    utility shall display an appropriate error message and no  further  steps[m
+                    shall be taken.[m
+[m
+               ii.  The  preceding component, all <slash> characters separating the preceding[m
+                    component from dot-dot, dot-dot, and all  <slash>  characters  separating[m
+                    dot-dot from the following component (if any) shall be deleted.[m
+[m
+            c. An  implementation  may  further  simplify  [1mcurpath[0m  by  removing any trailing[m
+               <slash> characters that are not also  leading  <slash>  characters,  replacing[m
+               multiple non-leading consecutive <slash> characters with a single <slash>, and[m
+               replacing three or more leading <slash> characters with a single <slash>.  If,[m
+               as a result of this canonicalization, the [1mcurpath[0m variable is null, no further[m
+               steps shall be taken.[m
+[m
+        9. If [1mcurpath[0m is longer than {PATH_MAX} bytes (including the  terminating  null)  and[m
+           the  [4mdirectory[24m  operand was not longer than {PATH_MAX} bytes (including the termi‐[m
+           nating null), then [1mcurpath[0m shall be converted from  an  absolute  pathname  to  an[m
+           equivalent  relative pathname if possible. This conversion shall always be consid‐[m
+           ered possible if the value of [4mPWD[24m, with a trailing <slash> added if  it  does  not[m
+           already  have  one, is an initial substring of [1mcurpath[0m.  Whether or not it is con‐[m
+           sidered possible under other circumstances  is  unspecified.  Implementations  may[m
+           also  apply  this conversion if [1mcurpath[0m is not longer than {PATH_MAX} bytes or the[m
+           [4mdirectory[24m operand was longer than {PATH_MAX} bytes.[m
+[m
+       10. The [4mcd[24m utility shall then perform  actions  equivalent  to  the  [4mchdir[24m()  function[m
+           called  with  [1mcurpath[0m  as the [4mpath[24m argument. If these actions fail for any reason,[m
+           the [4mcd[24m utility shall display an appropriate error message  and  the  remainder  of[m
+           this  step shall not be executed. If the [1m−P[0m option is not in effect, the [4mPWD[24m envi‐[m
+           ronment variable shall be set to the value that [1mcurpath[0m had on  entry  to  step  9[m
+[7m Manual page cd(1posix) line 47 (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K66[K~~
+[K           (i.e.,  before  conversion to a relative pathname). If the [1m−P[0m option is in effect,[m
+           the [4mPWD[24m environment variable shall be set to the string that would  be  output  by[m
+           [4mpwd[24m  [1m−P[0m.  If there is insufficient permission on the new directory, or on any par‐[m
+           ent of that directory, to determine the current working directory,  the  value  of[m
+           the [4mPWD[24m environment variable is unspecified.[m
+[m
+       If,  during the execution of the above steps, the [4mPWD[24m environment variable is set, the[m
+       [4mOLDPWD[24m environment variable shall also be set to the value of the old  working  direc‐[m
+       tory (that is the current working directory immediately prior to the call to [4mcd[24m).[m
+[m
+[1mOPTIONS[0m[m
+       The  [4mcd[24m  utility shall conform to the Base Definitions volume of POSIX.1‐2008, [4mSection[24m[m
+       [4m12.2[24m, [4mUtility[24m [4mSyntax[24m [4mGuidelines[24m.[m
+[m
+       The following options shall be supported by the implementation:[m
+[m
+       [1m−L[0m        Handle the operand dot-dot logically; symbolic link components shall not  be[m
+                 resolved  before  dot-dot  components are processed (see steps 8.  and 9. in[m
+                 the DESCRIPTION).[m
+[m
+       [1m−P[0m        Handle the operand dot-dot physically; symbolic  link  components  shall  be[m
+                 resolved  before  dot-dot  components  are  processed  (see  step  7. in the[m
+                 DESCRIPTION).[m
+[m
+       If both [1m−L[0m and [1m−P[0m options are specified, the last of these options shall be  used  and[m
+       all  others  ignored.  If neither [1m−L[0m nor [1m−P[0m is specified, the operand shall be handled[m
+       dot-dot logically; see the DESCRIPTION.[m
+[m
+[1mOPERANDS[0m[m
+       The following operands shall be supported:[m
+[m
+       [4mdirectory[24m An absolute or relative pathname of the directory that shall become the  new[m
+                 working  directory.  The interpretation of a relative pathname by [4mcd[24m depends[m
+                 on the [1m−L[0m option and the [4mCDPATH[24m and [4mPWD[24m environment variables. If  [4mdirectory[24m[m
+                 is an empty string, the results are unspecified.[m
+[m
+       −         When a <hyphen> is used as the operand, this shall be equivalent to the com‐[m
+                 mand:[m
+[m
+                     [1mcd[0m [1m"$OLDPWD"[0m [1m&&[0m [1mpwd[0m[m
+[m
+                 which changes to the previous working directory and then writes its name.[m
+[m
+[1mSTDIN[0m[m
+       Not used.[m
+[m
+[7m Manual page cd(1posix) line 93 (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K66[K~~
+[K[1mINPUT[0m [1mFILES[0m[m
+       None.[m
+[m
+[1mENVIRONMENT[0m [1mVARIABLES[0m[m
+       The following environment variables shall affect the execution of [4mcd[24m:[m
+[m
+       [4mCDPATH[24m    A <colon>-separated list of pathnames that  refer  to  directories.  The  [4mcd[24m[m
+                 utility  shall  use  this  list  in  its attempt to change the directory, as[m
+                 described in the DESCRIPTION. An empty string in place of a directory  path‐[m
+                 name  represents  the  current  directory. If [4mCDPATH[24m is not set, it shall be[m
+                 treated as if it were an empty string.[m
+[m
+       [4mHOME[24m      The name of the directory, used when no [4mdirectory[24m operand is specified.[m
+[m
+       [4mLANG[24m      Provide a default value for  the  internationalization  variables  that  are[m
+                 unset  or  null.  (See  the Base Definitions volume of POSIX.1‐2008, [4mSection[24m[m
+                 [4m8.2[24m, [4mInternationalization[24m [4mVariables[24m for the precedence of  internationaliza‐[m
+                 tion variables used to determine the values of locale categories.)[m
+[m
+       [4mLC_ALL[24m    If  set  to  a  non-empty string value, override the values of all the other[m
+                 internationalization variables.[m
+[m
+       [4mLC_CTYPE[24m  Determine the locale for the interpretation of sequences of  bytes  of  text[m
+                 data  as characters (for example, single-byte as opposed to multi-byte char‐[m
+                 acters in arguments).[m
+[m
+       [4mLC_MESSAGES[24m[m
+                 Determine the locale that should be used to affect the format  and  contents[m
+                 of diagnostic messages written to standard error.[m
+[m
+       [4mNLSPATH[24m   Determine  the  location  of  message catalogs for the processing of [4mLC_MES‐[24m[m
+                 [4mSAGES[24m.[m
+[m
+       [4mOLDPWD[24m    A pathname of the previous working directory, used by [4mcd[24m [1m−[0m.[m
+[m
+       [4mPWD[24m       This variable shall be set as specified in the DESCRIPTION. If  an  applica‐[m
+                 tion sets or unsets the value of [4mPWD[24m, the behavior of [4mcd[24m is unspecified.[m
+[m
+[1mASYNCHRONOUS[0m [1mEVENTS[0m[m
+       Default.[m
+[m
+[1mSTDOUT[0m[m
+       If  a  non-empty  directory  name from [4mCDPATH[24m is used, or if [4mcd[24m [1m−[0m is used, an absolute[m
+       pathname of the new working directory shall be written to the standard output as  fol‐[m
+       lows:[m
+[m
+[7m Manual page cd(1posix) line 139 (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K66[K~~
+[K           [1m"%s
+",[0m [1m<[0m[4mnew[24m [4mdirectory[24m>[m
+[m
+       Otherwise, there shall be no output.[m
+[m
+[1mSTDERR[0m[m
+       The standard error shall be used only for diagnostic messages.[m
+[m
+[1mOUTPUT[0m [1mFILES[0m[m
+       None.[m
+[m
+[1mEXTENDED[0m [1mDESCRIPTION[0m[m
+       None.[m
+[m
+[1mEXIT[0m [1mSTATUS[0m[m
+       The following exit values shall be returned:[m
+[m
+        0    The directory was successfully changed.[m
+[m
+       >0    An error occurred.[m
+[m
+[1mCONSEQUENCES[0m [1mOF[0m [1mERRORS[0m[m
+       The working directory shall remain unchanged.[m
+[m
+       [4mThe[24m [4mfollowing[24m [4msections[24m [4mare[24m [4minformative.[24m[m
+[m
+[1mAPPLICATION[0m [1mUSAGE[0m[m;1705265115
+       Since  [4mcd[24m  affects the current shell execution environment, it is always provided as a[m
+       shell regular built-in. If it is called in a subshell or  separate  utility  execution[m
+       environment, such as one of the following:[m
+[m
+           [1m(cd[0m [1m/tmp)[0m[m
+           [1mnohup[0m [1mcd[0m[m
+           [1mfind[0m [1m.[0m [1m−exec[0m [1mcd[0m [1m{}[0m [1m\;[0m[m;1705265115
+[m
+       it does not affect the working directory of the caller's environment.[m
+[m
+       The user must have execute (search) permission in [4mdirectory[24m in order to change to it.[m
+[m
+[1mEXAMPLES[0m[m
+       The following template can be used to perform processing in the directory specified by[m
+       [4mlocation[24m and end up in the current working directory in use before the first  [4mcd[24m  com‐[m
+       mand was issued:[m
+[m
+           [1mcd[0m [4mlocation[24m[m
+           [1mif[0m [1m[[0m [1m$?[0m [1m-ne[0m [1m0[0m [1m][0m[m
+           [1mthen[0m[m
+[7m Manual page cd(1posix) line 185 (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K66[K~~
+[K               [1mprint[0m [1merror[0m [1mmessage[0m[m
+               [1mexit[0m [1m1[0m[m
+           [1mfi[0m[m
+           [1m...[0m [1mdo[0m [1mwhatever[0m [1mis[0m [1mdesired[0m [1mas[0m [1mlong[0m [1mas[0m [1mthe[0m [1mOLDPWD[0m [1menvironment[0m [1mvariable[0m[m
+               [1mis[0m [1mnot[0m [1mmodified[0m[m
+           [1mcd[0m [1m-[0m[m
+[m
+[1mRATIONALE[0m[m
+       The  use  of  the [4mCDPATH[24m was introduced in the System V shell. Its use is analogous to[m
+       the use of the [4mPATH[24m variable in the shell. The BSD C  shell  used  a  shell  parameter[m
+       [4mcdpath[24m for this purpose.[m
+[m
+       A  common extension when [4mHOME[24m is undefined is to get the login directory from the user[m
+       database for the invoking user. This does not occur on System V implementations.[m
+[m
+       Some historical shells, such as the KornShell, took special actions when the directory[m
+       name  contained  a  dot-dot  component, selecting the logical parent of the directory,[m;1705265115
+       rather than the actual parent directory; that is, it moved up one level toward the [1m'/'[0m[m
+       in  the  pathname, remembering what the user typed, rather than performing the equiva‐[m
+       lent of:[m
+[m
+           [1mchdir("..");[0m[m
+[m
+       In such a shell, the following commands would not necessarily produce equivalent  out‐[m
+       put for all directories:[m
+[m
+           [1mcd[0m [1m..[0m [1m&&[0m [1mls[0m      [1mls[0m [1m..[0m[m
+[m
+       This  behavior is now the default. It is not consistent with the definition of dot-dot[m
+       in most historical practice; that is, while this behavior has been  optionally  avail‐[m
+       able  in  the KornShell, other shells have historically not supported this functional‐[m
+       ity. The logical pathname is stored in the [4mPWD[24m environment variable when the [4mcd[24m  util‐[m
+       ity  completes  and  this  value is used to construct the next directory name if [4mcd[24m is[m
+       invoked with the [1m−L[0m option.[m
+[m
+[1mFUTURE[0m [1mDIRECTIONS[0m[m
+       None.[m
+[m
+[1mSEE[0m [1mALSO[0m[m
+       [4mSection[24m [4m2.12[24m, [4mShell[24m [4mExecution[24m [4mEnvironment[24m, [4mpwd[24m[m
+[m
+       The Base Definitions volume of POSIX.1‐2008, [4mChapter[24m [4m8[24m, [4mEnvironment[24m [4mVariables[24m, [4mSection[24m[m
+       [4m12.2[24m, [4mUtility[24m [4mSyntax[24m [4mGuidelines[24m[m
+[m
+       The System Interfaces volume of POSIX.1‐2008, [4mchdir[24m()[m
+[m
+[7m Manual page cd(1posix) line 231 (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K66[K~~
+[K[1mCOPYRIGHT[0m[m
+       Portions  of  this  text are reprinted and reproduced in electronic form from IEEE Std[m
+       1003.1, 2013 Edition, Standard for Information Technology -- Portable Operating System[m
+       Interface  (POSIX),  The Open Group Base Specifications Issue 7, Copyright (C) 2013 by[m
+       the Institute of Electrical and Electronics Engineers, Inc and The Open Group.   (This[m
+       is  POSIX.1-2008  with  the 2013 Technical Corrigendum 1 applied.) In the event of any[m
+       discrepancy between this version and the original IEEE and The  Open  Group  Standard,[m
+       the  original  IEEE  and The Open Group Standard is the referee document. The original[m
+       Standard can be obtained online at http://www.unix.org/online.html .[m
+[m
+       Any typographical or formatting errors that appear in this page  are  most  likely  to[m
+       have  been introduced during the conversion of the source files to man page format. To[m
+       report such errors, see https://www.kernel.org/doc/man-pages/reporting_bugs.html .[m
+[m
+IEEE/The Open Group                          2013                                  CD(1POSIX)[m
+[7m Manual page cd(1posix) line 246/291 (END) (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K66[K~~
+[K
+[K[7m Manual page cd(1posix) line 246/291 (END) (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K66[K~~
+[K
+[K[7m Manual page cd(1posix) line 246/291 (END) (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K66[K~~
+[K
+[K[7m Manual page cd(1posix) line 246/291 (END) (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K66[K~~
+[K
+[K[7m Manual page cd(1posix) line 246/291 (END) (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K66[K~~
+[K
+[K[7m Manual page cd(1posix) line 246/291 (END) (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K66[K~~
+[K
+[K[7m Manual page cd(1posix) line 246/291 (END) (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K66[K~~
+[K
+[K[7m Manual page cd(1posix) line 246/291 (END) (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K66[K~~
+[K
+[K[7m Manual page cd(1posix) line 246/291 (END) (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K66[K~~
+[K
+[K[7m Manual page cd(1posix) line 246/291 (END) (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K55[K~~
+[K[HM[m
+[HM       database for the invoking user. This does not occur on System V implementations.[m
+[HM       A  common extension when [4mHOME[24m is undefined is to get the login directory from the user[m
+[HM[m
+[HM       [4mcdpath[24m for this purpose.[m
+[HM       the use of the [4mPATH[24m variable in the shell. The BSD C  shell  used  a  shell  parameter[m
+[HM       The  use  of  the [4mCDPATH[24m was introduced in the System V shell. Its use is analogous to[m
+[HM[1mRATIONALE[0m[m
+[HM[m
+[HM           [1mcd[0m [1m-[0m[m
+[HM               [1mis[0m [1mnot[0m [1mmodified[0m[m
+[HM           [1m...[0m [1mdo[0m [1mwhatever[0m [1mis[0m [1mdesired[0m [1mas[0m [1mlong[0m [1mas[0m [1mthe[0m [1mOLDPWD[0m [1menvironment[0m [1mvariable[0m[m
+[HM           [1mfi[0m[m
+[HM               [1mexit[0m [1m1[0m[m
+[HM               [1mprint[0m [1merror[0m [1mmessage[0m[m
+[HM           [1mthen[0m[m
+[HM           [1mif[0m [1m[[0m [1m$?[0m [1m-ne[0m [1m0[0m [1m][0m[m
+[HM           [1mcd[0m [4mlocation[24m[m
+[HM[m
+[HM       mand was issued:[m
+[HM       [4mlocation[24m and end up in the current working directory in use before the first  [4mcd[24m  com‐[m
+[HM       The following template can be used to perform processing in the directory specified by[m
+[HM[1mEXAMPLES[0m[m
+[HM[m
+[HM       The user must have execute (search) permission in [4mdirectory[24m in order to change to it.[m
+[HM[m
+[HM       it does not affect the working directory of the caller's environment.[m
+[HM[m
+[HM           [1mfind[0m [1m.[0m [1m−exec[0m [1mcd[0m [1m{}[0m [1m\;[0m[m
+[HM           [1mnohup[0m [1mcd[0m[m
+[HM           [1m(cd[0m [1m/tmp)[0m[m
+[HM[m
+[HM       environment, such as one of the following:[m
+[HM       shell regular built-in. If it is called in a subshell or  separate  utility  execution[m
+[HM       Since  [4mcd[24m  affects the current shell execution environment, it is always provided as a[m
+[HM[1mAPPLICATION[0m [1mUSAGE[0m[m
+[HM[m
+[HM       [4mThe[24m [4mfollowing[24m [4msections[24m [4mare[24m [4minformative.[24m[m
+[HM[m
+[HM       The working directory shall remain unchanged.[m
+[HM[1mCONSEQUENCES[0m [1mOF[0m [1mERRORS[0m[m
+[HM[m
+[HM       >0    An error occurred.[m
+[HM[m
+[HM        0    The directory was successfully changed.[m
+[HM[m
+[47;1H
+[K[7m Manual page cd(1posix) line 200/291 83% (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K55[K~~
+[K[HM       The following exit values shall be returned:[m
+[HM[1mEXIT[0m [1mSTATUS[0m[m
+[HM[m
+[HM       None.[m
+[HM[1mEXTENDED[0m [1mDESCRIPTION[0m[m
+[HM[m
+[HM       None.[m
+[HM[1mOUTPUT[0m [1mFILES[0m[m
+[HM[m
+[HM       The standard error shall be used only for diagnostic messages.[m
+[HM[1mSTDERR[0m[m
+[HM[m
+[HM       Otherwise, there shall be no output.[m
+[HM[m
+[HM           [1m"%s
+",[0m [1m<[0m[4mnew[24m [4mdirectory[24m>[m
+[HM[m
+[HM       lows:[m
+[HM       pathname of the new working directory shall be written to the standard output as  fol‐[m
+[HM       If  a  non-empty  directory  name from [4mCDPATH[24m is used, or if [4mcd[24m [1m−[0m is used, an absolute[m
+[HM[1mSTDOUT[0m[m
+[HM[m
+[HM       Default.[m
+[HM[1mASYNCHRONOUS[0m [1mEVENTS[0m[m
+[HM[m
+[HM                 tion sets or unsets the value of [4mPWD[24m, the behavior of [4mcd[24m is unspecified.[m;1705265116
+[HM       [4mPWD[24m       This variable shall be set as specified in the DESCRIPTION. If  an  applica‐[m
+[HM[m
+[HM       [4mOLDPWD[24m    A pathname of the previous working directory, used by [4mcd[24m [1m−[0m.[m
+[HM[m
+[HM                 [4mSAGES[24m.[m
+[HM       [4mNLSPATH[24m   Determine  the  location  of  message catalogs for the processing of [4mLC_MES‐[24m[m
+[HM[m
+[HM                 of diagnostic messages written to standard error.[m
+[HM                 Determine the locale that should be used to affect the format  and  contents[m
+[HM       [4mLC_MESSAGES[24m[m
+[HM[m
+[HM                 acters in arguments).[m
+[HM                 data  as characters (for example, single-byte as opposed to multi-byte char‐[m
+[HM       [4mLC_CTYPE[24m  Determine the locale for the interpretation of sequences of  bytes  of  text[m
+[HM[m
+[HM                 internationalization variables.[m
+[HM       [4mLC_ALL[24m    If  set  to  a  non-empty string value, override the values of all the other[m
+[HM[m
+[HM                 tion variables used to determine the values of locale categories.)[m
+[HM                 [4m8.2[24m, [4mInternationalization[24m [4mVariables[24m for the precedence of  internationaliza‐[m
+[HM                 unset  or  null.  (See  the Base Definitions volume of POSIX.1‐2008, [4mSection[24m[m
+[47;1H
+[K[7m Manual page cd(1posix) line 154/291 70% (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K55[K~~
+[K[HM       [4mLANG[24m      Provide a default value for  the  internationalization  variables  that  are[m
+[HM[m
+[HM       [4mHOME[24m      The name of the directory, used when no [4mdirectory[24m operand is specified.[m
+[HM[m
+[HM                 treated as if it were an empty string.[m
+[HM                 name  represents  the  current  directory. If [4mCDPATH[24m is not set, it shall be[m
+[HM                 described in the DESCRIPTION. An empty string in place of a directory  path‐[m
+[HM                 utility  shall  use  this  list  in  its attempt to change the directory, as[m
+[HM       [4mCDPATH[24m    A <colon>-separated list of pathnames that  refer  to  directories.  The  [4mcd[24m[m
+[HM[m
+[HM       The following environment variables shall affect the execution of [4mcd[24m:[m
+[HM[1mENVIRONMENT[0m [1mVARIABLES[0m[m
+[HM[m
+[HM       None.[m
+[HM[1mINPUT[0m [1mFILES[0m[m
+[HM[m
+[HM       Not used.[m
+[HM[1mSTDIN[0m[m
+[HM[m
+[HM                 which changes to the previous working directory and then writes its name.[m
+[HM[m
+[HM                     [1mcd[0m [1m"$OLDPWD"[0m [1m&&[0m [1mpwd[0m[m
+[HM[m
+[HM                 mand:[m
+[HM       −         When a <hyphen> is used as the operand, this shall be equivalent to the com‐[m
+[HM[m
+[HM                 is an empty string, the results are unspecified.[m
+[HM                 on the [1m−L[0m option and the [4mCDPATH[24m and [4mPWD[24m environment variables. If  [4mdirectory[24m[m
+[HM                 working  directory.  The interpretation of a relative pathname by [4mcd[24m depends[m
+[HM       [4mdirectory[24m An absolute or relative pathname of the directory that shall become the  new[m
+[HM[m
+[HM       The following operands shall be supported:[m
+[HM[1mOPERANDS[0m[m
+[HM[m
+[HM       dot-dot logically; see the DESCRIPTION.[m
+[HM       all  others  ignored.  If neither [1m−L[0m nor [1m−P[0m is specified, the operand shall be handled[m
+[HM       If both [1m−L[0m and [1m−P[0m options are specified, the last of these options shall be  used  and[m
+[HM[m
+[HM                 DESCRIPTION).[m
+[HM                 resolved  before  dot-dot  components  are  processed  (see  step  7. in the[m
+[HM       [1m−P[0m        Handle the operand dot-dot physically; symbolic  link  components  shall  be[m
+[HM[m
+[HM                 the DESCRIPTION).[m
+[HM                 resolved  before  dot-dot  components are processed (see steps 8.  and 9. in[m
+[HM       [1m−L[0m        Handle the operand dot-dot logically; symbolic link components shall not  be[m
+[HM[m
+[47;1H
+[K[7m Manual page cd(1posix) line 108/291 58% (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K55[K~~
+[K[HM       The following options shall be supported by the implementation:[m
+[HM[m
+[HM       [4m12.2[24m, [4mUtility[24m [4mSyntax[24m [4mGuidelines[24m.[m
+[HM       The  [4mcd[24m  utility shall conform to the Base Definitions volume of POSIX.1‐2008, [4mSection[24m[m
+[HM[1mOPTIONS[0m[m
+[HM[m
+[HM       tory (that is the current working directory immediately prior to the call to [4mcd[24m).[m
+[HM       [4mOLDPWD[24m environment variable shall also be set to the value of the old  working  direc‐[m
+[HM       If,  during the execution of the above steps, the [4mPWD[24m environment variable is set, the[m
+[HM[m
+[HM           the [4mPWD[24m environment variable is unspecified.[m
+[HM           ent of that directory, to determine the current working directory,  the  value  of[m
+[HM           [4mpwd[24m  [1m−P[0m.  If there is insufficient permission on the new directory, or on any par‐[m
+[HM           the [4mPWD[24m environment variable shall be set to the string that would  be  output  by[m
+[HM           (i.e.,  before  conversion to a relative pathname). If the [1m−P[0m option is in effect,[m
+[HM           ronment variable shall be set to the value that [1mcurpath[0m had on  entry  to  step  9[m
+[HM           this  step shall not be executed. If the [1m−P[0m option is not in effect, the [4mPWD[24m envi‐[m
+[HM           the [4mcd[24m utility shall display an appropriate error message  and  the  remainder  of[m
+[HM           called  with  [1mcurpath[0m  as the [4mpath[24m argument. If these actions fail for any reason,[m
+[HM       10. The [4mcd[24m utility shall then perform  actions  equivalent  to  the  [4mchdir[24m()  function[m
+[HM[m
+[HM           [4mdirectory[24m operand was longer than {PATH_MAX} bytes.[m;1705265116
+[HM           also  apply  this conversion if [1mcurpath[0m is not longer than {PATH_MAX} bytes or the[m
+[HM           sidered possible under other circumstances  is  unspecified.  Implementations  may[m
+[HM           already  have  one, is an initial substring of [1mcurpath[0m.  Whether or not it is con‐[m
+[HM           ered possible if the value of [4mPWD[24m, with a trailing <slash> added if  it  does  not[m
+[HM           equivalent  relative pathname if possible. This conversion shall always be consid‐[m
+[HM           nating null), then [1mcurpath[0m shall be converted from  an  absolute  pathname  to  an[m
+[HM           the  [4mdirectory[24m  operand was not longer than {PATH_MAX} bytes (including the termi‐[m
+[HM        9. If [1mcurpath[0m is longer than {PATH_MAX} bytes (including the  terminating  null)  and[m
+[HM[m
+[HM               steps shall be taken.[m
+[HM               as a result of this canonicalization, the [1mcurpath[0m variable is null, no further[m
+[HM               replacing three or more leading <slash> characters with a single <slash>.  If,[m
+[HM               multiple non-leading consecutive <slash> characters with a single <slash>, and[m
+[HM               <slash> characters that are not also  leading  <slash>  characters,  replacing[m
+[HM            c. An  implementation  may  further  simplify  [1mcurpath[0m  by  removing any trailing[m
+[HM[m
+[HM                    dot-dot from the following component (if any) shall be deleted.[m
+[HM                    component from dot-dot, dot-dot, and all  <slash>  characters  separating[m
+[HM               ii.  The  preceding component, all <slash> characters separating the preceding[m
+[HM[m
+[HM                    shall be taken.[m
+[HM                    utility shall display an appropriate error message and no  further  steps[m
+[HM                    resolution  with  symbolic  links  followed)  to a directory, then the [4mcd[24m[m
+[HM                i.  If the preceding component does not refer (in  the  context  of  pathname[m
+[47;1H
+[K[7m Manual page cd(1posix) line 62/291 43% (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K55[K~~
+[K[HM[m
+[HM               ther root nor dot-dot, then:[m
+[HM            b. For  each  dot-dot component, if there is a preceding component and it is nei‐[m
+[HM[m
+[HM               component shall be deleted.[m
+[HM            a. Dot components and any <slash> characters that separate  them  from  the  next[m
+[HM[m
+[HM           ing each component from beginning to end, in sequence:[m
+[HM        8. The  [1mcurpath[0m value shall then be converted to canonical form as follows, consider‐[m
+[HM[m
+[HM           character, and [1mcurpath[0m.[m
+[HM           value of [4mPWD[24m, a <slash> character if the value of [4mPWD[24m did not end with  a  <slash>[m
+[HM           a  <slash> character, set [1mcurpath[0m to the string formed by the concatenation of the[m
+[HM        7. If the [1m−P[0m option is in effect, proceed to step 10. If [1mcurpath[0m does not begin  with[m
+[HM[m
+[HM        6. Set [1mcurpath[0m to the [4mdirectory[24m operand.[m
+[HM[m;1705265116
+[HM           this step with the next pathname in [4mCDPATH[24m until all pathnames have been tested.[m
+[HM           directory,  set  [1mcurpath[0m  to  that string and proceed to step 7. Otherwise, repeat[m
+[HM           names a directory. In either case, if  the  resulting  string  names  an  existing[m
+[HM           is  null,  test  if the concatenation of dot, a <slash> character, and the operand[m
+[HM           a <slash> character, and the [4mdirectory[24m operand names a directory. If the  pathname[m
+[HM           catenation of that pathname, a <slash> character if that pathname did not end with[m
+[HM           the ENVIRONMENT VARIABLES section) if the pathname is non-null, test if  the  con‐[m
+[HM        5. Starting with the first pathname in the <colon>-separated pathnames of [4mCDPATH[24m (see[m
+[HM[m
+[HM           6.[m
+[HM        4. If the first component of the [4mdirectory[24m operand is dot or dot-dot, proceed to step[m
+[HM[m
+[HM           and and proceed to step 7.[m
+[HM        3. If the [4mdirectory[24m operand begins with a <slash> character, set [1mcurpath[0m to the oper‐[m
+[HM[m
+[HM           environment variable was specified as the [4mdirectory[24m operand.[m
+[HM           non-empty value, the [4mcd[24m utility shall behave as if the directory named in the [4mHOME[24m[m
+[HM        2. If  no  [4mdirectory[24m  operand  is given and the [4mHOME[24m environment variable is set to a[m
+[HM[m
+[HM           shall be taken.[m
+[HM           undefined, the default behavior is implementation-defined  and  no  further  steps[m
+[HM        1. If  no  [4mdirectory[24m  operand  is given and the [4mHOME[24m environment variable is empty or[m
+[HM[m
+[HM       requirement that [1mcurpath[0m be made visible to the application.)[m
+[HM       diate value used to simplify the description of the algorithm used by [4mcd[24m.  There is no[m
+[HM       steps  in sequence. (In the following steps, the symbol [1mcurpath[0m represents an interme‐[m
+[HM       ronment (see [4mSection[24m [4m2.12[24m, [4mShell[24m [4mExecution[24m [4mEnvironment[24m)  by  executing  the  following[m
+[HM       The [4mcd[24m utility shall change the working directory of the current shell execution envi‐[m
+[HM[1mDESCRIPTION[0m[m
+[47;1H
+[K[7m Manual page cd(1posix) line 16/291 22% (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K55[K~~
+[K[HM[m
+[HM       cd −[m
+[HM[m
+[HM       cd [1m[[0m−L|−P[1m][0m [1m[[0m[4mdirectory[24m[1m][0m[m
+[HM[1mSYNOPSIS[0m[m
+[HM[m
+[HM       cd — change the working directory[m
+[HM[1mNAME[0m[m
+[HM[m
+[HM       of Linux behavior), or the interface may not be implemented on Linux.[m
+[HM       of this interface may differ (consult the corresponding Linux manual page for  details[m
+[HM       This  manual  page is part of the POSIX Programmer's Manual.  The Linux implementation[m
+[HM[1mPROLOG[0m[m
+[HM[m
+[HMCD(1POSIX)                        POSIX Programmer's Manual                        CD(1POSIX)[m
+[47;1H
+[K[7m Manual page cd(1posix) line 1/291 17% (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K55[K~~
+[K
+[K[7m Manual page cd(1posix) line 1/291 17% (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K55[K~~
+[K
+[K[7m Manual page cd(1posix) line 1/291 17% (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K55[K~~
+[K
+[K[7m Manual page cd(1posix) line 1/291 17% (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K55[K~~
+[K
+[K[7m Manual page cd(1posix) line 1/291 17% (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K55[K~~
+[K
+[K[7m Manual page cd(1posix) line 1/291 17% (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K55[K~~
+[K
+[K[7m Manual page cd(1posix) line 1/291 17% (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K55[K~~
+[K
+[K[7m Manual page cd(1posix) line 1/291 17% (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K55[K~~
+[K
+[K[7m Manual page cd(1posix) line 1/291 17% (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K55[K~~
+[K
+[K[7m Manual page cd(1posix) line 1/291 17% (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K55[K~~
+[K
+[K[7m Manual page cd(1posix) line 1/291 17% (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K55[K~~
+[K
+[K[7m Manual page cd(1posix) line 1/291 17% (press h for help or q to quit)[27m[K
+[K[?1l>[?1049l]0;devuser10@NAT: ~[01;32mdevuser10@NAT[00m:[01;34m~[00m$ cd ./[K[K/home;1705265121
+]0;devuser10@NAT: /home[01;32mdevuser10@NAT[00m:[01;34m/home[00m$ cd ~;1705265123
+]0;devuser10@NAT: ~[01;32mdevuser10@NAT[00m:[01;34m~[00m$ clear;1705265124
+[3;J[H[2J]0;devuser10@NAT: ~[01;32mdevuser10@NAT[00m:[01;34m~[00m$ man netstat;1705265128
+[?1049h[?1h=
+NETSTAT(8)                        Linux Programmer's Manual                        NETSTAT(8)[m;1705265128
+[m;1705265128
+[1mNAME[0m[m
+       netstat  - Print network connections, routing tables, interface statistics, masquerade[m;1705265128
+       connections, and multicast memberships[m
+[m
+[1mSYNOPSIS[0m[m
+       [1mnetstat[0m [[4maddress_family_options[24m]  [[1m--tcp[0m|[1m-t[0m]  [[1m--udp[0m|[1m-u[0m]  [[1m--raw[0m|[1m-w[0m]  [[1m--listening[0m|[1m-l[0m][m
+       [[1m--all[0m|[1m-a[0m]   [[1m--numeric[0m|[1m-n[0m]   [[1m--numeric-hosts[0m]   [[1m--numeric-ports[0m]  [[1m--numeric-users[0m][m
+       [[1m--symbolic[0m|[1m-N[0m] [[1m--extend[0m|[1m-e[0m[[1m--extend[0m|[1m-e][0m] [[1m--timers[0m|[1m-o[0m] [[1m--program[0m|[1m-p[0m] [[1m--verbose[0m|[1m-v[0m][m
+       [[1m--continuous[0m|[1m-c][0m[m
+[m
+       [1mnetstat[0m   {[1m--route[0m|[1m-r[0m}   [[4maddress_family_options[24m]  [[1m--extend[0m|[1m-e[0m[[1m--extend[0m|[1m-e][0m]  [[1m--ver‐[0m[m
+       [1mbose[0m|[1m-v[0m] [[1m--numeric[0m|[1m-n[0m] [[1m--numeric-hosts[0m] [[1m--numeric-ports[0m] [[1m--numeric-users[0m]  [[1m--con‐[0m[m
+       [1mtinuous[0m|[1m-c][0m[m
+[m
+       [1mnetstat[0m {[1m--interfaces[0m|[1m-i[0m} [[1m--all[0m|[1m-a[0m] [[1m--extend[0m|[1m-e[0m[[1m--extend[0m|[1m-e][0m] [[1m--verbose[0m|[1m-v[0m] [[1m--pro‐[0m[m
+       [1mgram[0m|[1m-p[0m] [[1m--numeric[0m|[1m-n[0m] [[1m--numeric-hosts[0m] [[1m--numeric-ports[0m] [[1m--numeric-users[0m]  [[1m--con‐[0m[m
+       [1mtinuous[0m|[1m-c][0m[m
+[m
+       [1mnetstat[0m     {[1m--groups[0m|[1m-g[0m}     [[1m--numeric[0m|[1m-n[0m]    [[1m--numeric-hosts[0m]    [[1m--numeric-ports[0m][m
+       [[1m--numeric-users[0m] [[1m--continuous[0m|[1m-c][0m[m
+[m
+       [1mnetstat[0m    {[1m--masquerade[0m|[1m-M[0m}    [[1m--extend[0m|[1m-e[0m]     [[1m--numeric[0m|[1m-n[0m]     [[1m--numeric-hosts[0m][m
+       [[1m--numeric-ports[0m] [[1m--numeric-users[0m] [[1m--continuous[0m|[1m-c][0m[m
+[m
+       [1mnetstat[0m {[1m--statistics[0m|[1m-s[0m} [[1m--tcp[0m|[1m-t[0m] [[1m--udp[0m|[1m-u[0m] [[1m--raw[0m|[1m-w[0m][m
+[m
+       [1mnetstat[0m {[1m--version[0m|[1m-V[0m}[m
+[m
+       [1mnetstat[0m {[1m--help[0m|[1m-h[0m}[m
+[m
+       [4maddress_family_options[24m:[m
+[m
+       [[1m-4[0m]      [[1m-6[0m]     [[1m--protocol=[0m{[1minet[0m,[1munix[0m,[1mipx[0m,[1max25[0m,[1mnetrom[0m,[1mddp[0m}[,[1m...][0m]      [[1m--unix[0m|[1m-x[0m][m
+       [[1m--inet[0m|[1m--ip[0m] [[1m--ax25[0m] [[1m--ipx[0m] [[1m--netrom[0m] [[1m--ddp[0m][m
+[m
+[1mDESCRIPTION[0m[m
+       [1mNetstat[0m prints information about the Linux networking subsystem.  The type of informa‐[m
+       tion printed is controlled by the first argument, as follows:[m
+[m
+   [1m(none)[0m[m
+       By default, [1mnetstat[0m displays a list of open sockets.  If you don't specify any address[m
+       families, then the active sockets of all configured address families will be printed.[m
+[m
+   [1m--route[0m [1m,[0m [1m-r[0m[m
+[7m Manual page netstat(8) line 1 (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K66[K~~
+[K       Display the kernel routing tables. See the description in [1mroute[0m(8) for details.   [1mnet‐[0m[m
+       [1mstat[0m [1m-r[0m and [1mroute[0m [1m-e[0m produce the same output.[m
+[m
+   [1m--groups[0m [1m,[0m [1m-g[0m[m
+       Display multicast group membership information for IPv4 and IPv6.[m
+[m
+   [1m--interfaces,[0m [1m-i[0m[m
+       Display a table of all network interfaces.[m
+[m
+   [1m--masquerade[0m [1m,[0m [1m-M[0m[m
+       Display a list of masqueraded connections.[m
+[m
+   [1m--statistics[0m [1m,[0m [1m-s[0m[m
+       Display summary statistics for each protocol.[m
+[m
+[1mOPTIONS[0m[m
+   [1m--verbose[0m [1m,[0m [1m-v[0m[m
+       Tell the user what is going on by being verbose. Especially print some useful informa‐[m
+       tion about unconfigured address families.[m
+[m
+   [1m--wide[0m [1m,[0m [1m-W[0m[m
+       Do not truncate IP addresses by using output as wide as needed. This is  optional  for[m
+       now to not break existing scripts.[m
+[m
+   [1m--numeric[0m [1m,[0m [1m-n[0m[m
+       Show  numerical  addresses  instead of trying to determine symbolic host, port or user[m
+       names.[m
+[m
+   [1m--numeric-hosts[0m[m
+       shows numerical host addresses but does not affect the  resolution  of  port  or  user[m
+       names.[m
+[m
+   [1m--numeric-ports[0m[m
+       shows numerical port numbers but does not affect the resolution of host or user names.[m
+[m
+   [1m--numeric-users[0m[m
+       shows numerical user IDs but does not affect the resolution of host or port names.[m
+[m
+   [1m--protocol=[0m[4mfamily[24m , [1m-A[0m[m
+       Specifies  the  address families (perhaps better described as low level protocols) for[m
+       which connections are to be shown.  [4mfamily[24m is a comma (',') separated list of  address[m
+       family keywords like [1minet[0m, [1munix[0m, [1mipx[0m, [1max25[0m, [1mnetrom[0m, and [1mddp[0m.  This has the same effect[m
+       as using the [1m--inet[0m, [1m--unix[0m ([1m-x[0m), [1m--ipx[0m, [1m--ax25[0m, [1m--netrom[0m, and [1m--ddp[0m options.[m
+[m
+       The address family [1minet[0m includes raw, udp and tcp protocol sockets.[m
+[m
+[7m Manual page netstat(8) line 47 (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K66[K~~
+[K   [1m-c,[0m [1m--continuous[0m[m
+       This will cause [1mnetstat[0m to print the selected information every second continuously.[m
+[m
+   [1m-e,[0m [1m--extend[0m[m
+       Display additional information.  Use this option twice for maximum detail.[m
+[m
+   [1m-o,[0m [1m--timers[0m[m
+       Include information related to networking timers.[m
+[m
+   [1m-p,[0m [1m--program[0m[m
+       Show the PID and name of the program to which each socket belongs.[m
+[m
+   [1m-l,[0m [1m--listening[0m[m
+       Show only listening sockets.  (These are omitted by default.)[m
+[m
+   [1m-a,[0m [1m--all[0m[m
+       Show both listening and non-listening sockets.  With  the  [1m--interfaces[0m  option,  show[m
+       interfaces that are not up[m
+[m
+   [1m-F[0m[m
+       Print routing information from the FIB.  (This is the default.)[m
+[m
+   [1m-C[0m[m
+       Print routing information from the route cache.[m
+[m
+[1mOUTPUT[0m[m
+   [1mActive[0m [1mInternet[0m [1mconnections[0m (TCP, UDP, raw)[m
+   [1mProto[0m[m
+       The protocol (tcp, udp, raw) used by the socket.[m
+[m
+   [1mRecv-Q[0m[m
+       The count of bytes not copied by the user program connected to this socket.[m
+[m
+   [1mSend-Q[0m[m
+       The count of bytes not acknowledged by the remote host.[m
+[m
+   [1mLocal[0m [1mAddress[0m[m
+       Address  and  port  number  of the local end of the socket.  Unless the [1m--numeric[0m ([1m-n[0m)[m
+       option is specified, the socket address is resolved to its canonical host name (FQDN),[m
+       and the port number is translated into the corresponding service name.[m
+[m
+   [1mForeign[0m [1mAddress[0m[m
+       Address  and  port  number  of  the  remote  end  of  the socket.  Analogous to "Local[m
+       Address."[m
+[m
+   [1mState[0m[m
+[7m Manual page netstat(8) line 93 (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K66[K~~
+[K       The state of the socket. Since there are no states in raw mode and usually  no  states[m
+       used  in  UDP, this column may be left blank. Normally this can be one of several val‐[m
+       ues:[m
+[m
+       [4mESTABLISHED[24m[m
+              The socket has an established connection.[m
+[m
+       [4mSYN_SENT[24m[m
+              The socket is actively attempting to establish a connection.[m
+[m
+       [4mSYN_RECV[24m[m
+              A connection request has been received from the network.[m
+[m
+       [4mFIN_WAIT1[24m[m
+              The socket is closed, and the connection is shutting down.[m
+[m
+       [4mFIN_WAIT2[24m[m
+              Connection is closed, and the socket is waiting for a shutdown from the  remote[m
+              end.[m
+[m
+       [4mTIME_WAIT[24m[m;1705265130
+              The socket is waiting after close to handle packets still in the network.[m
+[m
+       [4mCLOSE[24m  The socket is not being used.[m
+[m
+       [4mCLOSE_WAIT[24m[m
+              The remote end has shut down, waiting for the socket to close.[m
+[m
+       [4mLAST_ACK[24m[m
+              The  remote  end  has shut down, and the socket is closed. Waiting for acknowl‐[m
+              edgement.[m
+[m
+       [4mLISTEN[24m The socket is  listening  for  incoming  connections.   Such  sockets  are  not[m
+              included  in  the  output unless you specify the [1m--listening[0m ([1m-l[0m) or [1m--all[0m ([1m-a[0m)[m
+              option.[m
+[m
+       [4mCLOSING[24m[m
+              Both sockets are shut down but we still don't have all our data sent.[m
+[m
+       [4mUNKNOWN[24m[m
+              The state of the socket is unknown.[m
+[m
+   [1mUser[0m[m
+       The username or the user id (UID) of the owner of the socket.[m
+[m
+   [1mPID/Program[0m [1mname[0m[m
+[7m Manual page netstat(8) line 139 (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K66[K~~
+[K       Slash-separated pair of the process id (PID) and process name of the process that owns[m
+       the  socket.   [1m--program[0m  causes this column to be included.  You will also need [4msupe‐[24m[m
+       [4mruser[24m privileges to see this information on sockets you don't own.   This  identifica‐[m
+       tion information is not yet available for IPX sockets.[m
+[m
+   [1mTimer[0m[m
+       (this needs to be written)[m
+[m
+   [1mActive[0m [1mUNIX[0m [1mdomain[0m [1mSockets[0m[m
+   [1mProto[0m[m
+       The protocol (usually unix) used by the socket.[m
+[m
+   [1mRefCnt[0m[m
+       The reference count (i.e. attached processes via this socket).[m
+[m
+   [1mFlags[0m[m
+       The  flags  displayed is SO_ACCEPTON (displayed as [1mACC[0m), SO_WAITDATA ([1mW[0m) or SO_NOSPACE[m
+       ([1mN[0m).  SO_ACCECPTON is used on unconnected sockets if their corresponding processes are[m
+       waiting for a connect request. The other flags are not of normal interest.[m
+[m
+   [1mType[0m[m
+       There are several types of socket access:[m
+[m
+       [4mSOCK_DGRAM[24m[m
+              The socket is used in Datagram (connectionless) mode.[m
+[m
+       [4mSOCK_STREAM[24m[m
+              This is a stream (connection) socket.[m
+[m
+       [4mSOCK_RAW[24m[m
+              The socket is used as a raw socket.[m
+[m
+       [4mSOCK_RDM[24m[m
+              This one serves reliably-delivered messages.[m
+[m
+       [4mSOCK_SEQPACKET[24m[m
+              This is a sequential packet socket.[m
+[m
+       [4mSOCK_PACKET[24m[m
+              Raw interface access socket.[m
+[m
+       [4mUNKNOWN[24m[m
+              Who ever knows what the future will bring us - just fill in here :-)[m
+[m
+   [1mState[0m[m
+       This field will contain one of the following Keywords:[m
+[7m Manual page netstat(8) line 185 (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K66[K~~
+[K[m
+       [4mFREE[24m   The socket is not allocated[m
+[m
+       [4mLISTENING[24m[m
+              The  socket  is  listening  for  a  connection  request.  Such sockets are only[m
+              included in the output if you  specify  the  [1m--listening[0m  ([1m-l[0m)  or  [1m--all[0m  ([1m-a[0m)[m
+              option.[m
+[m
+       [4mCONNECTING[24m[m
+              The socket is about to establish a connection.[m
+[m
+       [4mCONNECTED[24m[m
+              The socket is connected.[m
+[m
+       [4mDISCONNECTING[24m[m
+              The socket is disconnecting.[m
+[m
+       [4m(empty)[24m[m
+              The socket is not connected to another one.[m
+[m
+       [4mUNKNOWN[24m[m
+              This state should never happen.[m
+[m
+   [1mPID/Program[0m [1mname[0m[m
+       Process  ID (PID) and process name of the process that has the socket open.  More info[m
+       available in [1mActive[0m [1mInternet[0m [1mconnections[0m section written above.[m
+[m
+   [1mPath[0m[m
+       This is the path name as which the corresponding processes attached to the socket.[m
+[m
+   [1mActive[0m [1mIPX[0m [1msockets[0m[m
+       (this needs to be done by somebody who knows it)[m
+[m
+   [1mActive[0m [1mNET/ROM[0m [1msockets[0m[m
+       (this needs to be done by somebody who knows it)[m
+[m
+   [1mActive[0m [1mAX.25[0m [1msockets[0m[m
+       (this needs to be done by somebody who knows it)[m
+[m
+[1mNOTES[0m[m
+       Starting with Linux release 2.2 [1mnetstat[0m [1m-i[0m does  not  show  interface  statistics  for[m
+       alias interfaces. To get per alias interface counters you need to setup explicit rules[m
+       using the [1mipchains(8)[0m command.[m
+[m
+[1mFILES[0m[m
+       [4m/etc/services[24m -- The services translation file[m
+[7m Manual page netstat(8) line 231 (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K66[K~~
+[K[m
+       [4m/proc[24m -- Mount point for the proc filesystem, which  gives  access  to  kernel  status[m
+       information via the following files.[m
+[m
+       [4m/proc/net/dev[24m -- device information[m
+[m
+       [4m/proc/net/raw[24m -- raw socket information[m
+[m
+       [4m/proc/net/tcp[24m -- TCP socket information[m
+[m
+       [4m/proc/net/udp[24m -- UDP socket information[m
+[m
+       [4m/proc/net/igmp[24m -- IGMP multicast information[m
+[m
+       [4m/proc/net/unix[24m -- Unix domain socket information[m
+[m
+       [4m/proc/net/ipx[24m -- IPX socket information[m
+[m
+       [4m/proc/net/ax25[24m -- AX25 socket information[m
+[m
+       [4m/proc/net/appletalk[24m -- DDP (appletalk) socket information[m
+[m
+       [4m/proc/net/nr[24m -- NET/ROM socket information[m
+[m
+       [4m/proc/net/route[24m -- IP routing information[m
+[m
+       [4m/proc/net/ax25_route[24m -- AX25 routing information[m
+[m
+       [4m/proc/net/ipx_route[24m -- IPX routing information[m
+[m
+       [4m/proc/net/nr_nodes[24m -- NET/ROM nodelist[m
+[m
+       [4m/proc/net/nr_neigh[24m -- NET/ROM neighbours[m
+[m
+       [4m/proc/net/ip_masquerade[24m -- masqueraded connections[m
+[m
+       [4m/proc/net/snmp[24m -- statistics[m
+[m
+[1mSEE[0m [1mALSO[0m[m
+       [1mroute[0m(8), [1mifconfig[0m(8), [1mipchains[0m(8), [1miptables[0m(8), [1mproc[0m(5)[m
+[m
+[1mBUGS[0m[m
+       Occasionally  strange information may appear if a socket changes as it is viewed. This[m
+       is unlikely to occur.[m
+[m
+[1mAUTHORS[0m[m
+[7m Manual page netstat(8) line 277 (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K66[K~~
+[K       The netstat user interface was written by Fred Baumgarten <dc6iq@insu1.etec.uni-karls‐[m
+       ruhe.de>, the man page basically by Matt Welsh <mdw@tc.cornell.edu>. It was updated by[m
+       Alan Cox <Alan.Cox@linux.org> but could do with a bit more work.  It was updated again[m
+       by Tuan Hoang <tqhoang@bigfoot.com>.[m
+       The man page and the command included in the net-tools package is totally rewritten by[m
+       Bernd Eckenfels <ecki@linux.de>.[m
+[m
+net-tools                                 2008-11-16                               NETSTAT(8)[m
+[7m Manual page netstat(8) line 285/330 (END) (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K66[K~~
+[K
+[K[7m Manual page netstat(8) line 285/330 (END) (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K66[K~~
+[K
+[K[7m Manual page netstat(8) line 285/330 (END) (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K66[K~~
+[K
+[K[7m Manual page netstat(8) line 285/330 (END) (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K66[K~~
+[K
+[K[7m Manual page netstat(8) line 285/330 (END) (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K66[K~~
+[K
+[K[7m Manual page netstat(8) line 285/330 (END) (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K66[K~~
+[K
+[K[7m Manual page netstat(8) line 285/330 (END) (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K55[K~~
+[K[HM[m
+[HM       [4m/proc/net/raw[24m -- raw socket information[m
+[HM[m
+[HM       [4m/proc/net/dev[24m -- device information[m
+[HM[m
+[HM       information via the following files.[m
+[HM       [4m/proc[24m -- Mount point for the proc filesystem, which  gives  access  to  kernel  status[m
+[HM[m
+[HM       [4m/etc/services[24m -- The services translation file[m
+[HM[1mFILES[0m[m
+[HM[m
+[HM       using the [1mipchains(8)[0m command.[m
+[HM       alias interfaces. To get per alias interface counters you need to setup explicit rules[m
+[HM       Starting with Linux release 2.2 [1mnetstat[0m [1m-i[0m does  not  show  interface  statistics  for[m
+[HM[1mNOTES[0m[m
+[HM[m
+[HM       (this needs to be done by somebody who knows it)[m
+[HM   [1mActive[0m [1mAX.25[0m [1msockets[0m[m
+[HM[m
+[HM       (this needs to be done by somebody who knows it)[m
+[HM   [1mActive[0m [1mNET/ROM[0m [1msockets[0m[m
+[HM[m
+[HM       (this needs to be done by somebody who knows it)[m
+[HM   [1mActive[0m [1mIPX[0m [1msockets[0m[m
+[HM[m
+[HM       This is the path name as which the corresponding processes attached to the socket.[m
+[HM   [1mPath[0m[m
+[HM[m
+[HM       available in [1mActive[0m [1mInternet[0m [1mconnections[0m section written above.[m
+[HM       Process  ID (PID) and process name of the process that has the socket open.  More info[m
+[HM   [1mPID/Program[0m [1mname[0m[m
+[HM[m
+[HM              This state should never happen.[m
+[HM       [4mUNKNOWN[24m[m
+[HM[m
+[HM              The socket is not connected to another one.[m
+[HM       [4m(empty)[24m[m
+[HM[m
+[HM              The socket is disconnecting.[m
+[HM       [4mDISCONNECTING[24m[m
+[HM[m
+[HM              The socket is connected.[m
+[HM       [4mCONNECTED[24m[m
+[HM[m
+[HM              The socket is about to establish a connection.[m
+[HM       [4mCONNECTING[24m[m
+[47;1H
+[K[7m Manual page netstat(8) line 239/330 87% (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K55[K~~
+[K[HM[m
+[HM              option.[m
+[HM              included in the output if you  specify  the  [1m--listening[0m  ([1m-l[0m)  or  [1m--all[0m  ([1m-a[0m)[m
+[HM              The  socket  is  listening  for  a  connection  request.  Such sockets are only[m
+[HM       [4mLISTENING[24m[m
+[HM[m
+[HM       [4mFREE[24m   The socket is not allocated[m
+[HM[m
+[HM       This field will contain one of the following Keywords:[m
+[HM   [1mState[0m[m
+[HM[m
+[HM              Who ever knows what the future will bring us - just fill in here :-)[m
+[HM       [4mUNKNOWN[24m[m
+[HM[m
+[HM              Raw interface access socket.[m
+[HM       [4mSOCK_PACKET[24m[m
+[HM[m
+[HM              This is a sequential packet socket.[m
+[HM       [4mSOCK_SEQPACKET[24m[m
+[HM[m
+[HM              This one serves reliably-delivered messages.[m
+[HM       [4mSOCK_RDM[24m[m
+[HM[m
+[HM              The socket is used as a raw socket.[m
+[HM       [4mSOCK_RAW[24m[m;1705265131
+[HM[m
+[HM              This is a stream (connection) socket.[m
+[HM       [4mSOCK_STREAM[24m[m
+[HM[m
+[HM              The socket is used in Datagram (connectionless) mode.[m
+[HM       [4mSOCK_DGRAM[24m[m
+[HM[m
+[HM       There are several types of socket access:[m
+[HM   [1mType[0m[m
+[HM[m
+[HM       waiting for a connect request. The other flags are not of normal interest.[m
+[HM       ([1mN[0m).  SO_ACCECPTON is used on unconnected sockets if their corresponding processes are[m
+[HM       The  flags  displayed is SO_ACCEPTON (displayed as [1mACC[0m), SO_WAITDATA ([1mW[0m) or SO_NOSPACE[m
+[HM   [1mFlags[0m[m
+[HM[m
+[HM       The reference count (i.e. attached processes via this socket).[m
+[HM   [1mRefCnt[0m[m
+[HM[m
+[HM       The protocol (usually unix) used by the socket.[m
+[HM   [1mProto[0m[m
+[HM   [1mActive[0m [1mUNIX[0m [1mdomain[0m [1mSockets[0m[m
+[47;1H
+[K[7m Manual page netstat(8) line 193/330 75% (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K55[K~~
+[K[HM[m
+[HM       (this needs to be written)[m
+[HM   [1mTimer[0m[m
+[HM[m
+[HM       tion information is not yet available for IPX sockets.[m
+[HM       [4mruser[24m privileges to see this information on sockets you don't own.   This  identifica‐[m
+[HM       the  socket.   [1m--program[0m  causes this column to be included.  You will also need [4msupe‐[24m[m
+[HM       Slash-separated pair of the process id (PID) and process name of the process that owns[m
+[HM   [1mPID/Program[0m [1mname[0m[m
+[HM[m
+[HM       The username or the user id (UID) of the owner of the socket.[m
+[HM   [1mUser[0m[m
+[HM[m
+[HM              The state of the socket is unknown.[m
+[HM       [4mUNKNOWN[24m[m
+[HM[m
+[HM              Both sockets are shut down but we still don't have all our data sent.[m
+[HM       [4mCLOSING[24m[m
+[HM[m
+[HM              option.[m
+[HM              included  in  the  output unless you specify the [1m--listening[0m ([1m-l[0m) or [1m--all[0m ([1m-a[0m)[m
+[HM       [4mLISTEN[24m The socket is  listening  for  incoming  connections.   Such  sockets  are  not[m
+[HM[m
+[HM              edgement.[m
+[HM              The  remote  end  has shut down, and the socket is closed. Waiting for acknowl‐[m
+[HM       [4mLAST_ACK[24m[m
+[HM[m
+[HM              The remote end has shut down, waiting for the socket to close.[m
+[HM       [4mCLOSE_WAIT[24m[m
+[HM[m
+[HM       [4mCLOSE[24m  The socket is not being used.[m
+[HM[m
+[HM              The socket is waiting after close to handle packets still in the network.[m
+[HM       [4mTIME_WAIT[24m[m
+[HM[m
+[HM              end.[m
+[HM              Connection is closed, and the socket is waiting for a shutdown from the  remote[m
+[HM       [4mFIN_WAIT2[24m[m
+[HM[m
+[HM              The socket is closed, and the connection is shutting down.[m
+[HM       [4mFIN_WAIT1[24m[m
+[HM[m
+[HM              A connection request has been received from the network.[m
+[HM       [4mSYN_RECV[24m[m
+[HM[m
+[HM              The socket is actively attempting to establish a connection.[m
+[47;1H
+[K[7m Manual page netstat(8) line 147/330 64% (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K55[K~~
+[K[HM       [4mSYN_SENT[24m[m
+[HM[m
+[HM              The socket has an established connection.[m
+[HM       [4mESTABLISHED[24m[m
+[HM[m
+[HM       ues:[m
+[HM       used  in  UDP, this column may be left blank. Normally this can be one of several val‐[m
+[HM       The state of the socket. Since there are no states in raw mode and usually  no  states[m
+[HM   [1mState[0m[m
+[HM[m
+[HM       Address."[m
+[HM       Address  and  port  number  of  the  remote  end  of  the socket.  Analogous to "Local[m
+[HM   [1mForeign[0m [1mAddress[0m[m
+[HM[m
+[HM       and the port number is translated into the corresponding service name.[m
+[HM       option is specified, the socket address is resolved to its canonical host name (FQDN),[m
+[HM       Address  and  port  number  of the local end of the socket.  Unless the [1m--numeric[0m ([1m-n[0m)[m
+[HM   [1mLocal[0m [1mAddress[0m[m;1705265131
+[HM[m
+[HM       The count of bytes not acknowledged by the remote host.[m
+[HM   [1mSend-Q[0m[m
+[HM[m
+[HM       The count of bytes not copied by the user program connected to this socket.[m
+[HM   [1mRecv-Q[0m[m
+[HM[m
+[HM       The protocol (tcp, udp, raw) used by the socket.[m
+[HM   [1mProto[0m[m
+[HM   [1mActive[0m [1mInternet[0m [1mconnections[0m (TCP, UDP, raw)[m
+[HM[1mOUTPUT[0m[m
+[HM[m
+[HM       Print routing information from the route cache.[m
+[HM   [1m-C[0m[m
+[HM[m
+[HM       Print routing information from the FIB.  (This is the default.)[m
+[HM   [1m-F[0m[m
+[HM[m
+[HM       interfaces that are not up[m
+[HM       Show both listening and non-listening sockets.  With  the  [1m--interfaces[0m  option,  show[m
+[HM   [1m-a,[0m [1m--all[0m[m
+[HM[m
+[HM       Show only listening sockets.  (These are omitted by default.)[m
+[HM   [1m-l,[0m [1m--listening[0m[m
+[HM[m
+[HM       Show the PID and name of the program to which each socket belongs.[m
+[HM   [1m-p,[0m [1m--program[0m[m
+[HM[m
+[47;1H
+[K[7m Manual page netstat(8) line 101/330 52% (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K55[K~~
+[K[HM       Include information related to networking timers.[m
+[HM   [1m-o,[0m [1m--timers[0m[m
+[HM[m
+[HM       Display additional information.  Use this option twice for maximum detail.[m
+[HM   [1m-e,[0m [1m--extend[0m[m
+[HM[m
+[HM       This will cause [1mnetstat[0m to print the selected information every second continuously.[m
+[HM   [1m-c,[0m [1m--continuous[0m[m
+[HM[m
+[HM       The address family [1minet[0m includes raw, udp and tcp protocol sockets.[m
+[HM[m
+[HM       as using the [1m--inet[0m, [1m--unix[0m ([1m-x[0m), [1m--ipx[0m, [1m--ax25[0m, [1m--netrom[0m, and [1m--ddp[0m options.[m
+[HM       family keywords like [1minet[0m, [1munix[0m, [1mipx[0m, [1max25[0m, [1mnetrom[0m, and [1mddp[0m.  This has the same effect[m
+[HM       which connections are to be shown.  [4mfamily[24m is a comma (',') separated list of  address[m
+[HM       Specifies  the  address families (perhaps better described as low level protocols) for[m
+[HM   [1m--protocol=[0m[4mfamily[24m , [1m-A[0m[m
+[HM[m
+[HM       shows numerical user IDs but does not affect the resolution of host or port names.[m
+[HM   [1m--numeric-users[0m[m
+[HM[m
+[HM       shows numerical port numbers but does not affect the resolution of host or user names.[m
+[HM   [1m--numeric-ports[0m[m
+[HM[m
+[HM       names.[m
+[HM       shows numerical host addresses but does not affect the  resolution  of  port  or  user[m
+[HM   [1m--numeric-hosts[0m[m
+[HM[m
+[HM       names.[m
+[HM       Show  numerical  addresses  instead of trying to determine symbolic host, port or user[m
+[HM   [1m--numeric[0m [1m,[0m [1m-n[0m[m
+[HM[m
+[HM       now to not break existing scripts.[m
+[HM       Do not truncate IP addresses by using output as wide as needed. This is  optional  for[m
+[HM   [1m--wide[0m [1m,[0m [1m-W[0m[m
+[HM[m
+[HM       tion about unconfigured address families.[m
+[HM       Tell the user what is going on by being verbose. Especially print some useful informa‐[m
+[HM   [1m--verbose[0m [1m,[0m [1m-v[0m[m
+[HM[1mOPTIONS[0m[m
+[HM[m
+[HM       Display summary statistics for each protocol.[m
+[HM   [1m--statistics[0m [1m,[0m [1m-s[0m[m
+[HM[m
+[HM       Display a list of masqueraded connections.[m
+[HM   [1m--masquerade[0m [1m,[0m [1m-M[0m[m
+[HM[m
+[47;1H
+[K[7m Manual page netstat(8) line 55/330 41% (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K55[K~~
+[K[HM       Display a table of all network interfaces.[m
+[HM   [1m--interfaces,[0m [1m-i[0m[m
+[HM[m
+[HM       Display multicast group membership information for IPv4 and IPv6.[m
+[HM   [1m--groups[0m [1m,[0m [1m-g[0m[m
+[HM[m
+[HM       [1mstat[0m [1m-r[0m and [1mroute[0m [1m-e[0m produce the same output.[m
+[HM       Display the kernel routing tables. See the description in [1mroute[0m(8) for details.   [1mnet‐[0m[m
+[HM   [1m--route[0m [1m,[0m [1m-r[0m[m
+[HM[m
+[HM       families, then the active sockets of all configured address families will be printed.[m
+[HM       By default, [1mnetstat[0m displays a list of open sockets.  If you don't specify any address[m
+[HM   [1m(none)[0m[m
+[HM[m
+[HM       tion printed is controlled by the first argument, as follows:[m
+[HM       [1mNetstat[0m prints information about the Linux networking subsystem.  The type of informa‐[m
+[HM[1mDESCRIPTION[0m[m
+[HM[m
+[HM       [[1m--inet[0m|[1m--ip[0m] [[1m--ax25[0m] [[1m--ipx[0m] [[1m--netrom[0m] [[1m--ddp[0m][m
+[HM       [[1m-4[0m]      [[1m-6[0m]     [[1m--protocol=[0m{[1minet[0m,[1munix[0m,[1mipx[0m,[1max25[0m,[1mnetrom[0m,[1mddp[0m}[,[1m...][0m]      [[1m--unix[0m|[1m-x[0m][m
+[HM[m
+[HM       [4maddress_family_options[24m:[m
+[HM[m
+[HM       [1mnetstat[0m {[1m--help[0m|[1m-h[0m}[m
+[HM[m
+[HM       [1mnetstat[0m {[1m--version[0m|[1m-V[0m}[m
+[HM[m
+[HM       [1mnetstat[0m {[1m--statistics[0m|[1m-s[0m} [[1m--tcp[0m|[1m-t[0m] [[1m--udp[0m|[1m-u[0m] [[1m--raw[0m|[1m-w[0m][m
+[HM[m
+[HM       [[1m--numeric-ports[0m] [[1m--numeric-users[0m] [[1m--continuous[0m|[1m-c][0m[m
+[HM       [1mnetstat[0m    {[1m--masquerade[0m|[1m-M[0m}    [[1m--extend[0m|[1m-e[0m]     [[1m--numeric[0m|[1m-n[0m]     [[1m--numeric-hosts[0m][m
+[HM[m
+[HM       [[1m--numeric-users[0m] [[1m--continuous[0m|[1m-c][0m[m
+[HM       [1mnetstat[0m     {[1m--groups[0m|[1m-g[0m}     [[1m--numeric[0m|[1m-n[0m]    [[1m--numeric-hosts[0m]    [[1m--numeric-ports[0m][m
+[HM[m
+[HM       [1mtinuous[0m|[1m-c][0m[m
+[HM       [1mgram[0m|[1m-p[0m] [[1m--numeric[0m|[1m-n[0m] [[1m--numeric-hosts[0m] [[1m--numeric-ports[0m] [[1m--numeric-users[0m]  [[1m--con‐[0m[m
+[HM       [1mnetstat[0m {[1m--interfaces[0m|[1m-i[0m} [[1m--all[0m|[1m-a[0m] [[1m--extend[0m|[1m-e[0m[[1m--extend[0m|[1m-e][0m] [[1m--verbose[0m|[1m-v[0m] [[1m--pro‐[0m[m
+[HM[m
+[HM       [1mtinuous[0m|[1m-c][0m[m
+[HM       [1mbose[0m|[1m-v[0m] [[1m--numeric[0m|[1m-n[0m] [[1m--numeric-hosts[0m] [[1m--numeric-ports[0m] [[1m--numeric-users[0m]  [[1m--con‐[0m[m
+[HM       [1mnetstat[0m   {[1m--route[0m|[1m-r[0m}   [[4maddress_family_options[24m]  [[1m--extend[0m|[1m-e[0m[[1m--extend[0m|[1m-e][0m]  [[1m--ver‐[0m[m
+[HM[m
+[HM       [[1m--continuous[0m|[1m-c][0m[m
+[HM       [[1m--symbolic[0m|[1m-N[0m] [[1m--extend[0m|[1m-e[0m[[1m--extend[0m|[1m-e][0m] [[1m--timers[0m|[1m-o[0m] [[1m--program[0m|[1m-p[0m] [[1m--verbose[0m|[1m-v[0m][m
+[HM       [[1m--all[0m|[1m-a[0m]   [[1m--numeric[0m|[1m-n[0m]   [[1m--numeric-hosts[0m]   [[1m--numeric-ports[0m]  [[1m--numeric-users[0m][m
+[47;1H
+[K[7m Manual page netstat(8) line 9/330 27% (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K55[K~~
+[K[HM       [1mnetstat[0m [[4maddress_family_options[24m]  [[1m--tcp[0m|[1m-t[0m]  [[1m--udp[0m|[1m-u[0m]  [[1m--raw[0m|[1m-w[0m]  [[1m--listening[0m|[1m-l[0m][m
+[HM[1mSYNOPSIS[0m[m
+[HM[m
+[HM       connections, and multicast memberships[m
+[HM       netstat  - Print network connections, routing tables, interface statistics, masquerade[m
+[HM[1mNAME[0m[m
+[HM[m
+[HMNETSTAT(8)                        Linux Programmer's Manual                        NETSTAT(8)[m
+[47;1H
+[K[7m Manual page netstat(8) line 1/330 24% (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K55[K~~
+[K
+[K[7m Manual page netstat(8) line 1/330 24% (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K55[K~~
+[K
+[K[7m Manual page netstat(8) line 1/330 24% (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K55[K~~
+[K
+[K[7m Manual page netstat(8) line 1/330 24% (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K55[K~~
+[K
+[K[7m Manual page netstat(8) line 1/330 24% (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K55[K~~
+[K
+[K[7m Manual page netstat(8) line 1/330 24% (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K55[K~~
+[K
+[K[7m Manual page netstat(8) line 1/330 24% (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K55[K~~
+[K
+[K[7m Manual page netstat(8) line 1/330 24% (press h for help or q to quit)[27m[K
+[K [KESCESC[K[[[K55[K~~
+[K
+[K[7m Manual page netstat(8) line 1/330 24% (press h for help or q to quit)[27m[K
+[K[?1l>[?1049l]0;devuser10@NAT: ~[01;32mdevuser10@NAT[00m:[01;34m~[00m$ clear;1705265135
+[3;J[H[2J]0;devuser10@NAT: ~[01;32mdevuser10@NAT[00m:[01;34m~[00m$ 
+[K]0;devuser10@NAT: ~[01;32mdevuser10@NAT[00m:[01;34m~[00m$ cat /etc/motd;1705265148
+                ____    ____    __  __
+               /\  _`\ /\  _`\ /\ \/\ \
+               \ \,\L\_\ \,\L\_\ \ \_\ \
+                \/_\__ \\/_\__ \\ \  _  \
+                  /\ \L\ \/\ \L\ \ \ \ \ \
+                  \ `\____\ `\____\ \_\ \_\
+                   \/_____/\/_____/\/_/\/_/
+  ______                                 __
+ /\__  _\                               /\ \__  __
+ \/_/\ \/     ___     ___     __   _____\ \ ,_\/\_\    ___     ___
+    \ \ \   /' _ `\  /'___\ /'__`\/\ '__`\ \ \/\/\ \  / __`\ /' _ `\
+     \_\ \__/\ \/\ \/\ \__//\  __/\ \ \L\ \ \ \_\ \ \/\ \L\ \/\ \/\ \
+     /\_____\ \_\ \_\ \____\ \____\\ \ ,__/\ \__\\ \_\ \____/\ \_\ \_\
+     \/_____/\/_/\/_/\/____/\/____/ \ \ \/  \/__/ \/_/\/___/  \/_/\/_/
+                                     \ \_\
+                                      \/_/
+It's a week the first level down. Six months the second level down, and... the third level...
+
+        Welcome to SSH Inception. The goal is to answer all questions by exploring
+    the local network, the subnet 10.12.0.0/27. You are currently at the Starting Line.
+
+    For every host you login to you will be greeted with instructions. Each host
+    will give you a list of useful commands to solve each challenge. Use man
+    pages to help find useful options for commands.
+
+    Every stop has a file named \'secret\' with a code inside. Submit these codes on
+    EDURange to verify your progress.
+
+
+Go a level deeper. You will find the next host at 10.12.0.7.
+The trick is that the ssh port has been changed to 123.
+Your ssh username and password for the next stop are the same that got you here.
+
+Good luck!
+
+Helpful commands: ssh, help, man
+]0;devuser10@NAT: ~[01;32mdevuser10@NAT[00m:[01;34m~[00m$ ssh 10.12.0.67[K[K7 -p 123;1705265157
+The authenticity of host '[10.12.0.7]:123 ([10.12.0.7]:123)' can't be established.
+ECDSA key fingerprint is SHA256:4utoWe5uVp79ImYqkPPukjmrGIfvDC5demc1sx8sY9c.
+Are you sure you want to continue connecting (yes/no)? yes;1705265158
+Warning: Permanently added '[10.12.0.7]:123' (ECDSA) to the list of known hosts.
+
+devuser10@10.12.0.7's password: ;1705265159
+ ███████╗██╗██████╗ ███████╗████████╗    ███████╗████████╗ ██████╗ ██████╗;1705265159
+ ██╔════╝██║██╔══██╗██╔════╝╚══██╔══╝    ██╔════╝╚══██╔══╝██╔═══██╗██╔══██╗;1705265159
+ █████╗  ██║██████╔╝███████╗   ██║       ███████╗   ██║   ██║   ██║██████╔╝;1705265159
+ ██╔══╝  ██║██╔══██╗╚════██║   ██║       ╚════██║   ██║   ██║   ██║██╔═══╝;1705265159
+ ██║     ██║██║  ██║███████║   ██║       ███████║   ██║   ╚██████╔╝██║
+ ╚═╝     ╚═╝╚═╝  ╚═╝╚══════╝   ╚═╝       ╚══════╝   ╚═╝    ╚═════╝ ╚═╝
+
+"I'll tell you a riddle. You're waiting for a train, a train that will take
+you far away. You know where you hope this train will take you, but you don't
+know for sure."
+
+You found it. Well done. The next dream machine lies just a few addresses
+higher on your subnet. Use nmap to find the next closest machine.
+
+The subnet address was mentioned in an earlier message, or you can calculate it
+for yourself using 'ipcalc'
+
+Helpful commands: ifconfig, nmap, ssh, ipcalc
+]0;devuser10@FirstStop: ~[01;32mdevuser10@FirstStop[00m:[01;34m~[00m$ ll;1705265161
+total 24
+drwxr-xr-x 2 devuser10 devuser10 4096 Jan 14 20:41 [0m[01;34m.[0m/
+drwxr-xr-x 1 root      root      4096 Jan 14 20:41 [01;34m..[0m/
+-rw-r--r-- 1 devuser10 devuser10  220 Aug 31  2015 .bash_logout
+-rw-r--r-- 1 devuser10 devuser10 3771 Aug 31  2015 .bashrc
+-rw-r--r-- 1 devuser10 devuser10  655 May 16  2017 .profile
+-rw-r--r-- 1 root      root         9 Jan 14 20:41 secret
+]0;devuser10@FirstStop: ~[01;32mdevuser10@FirstStop[00m:[01;34m~[00m$ nmap 10.12.0.7-15[K[K30;1705265179
+;1705265179
+Starting Nmap 7.01 ( https://nmap.org ) at 2024-01-14 20:46 UTC;1705265179
+Nmap scan report for FirstStop (10.12.0.7)
+Host is up (0.00059s latency).
+All 1000 scanned ports on FirstStop (10.12.0.7) are closed
+
+Nmap scan report for SSHData_SecondStop.SSHData_PLAYER (10.12.0.10)
+Host is up (0.00065s latency).
+Not shown: 999 closed ports
+PORT   STATE SERVICE
+22/tcp open  ssh
+
+Nmap scan report for SSHData_ThirdStop.SSHData_PLAYER (10.12.0.13)
+Host is up (0.00068s latency).
+Not shown: 999 closed ports
+PORT   STATE SERVICE
+22/tcp open  ssh
+
+Nmap scan report for SSHData_AnonFTP.SSHData_PLAYER (10.12.0.14)
+Host is up (0.00068s latency).
+Not shown: 998 closed ports
+PORT   STATE SERVICE
+21/tcp open  ftp
+22/tcp open  ssh
+
+Nmap scan report for SSHData_FourthStop.SSHData_PLAYER (10.12.0.16)
+Host is up (0.00054s latency).
+Not shown: 999 closed ports
+PORT   STATE SERVICE
+22/tcp open  ssh
+
+Nmap scan report for SSHData_FifthStop.SSHData_PLAYER (10.12.0.17)
+Host is up (0.00047s latency).
+Not shown: 999 closed ports
+PORT   STATE SERVICE;1705265181
+22/tcp open  ssh
+
+Nmap scan report for SSHData_SatansPalace.SSHData_PLAYER (10.12.0.19)
+Host is up (0.00055s latency).
+Not shown: 999 closed ports
+PORT    STATE SERVICE
+666/tcp open  doom
+
+Nmap done: 24 IP addresses (7 hosts up) scanned in 1.71 seconds
+]0;devuser10@FirstStop: ~[01;32mdevuser10@FirstStop[00m:[01;34m~[00m$ nmap 10.12.0.6[K7/28;1705265196
+;1705265196
+Starting Nmap 7.01 ( https://nmap.org ) at 2024-01-14 20:46 UTC
+Nmap scan report for 10.12.0.1
+Host is up (0.00023s latency).
+Not shown: 982 closed ports
+PORT      STATE    SERVICE
+22/tcp    open     ssh
+80/tcp    open     http
+443/tcp   open     https
+3001/tcp  open     nessus
+5000/tcp  open     upnp
+5050/tcp  open     mmcc
+5555/tcp  open     freeciv
+32768/tcp filtered filenet-tms
+32769/tcp filtered filenet-rpc
+32770/tcp filtered sometimes-rpc3
+32771/tcp filtered sometimes-rpc5
+32772/tcp filtered sometimes-rpc7
+32773/tcp filtered sometimes-rpc9
+32774/tcp filtered sometimes-rpc11
+32775/tcp filtered sometimes-rpc13
+32776/tcp filtered sometimes-rpc15
+32777/tcp filtered sometimes-rpc17
+32778/tcp filtered sometimes-rpc19
+
+Nmap scan report for SSHData_nat.SSHData_PLAYER (10.12.0.2)
+Host is up (0.00089s latency).
+Not shown: 999 closed ports
+PORT   STATE SERVICE
+22/tcp open  ssh
+;1705265199
+Nmap scan report for SSHData_gateway.SSHData_PLAYER (10.12.0.4)
+Host is up (0.00086s latency).
+Not shown: 999 closed ports
+PORT   STATE SERVICE
+22/tcp open  ssh
+
+Nmap scan report for FirstStop (10.12.0.7)
+Host is up (0.00034s latency).
+All 1000 scanned ports on FirstStop (10.12.0.7) are closed
+
+Nmap scan report for SSHData_SecondStop.SSHData_PLAYER (10.12.0.10)
+Host is up (0.00029s latency).
+Not shown: 999 closed ports
+PORT   STATE SERVICE
+22/tcp open  ssh
+
+Nmap scan report for SSHData_ThirdStop.SSHData_PLAYER (10.12.0.13)
+Host is up (0.00072s latency).
+Not shown: 999 closed ports
+PORT   STATE SERVICE
+22/tcp open  ssh
+
+Nmap scan report for SSHData_AnonFTP.SSHData_PLAYER (10.12.0.14)
+Host is up (0.00078s latency).
+Not shown: 998 closed ports
+PORT   STATE SERVICE
+21/tcp open  ftp
+22/tcp open  ssh
+
+Nmap done: 16 IP addresses (7 hosts up) scanned in 2.70 seconds
+]0;devuser10@FirstStop: ~[01;32mdevuser10@FirstStop[00m:[01;34m~[00m$ nmaop [K[K[K[Kap localhost;1705265208
+;1705265208
+Starting Nmap 7.01 ( https://nmap.org ) at 2024-01-14 20:46 UTC
+Nmap scan report for localhost (127.0.0.1);1705265208
+Host is up (0.00015s latency).;1705265208
+Other addresses for localhost (not scanned): ::1;1705265208
+All 1000 scanned ports on localhost (127.0.0.1) are closed
+
+Nmap done: 1 IP address (1 host up) scanned in 0.05 seconds
+]0;devuser10@FirstStop: ~[01;32mdevuser10@FirstStop[00m:[01;34m~[00m$ ifconfig;1705265215
+eth0      Link encap:Ethernet  HWaddr 02:42:0a:0c:01:07  
+          inet addr:10.12.1.7  Bcast:10.12.1.31  Mask:255.255.255.224
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:434 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:359 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0 
+          RX bytes:62333 (62.3 KB)  TX bytes:60568 (60.5 KB)
+
+eth1      Link encap:Ethernet  HWaddr 02:42:0a:0c:00:07  
+          inet addr:10.12.0.7  Bcast:10.12.0.31  Mask:255.255.255.224
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:12252 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:12299 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0 
+          RX bytes:670372 (670.3 KB)  TX bytes:918592 (918.5 KB)
+
+lo        Link encap:Local Loopback  
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          UP LOOPBACK RUNNING  MTU:65536  Metric:1
+          RX packets:6127 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:6127 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:311106 (311.1 KB)  TX bytes:311106 (311.1 KB)
+
+]0;devuser10@FirstStop: ~[01;32mdevuser10@FirstStop[00m:[01;34m~[00m$ ipcalc;1705265216
+-bash: ipcalc: command not found
+]0;devuser10@FirstStop: ~[01;32mdevuser10@FirstStop[00m:[01;34m~[00m$ ls;1705265413
+secret
+]0;devuser10@FirstStop: ~[01;32mdevuser10@FirstStop[00m:[01;34m~[00m$ cat secret ;1705265418
+ELWnnFsK
+]0;devuser10@FirstStop: ~[01;32mdevuser10@FirstStop[00m:[01;34m~[00m$ nm[K[Kssh SecondStop;1705265477
+The authenticity of host 'secondstop (10.12.1.10)' can't be established.
+ECDSA key fingerprint is SHA256:4utoWe5uVp79ImYqkPPukjmrGIfvDC5demc1sx8sY9c.
+Are you sure you want to continue connecting (yes/no)? yes;1705265479
+Warning: Permanently added 'secondstop,10.12.1.10' (ECDSA) to the list of known hosts.
+
+devuser10@secondstop's password: ;1705265480
+Permission denied, please try again.
+
+devuser10@secondstop's password: ;1705265510
+      ::::::::  :::::::::: ::::::::   ::::::::  ::::    ::: :::::::::          :::::::: ::::::::::: ::::::::  ::::::::: 
+    :+:    :+: :+:       :+:    :+: :+:    :+: :+:+:   :+: :+:    :+:        :+:    :+:    :+:    :+:    :+: :+:    :+: 
+   +:+        +:+       +:+        +:+    +:+ :+:+:+  +:+ +:+    +:+        +:+           +:+    +:+    +:+ +:+    +:+  
+  +#++:++#++ +#++:++#  +#+        +#+    +:+ +#+ +:+ +#+ +#+    +:+        +#++:++#++    +#+    +#+    +:+ +#++:++#+    
+        +#+ +#+       +#+        +#+    +#+ +#+  +#+#+# +#+    +#+               +#+    +#+    +#+    +#+ +#+           
+#+#    #+# #+#       #+#    #+# #+#    #+# #+#   #+#+# #+#    #+#        #+#    #+#    #+#    #+#    #+# #+#            
+########  ########## ########   ########  ###    #### #########          ########     ###     ########  ###             
+****************************************************************************************************
+\"Remember, you are the dreamer, you build this world.\"
+
+SSH a level deeper if you dare. This time no password is provided.
+However, you might find the file id_rsa helpful...
+
+Helpful commands: nmap, ssh, ls, man
+****************************************************************************************************
+]0;devuser10@SecondStop: ~[01;32mdevuser10@SecondStop[00m:[01;34m~[00m$ ls;1705265514
+id_rsa  secret
+]0;devuser10@SecondStop: ~[01;32mdevuser10@SecondStop[00m:[01;34m~[00m$ clear;1705265515
+[3;J[H[2J]0;devuser10@SecondStop: ~[01;32mdevuser10@SecondStop[00m:[01;34m~[00m$ ls;1705265517
+id_rsa  secret
+]0;devuser10@SecondStop: ~[01;32mdevuser10@SecondStop[00m:[01;34m~[00m$ nmap;1705265547
+Nmap 7.01 ( https://nmap.org )
+Usage: nmap [Scan Type(s)] [Options] {target specification}
+TARGET SPECIFICATION:
+  Can pass hostnames, IP addresses, networks, etc.
+  Ex: scanme.nmap.org, microsoft.com/24, 192.168.0.1; 10.0.0-255.1-254
+  -iL <inputfilename>: Input from list of hosts/networks
+  -iR <num hosts>: Choose random targets
+  --exclude <host1[,host2][,host3],...>: Exclude hosts/networks
+  --excludefile <exclude_file>: Exclude list from file
+HOST DISCOVERY:
+  -sL: List Scan - simply list targets to scan
+  -sn: Ping Scan - disable port scan
+  -Pn: Treat all hosts as online -- skip host discovery
+  -PS/PA/PU/PY[portlist]: TCP SYN/ACK, UDP or SCTP discovery to given ports
+  -PE/PP/PM: ICMP echo, timestamp, and netmask request discovery probes
+  -PO[protocol list]: IP Protocol Ping
+  -n/-R: Never do DNS resolution/Always resolve [default: sometimes]
+  --dns-servers <serv1[,serv2],...>: Specify custom DNS servers
+  --system-dns: Use OS's DNS resolver
+  --traceroute: Trace hop path to each host
+SCAN TECHNIQUES:
+  -sS/sT/sA/sW/sM: TCP SYN/Connect()/ACK/Window/Maimon scans
+  -sU: UDP Scan
+  -sN/sF/sX: TCP Null, FIN, and Xmas scans
+  --scanflags <flags>: Customize TCP scan flags
+  -sI <zombie host[:probeport]>: Idle scan
+  -sY/sZ: SCTP INIT/COOKIE-ECHO scans
+  -sO: IP protocol scan
+  -b <FTP relay host>: FTP bounce scan
+PORT SPECIFICATION AND SCAN ORDER:
+  -p <port ranges>: Only scan specified ports
+    Ex: -p22; -p1-65535; -p U:53,111,137,T:21-25,80,139,8080,S:9
+  --exclude-ports <port ranges>: Exclude the specified ports from scanning
+  -F: Fast mode - Scan fewer ports than the default scan
+  -r: Scan ports consecutively - don't randomize
+  --top-ports <number>: Scan <number> most common ports
+  --port-ratio <ratio>: Scan ports more common than <ratio>
+SERVICE/VERSION DETECTION:
+  -sV: Probe open ports to determine service/version info
+  --version-intensity <level>: Set from 0 (light) to 9 (try all probes)
+  --version-light: Limit to most likely probes (intensity 2)
+  --version-all: Try every single probe (intensity 9)
+  --version-trace: Show detailed version scan activity (for debugging)
+SCRIPT SCAN:
+  -sC: equivalent to --script=default
+  --script=<Lua scripts>: <Lua scripts> is a comma separated list of
+           directories, script-files or script-categories
+  --script-args=<n1=v1,[n2=v2,...]>: provide arguments to scripts
+  --script-args-file=filename: provide NSE script args in a file
+  --script-trace: Show all data sent and received
+  --script-updatedb: Update the script database.
+  --script-help=<Lua scripts>: Show help about scripts.
+           <Lua scripts> is a comma-separated list of script-files or
+           script-categories.
+OS DETECTION:
+  -O: Enable OS detection
+  --osscan-limit: Limit OS detection to promising targets
+  --osscan-guess: Guess OS more aggressively
+TIMING AND PERFORMANCE:
+  Options which take <time> are in seconds, or append 'ms' (milliseconds),
+  's' (seconds), 'm' (minutes), or 'h' (hours) to the value (e.g. 30m).
+  -T<0-5>: Set timing template (higher is faster)
+  --min-hostgroup/max-hostgroup <size>: Parallel host scan group sizes
+  --min-parallelism/max-parallelism <numprobes>: Probe parallelization
+  --min-rtt-timeout/max-rtt-timeout/initial-rtt-timeout <time>: Specifies
+      probe round trip time.
+  --max-retries <tries>: Caps number of port scan probe retransmissions.
+  --host-timeout <time>: Give up on target after this long
+  --scan-delay/--max-scan-delay <time>: Adjust delay between probes
+  --min-rate <number>: Send packets no slower than <number> per second
+  --max-rate <number>: Send packets no faster than <number> per second
+FIREWALL/IDS EVASION AND SPOOFING:
+  -f; --mtu <val>: fragment packets (optionally w/given MTU)
+  -D <decoy1,decoy2[,ME],...>: Cloak a scan with decoys
+  -S <IP_Address>: Spoof source address
+  -e <iface>: Use specified interface
+  -g/--source-port <portnum>: Use given port number
+  --proxies <url1,[url2],...>: Relay connections through HTTP/SOCKS4 proxies
+  --data <hex string>: Append a custom payload to sent packets
+  --data-string <string>: Append a custom ASCII string to sent packets
+  --data-length <num>: Append random data to sent packets
+  --ip-options <options>: Send packets with specified ip options
+  --ttl <val>: Set IP time-to-live field
+  --spoof-mac <mac address/prefix/vendor name>: Spoof your MAC address
+  --badsum: Send packets with a bogus TCP/UDP/SCTP checksum
+OUTPUT:
+  -oN/-oX/-oS/-oG <file>: Output scan in normal, XML, s|<rIpt kIddi3,
+     and Grepable format, respectively, to the given filename.
+  -oA <basename>: Output in the three major formats at once
+  -v: Increase verbosity level (use -vv or more for greater effect)
+  -d: Increase debugging level (use -dd or more for greater effect)
+  --reason: Display the reason a port is in a particular state
+  --open: Only show open (or possibly open) ports
+  --packet-trace: Show all packets sent and received
+  --iflist: Print host interfaces and routes (for debugging)
+  --append-output: Append to rather than clobber specified output files
+  --resume <filename>: Resume an aborted scan
+  --stylesheet <path/URL>: XSL stylesheet to transform XML output to HTML
+  --webxml: Reference stylesheet from Nmap.Org for more portable XML
+  --no-stylesheet: Prevent associating of XSL stylesheet w/XML output
+MISC:
+  -6: Enable IPv6 scanning
+  -A: Enable OS detection, version detection, script scanning, and traceroute
+  --datadir <dirname>: Specify custom Nmap data file location
+  --send-eth/--send-ip: Send using raw ethernet frames or IP packets
+  --privileged: Assume that the user is fully privileged
+  --unprivileged: Assume the user lacks raw socket privileges
+  -V: Print version number
+  -h: Print this help summary page.
+EXAMPLES:
+  nmap -v -A scanme.nmap.org
+  nmap -v -sn 192.168.0.0/16 10.0.0.0/8
+  nmap -v -iR 10000 -Pn -p 80
+SEE THE MAN PAGE (https://nmap.org/book/man.html) FOR MORE OPTIONS AND EXAMPLES
+]0;devuser10@SecondStop: ~[01;32mdevuser10@SecondStop[00m:[01;34m~[00m$ ckl[K[Klear;1705265550
+[3;J[H[2J]0;devuser10@SecondStop: ~[01;32mdevuser10@SecondStop[00m:[01;34m~[00m$ ls;1705265568
+id_rsa  secret
+]0;devuser10@SecondStop: ~[01;32mdevuser10@SecondStop[00m:[01;34m~[00m$ cat secret;1705265571
+itAhY07O
+]0;devuser10@SecondStop: ~[01;32mdevuser10@SecondStop[00m:[01;34m~[00m$ nmap 10.12.0.2-20;1705265631
+;1705265631
+Starting Nmap 7.01 ( https://nmap.org ) at 2024-01-14 20:53 UTC
+Nmap scan report for SSHData_nat.SSHData_PLAYER (10.12.0.2)
+Host is up (0.00064s latency).
+Not shown: 999 closed ports
+PORT   STATE SERVICE
+22/tcp open  ssh
+
+Nmap scan report for SSHData_gateway.SSHData_PLAYER (10.12.0.4)
+Host is up (0.00068s latency).
+Not shown: 999 closed ports
+PORT   STATE SERVICE
+22/tcp open  ssh
+
+Nmap scan report for SSHData_FirstStop.SSHData_PLAYER (10.12.0.7)
+Host is up (0.00063s latency).
+All 1000 scanned ports on SSHData_FirstStop.SSHData_PLAYER (10.12.0.7) are closed
+
+Nmap scan report for SecondStop (10.12.0.10)
+Host is up (0.00059s latency).
+Not shown: 999 closed ports
+PORT   STATE SERVICE
+22/tcp open  ssh
+
+Nmap scan report for SSHData_ThirdStop.SSHData_PLAYER (10.12.0.13)
+Host is up (0.00067s latency).
+Not shown: 999 closed ports
+PORT   STATE SERVICE
+22/tcp open  ssh
+
+Nmap scan report for SSHData_AnonFTP.SSHData_PLAYER (10.12.0.14)
+Host is up (0.00069s latency).
+Not shown: 998 closed ports
+PORT   STATE SERVICE
+21/tcp open  ftp
+22/tcp open  ssh
+
+Nmap scan report for SSHData_FourthStop.SSHData_PLAYER (10.12.0.16)
+Host is up (0.00062s latency).
+Not shown: 999 closed ports
+PORT   STATE SERVICE
+22/tcp open  ssh
+
+Nmap scan report for SSHData_FifthStop.SSHData_PLAYER (10.12.0.17)
+Host is up (0.00057s latency).
+Not shown: 999 closed ports
+PORT   STATE SERVICE
+22/tcp open  ssh
+
+Nmap scan report for SSHData_SatansPalace.SSHData_PLAYER (10.12.0.19)
+Host is up (0.00062s latency).
+Not shown: 999 closed ports
+PORT    STATE SERVICE
+666/tcp open  doom
+
+Nmap done: 19 IP addresses (9 hosts up) scanned in 1.71 seconds
+]0;devuser10@SecondStop: ~[01;32mdevuser10@SecondStop[00m:[01;34m~[00m$ nmap -T5 -p [K- 10.12.0.13 - A[K[KA -sV -sC;1705265776
+;1705265776
+Starting Nmap 7.01 ( https://nmap.org ) at 2024-01-14 20:56 UTC
+Nmap scan report for SSHData_ThirdStop.SSHData_PLAYER (10.12.0.13)
+Host is up (0.00024s latency).
+Not shown: 65534 closed ports
+PORT   STATE SERVICE VERSION
+22/tcp open  ssh     OpenSSH 7.2p2 Ubuntu 4ubuntu2.10 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey: 
+|   2048 d5:11:0d:bc:e1:ed:1a:64:7c:fd:60:a8:ff:b7:01:0b (RSA)
+|_  256 3a:a1:a6:af:6c:52:a6:50:a4:cf:b8:d6:14:66:29:a6 (ECDSA)
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 3.33 seconds
+]0;devuser10@SecondStop: ~[01;32mdevuser10@SecondStop[00m:[01;34m~[00m$ ssh -i id_rsa 10.0[K12.0.13;1705265846
+The authenticity of host '10.12.0.13 (10.12.0.13)' can't be established.
+ECDSA key fingerprint is SHA256:4utoWe5uVp79ImYqkPPukjmrGIfvDC5demc1sx8sY9c.
+Are you sure you want to continue connecting (yes/no)? yes;1705265847
+Warning: Permanently added '10.12.0.13' (ECDSA) to the list of known hosts.
+
+;1705265847
+ ▄▄▄▄▄▄▄▄▄▄▄  ▄         ▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄        ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄ 
+▐░░░░░░░░░░░▌▐░▌       ▐░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░▌      ▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌
+ ▀▀▀▀█░█▀▀▀▀ ▐░▌       ▐░▌ ▀▀▀▀█░█▀▀▀▀ ▐░█▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀█░▌     ▐░█▀▀▀▀▀▀▀▀▀  ▀▀▀▀█░█▀▀▀▀ ▐░█▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀█░▌
+     ▐░▌     ▐░▌       ▐░▌     ▐░▌     ▐░▌       ▐░▌▐░▌       ▐░▌     ▐░▌               ▐░▌     ▐░▌       ▐░▌▐░▌       ▐░▌
+     ▐░▌     ▐░█▄▄▄▄▄▄▄█░▌     ▐░▌     ▐░█▄▄▄▄▄▄▄█░▌▐░▌       ▐░▌     ▐░█▄▄▄▄▄▄▄▄▄      ▐░▌     ▐░▌       ▐░▌▐░█▄▄▄▄▄▄▄█░▌
+     ▐░▌     ▐░░░░░░░░░░░▌     ▐░▌     ▐░░░░░░░░░░░▌▐░▌       ▐░▌     ▐░░░░░░░░░░░▌     ▐░▌     ▐░▌       ▐░▌▐░░░░░░░░░░░▌
+     ▐░▌     ▐░█▀▀▀▀▀▀▀█░▌     ▐░▌     ▐░█▀▀▀▀█░█▀▀ ▐░▌       ▐░▌      ▀▀▀▀▀▀▀▀▀█░▌     ▐░▌     ▐░▌       ▐░▌▐░█▀▀▀▀▀▀▀▀▀ 
+     ▐░▌     ▐░▌       ▐░▌     ▐░▌     ▐░▌     ▐░▌  ▐░▌       ▐░▌               ▐░▌     ▐░▌     ▐░▌       ▐░▌▐░▌          
+     ▐░▌     ▐░▌       ▐░▌ ▄▄▄▄█░█▄▄▄▄ ▐░▌      ▐░▌ ▐░█▄▄▄▄▄▄▄█░▌      ▄▄▄▄▄▄▄▄▄█░▌     ▐░▌     ▐░█▄▄▄▄▄▄▄█░▌▐░▌          
+     ▐░▌     ▐░▌       ▐░▌▐░░░░░░░░░░░▌▐░▌       ▐░▌▐░░░░░░░░░░▌      ▐░░░░░░░░░░░▌     ▐░▌     ▐░░░░░░░░░░░▌▐░▌          
+      ▀       ▀         ▀  ▀▀▀▀▀▀▀▀▀▀▀  ▀         ▀  ▀▀▀▀▀▀▀▀▀▀        ▀▀▀▀▀▀▀▀▀▀▀       ▀       ▀▀▀▀▀▀▀▀▀▀▀  ▀           
+                                                                                                                          
+
+****************************************************************************************************
+"Do not try and bend the spoon. That's impossible. Instead... only try to realize the truth."
+
+Someone incepted the password for the next stop in one of these directories.
+It sure would take a long time to look through all of them. There has to be a better way...
+
+Even once you have the credentials (which are correct), you might have trouble logging into the 
+Forth Stop. Perhaps they are blocking your IP?
+
+Helpful commands: grep, find, cat, man, nmap
+
+****************************************************************************************************
+]0;devuser10@ThirdStop: ~[01;32mdevuser10@ThirdStop[00m:[01;34m~[00m$ ls;1705265849
+[0m[01;34mdir1[0m    [01;34mdir14[0m  [01;34mdir2[0m   [01;34mdir25[0m  [01;34mdir30[0m  [01;34mdir36[0m  [01;34mdir41[0m  [01;34mdir47[0m  [01;34mdir52[0m  [01;34mdir58[0m  [01;34mdir63[0m  [01;34mdir69[0m  [01;34mdir74[0m  [01;34mdir8[0m   [01;34mdir85[0m  [01;34mdir90[0m  [01;34mdir96[0m
+[01;34mdir10[0m   [01;34mdir15[0m  [01;34mdir20[0m  [01;34mdir26[0m  [01;34mdir31[0m  [01;34mdir37[0m  [01;34mdir42[0m  [01;34mdir48[0m  [01;34mdir53[0m  [01;34mdir59[0m  [01;34mdir64[0m  [01;34mdir7[0m   [01;34mdir75[0m  [01;34mdir80[0m  [01;34mdir86[0m  [01;34mdir91[0m  [01;34mdir97[0m
+[01;34mdir100[0m  [01;34mdir16[0m  [01;34mdir21[0m  [01;34mdir27[0m  [01;34mdir32[0m  [01;34mdir38[0m  [01;34mdir43[0m  [01;34mdir49[0m  [01;34mdir54[0m  [01;34mdir6[0m   [01;34mdir65[0m  [01;34mdir70[0m  [01;34mdir76[0m  [01;34mdir81[0m  [01;34mdir87[0m  [01;34mdir92[0m  [01;34mdir98[0m
+[01;34mdir11[0m   [01;34mdir17[0m  [01;34mdir22[0m  [01;34mdir28[0m  [01;34mdir33[0m  [01;34mdir39[0m  [01;34mdir44[0m  [01;34mdir5[0m   [01;34mdir55[0m  [01;34mdir60[0m  [01;34mdir66[0m  [01;34mdir71[0m  [01;34mdir77[0m  [01;34mdir82[0m  [01;34mdir88[0m  [01;34mdir93[0m  [01;34mdir99[0m
+[01;34mdir12[0m   [01;34mdir18[0m  [01;34mdir23[0m  [01;34mdir29[0m  [01;34mdir34[0m  [01;34mdir4[0m   [01;34mdir45[0m  [01;34mdir50[0m  [01;34mdir56[0m  [01;34mdir61[0m  [01;34mdir67[0m  [01;34mdir72[0m  [01;34mdir78[0m  [01;34mdir83[0m  [01;34mdir89[0m  [01;34mdir94[0m  secret
+[01;34mdir13[0m   [01;34mdir19[0m  [01;34mdir24[0m  [01;34mdir3[0m   [01;34mdir35[0m  [01;34mdir40[0m  [01;34mdir46[0m  [01;34mdir51[0m  [01;34mdir57[0m  [01;34mdir62[0m  [01;34mdir68[0m  [01;34mdir73[0m  [01;34mdir79[0m  [01;34mdir84[0m  [01;34mdir9[0m   [01;34mdir95[0m
+]0;devuser10@ThirdStop: ~[01;32mdevuser10@ThirdStop[00m:[01;34m~[00m$ cat secret ;1705265853
+xwl35imM
+]0;devuser10@ThirdStop: ~[01;32mdevuser10@ThirdStop[00m:[01;34m~[00m$ grep -ri password;1705265855
+[35m[Kdir26/file.txt[m[K[36m[K:[m[Kthe [01;31m[Kpassword[m[K is 7035efa5, and the last octet of the ip address is 16
+]0;devuser10@ThirdStop: ~[01;32mdevuser10@ThirdStop[00m:[01;34m~[00m$ grep -ri [K[K password;1705265863
+[35m[Kdir26/file.txt[m[K[36m[K:[m[Kthe [01;31m[Kpassword[m[K is 7035efa5, and the last octet of the ip address is 16
+]0;devuser10@ThirdStop: ~[01;32mdevuser10@ThirdStop[00m:[01;34m~[00m$ grep p[K-r notthes[Kpassword;1705265874
+]0;devuser10@ThirdStop: ~[01;32mdevuser10@ThirdStop[00m:[01;34m~[00m$ grep -r foobar[K[K[K[K[K[K[K[K[K[K foobar;1705265881
+test;1705265886
+^C;1705265887
+]0;devuser10@ThirdStop: ~[01;32mdevuser10@ThirdStop[00m:[01;34m~[00m$ exit;1705265898
+logout
+Connection to 10.12.0.13 closed.
+
+]0;devuser10@SecondStop: ~[01;32mdevuser10@SecondStop[00m:[01;34m~[00m$ ssh 10.12.0.16;1705265905
+The authenticity of host '10.12.0.16 (10.12.0.16)' can't be established.
+ECDSA key fingerprint is SHA256:4utoWe5uVp79ImYqkPPukjmrGIfvDC5demc1sx8sY9c.
+Are you sure you want to continue connecting (yes/no)? yes;1705265907
+Warning: Permanently added '10.12.0.16' (ECDSA) to the list of known hosts.
+
+devuser10@10.12.0.16's password: ;1705265907
+;1705265907
+ /$$$$$$$$                              /$$     /$$              /$$$$$$   /$$                        
+| $$_____/                             | $$    | $$             /$$__  $$ | $$                        
+| $$     /$$$$$$  /$$   /$$  /$$$$$$  /$$$$$$  | $$$$$$$       | $$  \\__//$$$$$$    /$$$$$$   /$$$$$$ 
+| $$$$$ /$$__  $$| $$  | $$ /$$__  $$|_  $$_/  | $$__  $$      |  $$$$$$|_  $$_/   /$$__  $$ /$$__  $$
+| $$__/| $$  \\ $$| $$  | $$| $$  \\__/  | $$    | $$  \\ $$       \\____  $$ | $$    | $$  \\ $$| $$  \\ $$
+| $$   | $$  | $$| $$  | $$| $$        | $$ /$$| $$  | $$       /$$  \\ $$ | $$ /$$| $$  | $$| $$  | $$
+| $$   |  $$$$$$/|  $$$$$$/| $$        |  $$$$/| $$  | $$      |  $$$$$$/ |  $$$$/|  $$$$$$/| $$$$$$$/
+|__/    \\______/  \\______/ |__/         \\____/ |__/  |__/       \\______/   \\____/  \\______/ | $$____/ 
+                                                                                            | $$      
+                                                                                            | $$      
+                                                                                            |__/      
+
+
+****************************************************************************************************
+\"It's been six hours. Dreams move one... one-hundredth the speed of reality, and dog time is 
+one-seventh human time. So y'know, every day here is like a minute. It's like Inception, Morty, so 
+if it's confusing and stupid, then so is everyone's favorite movie.\"
+
+There is loose ftp server on the network. Find some useful credentials there to to help
+decrypt your next password. Read the ftp man page!
+
+(The file on the ftp server will give you credentials to use when running decryptpass. The files
+in this directory will not help you get to the ftp server.)
+
+Helpful commands: nmap, ftp - ls, man
+
+****************************************************************************************************
+]0;devuser10@FourthStop: ~[01;32mdevuser10@FourthStop[00m:[01;34m~[00m$ ls;1705265909
+[0m[01;32mdecryptpass[0m  encryptedpassword  secret
+]0;devuser10@FourthStop: ~[01;32mdevuser10@FourthStop[00m:[01;34m~[00m$ clear
+[3;J[H[2J]0;devuser10@FourthStop: ~[01;32mdevuser10@FourthStop[00m:[01;34m~[00m$ ll;1705265910
+total 32
+drwxr-xr-x 2 devuser10 devuser10 4096 Jan 14 20:41 [0m[01;34m.[0m/
+drwxr-xr-x 1 root      root      4096 Jan 14 20:41 [01;34m..[0m/
+-rw-r--r-- 1 devuser10 devuser10  220 Aug 31  2015 .bash_logout
+-rw-r--r-- 1 devuser10 devuser10 3771 Aug 31  2015 .bashrc
+-r-x---r-x 1 root      root       136 Jan 14 20:41 [01;32mdecryptpass[0m*
+-r-------- 1 devuser10 devuser10   64 Jan 14 20:41 encryptedpassword
+-rw-r--r-- 1 devuser10 devuser10  655 May 16  2017 .profile
+-rw-r--r-- 1 root      root         9 Jan 14 20:41 secret
+]0;devuser10@FourthStop: ~[01;32mdevuser10@FourthStop[00m:[01;34m~[00m$ cat decryptpass ;1705265915
+#!/bin/bash
+	openssl aes-256-cbc -d -in encryptedpassword -out password
+	if [ 0 > 0 ]; then
+  		chmod 400 password
+  		cat password
+	fi
+]0;devuser10@FourthStop: ~[01;32mdevuser10@FourthStop[00m:[01;34m~[00m$ nmap 10.12.0.2-20;1705265923
+;1705265923
+Starting Nmap 7.01 ( https://nmap.org ) at 2024-01-14 20:58 UTC
+Nmap scan report for SSHData_nat.SSHData_PLAYER (10.12.0.2)
+Host is up (0.00064s latency).
+Not shown: 999 closed ports
+PORT   STATE SERVICE
+22/tcp open  ssh
+
+Nmap scan report for SSHData_gateway.SSHData_PLAYER (10.12.0.4)
+Host is up (0.00068s latency).
+Not shown: 999 closed ports
+PORT   STATE SERVICE
+22/tcp open  ssh
+
+Nmap scan report for SSHData_FirstStop.SSHData_PLAYER (10.12.0.7)
+Host is up (0.00063s latency).
+All 1000 scanned ports on SSHData_FirstStop.SSHData_PLAYER (10.12.0.7) are closed
+
+Nmap scan report for SSHData_SecondStop.SSHData_PLAYER (10.12.0.10)
+Host is up (0.00059s latency).
+Not shown: 999 closed ports
+PORT   STATE SERVICE
+22/tcp open  ssh
+
+Nmap scan report for SSHData_ThirdStop.SSHData_PLAYER (10.12.0.13)
+Host is up (0.00066s latency).
+Not shown: 999 closed ports
+PORT   STATE SERVICE
+22/tcp open  ssh
+
+Nmap scan report for SSHData_AnonFTP.SSHData_PLAYER (10.12.0.14)
+Host is up (0.00068s latency).
+Not shown: 998 closed ports
+PORT   STATE SERVICE
+21/tcp open  ftp
+22/tcp open  ssh
+
+Nmap scan report for FourthStop (10.12.0.16)
+Host is up (0.00060s latency).
+Not shown: 999 closed ports
+PORT   STATE SERVICE
+22/tcp open  ssh
+
+Nmap scan report for SSHData_FifthStop.SSHData_PLAYER (10.12.0.17)
+Host is up (0.00057s latency).
+Not shown: 999 closed ports
+PORT   STATE SERVICE
+22/tcp open  ssh
+
+Nmap scan report for SSHData_SatansPalace.SSHData_PLAYER (10.12.0.19)
+Host is up (0.00062s latency).
+Not shown: 999 closed ports
+PORT    STATE SERVICE
+666/tcp open  doom
+
+Nmap done: 19 IP addresses (9 hosts up) scanned in 1.69 seconds
+]0;devuser10@FourthStop: ~[01;32mdevuser10@FourthStop[00m:[01;34m~[00m$ ftp 10.12.0.14;1705265931
+Connected to 10.12.0.14.
+220 (vsFTPd 3.0.3)
+Name (10.12.0.14:devuser10): Anonymous;1705265934
+331 Please specify the password.
+Password:;1705265934
+230 Login successful.
+Remote system type is UNIX.
+Using binary mode to transfer files.
+ftp> ls;1705265936
+200 PORT command successful. Consider using PASV.
+150 Here comes the directory listing.
+-rw-r--r--    1 0        0              57 Aug 26  2020 hint
+226 Directory send OK.
+ftp> get hint;1705265938
+local: hint remote: hint
+200 PORT command successful. Consider using PASV.
+150 Opening BINARY mode data connection for hint (57 bytes).
+226 Transfer complete.
+57 bytes received in 0.00 secs (392.0004 kB/s)
+ftp> exit;1705265939
+221 Goodbye.
+]0;devuser10@FourthStop: ~[01;32mdevuser10@FourthStop[00m:[01;34m~[00m$ ls;1705265941
+[0m[01;32mdecryptpass[0m  encryptedpassword  hint  secret
+]0;devuser10@FourthStop: ~[01;32mdevuser10@FourthStop[00m:[01;34m~[00m$ cat hint;1705265942
+Last Octet of IP: 17
+decryption_password: 8fddakjfds0s9f
+]0;devuser10@FourthStop: ~[01;32mdevuser10@FourthStop[00m:[01;34m~[00m$ cat secret;1705265943
+4NjhE4Ey
+]0;devuser10@FourthStop: ~[01;32mdevuser10@FourthStop[00m:[01;34m~[00m$ ./decryptpass ;1705265964
+enter aes-256-cbc decryption password:;1705265966
+The Password for the next stop is: 95541890
+]0;devuser10@FourthStop: ~[01;32mdevuser10@FourthStop[00m:[01;34m~[00m$ ^C
+]0;devuser10@FourthStop: ~[01;32mdevuser10@FourthStop[00m:[01;34m~[00m$ nmap 10.12.0.[K[K0.1-1[K20;1705265989
+;1705265989
+Starting Nmap 7.01 ( https://nmap.org ) at 2024-01-14 20:59 UTC
+Nmap scan report for 10.12.0.1
+Host is up (0.00022s latency).
+Not shown: 982 closed ports
+PORT      STATE    SERVICE
+22/tcp    open     ssh
+80/tcp    open     http
+443/tcp   open     https
+3001/tcp  open     nessus
+5000/tcp  open     upnp
+5050/tcp  open     mmcc
+5555/tcp  open     freeciv
+32768/tcp filtered filenet-tms
+32769/tcp filtered filenet-rpc
+32770/tcp filtered sometimes-rpc3
+32771/tcp filtered sometimes-rpc5
+32772/tcp filtered sometimes-rpc7
+32773/tcp filtered sometimes-rpc9
+32774/tcp filtered sometimes-rpc11
+32775/tcp filtered sometimes-rpc13
+32776/tcp filtered sometimes-rpc15
+32777/tcp filtered sometimes-rpc17
+32778/tcp filtered sometimes-rpc19
+
+Nmap scan report for SSHData_nat.SSHData_PLAYER (10.12.0.2)
+Host is up (0.00061s latency).
+Not shown: 999 closed ports
+PORT   STATE SERVICE
+22/tcp open  ssh
+
+Nmap scan report for SSHData_gateway.SSHData_PLAYER (10.12.0.4)
+Host is up (0.00081s latency).
+Not shown: 999 closed ports
+PORT   STATE SERVICE
+22/tcp open  ssh
+
+Nmap scan report for SSHData_FirstStop.SSHData_PLAYER (10.12.0.7)
+Host is up (0.00061s latency).
+All 1000 scanned ports on SSHData_FirstStop.SSHData_PLAYER (10.12.0.7) are closed
+
+Nmap scan report for SSHData_SecondStop.SSHData_PLAYER (10.12.0.10)
+Host is up (0.00058s latency).
+Not shown: 999 closed ports
+PORT   STATE SERVICE
+22/tcp open  ssh
+
+Nmap scan report for SSHData_ThirdStop.SSHData_PLAYER (10.12.0.13)
+Host is up (0.00069s latency).
+Not shown: 999 closed ports
+PORT   STATE SERVICE
+22/tcp open  ssh
+
+Nmap scan report for SSHData_AnonFTP.SSHData_PLAYER (10.12.0.14)
+Host is up (0.00062s latency).
+Not shown: 998 closed ports
+PORT   STATE SERVICE
+21/tcp open  ftp
+22/tcp open  ssh
+
+Nmap scan report for FourthStop (10.12.0.16)
+Host is up (0.00052s latency).
+Not shown: 999 closed ports
+PORT   STATE SERVICE
+22/tcp open  ssh
+
+Nmap scan report for SSHData_FifthStop.SSHData_PLAYER (10.12.0.17)
+Host is up (0.00060s latency).
+Not shown: 999 closed ports
+PORT   STATE SERVICE
+22/tcp open  ssh
+
+Nmap scan report for SSHData_SatansPalace.SSHData_PLAYER (10.12.0.19)
+Host is up (0.00082s latency).
+Not shown: 999 closed ports
+PORT    STATE SERVICE
+666/tcp open  doom
+
+Nmap done: 20 IP addresses (10 hosts up) scanned in 2.63 seconds
+]0;devuser10@FourthStop: ~[01;32mdevuser10@FourthStop[00m:[01;34m~[00m$ ssh 10.12.0.17 95541890[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[Kexit[K[K[K[Kexit;1705266027
+logout
+Connection to 10.12.0.16 closed.
+
+]0;devuser10@SecondStop: ~[01;32mdevuser10@SecondStop[00m:[01;34m~[00m$ exit;1705266028
+logout
+Connection to secondstop closed.
+
+]0;devuser10@FirstStop: ~[01;32mdevuser10@FirstStop[00m:[01;34m~[00m$ ls;1705266029
+secret
+]0;devuser10@FirstStop: ~[01;32mdevuser10@FirstStop[00m:[01;34m~[00m$ cd [K[K[Knmap [K[K[K[K[Kssh 10.12.0.17;1705266079
+The authenticity of host '10.12.0.17 (10.12.0.17)' can't be established.
+ECDSA key fingerprint is SHA256:4utoWe5uVp79ImYqkPPukjmrGIfvDC5demc1sx8sY9c.
+Are you sure you want to continue connecting (yes/no)? yes;1705266080
+Warning: Permanently added '10.12.0.17' (ECDSA) to the list of known hosts.
+
+devuser10@10.12.0.17's password: ;1705266081
+ ___________    ___________                                                                  ______                
+|            | |            `````|````` |         |                    ..'''' `````|`````  .~      ~.  |`````````, 
+|______      | |______           |      |_________|                 .''            |      |          | |'''''''''  
+|            | |                 |      |         |              ..'               |      |          | |           
+|            | |                 |      |         |        ....''                  |       `.______.'  |           
+                                                                                                                   
+****************************************************************************************************
+\"The ecstasy that blooms in synapses is Paprika-brand milk fat! 5% is the norm.
+The safety net of the ocean is nonlinear, even with what crabs dream of! Lets go!\"
+Decode the file 'betcha_cant_read_me' to find your way to the ultimate challenge... SATAN'S PALACE
+****************************************************************************************************
+]0;devuser10@FifthStop: ~[01;32mdevuser10@FifthStop[00m:[01;34m~[00m$ ls;1705266082
+betcha_cant_read_me  secret
+]0;devuser10@FifthStop: ~[01;32mdevuser10@FifthStop[00m:[01;34m~[00m$ ll;1705266083
+total 28
+drwxr-xr-x 2 devuser10 devuser10 4096 Jan 14 20:41 [0m[01;34m.[0m/
+drwxr-xr-x 1 root      root      4096 Jan 14 20:41 [01;34m..[0m/
+-rw-r--r-- 1 devuser10 devuser10  220 Aug 31  2015 .bash_logout
+-rw-r--r-- 1 devuser10 devuser10 3771 Aug 31  2015 .bashrc
+-r-------- 1 devuser10 devuser10  313 Jan 14 20:41 betcha_cant_read_me
+-rw-r--r-- 1 devuser10 devuser10  655 May 16  2017 .profile
+-rw-r--r-- 1 root      root         9 Jan 14 20:41 secret
+]0;devuser10@FifthStop: ~[01;32mdevuser10@FifthStop[00m:[01;34m~[00m$ cat betcha_cant_read_me ;1705266085
+WW91IGZvdW5kIG1lLiBHb29kIGpvYi4gVGhlIG5leHQgY2hhbGxlbmdlIHdpbGwgbm90IGJlIHNv
+IGVhc3kuIFlvdSB3aWxsIGZpbmQgU2F0YW5zIFBhbGFjZSBvbiB0aGUgaG9zdCB3aXRoIGEgY2Vy
+dGFpbiBvcGVuIHBvcnQuIFRoZSBtb3N0IGV2aWwgb3BlbiBwb3J0LiBTU0ggdG8gdGhhdCBwb3J0
+IHdpdGggdGhlIHBhc3N3b3JkICc1MmVmYjdkZScuIFRoZSBmaW5hbCB0cmVhc3VyZSBhd2FpdHMu
+Li4K
+]0;devuser10@FifthStop: ~[01;32mdevuser10@FifthStop[00m:[01;34m~[00m$ base64 -d betcha_cant_read_me ;1705266089
+You found me. Good job. The next challenge will not be so easy. You will find Satans Palace on the host with a certain open port. The most evil open port. SSH to that port with the password '52efb7de'. The final treasure awaits...
+]0;devuser10@FifthStop: ~[01;32mdevuser10@FifthStop[00m:[01;34m~[00m$ exit;1705266120
+logout
+Connection to 10.12.0.17 closed.
+
+]0;devuser10@FirstStop: ~[01;32mdevuser10@FirstStop[00m:[01;34m~[00m$ exit;1705266120
+logout
+Connection to 10.12.0.7 closed.
+
+]0;devuser10@NAT: ~[01;32mdevuser10@NAT[00m:[01;34m~[00m$ ls;1705266122
+]0;devuser10@NAT: ~[01;32mdevuser10@NAT[00m:[01;34m~[00m$ ssh 10.12.0.7;1705266126
+ssh: connect to host 10.12.0.7 port 22: Connection refused
+
+]0;devuser10@NAT: ~[01;32mdevuser10@NAT[00m:[01;34m~[00m$ ssh 10.12.0.7 -p 123;1705266129
+devuser10@10.12.0.7's password: ;1705266141
+Last login: Sun Jan 14 20:56:38 2024 from 10.12.0.2
+
+ ███████╗██╗██████╗ ███████╗████████╗    ███████╗████████╗ ██████╗ ██████╗
+ ██╔════╝██║██╔══██╗██╔════╝╚══██╔══╝    ██╔════╝╚══██╔══╝██╔═══██╗██╔══██╗
+ █████╗  ██║██████╔╝███████╗   ██║       ███████╗   ██║   ██║   ██║██████╔╝
+ ██╔══╝  ██║██╔══██╗╚════██║   ██║       ╚════██║   ██║   ██║   ██║██╔═══╝
+ ██║     ██║██║  ██║███████║   ██║       ███████║   ██║   ╚██████╔╝██║
+ ╚═╝     ╚═╝╚═╝  ╚═╝╚══════╝   ╚═╝       ╚══════╝   ╚═╝    ╚═════╝ ╚═╝;1705266141
+
+\"I'll tell you a riddle. You're waiting for a train, a train that will take
+you far away. You know where you hope this train will take you, but you don't
+know for sure.\"
+;1705266141
+You found it. Well done. The next dream machine lies just a few addresses
+higher on your subnet. Use nmap to find the next closest machine.;1705266141
+
+The subnet address was mentioned in an earlier message, or you can calculate it
+for yourself using 'ipcalc'
+;1705266141
+Helpful commands: ifconfig, nmap, ssh, ipcalc
+]0;devuser10@FirstStop: ~[01;32mdevuser10@FirstStop[00m:[01;34m~[00m$ nmap 10.12.0.1-20;1705266149
+;1705266149
+Starting Nmap 7.01 ( https://nmap.org ) at 2024-01-14 21:02 UTC
+Nmap scan report for 10.12.0.1
+Host is up (0.00044s latency).
+Not shown: 982 closed ports
+PORT      STATE    SERVICE
+22/tcp    open     ssh
+80/tcp    open     http
+443/tcp   open     https
+3001/tcp  open     nessus
+5000/tcp  open     upnp
+5050/tcp  open     mmcc
+5555/tcp  open     freeciv
+32768/tcp filtered filenet-tms
+32769/tcp filtered filenet-rpc
+32770/tcp filtered sometimes-rpc3
+32771/tcp filtered sometimes-rpc5
+32772/tcp filtered sometimes-rpc7
+32773/tcp filtered sometimes-rpc9
+32774/tcp filtered sometimes-rpc11
+32775/tcp filtered sometimes-rpc13
+32776/tcp filtered sometimes-rpc15
+32777/tcp filtered sometimes-rpc17
+32778/tcp filtered sometimes-rpc19
+
+Nmap scan report for SSHData_nat.SSHData_PLAYER (10.12.0.2)
+Host is up (0.00066s latency).
+Not shown: 999 closed ports
+PORT   STATE SERVICE
+22/tcp open  ssh
+
+Nmap scan report for SSHData_gateway.SSHData_PLAYER (10.12.0.4)
+Host is up (0.00086s latency).
+Not shown: 999 closed ports
+PORT   STATE SERVICE
+22/tcp open  ssh
+
+Nmap scan report for FirstStop (10.12.0.7)
+Host is up (0.00058s latency).
+All 1000 scanned ports on FirstStop (10.12.0.7) are closed
+
+Nmap scan report for SSHData_SecondStop.SSHData_PLAYER (10.12.0.10)
+Host is up (0.00056s latency).
+Not shown: 999 closed ports
+PORT   STATE SERVICE
+22/tcp open  ssh
+
+Nmap scan report for SSHData_ThirdStop.SSHData_PLAYER (10.12.0.13)
+Host is up (0.00062s latency).
+Not shown: 999 closed ports;1705266152
+PORT   STATE SERVICE
+22/tcp open  ssh
+
+Nmap scan report for SSHData_AnonFTP.SSHData_PLAYER (10.12.0.14)
+Host is up (0.00057s latency).
+Not shown: 998 closed ports
+PORT   STATE SERVICE
+21/tcp open  ftp
+22/tcp open  ssh
+
+Nmap scan report for SSHData_FourthStop.SSHData_PLAYER (10.12.0.16)
+Host is up (0.00062s latency).
+Not shown: 999 closed ports
+PORT   STATE SERVICE
+22/tcp open  ssh
+
+Nmap scan report for SSHData_FifthStop.SSHData_PLAYER (10.12.0.17)
+Host is up (0.00061s latency).
+Not shown: 999 closed ports
+PORT   STATE SERVICE
+22/tcp open  ssh
+
+Nmap scan report for SSHData_SatansPalace.SSHData_PLAYER (10.12.0.19)
+Host is up (0.00092s latency).
+Not shown: 999 closed ports
+PORT    STATE SERVICE
+666/tcp open  doom
+
+Nmap done: 20 IP addresses (10 hosts up) scanned in 2.63 seconds
+]0;devuser10@FirstStop: ~[01;32mdevuser10@FirstStop[00m:[01;34m~[00m$ ls;1705266174
+secret;1705266174
+]0;devuser10@FirstStop: ~[01;32mdevuser10@FirstStop[00m:[01;34m~[00m$ ssh SecondStop;1705266177
+devuser10@secondstop's password: ;1705266179
+Last login: Sun Jan 14 20:59:51 2024 from 10.12.0.7
+
+      ::::::::  :::::::::: ::::::::   ::::::::  ::::    ::: :::::::::          :::::::: ::::::::::: ::::::::  ::::::::: 
+    :+:    :+: :+:       :+:    :+: :+:    :+: :+:+:   :+: :+:    :+:        :+:    :+:    :+:    :+:    :+: :+:    :+: 
+   +:+        +:+       +:+        +:+    +:+ :+:+:+  +:+ +:+    +:+        +:+           +:+    +:+    +:+ +:+    +:+  
+  +#++:++#++ +#++:++#  +#+        +#+    +:+ +#+ +:+ +#+ +#+    +:+        +#++:++#++    +#+    +#+    +:+ +#++:++#+    
+        +#+ +#+       +#+        +#+    +#+ +#+  +#+#+# +#+    +#+               +#+    +#+    +#+    +#+ +#+           
+#+#    #+# #+#       #+#    #+# #+#    #+# #+#   #+#+# #+#    #+#        #+#    #+#    #+#    #+#    #+# #+#            
+########  ########## ########   ########  ###    #### #########          ########     ###     ########  ###             
+****************************************************************************************************
+\"Remember, you are the dreamer, you build this world.\"
+
+SSH a level deeper if you dare. This time no password is provided.
+However, you might find the file id_rsa helpful...
+
+Helpful commands: nmap, ssh, ls, man
+****************************************************************************************************
+]0;devuser10@SecondStop: ~[01;32mdevuser10@SecondStop[00m:[01;34m~[00m$ ssh FifthStop;1705266278
+The authenticity of host 'fifthstop (10.12.1.17)' can't be established.
+ECDSA key fingerprint is SHA256:4utoWe5uVp79ImYqkPPukjmrGIfvDC5demc1sx8sY9c.
+Are you sure you want to continue connecting (yes/no)? yes;1705266279
+Warning: Permanently added 'fifthstop,10.12.1.17' (ECDSA) to the list of known hosts.
+
+devuser10@fifthstop's password: ;1705266280
+Permission denied, please try again.
+
+devuser10@fifthstop's password: ;1705266291
+;1705266291
+]0;devuser10@SecondStop: ~[01;32mdevuser10@SecondStop[00m:[01;34m~[00m$ ssh FifthStop -p 666;1705266294
+ssh: connect to host fifthstop port 666: Connection refused
+
+]0;devuser10@SecondStop: ~[01;32mdevuser10@SecondStop[00m:[01;34m~[00m$ nmap FifthStop;1705266299
+;1705266299
+Starting Nmap 7.01 ( https://nmap.org ) at 2024-01-14 21:04 UTC
+Nmap scan report for FifthStop (10.12.1.17)
+Host is up (0.00029s latency).
+rDNS record for 10.12.1.17: SSHData_FifthStop.SSHData_NAT
+Not shown: 999 closed ports
+PORT   STATE SERVICE
+22/tcp open  ssh
+
+Nmap done: 1 IP address (1 host up) scanned in 0.07 seconds
+]0;devuser10@SecondStop: ~[01;32mdevuser10@SecondStop[00m:[01;34m~[00m$ nmap FifthStop[K[K[K[K[K[K[K[K[KSatansPalance;1705266307
+;1705266307
+Starting Nmap 7.01 ( https://nmap.org ) at 2024-01-14 21:05 UTC
+Failed to resolve \"SatansPalance\".
+WARNING: No targets were specified, so 0 hosts scanned.
+Nmap done: 0 IP addresses (0 hosts up) scanned in 0.07 seconds
+]0;devuser10@SecondStop: ~[01;32mdevuser10@SecondStop[00m:[01;34m~[00m$ nmap SatansPalance[K[K[Kce;1705266309
+;1705266309
+Starting Nmap 7.01 ( https://nmap.org ) at 2024-01-14 21:05 UTC
+Nmap scan report for SatansPalace (10.12.1.19)
+Host is up (0.00028s latency).
+rDNS record for 10.12.1.19: SSHData_SatansPalace.SSHData_NAT
+Not shown: 999 closed ports
+PORT    STATE SERVICE
+666/tcp open  doom
+
+Nmap done: 1 IP address (1 host up) scanned in 0.07 seconds
+]0;devuser10@SecondStop: ~[01;32mdevuser10@SecondStop[00m:[01;34m~[00m$ nmap SatansPalace[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[Kssh SatansPaa[Klace -p 666;1705266318
+The authenticity of host '[satanspalace]:666 ([10.12.1.19]:666)' can't be established.
+ECDSA key fingerprint is SHA256:4utoWe5uVp79ImYqkPPukjmrGIfvDC5demc1sx8sY9c.
+Are you sure you want to continue connecting (yes/no)? yes;1705266319
+Warning: Permanently added '[satanspalace]:666,[10.12.1.19]:666' (ECDSA) to the list of known hosts.
+
+devuser10@satanspalace's password: ;1705266321
+  ██████  ▄▄▄     ▄▄▄█████▓ ▄▄▄       ███▄    █   ██████     ██▓███   ▄▄▄       ██▓    ▄▄▄       ▄████▄  ▓█████ 
+▒██    ▒ ▒████▄   ▓  ██▒ ▓▒▒████▄     ██ ▀█   █ ▒██    ▒    ▓██░  ██▒▒████▄    ▓██▒   ▒████▄    ▒██▀ ▀█  ▓█   ▀ 
+░ ▓██▄   ▒██  ▀█▄ ▒ ▓██░ ▒░▒██  ▀█▄  ▓██  ▀█ ██▒░ ▓██▄      ▓██░ ██▓▒▒██  ▀█▄  ▒██░   ▒██  ▀█▄  ▒▓█    ▄ ▒███   
+  ▒   ██▒░██▄▄▄▄██░ ▓██▓ ░ ░██▄▄▄▄██ ▓██▒  ▐▌██▒  ▒   ██▒   ▒██▄█▓▒ ▒░██▄▄▄▄██ ▒██░   ░██▄▄▄▄██ ▒▓▓▄ ▄██▒▒▓█  ▄ 
+▒██████▒▒ ▓█   ▓██▒ ▒██▒ ░  ▓█   ▓██▒▒██░   ▓██░▒██████▒▒   ▒██▒ ░  ░ ▓█   ▓██▒░██████▒▓█   ▓██▒▒ ▓███▀ ░░▒████▒
+▒ ▒▓▒ ▒ ░ ▒▒   ▓▒█░ ▒ ░░    ▒▒   ▓▒█░░ ▒░   ▒ ▒ ▒ ▒▓▒ ▒ ░   ▒▓▒░ ░  ░ ▒▒   ▓▒█░░ ▒░▓  ░▒▒   ▓▒█░░ ░▒ ▒  ░░░ ▒░ ░
+░ ░▒  ░ ░  ▒   ▒▒ ░   ░      ▒   ▒▒ ░░ ░░   ░ ▒░░ ░▒  ░ ░   ░▒ ░       ▒   ▒▒ ░░ ░ ▒  ░ ▒   ▒▒ ░  ░  ▒    ░ ░  ░
+░  ░  ░    ░   ▒    ░        ░   ▒      ░   ░ ░ ░  ░  ░     ░░         ░   ▒     ░ ░    ░   ▒   ░           ░   
+      ░        ░  ░              ░  ░         ░       ░                    ░  ░    ░  ░     ░  ░░ ░         ░  ░
+░ 
+  ▄████ ▓█████▄▄▄█████▓    ▒█████   █    ██ ▄▄▄█████▓ ▐██▌  ▐██▌  ▐██▌  ▐██▌  ▐██▌ 
+ ██▒ ▀█▒▓█   ▀▓  ██▒ ▓▒   ▒██▒  ██▒ ██  ▓██▒▓  ██▒ ▓▒ ▐██▌  ▐██▌  ▐██▌  ▐██▌  ▐██▌ 
+▒██░▄▄▄░▒███  ▒ ▓██░ ▒░   ▒██░  ██▒▓██  ▒██░▒ ▓██░ ▒░ ▐██▌  ▐██▌  ▐██▌  ▐██▌  ▐██▌ 
+░▓█  ██▓▒▓█  ▄░ ▓██▓ ░    ▒██   ██░▓▓█  ░██░░ ▓██▓ ░  ▓██▒  ▓██▒  ▓██▒  ▓██▒  ▓██▒ 
+░▒▓███▀▒░▒████▒ ▒██▒ ░    ░ ████▓▒░▒▒█████▓   ▒██▒ ░  ▒▄▄   ▒▄▄   ▒▄▄   ▒▄▄   ▒▄▄  
+ ░▒   ▒ ░░ ▒░ ░ ▒ ░░      ░ ▒░▒░▒░ ░▒▓▒ ▒ ▒   ▒ ░░    ░▀▀▒  ░▀▀▒  ░▀▀▒  ░▀▀▒  ░▀▀▒ 
+  ░   ░  ░ ░  ░   ░         ░ ▒ ▒░ ░░▒░ ░ ░     ░     ░  ░  ░  ░  ░  ░  ░  ░  ░  ░ 
+░ ░   ░    ░    ░         ░ ░ ░ ▒   ░░░ ░ ░   ░          ░     ░     ░     ░     ░ 
+      ░    ░  ░               ░ ░     ░               ░     ░     ░     ░     ░    
+Connection to satanspalace closed.
+
+]0;devuser10@SecondStop: ~[01;32mdevuser10@SecondStop[00m:[01;34m~[00m$ ssh SatansPalace -p 666 cat secret ;1705266327
+devuser10@satanspalace's password: ;1705266328
+j1GVO8lW
+]0;devuser10@SecondStop: ~[01;32mdevuser10@SecondStop[00m:[01;34m~[00m$ ssh SatansPalace -p 666 cat secret [K[K[K[K[K[K[Kfinal_flag;1705266333
+devuser10@satanspalace's password: ;1705266334
+ZLKDOXQP VLR XOB QEB PPE FKZBMQFLK JXPQBO. Ebob fp vlro mollc: 5y2687a5
+]0;devuser10@SecondStop: ~[01;32mdevuser10@SecondStop[00m:[01;34m~[00m$ 
+[K]0;devuser10@SecondStop: ~[01;32mdevuser10@SecondStop[00m:[01;34m~[00m$ exit;1705266943
+logout
+Connection to secondstop closed.
+
+]0;devuser10@FirstStop: ~[01;32mdevuser10@FirstStop[00m:[01;34m~[00m$ exit;1705266944
+logout
+Connection to 10.12.0.7 closed.
+
+]0;devuser10@NAT: ~[01;32mdevuser10@NAT[00m:[01;34m~[00m$ exit;1705266944
+logout
+Connection to 10.12.0.2 closed.
+test
+
+END tty_sid:0
+;1705266944

@@ -19,7 +19,7 @@
 
 import analyze_config as config
 import decode as decode
-import logging
+import logging.handlers
 import os
 import re
 import sys
@@ -28,13 +28,22 @@ import time
 from analyzer_methods import write_to_csv, get_unique_id_dict, get_ttylog_lines_from_file, get_ttylog_lines_to_decode
 
 logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)
+# logger.setLevel(logging.INFO) # switch to logging.INFO for debug logging
 
 # Set up logger to a file
-file_handler = logging.FileHandler('logfile.log') # /tmp/acont.log
-file_handler.setLevel(logging.DEBUG)
+file_handler = logging.handlers.RotatingFileHandler('/tmp/acont.log', maxBytes=1048576, backupCount=5) # /tmp/acont.log
+# stream_handler = logging.StreamHandler(sys.stdout) # enable for troubleshooting/debugging
+# logging.StreamHandler(sys.stdout)
+
+# Create formatter and add it to the handlers
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+file_handler.setLevel(logging.INFO)
 file_handler.setFormatter(formatter)
+
 logger.addHandler(file_handler)
+# logger.addHandler(stream_handler) # enable for troubleshooting/debugging
+# logger.info("Logging to both stdout and file")
 
     
 class LogAnalyzerMain:
@@ -142,7 +151,6 @@ class LogAnalyzerMain:
 
     def get_host_names(self):
         # Read the host_names file and construct a regex pattern for possible hosts
-        # Version 1.2. this might crash the program if the file is malformed
         user_initial_prompt = self.user_initial_prompt
         try:
             with open('/usr/local/src/ttylog/host_names', 'r') as file:
@@ -190,23 +198,23 @@ class LogAnalyzerMain:
                 ttylog_lines = decode.decode(self.ttylog_lines_to_decode, user_prompt, root_prompt)
 
                 for line in ttylog_lines:
-                    line = self.process_line(line)
+                    line = self._process_line(line)
 
-                    if self.is_prompt(line):
-                        isinput, line, user_prompt, node_name, current_working_directory, current_line_prompt = self.handle_prompt(line, user_prompt, root_prompt, home_directory, current_session_id)
+                    if self._is_prompt(line):
+                        isinput, line, user_prompt, node_name, current_working_directory, current_line_prompt = self._handle_prompt(line, user_prompt, root_prompt, home_directory, current_session_id)
                     else:
                         isinput = False
 
-                    line_timestamp, line = self.extract_timestamp(line)
+                    line_timestamp, line = self._extract_timestamp(line)
 
                     my_timestamp = int(time.time())
 
                     if isinput:
-                        self.handle_input(line, my_timestamp, node_name, current_working_directory, current_line_prompt)
-                    elif not self.is_end(line):
+                        self._handle_input(line, my_timestamp, node_name, current_working_directory, current_line_prompt)
+                    elif not self._is_end(line):
                         self.output_txt += '\n' + line
                     else:
-                        self.save_output(csv_output_file, current_session_id)
+                        self._save_output(csv_output_file, current_session_id)
                     self.first_ttylog_line = False
                 time.sleep(0.1)
 
@@ -215,18 +223,18 @@ class LogAnalyzerMain:
         except Exception as e:
             logger.error(e)
 
-    def process_line(self, line):
+    def _process_line(self, line):
         # Remove command output, prompts, and user input symbols
         line = re.sub('.*\^C', '', line)
         return line
 
-    def is_prompt(self, line):
+    def _is_prompt(self, line):
             # Check if the line is a prompt
             command_pattern_user_prompt = re.compile(f"{self.user_initial_prompt.split('@')[0].casefold()}@{self.host_pattern}:.*?")
             command_pattern_root_prompt = re.compile(f"{self.root_prompt.casefold()}:.*?")
             return command_pattern_user_prompt.search(line.casefold()) or command_pattern_root_prompt.search(line.casefold())
 
-    def handle_prompt(self, line, user_prompt, root_prompt, home_directory, current_session_id):
+    def _handle_prompt(self, line, user_prompt, root_prompt, home_directory, current_session_id):
         # Handle different prompts and extract relevant information
         isinput = True
 
@@ -245,7 +253,7 @@ class LogAnalyzerMain:
 
         return isinput, line, user_prompt, node_name, current_working_directory, current_line_prompt
 
-    def extract_timestamp(self, line):
+    def _extract_timestamp(self, line):
         # Extract timestamp from the line
         tstampre = re.compile(";\d{9}")
         tmatch = tstampre.search(line)
@@ -257,35 +265,38 @@ class LogAnalyzerMain:
             line_timestamp = 0
         return line_timestamp, line
 
-    def handle_input(self, line, my_timestamp, node_name, current_working_directory, current_line_prompt):
+    def _handle_input(self, line, my_timestamp, node_name, current_working_directory, current_line_prompt):
         # Handle user input and update the CSV output
         input_cmd = line
         self.unique_id_dict['counter'] += 1
         unique_row_id = "{}:{}:{}".format(self.unique_id_dict['exp_name'], self.unique_id_dict['start_time'], self.unique_id_dict['counter'])
 
         if not self.first_ttylog_line:
-            self.save_output(self.csv_output_file, self.current_session_id)
+            self._save_output(self.csv_output_file, self.current_session_id)
 
+        # new_line sets each csv line
         new_line = {
             'id': unique_row_id,
             'timestamp': my_timestamp,
             'output': "",
             'node_name': node_name,
+            'node_name1': node_name, # for example testing
             'cwd': current_working_directory,
             'cmd': input_cmd,
-            'prompt': current_line_prompt
+            'prompt': current_line_prompt,
+            # Add any additional fields you want to capture here, then add to write_to_csv function
         }
         self.ttylog_sessions[self.current_session_id]['lines'].append(new_line)
 
         logger.info("Found input " + input_cmd + "\n")
 
-        self.output_txt = ''
+        self.output_txt = '' # Without this, the csv output changes big time.
 
-    def is_end(self, line):
+    def _is_end(self, line):
         # Check if the line is the end of a session
         return 'END tty_sid' in line
 
-    def save_output(self, csv_output_file, current_session_id):
+    def _save_output(self, csv_output_file, current_session_id):
         # Write the current session's output to the CSV file
 
         if len(self.output_txt) > 500:
@@ -295,6 +306,7 @@ class LogAnalyzerMain:
         if cline >= 0:
             self.ttylog_sessions[current_session_id]['lines'][cline]['output'] = self.output_txt
             write_to_csv(self.ttylog_sessions[current_session_id]['lines'][cline], csv_output_file)
+
             logger.info("Logged input " + self.ttylog_sessions[current_session_id]['lines'][cline]['cmd'] + "\n")
             logger.info("Logged output " + self.ttylog_sessions[current_session_id]['lines'][cline]['output'] + "\n")
 
