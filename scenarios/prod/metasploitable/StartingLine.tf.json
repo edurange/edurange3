@@ -1,6 +1,6 @@
 {
-	"resource": [
-	{
+    "resource": [
+        {
             "docker_container": [
                 {
                     "SNAME_StartingLine": [
@@ -19,16 +19,16 @@
                             ],
                             "connection": [
                                 {
-                                    "host": "${self.ports[0].ip}",
-                                    "password": "root",
-                                    "port": "${self.ports[0].external}",
-                                    "type": "ssh",
-                                    "user": "root"
+                                  "host": "${self.ports[0].ip}",
+                                  "password": "root",
+                                  "port": "${self.ports[0].external}",
+                                  "type": "ssh",
+                                  "user": "root"
                                 }
                             ],
-                            "hostname": "NAT",
-                            "image": "edurange2/ubuntu-sshd:16.04",
-                            "name": "SNAME_nat",
+                            "hostname": "StartingLine",
+                            "image": "edurange2/metasploit.attacker.dev",
+                            "name": "SNAME_StartingLine",
                             "networks_advanced": [
                                 {
                                     "ipv4_address": "10.OCTET.1.2",
@@ -42,6 +42,12 @@
                             "ports": [
                                 {
                                     "internal": 22
+                                }
+                            ],
+                            "host": [
+                                {
+                                    "host": "target",
+                                    "ip": "10.OCTET.0.2"
                                 }
                             ],
                             "provisioner": [
@@ -61,10 +67,11 @@
                     ]
                 }
             ]
-        }],
+        }
+    ],
     "locals": [
         {
-            "SNAME_StartingLine_extern": "HIDDEN"
+            "SNAME_StartingLine_extern": "${tostring(docker_container.SNAME_StartingLine.ports[0].external)}"
         }
     ],
     "output": [
@@ -73,13 +80,13 @@
                 {
                     "value": [
                         {
-                            "ip_address_public": "${join(\":\", [\"EXTERN_HOST\", local.SNAME_StartingLine_extern])}",
-                            "name": "SNAME_StartingLine"
+                          "ip_address_public": "${join(\":\", [\"EXTERN_HOST\", local.SNAME_StartingLine_extern])}",
+                          "name": "SNAME_StartingLine"
                         }
                     ]
                 }
             ]
         }
     ]
-
 }
+

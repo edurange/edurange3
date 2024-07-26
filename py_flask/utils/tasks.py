@@ -152,7 +152,7 @@ def start_scenario_task(self, scenario_id):
         name = str(scenario.name)
         name = "".join(e for e in name if e.isalnum())
         gateway = name + "_gateway"
-        start = name + "_nat"
+        start = name + "_StartingLine"
         start_ip = "10." + str(scenario.octet) + ".0.2"
         if int(scenario.status) != 0:
             logger.info("Invalid Status")
