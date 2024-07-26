@@ -17,7 +17,11 @@ import React, { useEffect } from 'react';
 import axios from 'axios';
 
 function AxiosConfig({ children }) {
+
+    let csrfToken = "";
+
     useEffect(() => {
+
         function getCSRFfromCookie() {
             const name = 'X-XSRF-TOKEN';
             const value = `; ${document.cookie}`;
@@ -28,11 +32,15 @@ function AxiosConfig({ children }) {
             };
             return null;
         };
-        const csrfToken = getCSRFfromCookie();
-        if (!csrfToken) { console.error('Axios: CSRF cookie not found'); } // DEV_ONLY
 
+        csrfToken = getCSRFfromCookie();
         axios.defaults.baseURL = '/api'; 
 
+        // force re-render if .baseURL has not yet been correctly assigned
+        if (!axios?.defaults?.baseURL !== "/api") { 
+            return
+        }
+        
         // IMPORTANT NOTES
         // - NO trailing slash on the baseURL 
         // - ASSUMES domain, not numeric IP 
@@ -55,7 +63,7 @@ function AxiosConfig({ children }) {
             }
             return Promise.reject(error);
         });
-    }, []);
+    }, [csrfToken]);
 
     return children;
 }

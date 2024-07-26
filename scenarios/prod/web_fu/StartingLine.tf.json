@@ -3,7 +3,7 @@
         {
             "docker_container": [
                 {
-                    "SNAME_attacker": [
+                    "SNAME_StartingLine": [
                         {
                             "capabilities": [
                                 {
@@ -19,37 +19,45 @@
                             ],
                             "connection": [
                                 {
-                                  "host": "${self.ports[0].ip}",
-                                  "password": "root",
-                                  "port": "${self.ports[0].external}",
-                                  "type": "ssh",
-                                  "user": "root"
+                                    "host": "${self.ports[0].ip}",
+                                    "password": "root",
+                                    "port": "${self.ports[0].external}",
+                                    "type": "ssh",
+                                    "user": "root"
                                 }
                             ],
-                            "hostname": "attacker",
-                            "image": "edurange2/metasploit.attacker.dev",
-                            "name": "SNAME_attacker",
+                            "hostname": "StartingLine",
+                            "image": "edurange2/webfu:latest",
+                            "name": "SNAME_StartingLine",
                             "networks_advanced": [
                                 {
-                                    "ipv4_address": "10.OCTET.1.3",
+                                    "ipv4_address": "10.OCTET.1.2",
                                     "name": "SNAME_NAT"
                                 },
                                 {
-                                    "ipv4_address": "10.OCTET.0.3",
+                                    "ipv4_address": "10.OCTET.0.2",
                                     "name": "SNAME_PLAYER"
                                 }
                             ],
                             "ports": [
                                 {
                                     "internal": 22
-                                }
-                            ],
-                            "host": [
+                                },
                                 {
-                                    "host": "target",
-                                    "ip": "10.OCTET.0.2"
+                                    "internal": 80,
+                                    "external": 8080
+                                },
+                                {
+                                    "internal": 443,
+                                    "external": 8443
                                 }
                             ],
+                            "mounts": {
+                                "source": "/etc/letsencrypt/archive/EXTERN_HOST",
+                                "target": "/etc/ssl/webfu",
+                                "type": "bind",
+                                "read_only": true
+                            },
                             "provisioner": [
                                 {
                                     "remote-exec": [
@@ -71,17 +79,17 @@
     ],
     "locals": [
         {
-            "SNAME_attacker_extern": "${tostring(docker_container.SNAME_attacker.ports[0].external)}"
+            "SNAME_StartingLine_extern": "HIDDEN"
         }
     ],
     "output": [
         {
-            "SNAME_attacker": [
+            "SNAME_StartingLine": [
                 {
                     "value": [
                         {
-                          "ip_address_public": "${join(\":\", [\"EXTERN_HOST\", local.SNAME_attacker_extern])}",
-                          "name": "SNAME_attacker"
+                            "ip_address_public": "${join(\":\", [\"EXTERN_HOST\", local.SNAME_StartingLine_extern])}",
+                            "name": "SNAME_StartingLine"
                         }
                     ]
                 }
@@ -89,4 +97,3 @@
         }
     ]
 }
-

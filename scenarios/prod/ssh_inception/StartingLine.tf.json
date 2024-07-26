@@ -1,9 +1,9 @@
 {
-    "resource": [
-        {
+	"resource": [
+	{
             "docker_container": [
                 {
-                    "SNAME_nat": [
+                    "SNAME_StartingLine": [
                         {
                             "capabilities": [
                                 {
@@ -26,9 +26,9 @@
                                     "user": "root"
                                 }
                             ],
-                            "hostname": "NAT",
+                            "hostname": "StartingLine",
                             "image": "edurange2/ubuntu-sshd:16.04",
-                            "name": "SNAME_nat",
+                            "name": "SNAME_StartingLine",
                             "networks_advanced": [
                                 {
                                     "ipv4_address": "10.OCTET.1.2",
@@ -61,25 +61,25 @@
                     ]
                 }
             ]
-        }
-    ],
+        }],
     "locals": [
         {
-            "SNAME_nat_extern": "HIDDEN"
+            "SNAME_StartingLine_extern": "HIDDEN"
         }
     ],
     "output": [
         {
-            "SNAME_nat": [
+            "SNAME_StartingLine": [
                 {
                     "value": [
                         {
-                            "ip_address_public": "${join(\":\", [\"EXTERN_HOST\", local.SNAME_nat_extern])}",
-                            "name": "SNAME_nat"
+                            "ip_address_public": "${join(\":\", [\"EXTERN_HOST\", local.SNAME_StartingLine_extern])}",
+                            "name": "SNAME_StartingLine"
                         }
                     ]
                 }
             ]
         }
     ]
+
 }
