@@ -1,6 +1,5 @@
 from selenium import webdriver
 from selenium.webdriver.firefox.service import Service
-from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
@@ -95,6 +94,7 @@ def run_many_users():
 	
 	
 def get_info():
+
 	num_users = input("Enter the number of users: ")
 	creds_path = input("Enter path to credentials file: ")
 	creds_file = open(creds_path, "r")
@@ -102,24 +102,31 @@ def get_info():
 	site = input("Enter eduRange host site: ")
 	scenario = input("Enter scenario name: ")
 	
-	info_file = open("profile_info.py", "w")
+	info_file = open("saved_info.py", "w")
 	info_file.write("NUM_USERS = " + num_users + "\nSITE = \"https://" + site + "\"\nSCENARIO = \"" + scenario + "\"\nCREDENTIALS = " + creds)
 	
 	
 	
+	
 def run():
+
 	save = input("Use previous settings? y/n ")
 	if save.lower() == "n":
 		get_info()
 	
 	global NUM_USERS, SITE, SCENARIO, CREDENTIALS	
-	import profile_info as info
+	import saved_info as info
 	NUM_USERS = info.NUM_USERS
 	SITE = info.SITE
 	SCENARIO = info.SCENARIO
 	CREDENTIALS = info.CREDENTIALS
 	
 	run_many_users()
+
+
+
+
+
 	
 run()
 	
