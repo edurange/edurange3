@@ -51,9 +51,9 @@ class User:
 		
 	def sample_commands(self):
 		for i in range(3):
-			submit_command("iamfrustrated")
+			self.submit_command("iamfrustrated")
 			time.sleep(1)
-			submit_command("ls")
+			self.submit_command("ls")
 			time.sleep(1)
 			
 	def quit(self):
