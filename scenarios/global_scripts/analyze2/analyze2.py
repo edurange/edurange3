@@ -210,7 +210,7 @@ class LogAnalyzerMain:
                     my_timestamp = int(time.time())
 
                     if isinput:
-                        self._handle_input(line, my_timestamp, node_name, current_working_directory, current_line_prompt)
+                        self._handle_input(line, my_timestamp, node_name, current_working_directory, current_line_prompt, user_prompt)
                     elif not self._is_end(line):
                         self.output_txt += '\n' + line
                     else:
@@ -232,7 +232,12 @@ class LogAnalyzerMain:
             # Check if the line is a prompt
             command_pattern_user_prompt = re.compile(f"{self.user_initial_prompt.split('@')[0].casefold()}@{self.host_pattern}:.*?")
             command_pattern_root_prompt = re.compile(f"{self.root_prompt.casefold()}:.*?")
+            user_match = command_pattern_user_prompt.search(line.casefold()) or command_pattern_root_prompt.search(line.casefold())
+            if user_match:
+                matched_string = user_match.group()
+                self.current_user = matched_string.strip(':')
             return command_pattern_user_prompt.search(line.casefold()) or command_pattern_root_prompt.search(line.casefold())
+            
 
     def _handle_prompt(self, line, user_prompt, root_prompt, home_directory, current_session_id):
         # Handle different prompts and extract relevant information
@@ -265,9 +270,10 @@ class LogAnalyzerMain:
             line_timestamp = 0
         return line_timestamp, line
 
-    def _handle_input(self, line, my_timestamp, node_name, current_working_directory, current_line_prompt):
+    def _handle_input(self, line, my_timestamp, node_name, current_working_directory, current_line_prompt, user_prompt):
         # Handle user input and update the CSV output
         input_cmd = line
+        user_prompt =  self.current_user  # this changes user_prompt to the mathed results
         self.unique_id_dict['counter'] += 1
         unique_row_id = "{}:{}:{}".format(self.unique_id_dict['exp_name'], self.unique_id_dict['start_time'], self.unique_id_dict['counter'])
 
@@ -284,6 +290,8 @@ class LogAnalyzerMain:
             'cwd': current_working_directory,
             'cmd': input_cmd,
             'prompt': current_line_prompt,
+            'user': user_prompt,
+            
             # Add any additional fields you want to capture here, then add to write_to_csv function
         }
         self.ttylog_sessions[self.current_session_id]['lines'].append(new_line)

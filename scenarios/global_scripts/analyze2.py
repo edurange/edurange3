@@ -1,1 +1,1 @@
-analyze2/new_analyzer.py
+analyze2/analyze2.py

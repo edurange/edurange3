@@ -26,3 +26,4 @@ host_pattern = ''
 ttylog = ''
 csv_output_file = ''
 ttylog_lines = []
+current_user = ''
