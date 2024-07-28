@@ -10,7 +10,7 @@ from py_flask.database.models import (
     StudentGroups,  
 )
 from py_flask.utils.error_utils import (
-    Err_Custom_FullInfo
+    custom_abort
 )
 from sqlalchemy.exc import SQLAlchemyError  # Import SQLAlchemy exceptions
 
@@ -66,27 +66,15 @@ blueprint_scenarios = Blueprint(
 
 @blueprint_scenarios.errorhandler(SQLAlchemyError)
 def handle_sqlalchemy_error(error):
-
-    # log full error, including traceback
     current_app.logger.error(f"SQLAlchemy Error: {error}\n{traceback.format_exc()}")
-
-    # return detail in debug mode or generic error message in prod
     if current_app.config['DEBUG']:
-        response_error = Err_Custom_FullInfo(f"Database error occurred: {str(error)}", 500)
-    
-    else: response_error = Err_Custom_FullInfo(f"Database error occurred.", 500)
-
-    return response_error
+        custom_abort(f"Database error occurred: {str(error)}", 500)
+    else: custom_abort(f"Database error occurred.", 500)
 
 # catch-all handler
 @blueprint_scenarios.errorhandler(Exception)
 def general_error_handler(error):
-    status_code = getattr(error, 'status_code', 500)
-
-    if getattr(error, 'message', None) is None:
-        error.message = "Unknown Error"
-
-    error_handler = Err_Custom_FullInfo(error.message, status_code)
+    error_handler = custom_abort(error)
     return error_handler.get_response()
 
 ### Reviewed / Working Routes  ##############
@@ -107,7 +95,7 @@ def get_content(i):
     meta = getScenarioMeta(current_scenario_id)
 
     if not credentialsJSON or not unique_name:
-        return Err_Custom_FullInfo(f"scenario with id {i} is found, but build failed", 500)
+        return custom_abort(f"scenario with id {i} is found, but build failed", 500)
     
     SSH_connections = identify_state(unique_name, "Started")
     SSH_IP = ""
@@ -144,7 +132,7 @@ def get_yaml_content(i):
     meta = getScenarioMeta(current_scenario_id)
 
     if not credentialsJSON or not unique_name:
-        return Err_Custom_FullInfo(f"scenario with id {i} is found, but build failed", 500)
+        return custom_abort(f"scenario with id {i} is found, but build failed", 500)
     
     SSH_connections = identify_state(unique_name, "Started")
     SSH_IP = ""

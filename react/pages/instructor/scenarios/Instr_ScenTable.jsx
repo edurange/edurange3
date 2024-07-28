@@ -4,6 +4,7 @@ import { InstructorRouter_context } from '../Instructor_router';
 import { HomeRouter_context } from '@pub/Home_router';
 import '@assets/css/tables.css'
 import edurange_icons from '../../../modules/ui/edurangeIcons';
+import { AppContext } from '../../../config/AxiosConfig';
 
 export const statusSwitch = {
     0: <span className='status-disabled'>Stopped</span>,
@@ -24,7 +25,9 @@ function Instr_ScenTable() {
         groups_state,
         scenarios_state, set_scenarios_state
     } = useContext(InstructorRouter_context);
-    const { set_desiredNavMetas_state } = useContext(HomeRouter_context);
+    const {
+        desiredNavMetas_state, set_desiredNavMetas_state,
+    } = useContext(AppContext);
 
 
 

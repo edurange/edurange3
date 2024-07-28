@@ -1,16 +1,22 @@
 import React, {useEffect, useContext} from 'react';
 import axios from 'axios';
 import { HomeRouter_context } from '../Home_router';
+import { AppContext } from '../../../config/AxiosConfig';
 
 function Logout () {
 
     const { 
         userData_state, set_userData_state, 
         login_state, 
-        set_login_state , set_desiredNavMetas_state
+        set_login_state
 
     } = useContext(HomeRouter_context);
-
+    const {
+        errorModal_state, set_errorModal_state,
+        desiredNavMetas_state, set_desiredNavMetas_state,
+        clipboard_state, set_clipboard_state
+    } = useContext(AppContext);
+    
     async function sendLogoutRequest() {
         if (!userData_state || !login_state) {return}
         try {

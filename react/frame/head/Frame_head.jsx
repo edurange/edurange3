@@ -7,15 +7,18 @@ import edurange_icons from '@modules/ui/edurangeIcons';
 import { HomeRouter_context } from '@pub/Home_router';
 import Frame_UserBox from './Frame_UserBox';
 import { navArrays } from '../../modules/nav/navItemsData';
+import { AppContext } from '../../config/AxiosConfig';
 
 function Frame_head() {
 
     const {
         sideNav_isVisible_state, set_sideNav_isVisible_state,
         sideNav_isSmall_state, set_sideNav_isSmall_state,
-        desiredNavMetas_state, set_desiredNavMetas_state,
         navArraysObj_state
     } = useContext(HomeRouter_context);
+    const {
+        desiredNavMetas_state, set_desiredNavMetas_state,
+    } = useContext(AppContext);
     
     const navArrayToShow = navArraysObj_state?.top ?? navArrays.logout.home.top
     const someNav = navArrays.top_logout
