@@ -17,10 +17,11 @@ class User:
 		service = Service("geckodriver")
 		self.driver = webdriver.Firefox(service=service)
 		
-	def submit_command(self, command):
+	def submit_text(self, text):
 		action = ActionChains(self.driver)
-		action.send_keys(command)
+		action.send_keys(text)
 		action.key_down(Keys.RETURN).key_up(Keys.RETURN).perform()
+		time.sleep(1)
 		
 	def login(self):
 		self.driver.get(SITE)
@@ -42,18 +43,40 @@ class User:
 				box.click()
 				break
 		time.sleep(1)
+		
+	def open_ssh(self):
 		ssh_button = self.driver.find_element(By.CLASS_NAME, "footcontrol-item.footcontrol-web-ssh-button")
 		ssh_button.click()
 		time.sleep(1)
+		
+	def open_chat(self):
+		right_side = self.driver.find_element(By.CLASS_NAME, "scenario-rightpane-frame")
+		right_side.find_element(By.CLASS_NAME, "footcontrol-item.footcontrol-chat-button").click()
+		time.sleep(1)
+		
+	def open_guide(self):
+		guide_button = self.driver.find_element(By.CLASS_NAME, "footcontrol-item.footcontrol-info-button")
+		guide_button.click()
+		time.sleep(1)
+		
+	def change_guide_tab(self, number):
+		tab_panel = self.driver.find_element(By.CLASS_NAME, "guidepane-controlbar-tabs-frame")
+		all_tabs = tab_panel.find_elements(By.TAG_NAME, "a")
+		new_tab = all_tabs[number]
+		new_tab.click()
+		time.sleep(1)
+		
+	def select_ssh(self):
 		event_box = self.driver.find_element(By.CLASS_NAME, "terminal.xterm.xterm-dom-renderer-owner-1")
 		event_box.click()
+	
+	def select_question(self, number):
+		question_box = self.driver.find_elements(By.CLASS_NAME, "edu3-qSubmit-text")
+		question_box[number].click()
 		
-	def sample_commands(self):
-		for i in range(3):
-			self.submit_command("iamfrustrated")
-			time.sleep(1)
-			self.submit_command("ls")
-			time.sleep(1)
+	def select_chat(self):
+		chat_box = self.driver.find_element(By.CLASS_NAME, "sender-text")
+		chat_box.click()
 			
 	def quit(self):
 		time.sleep(4)
@@ -66,9 +89,28 @@ class User:
 def run_user(credentials):
 	
 	user = User(credentials)
+	
 	user.login()
 	user.enter_scenario(SCENARIO)
-	user.sample_commands()
+	
+	user.open_ssh()
+	user.select_ssh()
+	user.submit_text("iamfrustrated")
+	user.submit_text("ls")
+	
+	# for file_wrangler
+	user.change_guide_tab(5)
+	user.select_question(1)
+	user.submit_text("4")
+	
+	user.select_ssh()
+	user.submit_text("echo 'hello world'")
+	
+	user.open_chat()
+	user.select_chat()
+	user.submit_text("help me pleaseee")
+	
+	time.sleep(3)
 	user.quit()
 
 
