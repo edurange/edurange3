@@ -5,12 +5,16 @@ import Copy_button_flex from '@components/Copy_button_flex';
 import { InstructorRouter_context } from '../Instructor_router';
 import { HomeRouter_context } from '@pub/Home_router';
 import '@assets/css/tables.css';
+import { AppContext } from '../../../config/AxiosConfig';
 
 
 function Instr_GroupsTable() {
 
     const { groups_state, set_groups_state } = useContext(InstructorRouter_context);
-    const { set_desiredNavMetas_state } = useContext(HomeRouter_context);
+
+    const {
+        desiredNavMetas_state, set_desiredNavMetas_state,
+    } = useContext(AppContext);
 
     async function handle_deleteGroup_click(event, groupName) {
         event.stopPropagation();

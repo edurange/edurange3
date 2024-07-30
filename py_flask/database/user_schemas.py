@@ -1,4 +1,5 @@
 from py_flask.config.extensions import db, bcrypt
+
 from py_flask.database.models import (
     GroupUsers, 
     Notification,
@@ -16,10 +17,9 @@ from marshmallow import (
     ValidationError,
     validates_schema,
     )
-
+from flask import jsonify
 from py_flask.utils.error_utils import (
     custom_abort,
-    Err_Custom_FullInfo,
 )
 
 from marshmallow import Schema, fields, validates, ValidationError
@@ -74,18 +74,18 @@ class RegistrationSchema(ma.SQLAlchemyAutoSchema):
         code_input = data.get("code")
 
         if password_input != confirm_password_input:
-            raise ValidationError("Passwords do not match")
+            custom_abort("Passwords do not match", 400)
 
 
         user = db_ses.query(Users).filter_by(username=username_input).first()
         if user != None:
-            return Err_Custom_FullInfo('User already exists in database.  Creation aborted.', 400)
 
+            custom_abort("User already exists.", 409)
 
         group = db_ses.query(StudentGroups).filter_by(code=code_input).first()
 
         if group is None:
-            return Err_Custom_FullInfo('Student group w/ this code not found, aborting.', 403)
+            return custom_abort('Student group w/ this code not found.', 403)
 
     class Meta:
         model = Users

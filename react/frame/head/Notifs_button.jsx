@@ -2,11 +2,16 @@ import React, { useContext } from 'react';
 import './Notifs_button.css';
 import edurange_icons from '@modules/ui/edurangeIcons';
 import { HomeRouter_context } from '../../pages/pub/Home_router';
+import { AppContext } from '../../config/AxiosConfig';
 
 function Notifs_button() {
 
     const notifsArray = ['dsf', "sdfds"];
-    const { set_desiredNavMetas_state } = useContext(HomeRouter_context);
+
+    const {
+        desiredNavMetas_state, set_desiredNavMetas_state,
+    } = useContext(AppContext);
+
     const buttonToUse = () => {
         if (notifsArray.length < 1) {return (
             <div className='homehead-notifs-button-frame' onClick={()=>set_desiredNavMetas_state(['/notifications', 'dash'])}>

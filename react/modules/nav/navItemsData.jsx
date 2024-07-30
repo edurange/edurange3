@@ -73,21 +73,6 @@ const accessibility = {
     navStub: 'options'
 };
 
-const issues = {
-    title: "Issues",
-    icon: edurange_icons.gitHub,
-    path: `https://github.com/edurange/edurange3/issues`,
-    navStub: 'dash',
-    external: true
-};
-
-const feedback = {
-    title: "Feedback",
-    icon: edurange_icons.comments,
-    path: `/feedback`,
-    navStub: 'dash',
-}
-
 // LOGGED-IN-ONLY
 const logout = {
     title: "Logout",
@@ -163,96 +148,116 @@ const instr_hints = {
     path: `/instructor/hints`,
     navStub: 'dash'
 };
+const student_hint = {
+    title: "Hints",
+    icon: edurange_icons.light_bulb,
+    path: `/hints`,
+    extension: true,
+    navStub: 'guide'
+};
+
+const issues = {
+    title: "Issues",
+    icon: edurange_icons.gitHub,
+    path: `https://github.com/edurange/edurange3/issues`,
+    navStub: 'dash',
+    external: true
+};
+
 
 export const navArrays = {
 
     logout: {
         home: {
             top: [login],
-            side: [login, feedback, issues]
+            side: [login, issues]
         },
     },
 
     student: {
         home: {
             top: [scenarios, logout],
-            side: [scenarios, feedback, issues, logout]
+            side: [scenarios, issues, logout]
         },
         dash: {
             top: [home, scenarios, logout],
-            side: [scenarios, feedback, issues, logout]
+            side: [scenarios, issues, logout]
         },
         account: {
             top: [scenarios, logout],
-            side: [scenarios, feedback, issues, logout]
+            side: [scenarios, issues, logout]
         },
-
+        // only exists in the context of a specific scenario
+        // e.g. /dashboard/scenarios/5
+        guide: {
+            top: [scenarios, logout],
+            side: [scenarios, student_hint, issues, logout]
+        }
     },
 
     instructor: {
         home: {
             top: [home, instructor, logout],
-            side: [instructor, feedback, issues, logout]
+            side: [instructor, issues, logout]
         },
         dash: {
             top: [instructor, logout],
-            side: [instructor, studentGroups, instr_scenarios, students, panopticon, instr_hints, logs, feedback, issues]
+            side: [instructor, studentGroups, instr_scenarios, students, panopticon, instr_hints, logs, issues]
         },
         account: {
             top: [instructor, logout],
-            side: [instructor, feedback, issues, logout]
+            side: [instructor, issues, logout]
         },
         scenarios: {
             top: [instructor, logout],
-            side: [instructor, studentGroups, instr_scenarios, students, feedback, issues]
+            side: [instructor, studentGroups, instr_scenarios, students, issues]
         },
         students: {
             top: [instructor, logout],
-            side: [instructor, studentGroups, instr_scenarios, students, feedback, issues]
+            side: [instructor, studentGroups, instr_scenarios, students, issues]
         },
         student_groups: {
             top: [instructor, logout],
-            side: [instructor, studentGroups, instr_scenarios, students, feedback, issues]
+            side: [instructor, studentGroups, instr_scenarios, students, issues]
         },
         scenario_groups: {
             top: [instructor, logout],
-            side: [instructor, studentGroups, instr_scenarios, students, feedback, issues]
+            side: [instructor, studentGroups, instr_scenarios, students, issues]
         },
     },
 
     admin: {
         home: {
             top: [home, instructor, logout],
-            side: [instructor, feedback, issues, logout]
+            side: [instructor, issues, logout]
         },
         dash: {
             top: [instructor, logout],
-            side: [instructor, studentGroups, instr_scenarios, students, panopticon, instr_hints, logs, feedback, issues]
+            side: [instructor, studentGroups, instr_scenarios, students, panopticon, instr_hints, logs, issues]
         },
         account: {
             top: [instructor, logout],
-            side: [instructor, feedback, issues, logout]
+            side: [instructor, issues, logout]
         },
         scenarios: {
             top: [instructor, logout],
-            side: [instructor, studentGroups, instr_scenarios, students, feedback, issues]
+            side: [instructor, studentGroups, instr_scenarios, students, issues]
 
         },
         students: {
             top: [instructor, logout],
-            side: [instructor, studentGroups, instr_scenarios, students, feedback, issues]
+            side: [instructor, studentGroups, instr_scenarios, students, issues]
 
         },
         student_groups: {
             top: [instructor, logout],
-            side: [instructor, studentGroups, instr_scenarios, students, feedback, issues]
+            side: [instructor, studentGroups, instr_scenarios, students, issues]
 
         },
         scenario_groups: {
             top: [instructor, logout],
-            side: [instructor, studentGroups, instr_scenarios, students, feedback, issues]
+            side: [instructor, studentGroups, instr_scenarios, students, issues]
 
         },
     },
 };
-

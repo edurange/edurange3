@@ -2,14 +2,19 @@
 import React, {useContext, useEffect} from 'react';
 import Login from './login/Login';
 import { HomeRouter_context } from "./Home_router";
+import { AppContext } from '../../config/AxiosConfig';
 
 function SessionKeeper () {
 
     const { 
         set_login_state,
         set_userData_state,
-        set_desiredNavMetas_state
       } = useContext(HomeRouter_context);
+      const {
+        errorModal_state, set_errorModal_state,
+        desiredNavMetas_state, set_desiredNavMetas_state,
+        clipboard_state, set_clipboard_state
+    } = useContext(AppContext);
     
     function restoreSession () {
         console.log('Restoring session...');
