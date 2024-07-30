@@ -71,7 +71,7 @@ class LogAnalyzerMain:
 
             # Check if the provided paths exist and are valid files. If not, log an error and exit.
             if not os.path.isfile(ttylog):
-                logger.critical("there's a problem with ttylog! aborting.")
+                logger.critical("file path invalid, aborting. Please adjust and try again.")
                 exit(1)
             
             if not ttylog:
@@ -290,7 +290,7 @@ class LogAnalyzerMain:
             'cwd': current_working_directory,
             'cmd': input_cmd,
             'prompt': current_line_prompt,
-            'user': user_prompt,
+            'username': user_prompt,
             
             # Add any additional fields you want to capture here, then add to write_to_csv function
         }

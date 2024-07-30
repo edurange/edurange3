@@ -350,7 +350,7 @@ def write_to_csv(data, csv_output_file):
 
 
             #Header logic
-            fieldnames = ['id', 'user', 'timestamp', 'scenario', 'data', 'cmd', 'output' ]
+            fieldnames = ['id', 'username', 'timestamp', 'scenario', 'data', 'cmd', 'output' ]
             csvreader = csv.DictWriter(csvfile, fieldnames=fieldnames)
             
             if csvfile.tell() == 0:
@@ -359,7 +359,7 @@ def write_to_csv(data, csv_output_file):
             # Write rows in specific order to csv, change or add to modify output to csv
             # Specific delimeter and quote character
             csvwriter = csv.writer(csvfile, delimiter=',', quotechar='%', quoting=csv.QUOTE_MINIMAL)
-            csvwriter.writerow([data['id'], data['user'], data['timestamp'], data['node_name'], data['cwd'], data['cmd'], data['output'], ])
+            csvwriter.writerow([data['id'], data['username'], data['timestamp'], data['node_name'], data['cwd'], data['cmd'], data['output'], ])
             logging.info("Data written to CSV: %s", data)
     except Exception as e:
         logging.error("Failed to write to CSV: %s", e)
