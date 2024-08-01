@@ -19,42 +19,6 @@ function Login() {
         clipboard_state, set_clipboard_state
     } = useContext(AppContext);
 
-    // async function sendLoginRequest(username_input, password_input) {
-    //     try {
-    //         const response = await axios.post('login',
-    //             {
-    //                 username: username_input,
-    //                 password: password_input
-    //             }
-    //         );
-    //         const userData = response.data;
-
-    //         if (userData) {
-    //             const newAlias = genAlias();
-    //             userData.user_alias = newAlias;
-    //             set_userData_state(userData);
-    //             set_login_state(true);
-
-    //             const newExpiry = Date.now() + loginExpiry;
-    //             sessionStorage.setItem('userData', JSON.stringify(userData));
-    //             sessionStorage.setItem('login', true);
-    //             sessionStorage.setItem('loginExpiry', newExpiry);
-    //             // set_chatData_state(chat_history);
-    //             if ((userData?.role === 'instructor') || (userData?.role === 'admin')) {
-    //                 set_desiredNavMetas_state(['/instructor', 'dash']);
-    //             }
-    //             else {
-    //                 set_desiredNavMetas_state(['/scenarios', 'dash']);
-    //             }
-    //         } else {
-    //             const errData = response.data.error;
-    //             set_errorModal_state(errData);
-    //         };
-    //     } catch (error) {
-    //         console.log('Login failure.');
-    //     };
-    // };
-
     async function sendLoginRequest(username_input, password_input) {
         try {
             const response = await axios.post('login', {

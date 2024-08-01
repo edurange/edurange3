@@ -57,7 +57,8 @@ import {
 
 import { 
     FaStopCircle,
-    FaPlayCircle 
+    FaPlayCircle,
+    FaWpforms,
  } from "react-icons/fa";
 
  const edurange_icons = {
@@ -102,7 +103,8 @@ import {
     playSign: <FaPlayCircle />,
     trash: <FaTrashCan/>,
     tower: <FaTowerObservation/>, 
-    comments: <FaCommentDots />
+    comments: <FaCommentDots />,
+    form: <FaWpforms/>
 }
 export default edurange_icons
 
