@@ -114,7 +114,7 @@ def generate_hint(language_model, logs_dict):
 
       generated_hint = result["choices"][0]["text"]
 
-      return {'generated_hint': generated_hint}
+      return generated_hint
 
 
 

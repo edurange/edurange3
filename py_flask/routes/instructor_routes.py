@@ -485,11 +485,10 @@ def get_hint():
 
     result = request_and_generate_hint.delay(this_scenario_name, this_student_id).get(timeout=None)
     
-    generated_hint = result['generated_hint']
-    logs_dict = result['logs_dict']
+   
     
 
-    return jsonify({'generated_hint': generated_hint, 'logs': logs_dict})
+    return jsonify(result)
     # return {
     #         "scen_type": this_scenario_name,
     #         "username": this_username,
