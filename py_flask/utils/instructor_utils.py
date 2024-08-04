@@ -1,6 +1,9 @@
 import os
 from py_flask.utils.auth_utils import register_user
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy import desc
+from sqlalchemy.orm import aliased
+from datetime import datetime
 
 from py_flask.config.extensions import db
 from py_flask.database.models import (
@@ -166,3 +169,25 @@ def getLogs(optional_user_id=None):
 
     print(returnDict)
     return returnDict
+
+def getNumOfRecentLogs(student_id, numOfRecentLogs):
+
+    method = "first"
+
+    def get_logsTable(model):
+        query = model.query.filter_by(user_id=student_id)
+        return query.order_by(desc(model.timestamp)).limit(numOfRecentLogs).all()
+        
+    chatLogs = get_logsTable(ChatMessages)
+    bashLogs = get_logsTable(BashHistory)
+    responseLogs = get_logsTable(Responses)
+
+    returnDict = {
+        "chat": [log.to_dict() for log in chatLogs],
+        "bash": [log.to_dict() for log in bashLogs],
+        "responses": [log.to_dict() for log in responseLogs]
+    }
+
+    return returnDict
+
+

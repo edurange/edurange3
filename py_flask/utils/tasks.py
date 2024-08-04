@@ -5,14 +5,30 @@ import shutil
 import string
 import subprocess
 import yaml
+import redis
+import pickle
+import time
+import datetime
+import math
+import pyopencl as cl
+import asyncio
+import csv
+import llama_cpp
+from llama_cpp import Llama
+from llama_index.core import Settings
+from llama_index.embeddings.huggingface import HuggingFaceEmbedding
+
 from datetime import datetime
 from celery import Celery
+from celery import shared_task
 from celery.utils.log import get_task_logger
 from flask import current_app, flash, jsonify
 from py_flask.utils.terraform_utils import adjust_network, find_and_copy_template, write_resource
 from py_flask.config.settings import CELERY_BROKER_URL, CELERY_RESULT_BACKEND
 from py_flask.utils.scenario_utils import claimOctet
-from py_flask.utils.ml_utils import check_hardware_specs, set_cpu_gpu_resources, prompt_model, initialize_model, input_context_system
+from py_flask.utils.ml_utils import initialize_model, generate_hint, load_language_model_from_redis
+from py_flask.utils.instructor_utils import getLogs, getNumOfRecentLogs
+
 
 logger = get_task_logger(__name__)
 path_to_directory = os.path.dirname(os.path.abspath(__file__))
@@ -427,12 +443,69 @@ def scenarioCollectLogs(self, arg):
 def setup_periodic_tasks(sender, **kwargs):
     sender.add_periodic_task(60.0, scenarioCollectLogs.s(''))
 
-@celery.task(bind=True)
-def request_and_generate_hint(self, scenario_type, username):
+@celery.task(bind=True, worker_prefetch_multiplier=1)
+def initialize_model(self):
 
-      scenario_type = scenario_type
-      language_model = initialize_model(True, 1)
-      finalized_prompt = input_context_system(scenario_type, username)
-      answer = prompt_model(language_model, finalized_prompt)
+    r = redis.StrictRedis(host='localhost', port=6379, db=1)
 
-      return {'generated_hint': answer}
+    def determine_cpu_resources():
+            #Get hardware specifications.
+            num_cpus = os.cpu_count()
+            if num_cpus is None or num_cpus <= 0:
+                  raise ValueError(f"Invalid CPU count: {num_cpus}")
+            
+            
+                  
+            return math.floor(num_cpus * 0.8) # Use of 80% available cores
+
+    def determine_gpu_resources():
+            #Iterate over platforms and check if gpu_device exists, if so return value to use it.
+        try:
+            platforms = cl.get_platforms()
+            for platform in platforms:
+                gpu_device = platform.get_devices(device_type=cl.device_type.GPU)
+                if gpu_device:
+                    return -1    
+
+        except Exception as GPU_NOT_FOUND:
+            return 0
+
+    #Determine resources
+    cpu_resources = determine_cpu_resources()
+    gpu_resources = determine_gpu_resources()
+      
+    #Retrieve modelfile from huggingface and initialize with llama-cpp-python.
+    language_model = Llama.from_pretrained(
+        repo_id="microsoft/Phi-3-mini-4k-instruct-gguf",
+        filename="Phi-3-mini-4k-instruct-q4.gguf",
+        verbose=False,
+        n_ctx=4086, 
+        n_threads=cpu_resources, 
+        n_gpu_layers=gpu_resources, # By default set's to -1 if GPU is detected to offload as much work as possible to GPU. # Force system to keep model in memory
+        use_mmap=True,  # Use mmap if possible
+        flash_attn=True,
+    )
+
+    language_model_pickle = pickle.dumps(language_model)
+    r.set('language_model', language_model_pickle)
+
+    print('Model initialized and available in redis cache')
+
+    
+
+
+@celery.task(bind=True, worker_prefetch_multiplier=1, priority=1)
+def request_and_generate_hint(self, scenario_name, user_id):
+    
+    numOfRecentLogs = 3
+
+    logs_dict = getNumOfRecentLogs(user_id, numOfRecentLogs)
+
+    language_model = load_language_model_from_redis()
+
+    answer = generate_hint(language_model, logs_dict)
+
+    serialize_answer = str(answer)
+        
+    return {'generated_hint': serialize_answer, 'logs_dict': logs_dict}
+

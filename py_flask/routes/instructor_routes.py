@@ -5,6 +5,8 @@ from py_flask.database.models import Users, StudentGroups, ScenarioGroups, Group
 from py_flask.utils.dataBuilder import get_group_data, get_user_data, get_scenario_data
 from py_flask.config.extensions import db
 from py_flask.utils.chat_utils import gen_chat_names, getChatLibrary
+from py_flask.utils.tasks import request_and_generate_hint, initialize_model
+
 from flask import (
     Blueprint,
     request,
@@ -27,7 +29,8 @@ from py_flask.utils.instructor_utils import (
     clearGroups,
     deleteUsers,
     NotifyCapture,
-    getLogs
+    getLogs,
+    getNumOfRecentLogs
     )
 from py_flask.utils.tasks import (
     create_scenario_task, 
@@ -475,20 +478,29 @@ def get_hint():
     requestJSON = request.json
     
     print('reqJSON: ', requestJSON)
-    this_scenario_type = "file_wrangler"
-    # this_scenario_type = requestJSON["scenario_type"]
-    this_username=g.current_username
-
-    print('get_hint using scenario type: ', this_scenario_type)
-
-    generated_hint = request_and_generate_hint.delay(this_scenario_type, this_username).get(timeout=None)
     
-    generated_hint = generated_hint['generated_hint']
-    print('generated hint: ',generated_hint)
+    this_scenario_name = requestJSON["scenario_name"]
+    this_student_id= requestJSON["student_id"]
 
-    return jsonify({'generated_hint': generated_hint})
+
+    result = request_and_generate_hint.delay(this_scenario_name, this_student_id).get(timeout=None)
+    
+    generated_hint = result['generated_hint']
+    logs_dict = result['logs_dict']
+    
+
+    return jsonify({'generated_hint': generated_hint, 'logs': logs_dict})
     # return {
-    #         "scen_type": this_scenario_type,
+    #         "scen_type": this_scenario_name,
     #         "username": this_username,
     #         "generated_hint": generated_hint
     #     }
+
+@blueprint_instructor.route("/init_model", methods=['POST'])
+@jwt_and_csrf_required
+def init_model():
+    try:
+        initialize_model.delay()
+    
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500

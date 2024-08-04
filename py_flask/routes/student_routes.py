@@ -104,29 +104,29 @@ def get_chat_history():
     return jsonify({'chat_history': chatHistory_dictList})
 
 
-@blueprint_student.route("/get_hint", methods=['POST'])
-@jwt_and_csrf_required
-def get_hint():
+# @blueprint_student.route("/get_hint", methods=['POST'])
+# @jwt_and_csrf_required
+# def get_hint():
 
-    requestJSON = request.json
+#     requestJSON = request.json
     
-    print('reqJSON: ', requestJSON)
-    this_scenario_type = "file_wrangler"
-    # this_scenario_type = requestJSON["scenario_type"]
-    this_username=g.current_username
+#     print('reqJSON: ', requestJSON)
+#     this_scenario_type = "file_wrangler"
+#     # this_scenario_type = requestJSON["scenario_type"]
+#     this_username=g.current_username
 
-    print('get_hint using scenario type: ', this_scenario_type)
+#     print('get_hint using scenario type: ', this_scenario_type)
 
-    generated_hint = request_and_generate_hint.delay(this_scenario_type, this_username).get(timeout=None)
+#     generated_hint = request_and_generate_hint.delay(this_scenario_type, this_username).get(timeout=None)
     
-    generated_hint = generated_hint['generated_hint']
-    print('generated hint: ',generated_hint)
+#     generated_hint = generated_hint['generated_hint']
+#     print('generated hint: ',generated_hint)
 
-    return jsonify({'generated_hint': generated_hint})
-    # return {
-    #         "scen_type": this_scenario_type,
-    #         "username": this_username,
-    #         "generated_hint": generated_hint
-    #     }
+#     return jsonify({'generated_hint': generated_hint})
+#     # return {
+#     #         "scen_type": this_scenario_type,
+#     #         "username": this_username,
+#     #         "generated_hint": generated_hint
+#     #     }
     
 
