@@ -42,30 +42,6 @@ function Feedback () {
   return (
     <form onSubmit={handleSubmit}>
       <div className="form-group">
-        <label htmlFor="name">Name:</label>
-        <input
-          type="text"
-          id="name"
-          name="name"
-          value={formData_state.name}
-          onChange={handleChange}   
-          placeholder='Not Required'       
-        />
-      </div>
-
-      <div className="form-group">
-        <label htmlFor="email">Email:</label>
-        <input
-          type="email"
-          id="email"
-          name="email"
-          value={formData_state.email}
-          onChange={handleScenarioChange}
-          placeholder='Not Required'
-        />
-      </div> 
-
-      <div className="form-group">
         <label>Is your feedback about a scenario?</label>
         <div className="scenario">
           <label>
@@ -102,7 +78,7 @@ function Feedback () {
             value={formData_state.scenarioSelect}
             required
           >
-            <option value="">Select a scenario_type</option>
+            <option value="">Select a Scenario</option>
             <option value="elf_infection">Elf Infection</option>
             <option value="file_wrangler">File Wrangler</option>
             <option value="getting_started">Getting Started</option>
@@ -148,6 +124,7 @@ function Feedback () {
           cols="50"
           value={formData_state.content}
           onChange={handleChange}
+          required
         ></textarea>
       </div>
 
