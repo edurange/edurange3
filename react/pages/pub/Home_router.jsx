@@ -19,6 +19,7 @@ import './Home.css';
 import axios from 'axios';
 import ErrorModal from '../../components/ErrorModal';
 import { AppContext } from '../../config/AxiosConfig';
+import Feedback from '../feedback/Feedback';
 
 export const HomeRouter_context = React.createContext();
 
@@ -103,6 +104,7 @@ function Home_router() {
                   <Route path="/options/*" element={<Options_controller />} />
                   <Route path="/info/*" element={<InfoRouter />} />
                   <Route path="/account" element={<Account />} />
+                  <Route path="/feedback" element={<Feedback />} />
                   <Route path="/scenarios/*" element={
                     <Student_context>
                       <Student_router />

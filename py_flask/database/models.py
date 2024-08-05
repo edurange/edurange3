@@ -183,3 +183,12 @@ class BashHistory(Edu3Mixin, SurrogatePK, Model):
     input = Column(db.String(250), nullable=False, unique=False)
     output = Column(db.String(10000), nullable=False, unique=False)
     archive_id = Column(db.String(8), nullable=False, unique=False)
+
+class FeedbackMessage(Edu3Mixin, SurrogatePK, Model):
+    """Feedback provided by users"""
+    __tablename__ = "feedback_message"
+
+    timestamp = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
+
+    content = Column(db.String(4000), nullable=False, unique=False)
+    scenario_type = Column(db.String(50), nullable=True, unique=False)
