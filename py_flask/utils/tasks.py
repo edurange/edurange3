@@ -443,7 +443,7 @@ def scenarioCollectLogs(self, arg):
 def setup_periodic_tasks(sender, **kwargs):
     sender.add_periodic_task(60.0, scenarioCollectLogs.s(''))
 
-@celery.task(bind=True, worker_prefetch_multiplier=1)
+@celery.task(bind=True, worker_prefetch_multiplier=1, priority=1)
 def initialize_model(self):
 
     r = redis.StrictRedis(host='localhost', port=6379, db=1)
@@ -503,7 +503,7 @@ def request_and_generate_hint(self, scenario_name, user_id):
 
     language_model = load_language_model_from_redis()
 
-    answer = generate_hint(language_model, logs_dict)
+    answer = generate_hint(language_model, logs_dict, scenario_name)
 
     serialize_answer = str(answer)
         

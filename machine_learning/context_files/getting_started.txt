@@ -1,0 +1,37 @@
+Goals:
+
+learn how to learn using man pages
+Understand the structure of the Linux file system: ls, cd, pwd, relative and absolute paths, find
+Interact with files and permissions: touch, mkdir, cat, chmod, cp, mv, bash, grep, sort, uniq, md5sum
+write a bash script
+
+Learning Objectives ('N' means new):
+
+Section 0:
+use man pages to find the options for a command, e.g. find the option for ls to include hidden files
+use apropos or Google to find the right command, e.g. find a command to print a file
+read the descriptions of cowsay and fortune in the man pages, e.g. run cowsay to say 'meow'
+
+Section 1 (file system):
+describe a typical Linux file system as a tree (N), e.g. find a file that is a descendant of x
+use ls with -a and -l, e.g. find a hidden file that is larger than 1KB
+search man pages to find an option, e.g. search man pages of ls for a sorting option
+use cd with . and ..
+create a new file with touch
+create a new directory with mkdir (N)
+use which to see where command files are located (N)
+modify permissions of a file using chmod (N), e.g. add execute permission, subtract write permission
+use find to locate files in branches of the file system, not connected to your home dir
+find a file in a branch of the file tree using the name option for find, e.g. File Wrangler
+
+Section 2 (scripts, pipe, redirect):
+execute a bash script in the current directory (N)
+redirect stdout to a file (with and without overwriting)
+pipe 2 commands together
+write a bash script to pipe 2 commands together, use the #! directive (N)
+
+Section 3 (sort, uniq, grep):
+use sort to sort a text file or with pipe |(N), e.g. sort a log file of from_IP and to_IP addresses with times
+sort a file and count or remove duplicates (N), e.g. use the log file
+use grep to find a string in a file (N), e.g. password example in ssh inception
+compute the md5sum and compare with a known value (N)

@@ -18,36 +18,52 @@ function Instr_Hints() {
 
   const [hint_state, set_hint_state] = useState('');
   const [selectedScenario, set_selectedScenario] = useState('');
-  const [selectedResources, set_selectedResources] = useState('');
-  const [usernameInput, set_usernameInput] = useState(''); 
-  
+  const [usernameInput, set_usernameInput] = useState('');
+  const [loading, set_loading] = useState(false);
+  const [error, set_error] = useState('');
 
   const scenarioOptions = [
-    { value: 'elf_infection', label: 'Elf_Infection' },
-    { value: 'file_wrangler', label: 'File_Wrangler' },
+    { value: 'getting_started', label: 'Getting Started' },
+    { value: 'elf_infection', label: 'Elf Infection' },
+    { value: 'file_wrangler', label: 'File Wrangler' },
     { value: 'metasploitable', label: 'Metasploitable' },
     { value: 'ransomware', label: 'Ransomware' },
-    { value: 'ssh_inception', label: 'Ssh_Inception' },
+    { value: 'ssh_inception', label: 'SSH Inception' },
     { value: 'strace', label: 'Strace' },
-    { value: 'treasure_hunt', label: 'Treasure_Hunt' },
-    { value: 'web_fu', label: 'Web_Fu' },
+    { value: 'treasure_hunt', label: 'Treasure Hunt' },
+    { value: 'web_fu', label: 'Web Fu' },
   ];
 
-  const resourceOptions = [
-    { value: 'high', label: 'High' },
-    { value: 'medium', label: 'Medium' },
-    { value: 'low', label: 'Low' },
-  ];
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.innerHTML = `
+      @keyframes rotateText {
+        0% { transform: rotate(0deg); }
+        25% { transform: rotate(90deg); }
+        50% { transform: rotate(180deg); }
+        75% { transform: rotate(270deg); }
+        100% { transform: rotate(360deg); }
+  }
+    `;
+    document.head.appendChild(style);
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
+
+  const rotateAnimation = {
+    animation: 'rotateText 3s steps(2, end) infinite',
+  };
 
   const requestHint = async () => {
+    set_loading(true);
+    set_error('');
     try {
       const reqJSON = {
         scenario_name: selectedScenario,
         student_id: usernameInput,
       };
 
-
-      console.log("Request JSON:", reqJSON);
       const response = await axios.post(
         "get_hint",
         reqJSON,
@@ -57,11 +73,14 @@ function Instr_Hints() {
           }
         }
       );
-      console.log('Hint response:', response);
+
       set_hint_state(response.data.generated_hint);
 
     } catch (error) {
       console.error("Error fetching hint:", error);
+      set_error('Failed to fetch hint.');
+    } finally {
+      set_loading(false);
     }
   };
 
@@ -70,22 +89,45 @@ function Instr_Hints() {
   };
 
   const handleUsernameChange = (e) => {
-    set_usernameInput(e.target.value); 
+    set_usernameInput(e.target.value);
   };
 
-
   return (
-    <div style={{ width: '200%', height: '200vh', padding: '20px' }}>
-      <div>
+    <div style={{ width: '100%', padding: '20px', position: 'relative' }}>
+      {loading && (
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          color: '#fff',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderRadius: '5px',
+          zIndex: 1000,
+          fontSize: '18px',
+          fontWeight: 'bold',
+          textAlign: 'center',
+          flexDirection: 'column' 
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <span style={{ marginRight: '8px' }}>GENERATING HINT</span>
+            <span style={rotateAnimation}>⌛</span>
+          </div>
+          <span>Please remain on the page...</span>
+        </div>
+      )}
 
+      <div>
         <label htmlFor="scenarioSelect">Select Scenario:</label>
         <select
           id="scenarioSelect"
           value={selectedScenario}
           onChange={handleScenarioChange}
-          style={{
-            marginRight: '10px'
-          }}
+          style={{ marginRight: '10px' }}
         >
           <option value="">Select Scenario</option>
           {scenarioOptions.map(option => (
@@ -99,19 +141,25 @@ function Instr_Hints() {
           id="usernameInput"
           value={usernameInput}
           onChange={handleUsernameChange}
-          placeholder="Enter StudentID"
-          style={{
-            marginRight: '10px'
-          }}
+          placeholder="Enter Student ID"
+          style={{ marginRight: '10px' }}
         />
 
         <button onClick={requestHint}>Request Hint</button>
       </div>
+
+      {error && (
+        <div style={{ marginTop: '10px', color: 'red', fontWeight: 'bold' }}>
+          {error}
+        </div>
+      )}
+
       <div style={{ marginTop: '10px' }}>
         <textarea
           rows={10}
           cols={80}
           readOnly
+          aria-live="polite"
           style={{
             fontFamily: 'monospace',
             fontSize: '16px',

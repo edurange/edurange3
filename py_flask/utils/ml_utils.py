@@ -66,7 +66,7 @@ def initialize_model():
             n_ctx=4086, 
             n_threads=cpu_resources, 
             n_gpu_layers=gpu_resources, # By default set's to -1 if GPU is detected to offload as much work as possible to GPU.
-            use_mlock=True, # Force system to keep model in memory
+            use_mlock=False, # Force system to keep model in memory
             use_mmap=True,  # Use mmap if possible
             flash_attn=True,
     )
@@ -76,40 +76,45 @@ def initialize_model():
 
 
 # @profile
-def generate_hint(language_model, logs_dict):
+def generate_hint(language_model, logs_dict, scenario_name):
 
       bash_history = logs_dict['bash']
       chat_history = logs_dict['chat']
       answer_history = logs_dict['responses']
 
-      finalized_prompt = f'''
+      load_learning_objectives_from_txt(scenario_name)
 
-            You are an instruction AI that assists a struggling student working on a cyber-security scenario. 
-            You will be provided a private answer key and summary to the question they're currently completing, 
-            as well as the recent bash, chat, and answer history of the student.
+      finalized_system_prompt = f'''
+
+            ROLE: 
+            Your are an AI assistant that only instructs and does conversate or ask questions, you assist students in completing a cyber-security scenario by generating them a short and concise hint based off their bash commands, chat messages, and or answers.
             
+            # Still deciding how to feed context to the model's prompt.
 
-            . That was the end of the answer guide, now I will provide you the recent bash, chat, and answer history of the student:
+            CONTEXT: 
+            For context this is the scenario's learning objectives: "{load_learning_objectives_from_txt}". 
 
-            . These are the student's recent bash commands: {bash_history}.
-
-            . These are the student's recent chat messages: {chat_history}.
-
-            . These are the student's recent answers to the question forms: {answer_history}.
-
-            . Now provide the student a short hint based off their bash, chat and answer history
-            on what to do next, but prioritize giving them a hint on debugging current bash errors from their bash commands that they're 
-            experiencing. You only instruct and must never ask for additional information. You do not suggest hints in the 
-            format of a list or steps. You do not discuss the answer key with the student.
-            
             '''
+      finalized_user_prompt = f'''
 
+            CONTEXT: 
+            You will now be provided with the student's recent bash, chat and answer history.
+
+            The student's recent bash commands: {bash_history}. 
+            The student's recent chat messages: {chat_history}.
+            The student's recent answers: {answer_history}.
+
+            TASK:
+            Using the student's recent bash commands, recent chat messages and or recent answers as context, now generate them a simple hint based off the learning objective. 
+            Prioritize assisting the student in debuging errors you see in their bash history if applicable and or helping them understand technical definitions expressed in their chat or answers history if applicable. 
+
+            '''
       result = language_model(
-            f"<|user|>\n{finalized_prompt}<|end|>\n<|assistant|>",
-            max_tokens=100,
+            f"<|system|>\n{finalized_system_prompt}<|end|>\n<|user|>\n{finalized_user_prompt}<|end|>\n<|assistant|> ",
+            max_tokens=-1,
             stop=["<|end|>"], 
             echo=False, 
-            temperature=0.9,
+            temperature=0.8,
       ) 
 
       generated_hint = result["choices"][0]["text"]
@@ -120,16 +125,24 @@ def generate_hint(language_model, logs_dict):
 
 def load_language_model_from_redis():
 
-        r = redis.StrictRedis(host='localhost', port=6379, db=1)
-        language_model_pickle = r.get('language_model')
+      r = redis.StrictRedis(host='localhost', port=6379, db=1)
+      language_model_pickle = r.get('language_model')
     
-        if language_model_pickle:
+      if language_model_pickle:
             language_model = pickle.loads(language_model_pickle)
             return language_model
 
-        else:
+      else:
             valueError('No language model found from Redis db')
             return None
+
+def load_learning_objectives_from_txt(scenario_name):
+
+      file_path = f"machine_learning/context_files/{scenario_name}.txt"
+      with open(file_path, 'r', encoding='utf-8') as file:
+            file_content = file.read()
+      return file_content
+
 
 
         
