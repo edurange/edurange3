@@ -3,11 +3,13 @@ import React, { useContext, useState, useEffect } from 'react';
 import { InstructorRouter_context } from '../Instructor_router';
 import { HomeRouter_context } from '@pub/Home_router';
 import '@assets/css/tables.css';
+import { AppContext } from '../../../config/AxiosConfig';
 
 function Instr_UsersTable() {
 
-    const { set_desiredNavMetas_state, userData_state } = useContext(HomeRouter_context);
-
+    const {
+        desiredNavMetas_state, set_desiredNavMetas_state,
+    } = useContext(AppContext);
     const { 
         users_state, set_users_state, 
         groups_state, set_groups_state, 
@@ -219,7 +221,7 @@ function Instr_UsersTable() {
 
     function compileMessages_byUser(user_id) {
 
-        const userAllowed_chanID_intArr = channelAccess_state[user_id];
+        const userAllowed_chanID_intArr = channelAccess_state[user_id] ?? [];
 
         const userAllowed_messageObjs_arr = userAllowed_chanID_intArr.map((allowed_channel_id) => {
             const filtered_messageObjs_arr = chatObjs_UL_state

@@ -1,6 +1,8 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { InstructorRouter_context } from '../Instructor_router';
 import { HomeRouter_context } from '../../pub/Home_router';
+import axios from 'axios';
+import { AppContext } from '../../../config/AxiosConfig';
 
 function Instr_Hints() {
     const {
@@ -22,12 +24,19 @@ function Instr_Hints() {
         loginExpiry,
         sideNav_isVisible_state, set_sideNav_isVisible_state,
         sideNav_isSmall_state, set_sideNav_isSmall_state,
-        clipboard_state, set_clipboard_state,
         navArraysObj_state,
-        desiredNavMetas_state, set_desiredNavMetas_state,
         chatSocket_state, set_chatSocket_state,
         chatData_state, set_chatData_state
     } = useContext(HomeRouter_context);
+
+    const {
+        errorModal_state, set_errorModal_state,
+        desiredNavMetas_state, set_desiredNavMetas_state,
+        clipboard_state, set_clipboard_state
+    } = useContext(AppContext);
+
+
+    
 
     return (
         <div>

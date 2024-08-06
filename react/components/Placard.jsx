@@ -1,14 +1,17 @@
 import React, { useContext } from 'react';
 import './placard.css';
 import { HomeRouter_context } from '../pages/pub/Home_router';
+import { AppContext } from '../config/AxiosConfig';
 
 function Placard({ placard_text, textSize, navMetas, is_button }) {
     const {
-        set_desiredNavMetas_state
-    } = useContext(HomeRouter_context);
+        errorModal_state, set_errorModal_state,
+        desiredNavMetas_state, set_desiredNavMetas_state,
+        clipboard_state, set_clipboard_state
+    } = useContext(AppContext);
 
     function handleNavClick() {
-        set_desiredNavMetas_state(navMetas)
+        set_desiredNavMetas_state(navMetas ?? ['/', 'home'])
     }
 
     return (

@@ -1,4 +1,3 @@
-// vite.config.js
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
@@ -22,5 +21,13 @@ export default defineConfig({
     server: {
         port: 3663
     },
-    // ... other options ...
+    build: {
+        terserOptions: {
+            compress: {
+                drop_console: true,
+            },
+            parallel: true,
+        }
+    },
+    // ... other option objects here ...
 });

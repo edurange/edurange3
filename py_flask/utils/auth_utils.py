@@ -12,12 +12,9 @@ from datetime import timedelta
 from functools import wraps
 from py_flask.database.models import GroupUsers, StudentGroups, Users, Channels, ChannelUsers
 from flask_jwt_extended import create_access_token, decode_token
+
 from py_flask.utils.error_utils import (
-    Err_InvalidCreds,
-)
-from py_flask.utils.error_utils import (
-    Err_InvalidCreds,
-    Err_Custom_FullInfo,
+    custom_abort,
 )
 ###########
 #  This `@jwt_and_csrf_required()` decorator function should be used on ALL 
@@ -50,7 +47,7 @@ def jwt_and_csrf_required(fn):
             # To avoid auth 'misses', use the `g` object any time the values are needed
 
         except Exception as err:
-            return Err_InvalidCreds()
+            custom_abort('Invalid Credentials', 403)
 
         return fn(*args, **kwargs)
     
@@ -59,8 +56,7 @@ def jwt_and_csrf_required(fn):
 # returns true if argument is an element of this tuple, false otherwise.
 def instructor_only():
     if g.current_user_role not in ('instructor', 'admin'):
-        return Err_Custom_FullInfo("Insufficient role privileges.", 403)
-
+        custom_abort("Insufficient role privileges.", 403)
 
 def login_er3(userObj):
 
