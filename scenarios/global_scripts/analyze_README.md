@@ -30,9 +30,12 @@ Refactored loop function and enumerate_ttylog to reduce time complexity.
     2. Add some testing (done)
     3. Add more logging support (done)
     4. test it live. (done)
+    5. Verify analyze works as intended with GettingStarted
+    6. Check the tests, some have commented out assertions that need script changes to pass that may effect the entire operation.
+    7. Decode is a mile long and is still hard to digest, may need to cut it into pieces for easier reading. Reading the tests helps understand what is going on.
 
 ### What does each method do?
-    New Analyzer:
+    Analyze V2:
     > def __init__(self) -> None:
         Sets up the important class-wide variables.
     > def get_ttylog_init(self):
