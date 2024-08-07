@@ -21,6 +21,8 @@ function Instr_Hints() {
   const [usernameInput, set_usernameInput] = useState('');
   const [loading, set_loading] = useState(false);
   const [error, set_error] = useState('');
+  const [isEditPopupVisible, set_isEditPopupVisible] = useState(false);
+  const [newHint, set_newHint] = useState('');
 
   const scenarioOptions = [
     { value: 'getting_started', label: 'Getting Started' },
@@ -90,6 +92,20 @@ function Instr_Hints() {
 
   const handleUsernameChange = (e) => {
     set_usernameInput(e.target.value);
+  };
+
+  const handleEditHint = () => {
+    set_newHint(hint_state);
+    set_isEditPopupVisible(true);
+  };
+
+  const handleSaveHint = () => {
+    set_hint_state(newHint);
+    set_isEditPopupVisible(false);
+  };
+
+  const handleCancelEdit = () => {
+    set_isEditPopupVisible(false);
   };
 
   return (
@@ -177,7 +193,45 @@ function Instr_Hints() {
           value={hint_state}
           placeholder="Hint will appear here"
         />
+        <button onClick={handleEditHint} style={{ marginTop: '10px' }}>Edit Hint</button>
       </div>
+
+      {isEditPopupVisible && (
+        <div style={{
+          position: 'fixed',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          padding: '20px',
+          backgroundColor: 'rgb(50, 50, 50)',
+          border: '2px solid #deb14f',
+          borderRadius: '5px',
+          boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
+          zIndex: 1000
+        }}>
+          <h3 style={{ color: '#deb14f' }}>Edit Hint</h3>
+          <textarea
+            rows={5}
+            cols={60}
+            value={newHint}
+            onChange={(e) => set_newHint(e.target.value)}
+            style={{
+              width: '90%',
+              marginBottom: '10px',
+              marginTop: '5px',
+              padding: '10px',
+              borderRadius: '5px',
+              backgroundColor: '#000000',
+              border: '1px solid #deb14f',
+              color: '#fff'
+            }}
+          />
+          <div>
+            <button onClick={handleSaveHint} style={{ marginRight: '10px' }}>Save</button>
+            <button onClick={handleCancelEdit}>Cancel</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

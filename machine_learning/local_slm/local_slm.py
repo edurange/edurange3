@@ -1,33 +1,24 @@
 ####################################################################################################
-# PHI-3 SMALL LANGUAGE MODEL MODULE
+# LOCAL SMALL LANGUAGE MODEL MODULE
 # Program for running Microsoft's Phi-3-mini-4k-instruct-q4 small language model,
 # a quantized SLM with only 4b params. Aiming to generate hints based on student bash, chat
 # and answer logs.
 # 
 #
 # Author: Taylor Wolff 
-# Run $python machine_learning/local_slm/phi_3_slm.py to be prompted to input bash commands.
+# Run $python machine_learning/local_slm/local_slm.py to be prompted to input bash commands.
 ####################################################################################################
 import sys
-import time
-import datetime
 import os
 import math
 import pyopencl as cl
 import asyncio
 import yaml
-import csv
-import pickle
-import redis
-
-
 
 import llama_cpp
 from llama_cpp import Llama
 from llama_index.core import Settings
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
-
-
 
 from memory_profiler import profile, memory_usage
 
@@ -73,14 +64,27 @@ def initialize_model():
       return language_model
 
 
+def load_learning_objectives_from_txt(scenario_name):
+
+      file_path = f"machine_learning/context_files/{scenario_name}.txt"
+      with open(file_path, 'r', encoding='utf-8') as file:
+            file_content = file.read()
+      return file_content
 
 
 # @profile
-def generate_hint(language_model, logs_dict, scenario_name):
+def generate_hint(language_model, scenario_name):
 
-      bash_history = logs_dict['bash']
-      chat_history = logs_dict['chat']
-      answer_history = logs_dict['responses']
+      #Set logs to what you want for student
+      bash_history = """
+
+      """
+      chat_history = """
+
+      """
+      answer_history = """
+
+      """
 
       load_learning_objectives_from_txt(scenario_name)
 
@@ -123,29 +127,25 @@ def generate_hint(language_model, logs_dict, scenario_name):
       return generated_hint
 
 
-
-def load_language_model_from_redis():
-
-      r = redis.StrictRedis(host='localhost', port=6379, db=1)
-      language_model_pickle = r.get('language_model')
+def request_and_generate_hint(scenario_name):
     
-      if language_model_pickle:
-            language_model = pickle.loads(language_model_pickle)
-            return language_model
+    language_model = initialize_model()
 
-      else:
-            valueError('No language model found from Redis db')
-            return None
+    answer = generate_hint(language_model, scenario_name)
 
-def load_learning_objectives_from_txt(scenario_name):
-
-      file_path = f"machine_learning/context_files/{scenario_name}.txt"
-      with open(file_path, 'r', encoding='utf-8') as file:
-            file_content = file.read()
-      return file_content
-
-
-
+    serialize_answer = str(answer)
         
+    return serialize_answer
+
+
+def main():
+      scenario_name = 'ssh_inception'
+      hint = request_and_generate_hint(scenario_name)
+      print(f"The generated hint: {hint}")
+    
+
+
+if __name__ == "__main__":
+    main()
 
 
