@@ -31,51 +31,6 @@ from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 
 from memory_profiler import profile, memory_usage
 
-
-def initialize_model():
-
-      def determine_cpu_resources():
-            #Get hardware specifications.
-            cpu_resource_scaler = 1 # Multiplicative scaler for CPU cores to be used.
-            num_cpus = os.cpu_count()
-            if num_cpus is None or num_cpus <= 0:
-                  raise ValueError(f"Invalid CPU count: {num_cpus}")
-            
-            return int(math.floor(num_cpus * cpu_resource_scaler))
-
-      def determine_gpu_resources():
-            #Iterate over platforms and check if gpu_device exists, if so return value to use it.
-            try:
-                  platforms = cl.get_platforms()
-                  for platform in platforms:
-                        gpu_device = platform.get_devices(device_type=cl.device_type.GPU)
-                        if gpu_device:
-                              return -1    
-
-            except Exception as GPU_NOT_FOUND:
-                  return 0
-
-      #Determine resources
-      cpu_resources = determine_cpu_resources()
-      gpu_resources = determine_gpu_resources()
-      
-      #Retrieve modelfile from huggingface and initialize with llama-cpp-python.
-      language_model = Llama.from_pretrained(
-            repo_id="microsoft/Phi-3-mini-4k-instruct-gguf",
-            filename="Phi-3-mini-4k-instruct-q4.gguf",
-            verbose=False,
-            n_ctx=4086, 
-            n_threads=cpu_resources, 
-            n_gpu_layers=gpu_resources, # By default set's to -1 if GPU is detected to offload as much work as possible to GPU.
-            use_mlock=False, # Force system to keep model in memory
-            use_mmap=True,  # Use mmap if possible
-            flash_attn=True,
-    )
-      return language_model
-
-
-
-
 # @profile
 def generate_hint(language_model, logs_dict, scenario_name):
 
