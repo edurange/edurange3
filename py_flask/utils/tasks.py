@@ -27,7 +27,7 @@ from py_flask.utils.terraform_utils import adjust_network, find_and_copy_templat
 from py_flask.config.settings import CELERY_BROKER_URL, CELERY_RESULT_BACKEND
 from py_flask.utils.scenario_utils import claimOctet
 from py_flask.utils.ml_utils import initialize_model, generate_hint, load_language_model_from_redis
-from py_flask.utils.instructor_utils import getLogs, getNumOfRecentLogs
+from py_flask.utils.instructor_utils import getLogs, getNumOfRecentLogsForHint
 
 
 logger = get_task_logger(__name__)
@@ -443,69 +443,62 @@ def scenarioCollectLogs(self, arg):
 def setup_periodic_tasks(sender, **kwargs):
     sender.add_periodic_task(60.0, scenarioCollectLogs.s(''))
 
+
 @celery.task(bind=True, worker_prefetch_multiplier=1, priority=1)
 def initialize_model(self):
+    
+    def determine_cpu_resources():   
+        cpu_resource_scaler = 1 # Multiplicative scaler for CPU cores to be used.
+        num_cpus = os.cpu_count()
+        if num_cpus is None or num_cpus <= 0:
+            raise ValueError(f"Invalid CPU count: {num_cpus}")   
 
-    r = redis.StrictRedis(host='localhost', port=6379, db=1)
-
-    def determine_cpu_resources():
-            #Get hardware specifications.
-            num_cpus = os.cpu_count()
-            if num_cpus is None or num_cpus <= 0:
-                  raise ValueError(f"Invalid CPU count: {num_cpus}")
-            
-            
-                  
-            return math.floor(num_cpus * 0.8) # Use of 80% available cores
+        return math.floor(num_cpus * cpu_resource_scaler) 
 
     def determine_gpu_resources():
-            #Iterate over platforms and check if gpu_device exists, if so return value to use it.
         try:
             platforms = cl.get_platforms()
             for platform in platforms:
                 gpu_device = platform.get_devices(device_type=cl.device_type.GPU)
                 if gpu_device:
+
                     return -1    
 
         except Exception as GPU_NOT_FOUND:
+
             return 0
 
-    #Determine resources
     cpu_resources = determine_cpu_resources()
     gpu_resources = determine_gpu_resources()
       
-    #Retrieve modelfile from huggingface and initialize with llama-cpp-python.
     language_model = Llama.from_pretrained(
         repo_id="microsoft/Phi-3-mini-4k-instruct-gguf",
         filename="Phi-3-mini-4k-instruct-q4.gguf",
         verbose=False,
         n_ctx=4086, 
         n_threads=cpu_resources, 
-        n_gpu_layers=gpu_resources, # By default set's to -1 if GPU is detected to offload as much work as possible to GPU. # Force system to keep model in memory
-        use_mmap=True,  # Use mmap if possible
+        n_gpu_layers=gpu_resources, 
+        use_mmap=True,
+        use_mlock=False,
         flash_attn=True,
     )
 
+    r = redis.StrictRedis(host='localhost', port=6379, db=1)
     language_model_pickle = pickle.dumps(language_model)
     r.set('language_model', language_model_pickle)
 
-    print('Model initialized and available in redis cache')
 
-    
+@celery.task(bind=True, worker_prefetch_multiplier=1, priority=1)
+def getLogs_for_hint(self, user_id):
+    logs_dict = getNumOfRecentLogsForHint(user_id)
+
+    return logs_dict
 
 
 @celery.task(bind=True, worker_prefetch_multiplier=1, priority=1)
-def request_and_generate_hint(self, scenario_name, user_id):
-    
-    numOfRecentLogs = 3
-
-    logs_dict = getNumOfRecentLogs(user_id, numOfRecentLogs)
-
+def request_and_generate_hint(self, scenario_name, logs_dict):
     language_model = load_language_model_from_redis()
-
     answer = generate_hint(language_model, logs_dict, scenario_name)
-
-    serialize_answer = str(answer)
-        
-    return {'generated_hint': serialize_answer, 'logs_dict': logs_dict}
+    
+    return {'generated_hint': answer, 'logs_dict': logs_dict}
 

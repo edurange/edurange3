@@ -151,9 +151,9 @@ def deleteUsers(users_to_delete):
         return []
 
 def getLogs(optional_user_id=None):
-    method = "first" if optional_user_id else "all"
-
+    
     def get_logsTable(model):
+        method = "first" if optional_user_id else "all"
         query_result = model.query.filter_by(user_id=optional_user_id) if optional_user_id else model.query
         return getattr(query_result, method)()
 
@@ -170,24 +170,24 @@ def getLogs(optional_user_id=None):
     print(returnDict)
     return returnDict
 
-def getNumOfRecentLogs(student_id, numOfRecentLogs):
-
-    method = "first"
+def getNumOfRecentLogsForHint(student_id, numOfRecentLogs=2):
 
     def get_logsTable(model):
         query = model.query.filter_by(user_id=student_id)
-        return query.order_by(desc(model.timestamp)).limit(numOfRecentLogs).all()
-        
-    chatLogs = get_logsTable(ChatMessages)
+        return query.order_by(model.timestamp.desc()).limit(numOfRecentLogs).all()
+    
     bashLogs = get_logsTable(BashHistory)
+    chatLogs = get_logsTable(ChatMessages)
     responseLogs = get_logsTable(Responses)
 
     returnDict = {
-        "chat": [log.to_dict() for log in chatLogs],
-        "bash": [log.to_dict() for log in bashLogs],
-        "responses": [log.to_dict() for log in responseLogs]
+        "bash": [{"index": i, "bashEntry": log.to_dict().get('content')} for i, log in enumerate(bashLogs)],
+        "chat": [{"index": i, "chatEntry": log.to_dict().get('content')} for i, log in enumerate(chatLogs)],
+        "responses": [{"index": i, "responsesEntry": log.to_dict().get('content')} for i, log in enumerate(responseLogs)]
     }
 
     return returnDict
+
+
 
 

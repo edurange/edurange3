@@ -77,6 +77,7 @@ function Instr_Hints() {
       );
 
       set_hint_state(response.data.generated_hint);
+      console.log(response)
 
     } catch (error) {
       console.error("Error fetching hint:", error);
@@ -203,7 +204,7 @@ function Instr_Hints() {
           left: '50%',
           transform: 'translate(-50%, -50%)',
           padding: '20px',
-          backgroundColor: 'rgb(50, 50, 50)',
+          backgroundColor: 'rgb(7, 0, 17)',
           border: '2px solid #deb14f',
           borderRadius: '5px',
           boxShadow: '0 2px 10px rgba(0,0,0,0.1)',

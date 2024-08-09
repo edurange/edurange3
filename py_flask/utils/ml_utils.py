@@ -36,11 +36,12 @@ def initialize_model():
 
       def determine_cpu_resources():
             #Get hardware specifications.
+            cpu_resource_scaler = 1 # Multiplicative scaler for CPU cores to be used.
             num_cpus = os.cpu_count()
             if num_cpus is None or num_cpus <= 0:
                   raise ValueError(f"Invalid CPU count: {num_cpus}")
             
-            return int(math.floor(num_cpus * 0.8)) # Will use 80% of cores for process
+            return int(math.floor(num_cpus * cpu_resource_scaler))
 
       def determine_gpu_resources():
             #Iterate over platforms and check if gpu_device exists, if so return value to use it.
@@ -99,14 +100,14 @@ def generate_hint(language_model, logs_dict, scenario_name):
       finalized_user_prompt = f'''
 
             CONTEXT: 
-            You will now be provided with the student's recent bash, chat and answer history.
+            You will now be provided with the student's recent bash, chat and question/answer response history.
 
             The student's recent bash commands: {bash_history}. 
             The student's recent chat messages: {chat_history}.
-            The student's recent answers: {answer_history}.
+            The student's recent question/answer responses: {answer_history}.
 
             TASK:
-            Using the student's recent bash commands, recent chat messages and or recent answers as context, now generate them a simple hint based off the learning objective. 
+            Using the student's recent bash commands, recent chat messages and or recent question/answer responses as context, now generate them a simple hint based off the learning objective. 
             Prioritize assisting the student in debuging errors you see in their bash history if applicable and or helping them understand technical definitions expressed in their chat or answers history if applicable. 
 
             '''

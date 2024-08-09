@@ -5,7 +5,7 @@ from py_flask.database.models import Users, StudentGroups, ScenarioGroups, Group
 from py_flask.utils.dataBuilder import get_group_data, get_user_data, get_scenario_data
 from py_flask.config.extensions import db
 from py_flask.utils.chat_utils import gen_chat_names, getChatLibrary
-from py_flask.utils.tasks import request_and_generate_hint, initialize_model
+from py_flask.utils.tasks import request_and_generate_hint, initialize_model, getLogs_for_hint
 
 from flask import (
     Blueprint,
@@ -30,7 +30,7 @@ from py_flask.utils.instructor_utils import (
     deleteUsers,
     NotifyCapture,
     getLogs,
-    getNumOfRecentLogs
+    getNumOfRecentLogsForHint
     )
 from py_flask.utils.tasks import (
     create_scenario_task, 
@@ -474,32 +474,18 @@ def add_user_to_container():
 @blueprint_instructor.route("/get_hint", methods=['POST'])
 @jwt_and_csrf_required
 def get_hint():
-
     requestJSON = request.json
-    
-    print('reqJSON: ', requestJSON)
-    
     this_scenario_name = requestJSON["scenario_name"]
     this_student_id= requestJSON["student_id"]
-
-
-    result = request_and_generate_hint.delay(this_scenario_name, this_student_id).get(timeout=None)
+    logs_dict = getLogs_for_hint.delay(this_student_id).get(timeout=None)
+    result = request_and_generate_hint.delay(this_scenario_name, logs_dict).get(timeout=None)
     
-   
-    
-
     return jsonify(result)
-    # return {
-    #         "scen_type": this_scenario_name,
-    #         "username": this_username,
-    #         "generated_hint": generated_hint
-    #     }
 
 @blueprint_instructor.route("/init_model", methods=['POST'])
 @jwt_and_csrf_required
 def init_model():
     try:
         initialize_model.delay()
-    
     except Exception as e:
         return jsonify({'error': str(e)}), 500
