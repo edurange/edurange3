@@ -1,12 +1,10 @@
 from selenium import webdriver
-from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
+REPLACE_ME_1
 import time
 import threading
-import shutil
-import tempfile
 
 
 
@@ -14,8 +12,10 @@ class User:
 	
 	def __init__(self, credentials):
 		self.credentials = credentials
-		service = Service("geckodriver")
-		self.driver = webdriver.Firefox(service=service)
+
+		REPLACE_ME_2
+		REPLACE_ME_3
+
 		
 	def submit_text(self, text):
 		action = ActionChains(self.driver)
