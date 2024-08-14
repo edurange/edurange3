@@ -5,6 +5,7 @@ import shutil
 import string
 import subprocess
 import yaml
+import threading
 from datetime import datetime
 from celery import Celery
 from celery.utils.log import get_task_logger
@@ -23,6 +24,8 @@ def get_path(file_name):
     return mail_path
 
 celery = Celery(__name__, broker=CELERY_BROKER_URL, backend=CELERY_RESULT_BACKEND)
+
+network_lock = threading.Lock()
 
 class ContextTask(celery.Task):
     ''' This allows tasks to assume the create_app() context, and access the database '''
@@ -104,21 +107,23 @@ def create_scenario_task(self, scen_name, scen_type, students_list, grp_id, scen
         
         lowest_avail_octet = claimOctet()
 
-        # Write provider and networks
-        find_and_copy_template(scen_type, "network")
-        adjust_network(str(lowest_avail_octet), scen_name)
-        os.system("terraform init")
-        os.system("terraform plan -out network")
+        # Lock network_related operations
+        with network_lock:
+            # Write provider and networks
+            find_and_copy_template(scen_type, "network")
+            adjust_network(str(lowest_avail_octet), scen_name)
+            os.system("terraform init")
+            os.system("terraform plan -out network")
 
-        logger.info("All flags: {}".format(flags))
+            logger.info("All flags: {}".format(flags))
 
-        # Each container and their names are pulled from the 'scen_type'.json file
-        for i, c in enumerate(c_names):
-            find_and_copy_template(scen_type, c)
-            write_resource(
-                str(lowest_avail_octet), scen_name, scen_type, i, usernames, passwords,
-                s_files[i], g_files[i], u_files[i], flags, c_names
-            )
+            # Each container and their names are pulled from the 'scen_type'.json file
+            for i, c in enumerate(c_names):
+                find_and_copy_template(scen_type, c)
+                write_resource(
+                    str(lowest_avail_octet), scen_name, scen_type, i, usernames, passwords,
+                    s_files[i], g_files[i], u_files[i], flags, c_names
+                )
 
         scenario.update(
             status=0,
@@ -166,10 +171,13 @@ def start_scenario_task(self, scenario_id):
         elif os.path.isdir(os.path.join("./scenarios/tmp/", name)):
             scenario.update(status=3)
             logger.info("Folder Found")
-            os.chdir("./scenarios/tmp/" + name)
-            os.system("terraform apply network")
-            os.system("terraform apply --auto-approve")
-            os.system("../../../shell_scripts/scenario_movekeys.sh {} {} {}".format(gateway, start, start_ip))
+            
+            # Lock network-related operations
+            with network_lock:
+                os.chdir("./scenarios/tmp/" + name)
+                os.system("terraform apply network")
+                os.system("terraform apply --auto-approve")
+                os.system("../../../shell_scripts/scenario_movekeys.sh {} {} {}".format(gateway, start, start_ip))
             os.chdir("../../..")
             scenario.update(status=1)
             NotifyCapture("Scenario " + name + " has started successfully.")
@@ -210,9 +218,12 @@ def stop_scenario_task(self, scenario_id):
         elif os.path.isdir(os.path.join("./scenarios/tmp/", name)):
             logger.info("Folder Found")
             scenario.update(status=4)
-            os.chdir("./scenarios/tmp/" + name)
-            os.system("terraform destroy --auto-approve")
-            os.chdir("../../..")
+            
+            # Lock network-related operations
+            with network_lock:
+                os.chdir("./scenarios/tmp/" + name)
+                os.system("terraform destroy --auto-approve")
+                os.chdir("../../..")
             scenario.update(status=0)
             NotifyCapture("Scenario " + name + " has successfully stopped.")
             return {
@@ -293,9 +304,12 @@ def destroy_scenario_task(self, scenario_id):
                 r.delete()
             if os.path.isdir(os.path.join("./scenarios/tmp/", name)):
                 logger.info("Folder Found, current directory: {}".format(os.getcwd()))
-                os.chdir("./scenarios/tmp/")
-                shutil.rmtree(name)
-                os.chdir("../..")
+                
+                # Lock network-related operations
+                with network_lock:
+                    os.chdir("./scenarios/tmp/")
+                    shutil.rmtree(name)
+                    os.chdir("../..")
                 if s_group:
                     s_group.delete()
 
@@ -359,8 +373,9 @@ def scenarioCollectLogs(self, arg):
     files = files.split('\n')[:-1]
     for scenario_name in scenario_nameList:
         try:  # DEV_FIX This is dangerous, may want to substitute for subprocess.call
-            os.system(f'docker cp {scenario_name}_gateway:/usr/local/src/merged_logs.csv logs/{scenario_name}_gateway.csv')
-            os.system(f'docker cp {scenario_name}_gateway:/usr/local/src/raw_logs.zip logs/{scenario_name}_gateway.zip')
+            with network_lock:
+                os.system(f'docker cp {scenario_name}_gateway:/usr/local/src/merged_logs.csv logs/{scenario_name}_gateway.csv')
+                os.system(f'docker cp {scenario_name}_gateway:/usr/local/src/raw_logs.zip logs/{scenario_name}_gateway.zip')
         except FileNotFoundError as e:
             print(f'{e}')
         if os.path.isdir(f'scenarios/tmp/{scenario_name}'):
