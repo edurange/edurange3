@@ -56,6 +56,12 @@ function Home_router() {
 
     const roleToUse = userData_state?.role ?? 'logout';
 
+    console.log('desired nav stub: ', desiredNavStub)
+
+    console.log('navArrays: ', navArrays)
+    console.log('roleToUse: ', roleToUse)
+    console.log('navArrays[roleToUse]: ', navArrays[roleToUse])
+
     if (!(desiredNavStub in navArrays[roleToUse])) {
       console.error('navStub not found in role navItemData as key');
       return;

@@ -6,6 +6,7 @@ import { InstructorRouter_context } from "../../instructor/Instructor_router";
 import { HomeRouter_context } from "../../pub/Home_router";
 import { useSortedData } from "../../../modules/utils/sorting_modules";
 import ListController from "../../../components/ListController";
+import "../../../components/ListController.css";
 
 function Instr_Chat_HistoryBox({ lastChat_ref, chatObjs_array, selectedUser_obj }) {
     const { selectedMessage_state, set_selectedMessage_state } = useContext(InstructorRouter_context);
@@ -52,29 +53,31 @@ function Instr_Chat_HistoryBox({ lastChat_ref, chatObjs_array, selectedUser_obj 
     
     return (
         <>
-        <div className='listController-frame'>
+            <div className="chat-listController-bar">
+
                 <ListController 
                     sortDirection_state={sortDirection_state}
                     set_sortDirection_state={set_sortDirection_state}
                     primarySortProperty_state={primarySortProperty_state}
                     set_primarySortProperty_state={set_primarySortProperty_state}
-                    />
-        </div>
-        <div className="instr-historybox-frame">
-            <div className='chat-historybox-carpet'>
-                {sortedArr.map((chat, index) => (
-                    <div key={index} ref={index === messagesToDisplay_state.length - 1 ? lastChat_ref : null}>
-                        <Msg_Bubble 
-                            is_instructor={is_instructor} 
-                            user_id={userData_state?.id} 
-                            message_obj={chat} 
-                            is_outgoing={chat?.user_id === userData_state?.id} 
-                        />
-                    </div>
-                ))}
+                />
             </div>
-        </div>
-    </>
+
+            <div className="instr-historybox-frame">
+                <div className='chat-historybox-carpet'>
+                    {sortedArr.map((chat, index) => (
+                        <div key={index} ref={index === messagesToDisplay_state.length - 1 ? lastChat_ref : null}>
+                            <Msg_Bubble 
+                                is_instructor={is_instructor} 
+                                user_id={userData_state?.id} 
+                                message_obj={chat} 
+                                is_outgoing={chat?.user_id === userData_state?.id} 
+                            />
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </>
     );
 }
 

@@ -34,9 +34,10 @@ function Feedback () {
     }
   };
 
-  function handleSubmit (e) {
-    e.preventDefault();
-    axios.post('/feedback', formData_state)
+  async function handleSubmit (event) {
+    event.preventDefault();
+    feedback_response = await axios.post('/feedback', formData_state)
+    console.log(feedback_response)
   };
 
   return (

@@ -44,7 +44,7 @@ function LogTable({ rowData, use_crud, logType }) {
                                 <div className="grid-item">{item.archive_id}</div>
                                 <div className="grid-item content-box">
                                     <div className='content-box'>
-                                        {item.content}
+                                        {item.content ?? item.input}
                                     </div>
                                 </div>
                                 <div className='grid-item'>

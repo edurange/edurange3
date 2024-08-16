@@ -45,33 +45,38 @@ function Instructor_router() {
             const responseData = response.data;
             // DEV_FIX (update for new list strategy (not dict))
 
+            console.log('responseData: ', responseData)
             // recent_reply is compared to chat_message timestamp to determine
             // whether message is considered new (Instr_UserTable.jsx).
             // the prop is also updated when an instructor sends reply (ea instr has their own record)
             // this record is only persistent in memory; full refresh effectively sets all to 'old'
-
+            
             responseData?.users?.forEach(user => {
                 if (!user.recent_reply) {
+                    console.log('no recent reply found, adding... ', responseData)
                     user.recent_reply = Date.now()
+                    console.log('current recent_reply: ', user.recent_reply)
+                }
+                if (!user.bash_resetTime) {
+                    console.log('no bash reset time found, adding... ', responseData)
+                    user.bash_resetTime = Date.now()
+                    console.log('current bash_resetTime: ', user.recent_reply)
+                }
+                if (!user.response_resetTime) {
+                    console.log('no recent reply found, adding... ', responseData)
+                    user.response_resetTime = Date.now()
+                    console.log('current response_resetTime: ', user.response_resetTime)
                 }
             });
 
             set_users_state(responseData?.users);
             set_groups_state(responseData?.groups);
             set_scenarios_state(responseData?.scenarios);
-            set_logs_state(responseData?.logs)
+            set_logs_state(responseData?.logs);
         }
         catch (error) { console.log('get_instructorData error:', error); };
     };
     useEffect(() => { get_instructorData(); }, []);
-
-    if (
-        !scenarios_state
-        || !groups_state
-        || !scenarios_state
-        || !logs_state
-        || !login_state
-    ) { return <></> }
 
     // INITIALIZE ONLY SOCKET REF
     useEffect(() => {
@@ -92,6 +97,7 @@ function Instructor_router() {
             }
         };
     }, []);
+
     useEffect(() => {
         async function get_lib(){
             const chatlib_resp = await axios.get('/get_chat_library');
@@ -102,7 +108,7 @@ function Instructor_router() {
         }
         get_lib()
     }, []);
-    
+
     useEffect(() => {
         const handleMessage = (event) => {
             const message = JSON.parse(event.data);
@@ -129,6 +135,14 @@ function Instructor_router() {
             lastChat_ref.current.scrollIntoView({ behavior: 'smooth' });
         }
     }, [chatObjs_UL_state]);
+
+    if (
+        !scenarios_state
+        || !groups_state
+        || !scenarios_state
+        || !logs_state
+        || !login_state
+    ) { return <></> }
 
     return (
         <div className='newdash-frame'>

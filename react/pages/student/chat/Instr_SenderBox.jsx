@@ -51,7 +51,8 @@ function Instr_SenderBox() {
                 set_messageContent_state('');
             }
         }
-        const response_target_user_id = selectedMessage_state?.sender;
+        console.log('selectedMessage_state: ', selectedMessage_state)
+        const response_target_user_id = selectedMessage_state?.user_id;
         const new_timestamp = Date.now();
         const updated_users_state = users_state.map(user => {
             if (user.id === response_target_user_id) {
