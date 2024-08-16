@@ -3,9 +3,10 @@ import axios from 'axios';
 import { InstructorRouter_context } from '../Instructor_router';
 import { HomeRouter_context } from '../../pub/Home_router';
 import { AppContext } from '../../../config/AxiosConfig';
+import { ChatMessage } from '../../../modules/utils/chat_modules';
 
 function Instr_Hints() {
-  const { scenarios_state } = useContext(InstructorRouter_context);
+  const { socket_ref, scenarios_state, users_state } = useContext(InstructorRouter_context);
   const { userData_state } = useContext(HomeRouter_context);
   const {
     errorModal_state,
@@ -17,8 +18,8 @@ function Instr_Hints() {
   } = useContext(AppContext);
 
   const [hint_state, set_hint_state] = useState('');
-  const [selectedScenario, set_selectedScenario] = useState('');
-  const [usernameInput, set_usernameInput] = useState('');
+  const [selectedScenarioType, set_selectedScenarioType] = useState('');
+  const [userIDinput, set_userIDinput] = useState('');
   const [loading, set_loading] = useState(false);
   const [error, set_error] = useState('');
   const [isEditPopupVisible, set_isEditPopupVisible] = useState(false);
@@ -62,8 +63,8 @@ function Instr_Hints() {
     set_error('');
     try {
       const reqJSON = {
-        scenario_name: selectedScenario,
-        student_id: usernameInput,
+        scenario_name: selectedScenarioType,
+        student_id: userIDinput,
       };
 
       const response = await axios.post(
@@ -88,16 +89,54 @@ function Instr_Hints() {
   };
 
   const handleScenarioChange = (e) => {
-    set_selectedScenario(e.target.value);
+    set_selectedScenarioType(e.target.value);
   };
 
   const handleUsernameChange = (e) => {
-    set_usernameInput(e.target.value);
+    set_userIDinput(e.target.value);
   };
 
   const handleEditHint = () => {
     set_newHint(hint_state);
     set_isEditPopupVisible(true);
+  };
+  console.log ('users state: ', users_state);
+  
+  const filteredUser = users_state.filter((user) => user.id === 3)[0]
+
+  const filteredUserHomeChan = filteredUser?.channel_data?.home_channel
+
+  console.log ('filtered user: ', filteredUser);
+  console.log ('filtered user home channel: ', filteredUserHomeChan);
+
+  const handleHintSend = () => {
+
+    if (!hint_state || !selectedScenarioType || !userIDinput) {
+      return
+    }
+
+    const chatMsg = new ChatMessage(
+      filteredUserHomeChan, // channel id
+      "HintBot", // 
+      selectedScenarioType, // scenario type
+      hint_state.trim(), // 'content'
+      1 // 'scenario_id'  // DEV_FIX: replace w/ dynamic scenario id
+    );
+
+    console.log('generated chatMsg: ', chatMsg)
+
+    if (chatMsg.content) {
+      const newChat = {
+        message_type: 'chat_message',
+        timestamp: Date.now(),
+        data: chatMsg
+      };
+
+      if (socket_ref.current && socket_ref.current.readyState === 1) {
+        console.log('trying to send socket msg')
+        socket_ref.current.send(JSON.stringify(newChat));
+      }
+    }
   };
 
   const handleSaveHint = () => {
@@ -128,7 +167,7 @@ function Instr_Hints() {
           fontSize: '18px',
           fontWeight: 'bold',
           textAlign: 'center',
-          flexDirection: 'column' 
+          flexDirection: 'column'
         }}>
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <span style={{ marginRight: '8px' }}>GENERATING HINT</span>
@@ -142,7 +181,7 @@ function Instr_Hints() {
         <label htmlFor="scenarioSelect">Select Scenario:</label>
         <select
           id="scenarioSelect"
-          value={selectedScenario}
+          value={selectedScenarioType}
           onChange={handleScenarioChange}
           style={{ marginRight: '10px' }}
         >
@@ -152,11 +191,11 @@ function Instr_Hints() {
           ))}
         </select>
 
-        <label htmlFor="usernameInput">Student ID:</label>
+        <label htmlFor="userIDinput">Student ID:</label>
         <input
           type="text"
-          id="usernameInput"
-          value={usernameInput}
+          id="userIDinput"
+          value={userIDinput}
           onChange={handleUsernameChange}
           placeholder="Enter Student ID"
           style={{ marginRight: '10px' }}
@@ -195,6 +234,7 @@ function Instr_Hints() {
           placeholder="Hint will appear here"
         />
         <button onClick={handleEditHint} style={{ marginTop: '10px' }}>Edit Hint</button>
+        <button onClick={handleHintSend} style={{ marginTop: '10px' }}>Send Hint To Student</button>
       </div>
 
       {isEditPopupVisible && (
