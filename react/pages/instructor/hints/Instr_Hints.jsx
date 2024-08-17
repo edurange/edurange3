@@ -6,7 +6,7 @@ import { AppContext } from '../../../config/AxiosConfig';
 import { ChatMessage } from '../../../modules/utils/chat_modules';
 
 function Instr_Hints() {
-  const { socket_ref, scenarios_state, users_state } = useContext(InstructorRouter_context);
+  const { socket_ref, scenarios_state, users_state, groups_state } = useContext(InstructorRouter_context);
   const { userData_state } = useContext(HomeRouter_context);
   const {
     errorModal_state,
@@ -18,24 +18,21 @@ function Instr_Hints() {
   } = useContext(AppContext);
 
   const [hint_state, set_hint_state] = useState('');
-  const [selectedScenarioType, set_selectedScenarioType] = useState('');
+  const [selectedScenario_state, set_selectedScenario_state] = useState({
+    id: -1,
+    name: 'n/a',
+    scenario_type: 'n/a'
+  });
+  const [selectedUser_state, set_selectedUser_state] = useState({
+    id: -1,
+    name: 'n/a',
+    group: 'n/a'
+  });
   const [userIDinput, set_userIDinput] = useState('');
   const [loading, set_loading] = useState(false);
   const [error, set_error] = useState('');
   const [isEditPopupVisible, set_isEditPopupVisible] = useState(false);
   const [newHint, set_newHint] = useState('');
-
-  const scenarioOptions = [
-    { value: 'getting_started', label: 'Getting Started' },
-    { value: 'elf_infection', label: 'Elf Infection' },
-    { value: 'file_wrangler', label: 'File Wrangler' },
-    { value: 'metasploitable', label: 'Metasploitable' },
-    { value: 'ransomware', label: 'Ransomware' },
-    { value: 'ssh_inception', label: 'SSH Inception' },
-    { value: 'strace', label: 'Strace' },
-    { value: 'treasure_hunt', label: 'Treasure Hunt' },
-    { value: 'web_fu', label: 'Web Fu' },
-  ];
 
   useEffect(() => {
     const style = document.createElement('style');
@@ -88,42 +85,28 @@ function Instr_Hints() {
     }
   };
 
-  const handleScenarioChange = (e) => {
-    set_selectedScenarioType(e.target.value);
-  };
-
-  const handleUsernameChange = (e) => {
-    set_userIDinput(e.target.value);
-  };
-
   const handleEditHint = () => {
     set_newHint(hint_state);
     set_isEditPopupVisible(true);
   };
-  console.log ('users state: ', users_state);
-  
+ 
   const filteredUser = users_state.filter((user) => user.id === 3)[0]
-
   const filteredUserHomeChan = filteredUser?.channel_data?.home_channel
-
-  console.log ('filtered user: ', filteredUser);
-  console.log ('filtered user home channel: ', filteredUserHomeChan);
 
   const handleHintSend = () => {
 
-    if (!hint_state || !selectedScenarioType || !userIDinput) {
+    if (!hint_state || !selectedScenario_state || !selectedUser_state) {
+      console.log('missing arg, aborting')
       return
     }
 
     const chatMsg = new ChatMessage(
       filteredUserHomeChan, // channel id
-      "HintBot", // 
-      selectedScenarioType, // scenario type
+      "HintBot", // user alias
+      selectedScenario_state.scenario_type, // scenario type
       hint_state.trim(), // 'content'
-      1 // 'scenario_id'  // DEV_FIX: replace w/ dynamic scenario id
+      selectedScenario_state.id // 'scenario_id' 
     );
-
-    console.log('generated chatMsg: ', chatMsg)
 
     if (chatMsg.content) {
       const newChat = {
@@ -177,29 +160,51 @@ function Instr_Hints() {
         </div>
       )}
 
-      <div>
-        <label htmlFor="scenarioSelect">Select Scenario:</label>
-        <select
-          id="scenarioSelect"
-          value={selectedScenarioType}
-          onChange={handleScenarioChange}
-          style={{ marginRight: '10px' }}
-        >
-          <option value="">Select Scenario</option>
-          {scenarioOptions.map(option => (
-            <option key={option.value} value={option.value}>{option.label}</option>
-          ))}
-        </select>
+<div>
 
-        <label htmlFor="userIDinput">Student ID:</label>
-        <input
-          type="text"
-          id="userIDinput"
-          value={userIDinput}
-          onChange={handleUsernameChange}
-          placeholder="Enter Student ID"
-          style={{ marginRight: '10px' }}
-        />
+<label htmlFor="scenarioSelect">Scenario:</label>
+<select
+  id="scenarioSelect"
+  value={selectedScenario_state ? selectedScenario_state.id : ""}
+  onChange={(e) => {
+    const selectedId = Number(e.target.value);
+    const selectedOption = scenarios_state.find(option => Number(option.id) === selectedId);
+    if (selectedOption) {
+      set_selectedScenario_state(selectedOption);
+    } else {
+      console.error('No matching scenario found!');
+    }
+  }}
+  style={{ marginRight: '10px' }}
+>
+  <option value="">Select Scenario</option>
+  {scenarios_state.map((option) => (
+    <option key={option.id} value={option.id}>{`${option.name} (${option.scenario_type} id: ${option.id})`}</option>
+  ))}
+</select>
+
+<label htmlFor="userSelect">User:</label>
+
+<select
+  id="userSelect"
+  value={selectedUser_state ? selectedUser_state.id : ""}
+  onChange={(e) => {
+    const selectedId = Number(e.target.value);
+    const selectedOption = users_state.find(option => Number(option.id) === selectedId);
+    if (selectedOption) {
+      set_selectedUser_state(selectedOption);
+    } else {
+      console.error('No matching user found!');
+    }
+  }}
+  style={{ marginRight: '10px' }}
+>
+  <option value="">Select User</option>
+  {users_state.map((option) => (
+    <option key={option.id} value={option.id}>{`${option.username} (group: ${groups_state.find(groupOption => Number(option.membership) === Number(groupOption.id))?.name ?? ""}, id: ${option.id})`}</option>
+  )
+  )}
+</select>
 
         <button onClick={requestHint}>Request Hint</button>
       </div>

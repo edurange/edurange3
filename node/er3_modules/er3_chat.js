@@ -147,6 +147,9 @@ async function echoMessage_all(messageReceipt) {
 }
 
 async function insertMessageIntoDB(senderId, messageData, timestamp, archive_id) {
+
+    console.log('inserting into db: ', messageData)
+
     await pool.query('INSERT INTO chat_messages (user_id, channel_id, content, scenario_type, timestamp, scenario_id, archive_id) VALUES ($1, $2, $3, $4, $5, $6, $7)', [
         senderId,
         messageData.channel_id,

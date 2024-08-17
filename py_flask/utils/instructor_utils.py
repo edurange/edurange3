@@ -167,7 +167,6 @@ def getLogs(optional_user_id=None):
         "responses": Edu3Mixin.to_list(responseLogs)
     }
 
-    print(returnDict)
     return returnDict
 
 def getNumOfRecentLogsForHint(student_id, numOfRecentLogs=2):
