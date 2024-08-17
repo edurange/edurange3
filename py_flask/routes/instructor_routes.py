@@ -168,7 +168,6 @@ def get_instructor_data():
         'scenarios': sd,
         'logs' : logData
     }
-    print(return_obj)
     return jsonify(return_obj)
 
 
