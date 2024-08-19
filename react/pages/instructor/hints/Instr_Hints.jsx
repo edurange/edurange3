@@ -60,8 +60,8 @@ function Instr_Hints() {
     set_error('');
     try {
       const reqJSON = {
-        scenario_name: selectedScenarioType,
-        student_id: userIDinput,
+        scenario_name: selectedScenario_state.scenario_type.toLowerCase(),
+        student_id: selectedUser_state.id,
       };
 
       const response = await axios.post(
