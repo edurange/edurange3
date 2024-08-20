@@ -1,13 +1,3 @@
-####################################################################################################
-# PHI-3 SMALL LANGUAGE MODEL MODULE
-# Program for running Microsoft's Phi-3-mini-4k-instruct-q4 small language model,
-# a quantized SLM with only 4b params. Aiming to generate hints based on student bash, chat
-# and answer logs.
-# 
-#
-# Author: Taylor Wolff 
-# Run $python machine_learning/local_slm/phi_3_slm.py to be prompted to input bash commands.
-####################################################################################################
 import sys
 import time
 import datetime

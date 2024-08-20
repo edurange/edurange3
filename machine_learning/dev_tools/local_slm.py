@@ -6,7 +6,7 @@
 # 
 #
 # Author: Taylor Wolff 
-# Run $python machine_learning/local_slm/local_slm.py to be prompted to input bash commands.
+# Run $python machine_learning/dev_tools/local_slm.py to be prompted to input bash commands.
 ####################################################################################################
 import sys
 import os
@@ -14,7 +14,6 @@ import math
 import pyopencl as cl
 import asyncio
 import yaml
-
 import llama_cpp
 from llama_cpp import Llama
 from llama_index.core import Settings
@@ -24,17 +23,15 @@ from memory_profiler import profile, memory_usage
 
 
 def initialize_model():
-
-      def determine_cpu_resources():
-            #Get hardware specifications.
+      def determine_cpu_resources():   
+            cpu_resource_scaler = 1 # Multiplicative scaler for CPU cores to be used.
             num_cpus = os.cpu_count()
             if num_cpus is None or num_cpus <= 0:
-                  raise ValueError(f"Invalid CPU count: {num_cpus}")
-            
-            return int(math.floor(num_cpus * 0.8)) # Will use 80% of cores for process
+                  raise ValueError(f"Invalid CPU count: {num_cpus}")   
+
+                  return math.floor(num_cpus * cpu_resource_scaler) 
 
       def determine_gpu_resources():
-            #Iterate over platforms and check if gpu_device exists, if so return value to use it.
             try:
                   platforms = cl.get_platforms()
                   for platform in platforms:
@@ -45,22 +42,20 @@ def initialize_model():
             except Exception as GPU_NOT_FOUND:
                   return 0
 
-      #Determine resources
       cpu_resources = determine_cpu_resources()
       gpu_resources = determine_gpu_resources()
       
-      #Retrieve modelfile from huggingface and initialize with llama-cpp-python.
       language_model = Llama.from_pretrained(
-            repo_id="microsoft/Phi-3-mini-4k-instruct-gguf",
-            filename="Phi-3-mini-4k-instruct-q4.gguf",
-            verbose=False,
-            n_ctx=4086, 
-            n_threads=cpu_resources, 
-            n_gpu_layers=gpu_resources, # By default set's to -1 if GPU is detected to offload as much work as possible to GPU.
-            use_mlock=False, # Force system to keep model in memory
-            use_mmap=True,  # Use mmap if possible
-            flash_attn=True,
-    )
+        repo_id="microsoft/Phi-3-mini-4k-instruct-gguf",
+        filename="Phi-3-mini-4k-instruct-q4.gguf",
+        verbose=False,
+        n_ctx=4086, 
+        n_threads=cpu_resources, 
+        n_gpu_layers=gpu_resources, 
+        use_mmap=True,
+        use_mlock=True,
+        flash_attn=True,
+     )
       return language_model
 
 
@@ -71,20 +66,13 @@ def load_learning_objectives_from_txt(scenario_name):
             file_content = file.read()
       return file_content
 
-
 # @profile
-def generate_hint(language_model, scenario_name):
+def generate_hint(language_model, scenario_name, student_logs):
 
       #Set logs to what you want for student
-      bash_history = """
-
-      """
-      chat_history = """
-
-      """
-      answer_history = """
-
-      """
+      bash_history = {student_logs[0]}
+      chat_history = {student_logs[1]}
+      answer_history = {student_logs[2]}
 
       load_learning_objectives_from_txt(scenario_name)
 
@@ -127,20 +115,20 @@ def generate_hint(language_model, scenario_name):
       return generated_hint
 
 
-def request_and_generate_hint(scenario_name):
-    
-    language_model = initialize_model()
-
-    answer = generate_hint(language_model, scenario_name)
-
-    serialize_answer = str(answer)
-        
-    return serialize_answer
-
-
 def main():
-      scenario_name = 'ssh_inception'
-      hint = request_and_generate_hint(scenario_name)
+      print(f"\nEDURANGE LOCAL SLM TESTING DEVELOPMENT TOOL")
+      print(f"Author: Taylor Wolff\n")
+
+      scenario_name = input("Scenario name?: ")
+      bash_logs = input("Enter bash command logs, dilineate within an array ex: '[1. ls, 2. pwd]'  : ")
+      chat_logs = input("Enter bash chat logs, dilineate within an array ex: '[1. Hi, 2. I need help]'  : ")
+      answer_logs = input("Enter bash answer logs, dilineate within an array ex: '[1. man, 2. man pwd]' : ")
+      student_logs = [bash_logs, chat_logs, answer_logs]
+
+      language_model = initialize_model()
+      hint = generate_hint(language_model, scenario_name, student_logs)
+
+      
       print(f"The generated hint: {hint}")
     
 
