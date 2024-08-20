@@ -1,67 +1,46 @@
 import React, { useState } from 'react';
 import './feedback.css'
+import axios from 'axios';
 
-const Feedback = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    scenario: '',
+function Feedback () {
+
+  const [formData_state, set_formData_state] = useState({
+    // name: '',
+    // email: '',
+    scenario_type: '',
     scenarioSelect: '',
     scenarioDifficulty: '',
-    comments: ''
+    content: ''
 });
 
   const [isScenarioFeedback, setIsScenarioFeedback] = useState(false);
 
-  const handleChange = (e) => {
+  function handleChange (e) {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
+    set_formData_state({
+      ...formData_state,
       [name]: value
     });
   };
 
-  const handleScenarioChange = (e) => {
+  function handleScenarioChange (e) {
     const { value } = e.target;
     setIsScenarioFeedback(value === 'yes');
     if (value === 'no') {
-      setFormData({
-        ...formData,
+      set_formData_state({
+        ...formData_state,
         scenarioSelect: ''
       });
     }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();        
+  function handleSubmit (e) {
+    e.preventDefault();
+    axios.post('/feedback', formData_state)
   };
 
   return (
     <form onSubmit={handleSubmit}>
-      <div className="form-group">
-        <label htmlFor="name">Name:</label>
-        <input
-          type="text"
-          id="name"
-          name="name"
-          value={formData.name}
-          onChange={handleChange}   
-          placeholder='Not Required'       
-        />
-      </div>
-
-      <div className="form-group">
-        <label htmlFor="email">Email:</label>
-        <input
-          type="email"
-          id="email"
-          name="email"
-          value={formData.email}
-          onChange={handleScenarioChange}
-          placeholder='Not Required'
-        />
-      </div> 
-
       <div className="form-group">
         <label>Is your feedback about a scenario?</label>
         <div className="scenario">
@@ -91,15 +70,15 @@ const Feedback = () => {
 
       {isScenarioFeedback && (
         <div className="form-group">
-          <label htmlFor="scenarioSelect">Select Scenario:</label>
+          <label htmlFor="scenarioSelect">Select scenario_type:</label>
           <select
             id="scenarioSelect"
             name="scenarioSelect"
             onChange={handleChange}
-            value={formData.scenarioSelect}
+            value={formData_state.scenarioSelect}
             required
           >
-            <option value="">Select a scenario</option>
+            <option value="">Select a Scenario</option>
             <option value="elf_infection">Elf Infection</option>
             <option value="file_wrangler">File Wrangler</option>
             <option value="getting_started">Getting Started</option>
@@ -120,7 +99,7 @@ const Feedback = () => {
         <select
           id="scenarioDifficulty"
           name="scenarioDifficulty"
-          value={formData.scenarioDifficulty}
+          value={formData_state.scenarioDifficulty}
           onChange={handleChange}
           required
         >
@@ -137,14 +116,15 @@ const Feedback = () => {
       )}
 
       <div className="form-group">
-        <label htmlFor="comments">Additional Comments:</label>
+        <label htmlFor="content">Additional comments:</label>
         <textarea
-          id="comments"
-          name="comments"
+          id="content"
+          name="content"
           rows="4"
           cols="50"
-          value={formData.comments}
+          value={formData_state.content}
           onChange={handleChange}
+          required
         ></textarea>
       </div>
 

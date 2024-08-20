@@ -1,5 +1,5 @@
 from py_flask.config.extensions import db
-from py_flask.database.models import Users, Channels, ChannelUsers
+from py_flask.database.models import Users, Channels, ChannelUsers, FeedbackMessage
 from py_flask.utils.chat_utils import getChannelDictList_byUser
 from py_flask.utils.auth_utils import register_user, login_er3
 from py_flask.database.user_schemas import LoginSchema, RegistrationSchema
@@ -100,3 +100,23 @@ def registration():
 def error_test():
     custom_abort('test error back at ya', 400)
     return jsonify({'response': 'you shouldnt see this'})
+
+@blueprint_public.route("/feedback", methods=["POST"])
+def submit_feedback():
+
+    requestJSON = request.json
+    db_ses = db.session
+    scenario_type = requestJSON['scenario_type'] if requestJSON['scenario_type'] else 'NONE'
+    content = requestJSON['content']
+
+    new_message = FeedbackMessage (
+        scenario_type = scenario_type,
+        content = content
+    )
+    
+    db_ses.add(new_message)
+    db_ses.commit()
+
+    return jsonify(
+        {'scenario_type': scenario_type, 'content': content}
+        )
