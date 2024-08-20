@@ -1,6 +1,9 @@
 from sqlalchemy.orm import joinedload
-from py_flask.database.models import ScenarioGroups, Scenarios, Users, GroupUsers, StudentGroups
+from py_flask.database.models import ScenarioGroups, Scenarios, Users, GroupUsers, StudentGroups, TA_Assignments
 from py_flask.utils.chat_utils import getChannelDictList_byUser
+from py_flask.config.extensions import db
+from py_flask.database.db_classes import Edu3Mixin
+
 
 def get_group_data():
     groups = (
@@ -50,12 +53,22 @@ def get_user_data():
             "username": user.username,
             "membership": group_id,
             "channel_data": channel_data,
-            "scenarios": [{"id": s.id, "name": s.name} for s in user.scenarios]
+            "scenarios": [{"id": s.id, "name": s.name} for s in user.scenarios],
+            "is_instructor": user.is_instructor,
+            "is_admin": user.is_admin
         }
         user_data.append(user_info)
 
     return user_data
 
+def get_taAssignment_data():
+
+    db_ses = db.session
+    ta_assignments = TA_Assignments.query.all()
+
+    ta_assignments = Edu3Mixin.to_list(ta_assignments)
+
+    return ta_assignments
 
 def get_scenario_data():
     scenarios = (

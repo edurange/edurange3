@@ -51,8 +51,7 @@ function Instr_Dash() {
                         navMetas={['/instructor/students', 'dash']} 
                         is_button={true} />
                     <Instr_UsersTable set_scenarioDetail_state={set_scenarioDetail_state} />
-                </div>
-                
+                </div>    
 
             </div>
 

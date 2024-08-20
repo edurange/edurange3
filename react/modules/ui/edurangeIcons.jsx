@@ -37,7 +37,8 @@ import {
     FaTrashCan,
     FaTowerObservation,
     FaGithub,
-    FaCommentDots
+    FaCommentDots,
+    FaArrowsDownToPeople 
 } from "react-icons/fa6";
 
 import { 
@@ -104,7 +105,8 @@ import {
     trash: <FaTrashCan/>,
     tower: <FaTowerObservation/>, 
     comments: <FaCommentDots />,
-    form: <FaWpforms/>
+    form: <FaWpforms/>,
+    ta_assignments: <FaArrowsDownToPeople/>
 }
 export default edurange_icons
 

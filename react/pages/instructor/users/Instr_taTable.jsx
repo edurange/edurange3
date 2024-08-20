@@ -7,17 +7,16 @@ import '@assets/css/tables.css';
 import { AppContext } from '../../../config/AxiosConfig';
 import '../../../components/ListController.css';
 
-function Instr_UsersTable() {
+function Instr_taTable() {
 
     const {
-        set_desiredNavMetas_state
+        desiredNavMetas_state, set_desiredNavMetas_state
     } = useContext(AppContext);
     const { 
         users_state, set_users_state, 
         groups_state, set_groups_state, 
         chatObjs_UL_state, channelAccess_state,
-        logs_state, taAssignments_state, set_taAssignments_state,
-        taDict_state, set_taDict_state
+        logs_state
     } = useContext(InstructorRouter_context);
 
     const {
@@ -27,7 +26,6 @@ function Instr_UsersTable() {
     const [selectedUsers_state, set_selectedUsers_state] = useState({});
     const [actionSelection_state, set_actionSelection_state] = useState('');
     const [selectedGroupId_state, set_selectedGroupId_state] = useState('');
-    const [selectedTA_state, set_selectedTA_state] = useState('');
     const [buttonIsDisabled_state, set_buttonIsDisabled_state] = useState(true);
 
     const [sortingEnabled_state, set_sortingEnabled_state] = useState(true);
@@ -44,6 +42,8 @@ function Instr_UsersTable() {
     const response_logs = logs_state?.responses;
 
     const [sortingType_state, set_sortingType_state] = useState('new_chats');
+
+    console.log('UserTable logs_state: ',logs_state)
 
     useEffect(() => {
         const isAnyUserSelected = Object.values(selectedUsers_state).some((isSelected) => isSelected);
@@ -83,11 +83,6 @@ function Instr_UsersTable() {
         set_selectedGroupId_state(event.target.value);
     }
 
-    function handleTASelectionChange(event) {
-        event.stopPropagation();
-        set_selectedTA_state(event.target.value);
-    }
-
     async function handleUpdateDatabase(event) {
         event.stopPropagation();
         switch (actionSelection_state) {
@@ -100,27 +95,15 @@ function Instr_UsersTable() {
             case 'ClearGroup':
                 await clearGroups();
                 break;
-            case 'AssignToTA':
-                await edit_taAssignments(true); // true to assign students to TA
-                break;    
-            case 'UnassignFromTA':
-                await edit_taAssignments(false); // false to unassign students from TA
-                break;    
-            case 'PromoteToTA':
-                await editRole(true); // true to promote from student to TA
-                break;
-            case 'DemoteFromTA':
-                await editRole(false); // false to demote from TA to student
-                break;
             default:
         }
     }
 
     async function deleteUsers() {
-        const usersToDelete_idList = Object.keys(selectedUsers_state).filter((userId) => selectedUsers_state[userId]);
+        const usersToDelete = Object.keys(selectedUsers_state).filter((userId) => selectedUsers_state[userId]);
         try {
             const response = await axios.post('/delete_users', {
-                users_to_delete: usersToDelete_idList,
+                users_to_delete: usersToDelete,
             });
             if (response.data.result === 'success') {
                 const remainingUsers = users_state.filter(
@@ -168,95 +151,6 @@ function Instr_UsersTable() {
             }
         } catch (error) {
             console.error('Error assigning users to group:', error);
-        }
-    }
-
-    // is_assigning is a bool; true is to add users to ta assignment ; false is remove
-    async function edit_taAssignments(is_assigning) { 
-        const usersToAssign_IDs = Object.keys(selectedUsers_state)
-            .filter((userId) => selectedUsers_state[userId])
-            .map((userId) => parseInt(userId, 10));
-    
-        try {
-            const response = await axios.post('/edit_ta_assignments', {
-                ta_id: parseInt(selectedTA_state, 10),
-                users_to_assign: usersToAssign_IDs,
-                is_assigning: is_assigning
-            });
-    
-            if (response.data.result === 'success') {
-
-                const new_taAssignments = []
-                response?.data?.assignedUsers_idList.map(
-                    (assigned_userID_int) => {
-                        new_taAssignments.push({
-                        student_id: assigned_userID_int,
-                        ta_id: response?.data?.ta_id
-                    })}
-                );
-    
-                set_taAssignments_state(prevState => {
-                    const updatedAssignments = [...prevState];
-                    new_taAssignments.forEach(newAssignment => {
-                        if (is_assigning) {
-                            updatedAssignments.push(newAssignment);
-                        } else {
-                            const index = updatedAssignments.findIndex(
-                                existingAssignment =>
-                                    existingAssignment.student_id === newAssignment.student_id &&
-                                    existingAssignment.ta_id === newAssignment.ta_id
-                            );
-                            if (index !== -1) {
-                                updatedAssignments.splice(index, 1);
-                            }
-                        }
-                    });
-                    return updatedAssignments;
-                });
-            } else {
-                console.error('Error updating TA assignments:', response.data.message);
-            }
-        } catch (error) {
-            console.error('Error updating TA assignments:', error);
-        }
-    }
-    
-
-    async function editRole(is_promoting) {
-
-        const users_to_edit_ids = Object.keys(selectedUsers_state)
-        .filter((userId) => selectedUsers_state[userId])
-        .map((userId) => parseInt(userId, 10));
-
-        try {
-            const response = await axios.post('/edit_role', {
-                users_to_edit: users_to_edit_ids,
-                is_promoting: is_promoting
-            });
-
-            if (response.data.result === 'success') {
-                const updatedUsers = response?.data?.updated_user_list;
-                const isPromoting = response?.data?.is_promoting;
-            
-                if (isPromoting == undefined) {
-                    console.log('isPromoting bool undefined')
-                    return
-                };
-
-                const updatedUsersState = users_state.map(user => {
-                    if (updatedUsers.includes(user.id)) {
-                        return { ...user, is_instructor: isPromoting };
-                    }
-                    return user;
-                });
-            
-                set_users_state(updatedUsersState);
-
-            } else {
-                console.error('Error promoting users to TA:', response.data.message);
-            }
-        } catch (error) {
-            console.error('Error promoting users to TA:', error);
         }
     }
     
@@ -355,6 +249,8 @@ function Instr_UsersTable() {
 
     const sortedUsers = sortingEnabled_state ? sortUsers(users_state) : users_state;
 
+    console.log('logs for userstable: ', logs_state)
+
     return (
         <>
             <div className="create-frame">
@@ -364,11 +260,6 @@ function Instr_UsersTable() {
                         <option value="AssignToGroup">Assign to Group</option>
                         <option value="ClearGroup">Clear Group</option>
                         <option value="DeleteUser">Delete User</option>
-                        <option value="AssignToTA">Assign Student to TA</option>
-                        <option value="UnassignFromTA">Un-Assign Student from TA</option>
-                        {userData_state.role === 'admin' ? <option value="PromoteToTA">Promote to TA</option> : <></>}
-                        {userData_state.role === 'admin' ? <option value="DemoteFromTA">Demote from TA</option> : <></>}
-                        
                     </select>
                     {actionSelection_state === 'AssignToGroup' && (
                         <select className="create-dropdown" value={selectedGroupId_state} onChange={handleGroupSelectionChange}>
@@ -378,30 +269,6 @@ function Instr_UsersTable() {
                                 .map((group) => (
                                     <option key={group.id} value={group.id}>
                                         {group.name}
-                                    </option>
-                                ))}
-                        </select>
-                    )}
-                    {actionSelection_state === 'AssignToTA' && (
-                        <select className="create-dropdown" value={selectedTA_state} onChange={handleTASelectionChange}>
-                            <option value="">Select TA</option>
-                            {users_state
-                                .filter((ta) => ta.is_instructor || ta.is_admin)
-                                .map((ta) => (
-                                    <option key={ta.id} value={ta.id}>
-                                        {ta.username}
-                                    </option>
-                                ))}
-                        </select>
-                    )}
-                    {actionSelection_state === 'UnassignFromTA' && (
-                        <select className="create-dropdown" value={selectedTA_state} onChange={handleTASelectionChange}>
-                            <option value="">Select TA</option>
-                            {users_state
-                                .filter((ta) => ta.is_instructor || ta.is_admin)
-                                .map((ta) => (
-                                    <option key={ta.id} value={ta.id}>
-                                        {ta.username}
                                     </option>
                                 ))}
                         </select>
@@ -447,7 +314,6 @@ function Instr_UsersTable() {
                     <div className="table-header-item col-large">Group</div>
                     <div className="table-cell-item highlightable-cell col-small">Cmds</div>
                     <div className="table-cell-item highlightable-cell col-small">Chats</div>
-                    <div className="table-cell-item highlightable-cell col-small">TAs</div>
                 </div>
                 {sortedUsers.map((user, index) => {
                     const allowedMessages = compileMessages_byUser(user.id);
@@ -471,6 +337,7 @@ function Instr_UsersTable() {
                             const dateString = cmd.timestamp;
                             const dateObject = new Date(dateString);
                             const cmd_timestamp_int = dateObject.getTime();
+                            
                             const cmdRestInt = user.recent_reply;
                         
                             return cmdRestInt < cmd_timestamp_int;
@@ -491,12 +358,7 @@ function Instr_UsersTable() {
                                     />
                                 </div>
                             </div>
-                            <div className="table-cell-item highlightable-cell col-large" onClick={(event) => handle_userDetail_click(event, user)}>
-                                {user.username}
-                                {user.is_instructor 
-                                ? (<div className='highlighter-green'>&nbsp;(TA) </div>) 
-                                : <></>}
-                            </div>
+                            <div className="table-cell-item highlightable-cell col-large" onClick={(event) => handle_userDetail_click(event, user)}>{user.username}</div>
                             <div className="table-cell-item highlightable-cell col-large" onClick={(event) => handle_groupDetail_click(event, user)}>{getGroupNameById(user.membership)}</div>
                             <div className="table-cell-item highlightable-cell col-small" onClick={(event) => handle_userDetail_click(event, user)}>
                                 {allowedCmds?.length}(
@@ -508,9 +370,6 @@ function Instr_UsersTable() {
                             <div className="table-cell-item highlightable-cell col-small" onClick={(event) => handle_userDetail_click(event, user)}>
                                 {totalMessages}(<span className='highlighter-orange'>{newMessagesCount}</span>)
                             </div>
-                            <div className="table-cell-item highlightable-cell col-small">
-                                {taDict_state[user.id]?.join(',')}
-                            </div>
                         </div>
                     );
                 })}
@@ -518,4 +377,5 @@ function Instr_UsersTable() {
         </>
     );
 }
-export default Instr_UsersTable;
+
+export default Instr_taTable;

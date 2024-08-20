@@ -1,8 +1,8 @@
 from sqlalchemy.exc import SQLAlchemyError
 import traceback
 from py_flask.database.user_schemas import CreateGroupSchema, TestUserListSchema
-from py_flask.database.models import Users, StudentGroups, ScenarioGroups, GroupUsers, Scenarios
-from py_flask.utils.dataBuilder import get_group_data, get_user_data, get_scenario_data
+from py_flask.database.models import Users, StudentGroups, ScenarioGroups, GroupUsers, Scenarios, TA_Assignments
+from py_flask.utils.dataBuilder import get_group_data, get_user_data, get_scenario_data, get_taAssignment_data
 from py_flask.config.extensions import db
 from py_flask.utils.chat_utils import gen_chat_names, getChatLibrary
 from flask import (
@@ -27,7 +27,8 @@ from py_flask.utils.instructor_utils import (
     clearGroups,
     deleteUsers,
     NotifyCapture,
-    getLogs
+    getLogs,
+    edit_taAssignments
     )
 from py_flask.utils.tasks import (
     create_scenario_task, 
@@ -144,29 +145,17 @@ def get_instructor_data():
     gd = get_group_data()
     ud = get_user_data()
     sd = get_scenario_data()
-
-    try:
-        logData = getLogs()
-        if logData is None:
-            raise custom_abort({
-                'message': 'Error retrieving logs',
-                'status_code': 400
-            })
-    except custom_abort as err:
-        return err.get_response()
-    except Exception as err:
-        generic_error = custom_abort({'message': str(err), 'status_code': 500})
-        return generic_error.get_response()
-
+    td = get_taAssignment_data()
+    logData = getLogs()
 
     return_obj = {
         'groups': gd,
         'users': ud,
         'scenarios': sd,
-        'logs' : logData
+        'logs' : logData,
+        'ta_assignments': td
     }
     return jsonify(return_obj)
-
 
 @blueprint_instructor.route('/get_instr_content/<int:i>', methods=['GET']) # WIP
 @jwt_and_csrf_required
@@ -179,12 +168,11 @@ def get_instr_content(i):
         or i < 0 
         or i > 999
         ):
-            return jsonify({'error': 'invalid scenario ID'}) # DEV_ONLY (replace with standard denial msg)
+            custom_abort('invalid scenario ID', 404)
 
     contentJSON, credentialsJSON, unique_name = getContent(g.current_user_role, current_scenario_id, g.current_username)
 
     meta = getScenarioMeta(current_scenario_id)
-
     
     SSH_connections = identify_state(unique_name, "Started")
     SSH_IP = ""
@@ -234,7 +222,7 @@ def scenario_interface():
             }
             all_scenarios_list.append(scenario_info)
         return jsonify({"result": "success","scenarios_list":all_scenarios_list})
-
+ 
     def create_scenario(requestJSON):
 
         if (
@@ -448,6 +436,20 @@ def get_chat_library():
     chatHistoryData_dict = getChatLibrary()
     return jsonify(chatHistoryData_dict)
 
+
+@blueprint_instructor.route("/edit_ta_assignments", methods=['POST'])
+@jwt_and_csrf_required
+def edit_ta_assignments():
+    instructor_only()
+
+    requestJSON = request.json
+
+    ta_id = requestJSON.get('ta_id')
+    userID_list = requestJSON.get('users_to_assign')
+    is_assigning = requestJSON.get('is_assigning')
+
+    returnDict = edit_taAssignments(userID_list, ta_id, is_assigning)
+    return jsonify(returnDict)
 
 #TODO: A lot
 @blueprint_instructor.route("/add_user_to_container", methods=['POST'])

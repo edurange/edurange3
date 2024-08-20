@@ -52,15 +52,12 @@ class Channels(Edu3Mixin, SurrogatePK, Model):
     owner = relationship("Users", backref="channels")
     users = relationship("ChannelUsers", backref="channels", cascade="all, delete-orphan")
 
-
 class ChannelUsers(Edu3Mixin, SurrogatePK, Model):
     """Users belong to channels"""
     ___tablename___ = "channel_users"
     user_id = reference_col("users", nullable=False)
     channel_id = reference_col("channels", nullable=False)
     user = relationship("Users", backref="channel_users")
-    # channel_id = relationship("Channels", backref="channel_users", viewonly=True)
-
 
 class Users(Edu3Mixin, SurrogatePK, Model):
     """A user of the app."""
@@ -118,6 +115,13 @@ class ScenarioGroups(Edu3Mixin, SurrogatePK, Model):
     scenario_id = reference_col("scenarios", nullable=False)
     scenario = relationship("Scenarios", backref="scenario_groups")
 
+class TA_Assignments (Edu3Mixin, SurrogatePK, Model):
+    """Teaching Assistants' assigned students"""
+    __tablename__ = "ta_assignments"
+
+    ta_id = reference_col("users", nullable=False)
+    student_id = reference_col("users", nullable=False)
+    student = relationship("Users", foreign_keys=[student_id], backref="ta_assignments")
 
 
 #####
@@ -192,3 +196,4 @@ class FeedbackMessage(Edu3Mixin, SurrogatePK, Model):
 
     content = Column(db.String(4000), nullable=False, unique=False)
     scenario_type = Column(db.String(50), nullable=True, unique=False)
+

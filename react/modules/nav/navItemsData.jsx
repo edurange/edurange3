@@ -171,6 +171,13 @@ const feedback = {
     navStub: 'dash',
 };
 
+const ta_assignments = {
+    title: "TAs",
+    icon: edurange_icons.ta_assignments,
+    path: `/tas`,
+    navStub: 'dash',
+};
+
 
 export const navArrays = {
 
@@ -209,7 +216,7 @@ export const navArrays = {
         },
         dash: {
             top: [feedback, instructor, logout],
-            side: [instructor, studentGroups, instr_scenarios, students, panopticon, instr_hints, logs, issues]
+            side: [instructor, studentGroups, instr_scenarios, students, ta_assignments, panopticon, instr_hints, logs, issues]
         },
         account: {
             top: [feedback, instructor, logout],
@@ -240,7 +247,7 @@ export const navArrays = {
         },
         dash: {
             top: [feedback, instructor, logout],
-            side: [instructor, studentGroups, instr_scenarios, students, panopticon, instr_hints, logs, issues]
+            side: [instructor, studentGroups, instr_scenarios, students, ta_assignments, panopticon, instr_hints, logs, issues]
         },
         account: {
             top: [feedback, instructor, logout],

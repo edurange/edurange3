@@ -9,7 +9,11 @@ import ListController from "../../../components/ListController";
 import "../../../components/ListController.css";
 
 function Instr_Chat_HistoryBox({ lastChat_ref, chatObjs_array, selectedUser_obj }) {
-    const { selectedMessage_state, set_selectedMessage_state } = useContext(InstructorRouter_context);
+    const { 
+        selectedMessage_state, set_selectedMessage_state,
+        taDict_state, set_taDict_state, users_state
+    } = useContext(InstructorRouter_context);
+
     const { userData_state } = useContext(HomeRouter_context);
     
     const [messagesToDisplay_state, set_messagesToDisplay_state] = useState([]);
@@ -19,14 +23,28 @@ function Instr_Chat_HistoryBox({ lastChat_ref, chatObjs_array, selectedUser_obj 
     const is_instructor = userData_state?.role === "admin" || userData_state?.role === "instructor";
     
     useEffect(() => {
+        
         if (selectedUser_obj?.channel_data?.available_channels) {
             const user_channel_ints = selectedUser_obj.channel_data.available_channels.map(chan => chan.id) ?? [0];
             const chats_filteredByAvailChannels = chatObjs_array.filter((chatObj) => user_channel_ints.includes(chatObj.channel_id))
             set_messagesToDisplay_state(chats_filteredByAvailChannels);
+            // set_messagesToDisplay_state(chats_filteredByAvailChannels);
         } else {
-            set_messagesToDisplay_state(chatObjs_array);
+
+            const taFiltered = []
+            
+            if (!users_state) return
+            if (users_state.length < 1) return
+
+            chatObjs_array.forEach((chatObj) => {
+                const thisSender_id = chatObj.user_id;
+                if (taDict_state[thisSender_id]?.includes(userData_state?.id) || Number(chatObj.user_id) === Number(userData_state.id)) {
+                    taFiltered.push(chatObj);
+                }
+            });
+            set_messagesToDisplay_state(taFiltered);
         }
-    }, [selectedUser_obj, chatObjs_array]);
+    }, [selectedUser_obj, chatObjs_array, taDict_state, users_state, userData_state]);
     
     useEffect(() => {
         if (lastChat_ref.current) {

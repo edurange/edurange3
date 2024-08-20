@@ -9,7 +9,7 @@ import Instr_Chat_HistoryBox from '../student/chat/Instr_Chat_HistoryBox';
 function Panopticon() {
     const {
         lastChat_ref, chatObjs_UL_state,
-        selectedMessage_state, set_selectedMessage_state,
+        selectedMessage_state, set_selectedMessage_state, 
     } = useContext(InstructorRouter_context);
 
     if (!chatObjs_UL_state) {

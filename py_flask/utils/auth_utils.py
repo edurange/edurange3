@@ -53,9 +53,12 @@ def jwt_and_csrf_required(fn):
     
     return wrapper
 
-# returns true if argument is an element of this tuple, false otherwise.
 def instructor_only():
     if g.current_user_role not in ('instructor', 'admin'):
+        custom_abort("Insufficient role privileges.", 403)
+
+def admin_only():
+    if g.current_user_role != 'admin':
         custom_abort("Insufficient role privileges.", 403)
 
 def login_er3(userObj):

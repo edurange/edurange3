@@ -16,8 +16,6 @@ import Frame_head from '../../frame/head/Frame_head';
 import Frame_foot from '../../frame/foot/Frame_foot';
 import Account from '../student/account/Account';
 import './Home.css';
-import axios from 'axios';
-import ErrorModal from '../../components/ErrorModal';
 import { AppContext } from '../../config/AxiosConfig';
 import Feedback from '../feedback/Feedback';
 
@@ -41,8 +39,8 @@ function Home_router() {
     desiredNavMetas_state, set_desiredNavMetas_state,
     clipboard_state, set_clipboard_state
 } = useContext(AppContext);
-  const navigate = useNavigate();
 
+  const navigate = useNavigate();
 
   function begin_nav(navMetas) {
 
@@ -55,12 +53,6 @@ function Home_router() {
     }
 
     const roleToUse = userData_state?.role ?? 'logout';
-
-    console.log('desired nav stub: ', desiredNavStub)
-
-    console.log('navArrays: ', navArrays)
-    console.log('roleToUse: ', roleToUse)
-    console.log('navArrays[roleToUse]: ', navArrays[roleToUse])
 
     if (!(desiredNavStub in navArrays[roleToUse])) {
       console.error('navStub not found in role navItemData as key');
@@ -77,8 +69,6 @@ function Home_router() {
     navigate(desiredNavPath);
   };
   useEffect(() => {begin_nav(desiredNavMetas_state);}, [desiredNavMetas_state]); 
-
-
 
   return (
     <div id='edurange-appframe'>

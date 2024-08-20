@@ -23,6 +23,8 @@ function Instructor_router() {
     const [chatObjs_UL_state, set_chatObjs_UL_state] = useState([]); // unordered array of all chats
     const [channelAccess_state, set_channelAccess_state] = useState({});
     const [users_state, set_users_state] = useState([])
+    const [taAssignments_state, set_taAssignments_state] = useState([]);
+    const [taDict_state, set_taDict_state] = useState({})
     const [groups_state, set_groups_state] = useState([])
     const [scenarios_state, set_scenarios_state] = useState([])
     const [scenarioDetail_state, set_scenarioDetail_state] = useState({})
@@ -39,13 +41,28 @@ function Instructor_router() {
     const socket_protocol = (window.location.protocol === "https:") ? "wss" : "ws";
     const socketURL = `${socket_protocol}://${window.location.host}/chat`;
 
+    function compile_taDict(ta_assignments) {
+        const ta_dict = {};
+    
+        (ta_assignments ?? []).forEach(assignment => {
+            const { student_id, ta_id } = assignment;
+    
+            if (!ta_dict[student_id]) {
+                ta_dict[student_id] = [];
+            }
+    
+            ta_dict[student_id].push(ta_id);
+        });
+    
+        return ta_dict;
+    }
+
     async function get_instructorData() {
         try {
             const response = await axios.get("/get_instructor_data");
             const responseData = response.data;
             // DEV_FIX (update for new list strategy (not dict))
 
-            console.log('responseData: ', responseData)
             // recent_reply is compared to chat_message timestamp to determine
             // whether message is considered new (Instr_UserTable.jsx).
             // the prop is also updated when an instructor sends reply (ea instr has their own record)
@@ -53,25 +70,23 @@ function Instructor_router() {
             
             responseData?.users?.forEach(user => {
                 if (!user.recent_reply) {
-                    console.log('no recent reply found, adding... ', responseData)
                     user.recent_reply = Date.now()
-                    console.log('current recent_reply: ', user.recent_reply)
                 }
                 if (!user.bash_resetTime) {
-                    console.log('no bash reset time found, adding... ', responseData)
                     user.bash_resetTime = Date.now()
-                    console.log('current bash_resetTime: ', user.recent_reply)
                 }
                 if (!user.response_resetTime) {
-                    console.log('no recent reply found, adding... ', responseData)
                     user.response_resetTime = Date.now()
-                    console.log('current response_resetTime: ', user.response_resetTime)
                 }
+                
             });
+
+            const compiled_taDict = compile_taDict(responseData?.ta_assignments)
 
             set_users_state(responseData?.users);
             set_groups_state(responseData?.groups);
             set_scenarios_state(responseData?.scenarios);
+            set_taDict_state(compiled_taDict);
             set_logs_state(responseData?.logs);
         }
         catch (error) { console.log('get_instructorData error:', error); };
@@ -163,7 +178,9 @@ function Instructor_router() {
                     channelAccess_state, set_channelAccess_state,
                     selectedMessage_state, set_selectedMessage_state,
                     socket_ref, lastChat_ref,
-                    logs_state, set_logs_state
+                    logs_state, set_logs_state,
+                    taAssignments_state, set_taAssignments_state,
+                    taDict_state, set_taDict_state
                 }}>
 
                     <Routes>
