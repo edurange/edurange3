@@ -1,0 +1,187 @@
+.hints-dashboard-ui {
+    margin: 0px 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px; 
+    position: relative; 
+  }
+
+  .pageTitle {
+    display: flex;
+    font-size: 48px;
+  }
+  
+  .pageSubtitle {
+    display: flex;
+    font-size: 16px;
+    margin-top: -15px;
+  }
+  
+  .dropdowns-container {
+    display: flex;
+    gap: 20px; 
+  }
+  
+  .actions-container {
+    display: flex;
+    gap: 10px; 
+  }
+  
+  .hint-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; 
+  }
+  
+  .hint-section-buttons {
+    display: flex;
+    gap: 10px; 
+  }
+  
+  .textarea {
+    font-family: monospace;
+    font-size: 16px;
+    background-color: #000000;
+    color: #FFFFFF;
+    padding: 10px;
+    border: 2px solid #deb14f;
+    border-radius: 5px;
+    max-height: 100%;
+    max-width: 100%;
+    overflow-y: auto;
+    resize: none;
+  }
+  
+  .dropdowns-container {
+    display: flex;
+    flex-direction: row;
+    gap: 5px; 
+    cursor: pointer;
+  }
+
+  .scenario-select{
+    display: flex;
+    flex-direction: column;
+  }
+
+  .user-select {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .scenarioSelectLabel{
+    display: flex;
+    margin-bottom: 50px;
+  }
+
+  .userSelectLabel {
+    display: flex;
+    margin-bottom: 50px
+  }
+  
+  .select-input {
+    padding: 5px;
+    cursor: pointer;
+  }
+  
+  .request-hint-button {
+    font-size: 16px;
+    width: 100%;
+    box-sizing: flex;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+  }
+
+  .request-hint-button:hover {
+    
+    background-color: #deb14f; 
+    color: #000000;
+    transform: translate(3px, -3px);
+    
+  }
+
+  .cancel-hint-button {
+    font-size: 13px;
+    margin-top: 15px;
+    background-color: #c14c3e;
+    color: #FFFFFF;
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+  }
+
+  .cancel-hint-button:hover {
+    background-color: red;
+    cursor: pointer;
+    transform: translate(3px, -3px);
+  }
+
+
+  .below-textbox-button {
+    font-size: 13px;
+    width: 50%; 
+    border-radius: 10px;
+    box-sizing: flex; 
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    
+    
+  }
+
+  .below-textbox-button:hover {
+    
+    background-color: #deb14f; 
+    color: #000000;
+    transform: translate(3px, -3px);
+    
+  }
+  
+  .rotate-animation {
+    animation: 'rotateText 3s steps(2, end) infinite',
+  }
+ 
+  
+  .loading-overlay div {
+    display: flex;
+    align-items: center;
+  }
+  
+  .loading-overlay span {
+    margin-right: 8px;
+  }
+  
+  .error-message {
+    color: red;
+    font-weight: bold;
+  }
+
+  .loading-overlay {
+     position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    z-index: 1000;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    flex-direction: column;
+    }
+
+    @keyframes rotate {
+      0% { transform: rotate(0deg); }
+      25% { transform: rotate(90deg); }
+      50% { transform: rotate(180deg); }
+      75% { transform: rotate(270deg); }
+      100% { transform: rotate(360deg); }
+    }
+      
+    .rotate-text-animation {
+      animation: rotate 3s steps(2, end) infinite;
+    }

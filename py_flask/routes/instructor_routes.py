@@ -5,7 +5,7 @@ from py_flask.database.models import Users, StudentGroups, ScenarioGroups, Group
 from py_flask.utils.dataBuilder import get_group_data, get_user_data, get_scenario_data
 from py_flask.config.extensions import db
 from py_flask.utils.chat_utils import gen_chat_names, getChatLibrary
-from py_flask.utils.tasks import request_and_generate_hint, initialize_model, getLogs_for_hint
+from py_flask.utils.tasks import request_and_generate_hint, initialize_model, getLogs_for_hint, cancel_generate_hint_celery
 
 from flask import (
     Blueprint,
@@ -487,4 +487,11 @@ def init_model():
     try:
         initialize_model.delay()
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'model failed to initialize'})
+
+@blueprint_instructor.route("/cancel_hint", methods=['POST'])
+@jwt_and_csrf_required
+def cancel_generate_hint_route():
+    result = cancel_generate_hint_celery.delay().get(timeout=None)
+    return jsonify({'status': result})
+

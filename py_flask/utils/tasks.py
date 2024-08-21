@@ -18,6 +18,7 @@ from llama_cpp import Llama
 from llama_index.core import Settings
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 
+
 from datetime import datetime
 from celery import Celery
 from celery import shared_task
@@ -26,7 +27,7 @@ from flask import current_app, flash, jsonify
 from py_flask.utils.terraform_utils import adjust_network, find_and_copy_template, write_resource
 from py_flask.config.settings import CELERY_BROKER_URL, CELERY_RESULT_BACKEND
 from py_flask.utils.scenario_utils import claimOctet
-from py_flask.utils.ml_utils import generate_hint, load_language_model_from_redis
+from py_flask.utils.ml_utils import generate_hint, load_language_model_from_redis, load_generate_hint_task_id_from_redis
 from py_flask.utils.instructor_utils import getLogs, getNumOfRecentLogsForHint
 
 
@@ -444,7 +445,7 @@ def setup_periodic_tasks(sender, **kwargs):
     sender.add_periodic_task(60.0, scenarioCollectLogs.s(''))
 
 
-@celery.task(bind=True, worker_prefetch_multiplier=1, priority=1)
+@celery.task(bind=True, worker_prefetch_multiplier=1, priority=1, concurrency=1)
 def initialize_model(self):
     
     def determine_cpu_resources():   
@@ -495,10 +496,25 @@ def getLogs_for_hint(self, user_id):
     return logs_dict
 
 
-@celery.task(bind=True, worker_prefetch_multiplier=1, priority=1)
+@celery.task(bind=True, worker_prefetch_multiplier=1, priority=1, concurrency=1)
 def request_and_generate_hint(self, scenario_name, logs_dict):
+    
+    r = redis.StrictRedis(host='localhost', port=6379, db=1)
+    task_id = self.request.id
+    generate_hint_task_id_pickle = pickle.dumps(task_id)
+    r.set('generate_hint_task_id', generate_hint_task_id_pickle)
     language_model = load_language_model_from_redis()
     answer = generate_hint(language_model, logs_dict, scenario_name)
-    
+
     return {'generated_hint': answer, 'logs_dict': logs_dict}
 
+
+
+@celery.task(bind=True, worker_prefetch_multiplier=1, priority=1, concurrency=1)
+def cancel_generate_hint_celery(self):
+    generate_hint_task_id = load_generate_hint_task_id_from_redis()
+    self.app.control.revoke(generate_hint_task_id, terminate=True)
+    
+    return {'status': generate_hint_task_id}
+
+      

@@ -9,16 +9,10 @@ import yaml
 import csv
 import pickle
 import redis
-
-
-
 import llama_cpp
 from llama_cpp import Llama
 from llama_index.core import Settings
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
-
-
-
 from memory_profiler import profile, memory_usage
 
 # @profile
@@ -69,7 +63,6 @@ def generate_hint(language_model, logs_dict, scenario_name):
       return generated_hint
 
 
-
 def load_language_model_from_redis():
 
       r = redis.StrictRedis(host='localhost', port=6379, db=1)
@@ -81,6 +74,19 @@ def load_language_model_from_redis():
 
       else:
             valueError('No language model found from Redis db')
+            return None
+
+def load_generate_hint_task_id_from_redis():
+
+      r = redis.StrictRedis(host='localhost', port=6379, db=1)
+      generate_hint_task_id_pickle = r.get('generate_hint_task_id')
+    
+      if generate_hint_task_id_pickle:
+            generate_hint_task_id = pickle.loads(generate_hint_task_id_pickle)
+            return generate_hint_task_id
+
+      else:
+            valueError('No generate hint task id found from Redis db')
             return None
 
 def load_learning_objectives_from_txt(scenario_name):
