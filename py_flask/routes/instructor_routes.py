@@ -101,11 +101,14 @@ def create_group():
     new_code = grc()
 
     group_obj = StudentGroups.create(name=group_name, owner_id=g.current_user_id, code=new_code)
+    # add admin to all groups on creation
+    addGroupUsers(group_obj, [{"id" : 1}])
+    
 
     if (validatedJSON['should_generate']):
 
         newUsers_list = generateTestAccts(group_obj, validatedJSON['new_user_count'], new_code)
-        return_groupDict = addGroupUsers(group_obj, newUsers_list)
+        addGroupUsers(group_obj, newUsers_list)
 
         return {
             "result": "success",

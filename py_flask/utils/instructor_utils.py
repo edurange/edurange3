@@ -63,40 +63,6 @@ def addGroupUsers(group_obj, userDict_list):
     db_ses.commit()
     return assigned_user_ids
 
-# def edit_taAssignments (students_idList, ta_id, is_assigning):
-
-#     if is_assigning is None:
-#         custom_abort('is_assigning bool not provided', 400)
-
-#     db_ses = db.session
-#     ta_dbObj = Users.query.get(ta_id)
-#     if not ta_dbObj:
-#         custom_abort('TA not found', 404)
-
-#     assignedUsers_idList = []
-
-#     for user_id in students_idList:
-
-#         user_dbObj = Users.query.get(user_id)
-#         if not user_dbObj:
-#             continue
-        
-#         existing_studentTAlink = TA_Assignments.query.filter_by(student_id=user_id, ta_id=ta_id ).first()
-#         if existing_studentTAlink and is_assigning == False:
-#             db_ses.delete(existing_studentTAlink)
-
-#         new_assignment = TA_Assignments(student_id=user_id, ta_id=ta_id)
-#         db_ses.add(new_assignment)
-#         assignedUsers_idList.append(user_id)
-
-#     db_ses.commit()
-#     return {
-#         'result': 'success',
-#         'updated_user_list': assignedUsers_idList,
-#         'ta_id': ta_id,
-#         'is_assigning': is_assigning
-#     }  
-
 def edit_taAssignments(students_idList, ta_id, is_assigning):
     if is_assigning is None:
         custom_abort('is_assigning bool not provided', 400)

@@ -28,7 +28,6 @@ function Instr_Chat_HistoryBox({ lastChat_ref, chatObjs_array, selectedUser_obj 
             const user_channel_ints = selectedUser_obj.channel_data.available_channels.map(chan => chan.id) ?? [0];
             const chats_filteredByAvailChannels = chatObjs_array.filter((chatObj) => user_channel_ints.includes(chatObj.channel_id))
             set_messagesToDisplay_state(chats_filteredByAvailChannels);
-            // set_messagesToDisplay_state(chats_filteredByAvailChannels);
         } else {
 
             const taFiltered = []

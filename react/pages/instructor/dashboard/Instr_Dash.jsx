@@ -9,6 +9,9 @@ import Creation_Instructions from '../notifications/items/Creation_Instructions.
 import { InstructorRouter_context } from '../Instructor_router.jsx';
 import './Instr_Dash.css';
 import Instr_UsersTable from '../users/Instr_UsersTable.jsx';
+import Staff_ScenGrid from '../scenarios/Staff_ScenGrid.jsx';
+import Staff_GroupsGrid from '../scenarios/Staff_GroupsGrid.jsx';
+import Staff_UsersGrid from '../users/Staff_UsersGrid.jsx';
 
 function Instr_Dash() {
 
@@ -31,7 +34,7 @@ function Instr_Dash() {
                         is_button={true} 
                         textSize={'large'}/>
                     <CreateGroup />
-                    <Instr_GroupsTable />
+                    <Staff_GroupsGrid />
                 </div>
 
                 <div className='instructor-dash-section'>
@@ -41,16 +44,16 @@ function Instr_Dash() {
                         navMetas={['/instructor/scenarios', 'dash']} 
                         is_button={true} />
                     <CreateScenario />
-                    <Instr_ScenTable set_scenarioDetail_state={set_scenarioDetail_state} />
+                    <Staff_ScenGrid set_scenarioDetail_state={set_scenarioDetail_state} />
                 </div>
 
                 <div className='instructor-dash-section'>
                     <Placard 
-                        placard_text='STUDENTS'
+                        placard_text='USERS'
                         textSize={'large'} 
                         navMetas={['/instructor/students', 'dash']} 
                         is_button={true} />
-                    <Instr_UsersTable set_scenarioDetail_state={set_scenarioDetail_state} />
+                    <Staff_UsersGrid set_scenarioDetail_state={set_scenarioDetail_state} />
                 </div>    
 
             </div>

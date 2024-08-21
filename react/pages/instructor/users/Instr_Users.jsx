@@ -3,6 +3,7 @@ import Instr_UsersTable from './Instr_UsersTable';
 import Placard from '@components/Placard';
 import { InstructorRouter_context } from '../Instructor_router';
 import '@assets/css/tables.css';
+import Staff_UsersGrid from './Staff_UsersGrid';
 
 function Instr_Users() {
 
@@ -16,7 +17,7 @@ function Instr_Users() {
                 <div className='instructor-dash-section'>
                     <Placard placard_text={"Students"} />
                     <div className="table-frame">
-                        <Instr_UsersTable />
+                        <Staff_UsersGrid />
                     </div>
                 </div>
             </div>

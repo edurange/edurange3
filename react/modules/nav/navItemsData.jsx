@@ -216,7 +216,7 @@ export const navArrays = {
         },
         dash: {
             top: [feedback, instructor, logout],
-            side: [instructor, studentGroups, instr_scenarios, students, ta_assignments, panopticon, instr_hints, logs, issues]
+            side: [instructor, studentGroups, instr_scenarios, students, panopticon, instr_hints, logs, issues]
         },
         account: {
             top: [feedback, instructor, logout],
@@ -247,7 +247,7 @@ export const navArrays = {
         },
         dash: {
             top: [feedback, instructor, logout],
-            side: [instructor, studentGroups, instr_scenarios, students, ta_assignments, panopticon, instr_hints, logs, issues]
+            side: [instructor, studentGroups, instr_scenarios, students, panopticon, instr_hints, logs, issues]
         },
         account: {
             top: [feedback, instructor, logout],

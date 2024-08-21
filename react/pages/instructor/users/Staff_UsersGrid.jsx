@@ -1,13 +1,12 @@
-
 import axios from 'axios';
 import React, { useContext, useState, useEffect } from 'react';
 import { InstructorRouter_context } from '../Instructor_router';
 import { HomeRouter_context } from '@pub/Home_router';
-import '@assets/css/tables.css';
+import '../scenarios/Staff_TableGrid.css';
 import { AppContext } from '../../../config/AxiosConfig';
 import '../../../components/ListController.css';
 
-function Instr_UsersTable() {
+function Staff_UsersGrid() {
 
     const {
         set_desiredNavMetas_state
@@ -31,14 +30,6 @@ function Instr_UsersTable() {
     const [buttonIsDisabled_state, set_buttonIsDisabled_state] = useState(true);
 
     const [sortingEnabled_state, set_sortingEnabled_state] = useState(true);
-
-    // options:
-    //  - new_responses
-    //  - total_responses
-    //  - new_cmds
-    //  - total_cmds
-    //  - new_msgs
-    //  - total_msgs
 
     const cmd_logs = logs_state?.bash;
     const response_logs = logs_state?.responses;
@@ -171,8 +162,7 @@ function Instr_UsersTable() {
         }
     }
 
-    // is_assigning is a bool; true is to add users to ta assignment ; false is remove
-    async function edit_taAssignments(is_assigning) {
+    async function edit_taAssignments(is_assigning) { 
         const usersToAssign_IDs = Object.keys(selectedUsers_state)
             .filter((userId) => selectedUsers_state[userId])
             .map((userId) => parseInt(userId, 10));
@@ -185,22 +175,24 @@ function Instr_UsersTable() {
             });
     
             if (response.data.result === 'success') {
-                const new_taAssignments = [];
-                response.data.assignedUsers_idList.forEach((assigned_userID_int) => {
-                    new_taAssignments.push({
+
+                const new_taAssignments = []
+                response?.data?.assignedUsers_idList.map(
+                    (assigned_userID_int) => {
+                        new_taAssignments.push({
                         student_id: assigned_userID_int,
-                        ta_id: response.data.ta_id
-                    });
-                });
+                        ta_id: response?.data?.ta_id
+                    })}
+                );
     
-                set_taAssignments_state((prevState) => {
+                set_taAssignments_state(prevState => {
                     const updatedAssignments = [...prevState];
-                    new_taAssignments.forEach((newAssignment) => {
+                    new_taAssignments.forEach(newAssignment => {
                         if (is_assigning) {
                             updatedAssignments.push(newAssignment);
                         } else {
                             const index = updatedAssignments.findIndex(
-                                (existingAssignment) =>
+                                existingAssignment =>
                                     existingAssignment.student_id === newAssignment.student_id &&
                                     existingAssignment.ta_id === newAssignment.ta_id
                             );
@@ -212,12 +204,12 @@ function Instr_UsersTable() {
                     return updatedAssignments;
                 });
     
-                set_taDict_state((prevDict) => {
+                set_taDict_state(prevDict => {
                     const updatedDict = { ...prevDict };
-    
-                    new_taAssignments.forEach((assignment) => {
+
+                    new_taAssignments.forEach(assignment => {
                         const { student_id, ta_id } = assignment;
-    
+
                         if (is_assigning) {
                             if (!updatedDict[student_id]) {
                                 updatedDict[student_id] = [];
@@ -234,7 +226,7 @@ function Instr_UsersTable() {
                             }
                         }
                     });
-    
+
                     return updatedDict;
                 });
             } else {
@@ -378,7 +370,7 @@ function Instr_UsersTable() {
     }
 
     const sortedUsers = sortingEnabled_state ? sortUsers(users_state) : users_state;
-
+    console.log('uds: ', users_state)
     return (
         <>
             <div className="create-frame">
@@ -461,17 +453,17 @@ function Instr_UsersTable() {
                 </select>
             </div>
 
-            <div className="table-frame">
-                <div className="table-header">
-                    <div onClick={handleSelectAllUsers} className="table-cell-item highlightable-cell col-xxsmall">
+            <div className="table-usersgrid">
+                <div className="table-tablegrid-header">
+                    <div onClick={handleSelectAllUsers} className="tablegrid-header-item">
                         ID
                         <input type="checkbox" checked={areAllUsersSelected} readOnly />
                     </div>
-                    <div className="table-header-item col-large">Username</div>
-                    <div className="table-header-item col-large">Group</div>
-                    <div className="table-cell-item highlightable-cell col-small">Cmds</div>
-                    <div className="table-cell-item highlightable-cell col-small">Chats</div>
-                    <div className="table-cell-item highlightable-cell col-small">TAs</div>
+                    <div className="tablegrid-header-item">Username</div>
+                    <div className="tablegrid-header-item">Group</div>
+                    <div className="tablegrid-header-item">Cmds</div>
+                    <div className="tablegrid-header-item">Chats</div>
+                    <div className="tablegrid-header-item">TAs</div>
                 </div>
                 {sortedUsers.map((user, index) => {
                     const allowedMessages = compileMessages_byUser(user.id);
@@ -503,8 +495,8 @@ function Instr_UsersTable() {
                         .length) ?? 0;
 
                     return (
-                        <div key={index + 2000} className="table-row">
-                            <div className="table-cell-item highlightable-cell col-xxsmall">
+                        <div key={index + 2000} className="table-tablegrid-row">
+                            <div className="tablegrid-item">
                                 <div onClick={(event) => handleUserCheckboxChange(event, user.id)}>
                                     {user.id}
                                     <input
@@ -515,25 +507,29 @@ function Instr_UsersTable() {
                                     />
                                 </div>
                             </div>
-                            <div className="table-cell-item highlightable-cell col-large" onClick={(event) => handle_userDetail_click(event, user)}>
+                            <div className="tablegrid-item" onClick={(event) => handle_userDetail_click(event, user)}>
                                 {user.username}
                                 {user.is_instructor 
                                 ? (<div className='highlighter-green'>&nbsp;(TA) </div>) 
                                 : <></>}
                             </div>
-                            <div className="table-cell-item highlightable-cell col-large" onClick={(event) => handle_groupDetail_click(event, user)}>{getGroupNameById(user.membership)}</div>
-                            <div className="table-cell-item highlightable-cell col-small" onClick={(event) => handle_userDetail_click(event, user)}>
+                            <div className="tablegrid-item" onClick={(event) => handle_groupDetail_click(event, user)}>{getGroupNameById(user.membership)}</div>
+                            <div className="tablegrid-item" onClick={(event) => handle_userDetail_click(event, user)}>
                                 {allowedCmds?.length}(
                                     <span className='highlighter-orange'>
                                         {newBashCount}
                                     </span>
                                 )
                             </div>
-                            <div className="table-cell-item highlightable-cell col-small" onClick={(event) => handle_userDetail_click(event, user)}>
+                            <div className="tablegrid-item" onClick={(event) => handle_userDetail_click(event, user)}>
                                 {totalMessages}(<span className='highlighter-orange'>{newMessagesCount}</span>)
                             </div>
-                            <div className="table-cell-item highlightable-cell col-small">
-                                {taDict_state[user.id]?.join(',')}
+                            <div className="tablegrid-item">
+                                {taDict_state[user.id]?.map(taId => {
+    const taUser = users_state.find(user => user.id === taId);
+    return taUser ? taUser.username : taId;
+}).join(', ')}
+
                             </div>
                         </div>
                     );
@@ -542,4 +538,4 @@ function Instr_UsersTable() {
         </>
     );
 }
-export default Instr_UsersTable;
+export default Staff_UsersGrid;

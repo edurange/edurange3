@@ -1,9 +1,9 @@
 
 import React from 'react';
-import Instr_ScenTable from './Instr_ScenTable';
 import CreateScenario from './CreateScenario';
 import '@assets/css/tables.css';
 import Placard from '@components/Placard';
+import Staff_ScenGrid from './Staff_ScenGrid';
 
 function Instr_Scenarios() {
 
@@ -15,7 +15,7 @@ function Instr_Scenarios() {
                     <Placard placard_text={"Scenarios"} />
                         <CreateScenario />
                     <div className="table-frame">
-                        <Instr_ScenTable />                
+                        <Staff_ScenGrid />                
                     </div>
                 </div>
             </div>
