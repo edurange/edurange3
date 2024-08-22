@@ -91,7 +91,7 @@ def load_generate_hint_task_id_from_redis():
 
 def load_learning_objectives_from_txt(scenario_name):
 
-      file_path = f"machine_learning/context_files/{scenario_name}.txt"
+      file_path = f"machine_learning/learning_objectives_files/{scenario_name}.txt"
       with open(file_path, 'r', encoding='utf-8') as file:
             file_content = file.read()
       return file_content

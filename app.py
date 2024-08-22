@@ -12,6 +12,7 @@ from py_flask.utils.common_utils import generate_alphanum
 from py_flask.utils.tasks import initialize_model
 
 
+
 app = create_app()
 app.app_context().push()
 
@@ -51,3 +52,5 @@ try:
     
 except exception as e:
     print(" !! Model initialization failed !! ")
+
+

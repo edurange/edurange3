@@ -1,13 +1,7 @@
 ####################################################################################################
 # CLASSIFICATION MANAGER MODULE
-# Manages execution, compute and logging of the real time classification with Naive Bayes
+# Manages execution, compute and logging of the real time classification with Logistic Regression
 # 
-# Takes command arg of
-# python py_flask\utils\classification_manager.py py_flask\mode\{model name}.joblib py_flask\log\{output for probability}.csv {Compute and update frequency}
-# EXAMPLE:
-# python py_flask\utils\classification_manager.py py_flask\model\trained_model.joblib py_flask\log\student_probability_table.csv 4
-#
-#
 # Author: Taylor Wolff (building off of Aubrey Birdwell's modules)
 ####################################################################################################
 

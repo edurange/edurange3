@@ -32,6 +32,7 @@ const Instr_Hints = () => {
 
   const [userIDinput, set_userIDinput] = useState('');
   const [loading, set_loading] = useState(false);
+  const [elapsedTime, setElapsedTime] = useState(0);
   const [error, set_error] = useState('');
   const [isEditing, set_isEditing] = useState(false);
   const [newHint, set_newHint] = useState('');
@@ -145,13 +146,33 @@ const Instr_Hints = () => {
     }
   }, [hint_state, isEditing]);
 
+  useEffect(() => {
+    let timer;
+    
+    if (loading) {
+      timer = setInterval(() => {
+        setElapsedTime(prevTime => prevTime +1);
+      }, 1000);
+    }
+    else {
+      setElapsedTime(0);
+    }
+      return () => {
+        clearInterval(timer);
+      };
+  }, [loading]);
+
+
   const LoadingOverlay = () => (
     <div className="loading-overlay">
       <div>
         <span>GENERATING HINT</span>
-        <span className="rotate-text-animation">⌛</span>
+        <span className="hourglass">⌛</span>
       </div>
-      <span>Please remain on the page...</span>
+      <div>
+        <span>Please remain on the page...</span>
+      </div>
+        <span className="elapsed-time-counter"> Elapsed time: {elapsedTime} seconds </span>
       <div>
         <button onClick={cancelHint} className="cancel-hint-button">CANCEL HINT </button>
       </div>
