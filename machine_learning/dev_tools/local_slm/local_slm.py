@@ -6,10 +6,11 @@
 # 
 #
 # Author: Taylor Wolff 
-# Run $python machine_learning/dev_tools/local_slm.py to be prompted to input bash commands.
+# Run $python3 machine_learning/dev_tools/local_slm/local_slm.py to be prompted to input bash commands.
 ####################################################################################################
 import sys
 import os
+import csv
 import math
 import pyopencl as cl
 import asyncio
@@ -27,8 +28,8 @@ def initialize_model():
             cpu_resource_scaler = 1 # Multiplicative scaler for CPU cores to be used.
             num_cpus = os.cpu_count()
             if num_cpus is None or num_cpus <= 0:
-                  raise ValueError(f"Invalid CPU count: {num_cpus}")   
-
+                  raise ValueError(f"Invalid CPU count: {num_cpus}")
+            else:   
                   return math.floor(num_cpus * cpu_resource_scaler) 
 
       def determine_gpu_resources():
@@ -37,44 +38,49 @@ def initialize_model():
                   for platform in platforms:
                         gpu_device = platform.get_devices(device_type=cl.device_type.GPU)
                         if gpu_device:
-                              return -1    
+                              return -1
+                        else:
+                              return 0    
 
             except Exception as GPU_NOT_FOUND:
                   return 0
 
       cpu_resources = determine_cpu_resources()
+      print (f"1. CPU's used: {cpu_resources}")
       gpu_resources = determine_gpu_resources()
-      
+      print (f"2. GPU's used: {gpu_resources}")
+
       language_model = Llama.from_pretrained(
         repo_id="microsoft/Phi-3-mini-4k-instruct-gguf",
         filename="Phi-3-mini-4k-instruct-q4.gguf",
         verbose=False,
         n_ctx=4086, 
         n_threads=cpu_resources, 
-        n_gpu_layers=gpu_resources, 
-        use_mmap=True,
-        use_mlock=True,
-        flash_attn=True,
+        n_gpu_layers=-1, 
      )
+
+      print("3. Model initialize succesfully")
       return language_model
 
 
 def load_learning_objectives_from_txt(scenario_name):
 
-      file_path = f"machine_learning/context_files/{scenario_name}.txt"
+      file_path = f"machine_learning/learning_objectives_files/{scenario_name}.txt"
       with open(file_path, 'r', encoding='utf-8') as file:
             file_content = file.read()
+      
+      print("objectives loaded.")
       return file_content
 
 # @profile
 def generate_hint(language_model, scenario_name, student_logs):
 
       #Set logs to what you want for student
-      bash_history = {student_logs[0]}
-      chat_history = {student_logs[1]}
-      answer_history = {student_logs[2]}
+      bash_history = student_logs['bash_logs']
+      chat_history = student_logs['chat_logs']
+      answer_history = student_logs['answer_logs']
 
-      load_learning_objectives_from_txt(scenario_name)
+      # learning_objectives = load_learning_objectives_from_txt(scenario_name)
 
       finalized_system_prompt = f'''
 
@@ -84,7 +90,8 @@ def generate_hint(language_model, scenario_name, student_logs):
             # Still deciding how to feed context to the model's prompt.
 
             CONTEXT: 
-            For context this is the scenario's learning objectives: "{load_learning_objectives_from_txt}". 
+            
+
 
             '''
             
@@ -110,10 +117,36 @@ def generate_hint(language_model, scenario_name, student_logs):
             temperature=0.8,
       ) 
 
+      print("4. Now generating hint")
+
       generated_hint = result["choices"][0]["text"]
 
+      print("5. Hint generated")
+      print(generated_hint)
+
+      
       return generated_hint
 
+def export_hint_with_information(scenario_name, generated_hint, student_logs):
+
+
+      bash_history = student_logs['bash_logs']
+      chat_history = student_logs['chat_logs']
+      answer_history = student_logs['answer_logs']
+
+      data = [
+            [generated_hint],
+            [bash_history],
+            [chat_history],
+            [answer_history]
+      ]
+
+      print("5. Exporting hint to csv")
+      file_path = f"machine_learning/dev_tools/local_slm/pre-generated_hints/{scenario_name}.csv"
+      with open(file_path, 'w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerows(data)
+      print("6. Hint exported to csv")
 
 def main():
       print(f"\nEDURANGE LOCAL SLM TESTING DEVELOPMENT TOOL")
@@ -123,13 +156,14 @@ def main():
       bash_logs = input("Enter bash command logs, dilineate within an array ex: '[1. ls, 2. pwd]'  : ")
       chat_logs = input("Enter bash chat logs, dilineate within an array ex: '[1. Hi, 2. I need help]'  : ")
       answer_logs = input("Enter bash answer logs, dilineate within an array ex: '[1. man, 2. man pwd]' : ")
-      student_logs = [bash_logs, chat_logs, answer_logs]
+      student_logs = {'bash_logs': bash_logs, 'chat_logs': chat_logs, 'answer_logs': answer_logs}
 
       language_model = initialize_model()
-      hint = generate_hint(language_model, scenario_name, student_logs)
+      generated_hint = generate_hint(language_model, scenario_name, student_logs)
 
-      
-      print(f"The generated hint: {hint}")
+      export_hint_with_information(scenario_name, generated_hint, student_logs)
+
+      # print(f"The generated hint: {generated_hint}")
     
 
 

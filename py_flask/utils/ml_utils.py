@@ -22,7 +22,7 @@ def generate_hint(language_model, logs_dict, scenario_name):
       chat_history = logs_dict['chat']
       answer_history = logs_dict['responses']
 
-      load_learning_objectives_from_txt(scenario_name)
+      #learning_objectives_string = load_learning_objectives_from_txt(scenario_name)
 
       finalized_system_prompt = f'''
 
@@ -32,7 +32,7 @@ def generate_hint(language_model, logs_dict, scenario_name):
             # Still deciding how to feed context to the model's prompt.
 
             CONTEXT: 
-            For context this is the scenario's learning objectives: "{load_learning_objectives_from_txt}". 
+            For context this is the scenario's learning objectives: " ". 
 
             '''
             
@@ -75,6 +75,25 @@ def load_language_model_from_redis():
       else:
             valueError('No language model found from Redis db')
             return None
+
+def load_cpu_and_gpu_resources_from_redis():
+
+      r = redis.StrictRedis(host='localhost', port=6379, db=1)
+      cpu_resources_pickle = r.get('language_model_cpu_resources')
+      if cpu_resources_pickle:
+            cpu_resources = pickle.loads(cpu_resources_pickle)
+      else:
+            cpu_resources = None
+      
+      gpu_resources_pickle = r.get('language_model_gpu_resources')
+
+      if gpu_resources_pickle:
+            gpu_resources = pickle.loads(gpu_resources_pickle)
+      else:
+            gpu_resources = None
+
+      return cpu_resources, gpu_resources
+
 
 def load_generate_hint_task_id_from_redis():
 

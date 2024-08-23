@@ -27,7 +27,7 @@ from flask import current_app, flash, jsonify
 from py_flask.utils.terraform_utils import adjust_network, find_and_copy_template, write_resource
 from py_flask.config.settings import CELERY_BROKER_URL, CELERY_RESULT_BACKEND
 from py_flask.utils.scenario_utils import claimOctet
-from py_flask.utils.ml_utils import generate_hint, load_language_model_from_redis, load_generate_hint_task_id_from_redis
+from py_flask.utils.ml_utils import generate_hint, load_language_model_from_redis, load_generate_hint_task_id_from_redis, load_cpu_and_gpu_resources_from_redis
 from py_flask.utils.instructor_utils import getLogs, getNumOfRecentLogsForHint
 
 
@@ -452,9 +452,10 @@ def initialize_model(self):
         cpu_resource_scaler = 1 # Multiplicative scaler for CPU cores to be used.
         num_cpus = os.cpu_count()
         if num_cpus is None or num_cpus <= 0:
-            raise ValueError(f"Invalid CPU count: {num_cpus}")   
+            raise ValueError(f"Invalid CPU count: {num_cpus}")
+        else:   
+            return math.floor(num_cpus * cpu_resource_scaler)    
 
-        return math.floor(num_cpus * cpu_resource_scaler) 
 
     def determine_gpu_resources():
         try:
@@ -462,8 +463,9 @@ def initialize_model(self):
             for platform in platforms:
                 gpu_device = platform.get_devices(device_type=cl.device_type.GPU)
                 if gpu_device:
-
-                    return -1    
+                    return -1
+                else:
+                    return 0   
 
         except Exception as GPU_NOT_FOUND:
 
@@ -486,7 +488,11 @@ def initialize_model(self):
 
     r = redis.StrictRedis(host='localhost', port=6379, db=1)
     language_model_pickle = pickle.dumps(language_model)
+    language_model_cpu_resources_pickle = pickle.dumps(cpu_resources)
+    language_model_gpu_resources_pickle = pickle.dumps(gpu_resources)
     r.set('language_model', language_model_pickle)
+    r.set('language_model_cpu_resources', language_model_cpu_resources_pickle)
+    r.set('language_model_gpu_resources', language_model_gpu_resources_pickle)
 
 
 @celery.task(bind=True, worker_prefetch_multiplier=1, priority=1)
@@ -504,9 +510,12 @@ def request_and_generate_hint(self, scenario_name, logs_dict):
     generate_hint_task_id_pickle = pickle.dumps(task_id)
     r.set('generate_hint_task_id', generate_hint_task_id_pickle)
     language_model = load_language_model_from_redis()
+
+    cpu_and_gpu_resources = load_cpu_and_gpu_resources_from_redis()
+    
     answer = generate_hint(language_model, logs_dict, scenario_name)
 
-    return {'generated_hint': answer, 'logs_dict': logs_dict}
+    return {'generated_hint': answer, 'logs_dict': logs_dict, 'cpu_resources_used': cpu_and_gpu_resources[0], 'gpu_rescources_used': cpu_and_gpu_resources[1]}
 
 
 
