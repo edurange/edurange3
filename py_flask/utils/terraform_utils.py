@@ -1,14 +1,49 @@
 import os
 import shutil
 import json
+import logging
 
+# def find_and_copy_template(s_type, c_name):
+#     path = '../../../scenarios/prod/' + s_type
+#     try:
+#         shutil.copy(path + '/' + c_name + '.tf.json', c_name + '.tf.json')
+#     except FileNotFoundError:
+#         return "Template not found, or path error"
 
 def find_and_copy_template(s_type, c_name):
-    path = '../../../scenarios/prod/' + s_type
+    # Validate inputs
+    if not isinstance(s_type, str) or not isinstance(c_name, str):
+        return "Invalid input: s_type and c_name must be strings"
+
+    # Define paths
+    base_path = os.path.normpath(os.path.join('../../../scenarios/prod', s_type))
+    source_file = os.path.join(base_path, 'container', c_name + '.tf.json')
+    destination_file = os.path.join(os.getcwd(), c_name + '.tf.json')  # Save in the current working directory
+    source_network_dir = os.path.join(base_path, 'network')
+    destination_network_dir = os.path.join(os.getcwd(), 'network')  # Save the network directory in the current working directory
+
     try:
-        shutil.copy(path + '/' + c_name + '.tf.json', c_name + '.tf.json')
+        # Copy the template file
+        shutil.copy(source_file, destination_file)
+        
+        # Copy the network directory
+        if os.path.isdir(source_network_dir):
+            if os.path.isdir(destination_network_dir):
+                # If the network directory already exists, remove it before copying
+                shutil.rmtree(destination_network_dir)
+            shutil.copytree(source_network_dir, destination_network_dir)
+        else:
+            return f"Network directory not found at {source_network_dir}"
+        
+        return f"Template {c_name}.tf.json and network directory copied successfully"
+    
     except FileNotFoundError:
-        return "Template not found, or path error"
+        return f"Template {c_name}.tf.json not found at {source_file}"
+    except shutil.Error as e:
+        return f"Error during copying: {str(e)}"
+    except Exception as e:
+        return f"An unexpected error occurred: {str(e)}"
+
 
 
 def build_users(usernames, passwords):
@@ -90,23 +125,25 @@ def build_execute_files(s_files, g_files, u_files, flags):
             execs += "\","
     return execs
 
-
-def adjust_network(address, name):
+def adjust_network(address, name, logger):
     try:
-        net = open('network.tf.json', 'r+')
-        net_config = json.load(net)
+        # Read from the new template location
+        with open('network/network_template.tf.json', 'r') as net:
+            net_config = json.load(net)
     except FileNotFoundError:
         return "Network Template Not Found"
 
-    # Replace the name and addresses in the 'network' file
+    # Replace the name and addresses in the template
     for i, r in enumerate(net_config['resource']):
         for s in r:
             for j, t in enumerate(net_config['resource'][i][s]):
                 net_config['resource'][i][s][j] = eval(str(t).replace('SNAME', name).replace('OCTET', address))
-    with open('tmp.tf.json', 'w') as f:
+
+    # Write the modified configuration directly to network.tf.json
+    with open('network.tf.json', 'w') as f:
         json.dump(net_config, f, indent=4)
 
-    os.rename('tmp.tf.json', 'network.tf.json')
+    return "Network configuration updated successfully"
 
 
 def write_resource(address, name, s_type,

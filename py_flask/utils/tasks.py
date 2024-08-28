@@ -5,6 +5,9 @@ import shutil
 import string
 import subprocess
 import yaml
+import threading
+import logging
+
 from datetime import datetime
 from celery import Celery
 from celery.utils.log import get_task_logger
@@ -13,7 +16,35 @@ from py_flask.utils.terraform_utils import adjust_network, find_and_copy_templat
 from py_flask.config.settings import CELERY_BROKER_URL, CELERY_RESULT_BACKEND
 from py_flask.utils.scenario_utils import claimOctet
 
+# Create a custom logger
 logger = get_task_logger(__name__)
+
+# Configure the root logger
+logging.basicConfig(level=logging.INFO)
+
+# Create a file handler
+file_handler = logging.FileHandler('logs/celery_tasks.log')
+file_handler.setLevel(logging.INFO)
+
+# Create a console handler
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.INFO)
+
+# Create a formatter
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+# Set the formatter for both handlers
+file_handler.setFormatter(formatter)
+console_handler.setFormatter(formatter)
+
+# Add the handlers to the logger
+logger.addHandler(file_handler)
+logger.addHandler(console_handler)
+
+# Ensure propagation is set to True
+logger.propagate = True
+
+
 path_to_directory = os.path.dirname(os.path.abspath(__file__))
 
 def get_path(file_name):
@@ -23,6 +54,8 @@ def get_path(file_name):
     return mail_path
 
 celery = Celery(__name__, broker=CELERY_BROKER_URL, backend=CELERY_RESULT_BACKEND)
+
+network_lock = threading.Lock()
 
 class ContextTask(celery.Task):
     ''' This allows tasks to assume the create_app() context, and access the database '''
@@ -39,101 +72,105 @@ celery.Task = ContextTask
 
 @celery.task(bind=True)
 def create_scenario_task(self, scen_name, scen_type, students_list, grp_id, scen_id):
-    ''' self is the task instance, other arguments are the results of database queries '''
-    from py_flask.database.models import ScenarioGroups, Scenarios
-    from py_flask.utils.scenario_utils import gather_files
+    try:
+        ''' self is the task instance, other arguments are the results of database queries '''
+        from py_flask.database.models import ScenarioGroups, Scenarios
+        from py_flask.utils.scenario_utils import gather_files
 
-    app = current_app
-    scen_type = scen_type.lower()
-    grp_id = grp_id["id"]
+        app = current_app
+        scen_type = scen_type.lower()
+        grp_id = grp_id["id"]
 
-    c_names, g_files, s_files, u_files, packages, ip_addrs = gather_files(scen_type, logger)
+        c_names, g_files, s_files, u_files, packages, ip_addrs = gather_files(scen_type, logger)
 
-    logger.info ('values returned from gatherFiles:', c_names, g_files, s_files, u_files, packages, ip_addrs)
+        logger.info('values returned from gatherFiles:', c_names, g_files, s_files, u_files, packages, ip_addrs)
 
-    logger.info(
-        "Executing task id {0.id}, args: {0.args!r} kwargs: {0.kwargs!r}".format(
-            self.request
-        )
-    )
-    students = {}
-    usernames, passwords = [], []
+        logger.info("Executing task id {0.id}, args: {0.args!r} kwargs: {0.kwargs!r}".format(self.request))
 
-    for i in range(len(students_list)):
-        username = "".join(e for e in students_list[i]["username"] if e.isalnum())
-        password = "".join(
-            random.choice(string.ascii_letters + string.digits) for _ in range(6)
-        )
+        students = {}
+        usernames, passwords = [], []
 
-        usernames.append(username)
-        passwords.append(password)
+        for student in students_list:
+            username = "".join(e for e in student["username"] if e.isalnum())
+            password = "".join(random.choice(string.ascii_letters + string.digits) for _ in range(6))
 
-        logger.info(f'User: {students_list[i]["username"]}')
-        students[username] = []
-        students[username].append({"username": username, "password": password})
+            usernames.append(username)
+            passwords.append(password)
 
+            logger.info(f'User: {student["username"]}')
+            students[username] = [{"username": username, "password": password}]
 
-    with app.test_request_context():
-        scenario = Scenarios.query.filter_by(id=scen_id).first()
-        scen_name = "".join(e for e in scen_name if e.isalnum())
+        with app.test_request_context():
+            scenario = Scenarios.query.filter_by(id=scen_id).first()
+            scen_name = "".join(e for e in scen_name if e.isalnum())
 
-        os.makedirs("./scenarios/tmp/" + scen_name)
-        os.chdir("./scenarios/tmp/" + scen_name)
+            os.makedirs("./scenarios/tmp/" + scen_name)
+            os.chdir("./scenarios/tmp/" + scen_name)
 
-        os.makedirs("./student_view")
+            os.makedirs("student_view", exist_ok=True)
 
-        with open("students.json", "w") as outfile:
-            json.dump(students, outfile)
+            with open("students.json", "w") as outfile:
+                json.dump(students, outfile)
 
-        with open(f"../../../scenarios/prod/{scen_type}/guide_content.yml", "r+")as f:
-            content = yaml.safe_load(f)
-            content_items = content['contentDefinitions']
-            logger.info(f"Content Type: {type(content)}")
+            with open(f"../../../scenarios/prod/{scen_type}/guide_content.yml", "r") as f:
+                content = yaml.safe_load(f)
+                content_items = content['contentDefinitions']
+                logger.debug(f"Content Type: {type(content)}")
 
-        flags = []
-        for content_num, item_name in enumerate(content_items):
-            if content_items[item_name]["type"] == "question":
-                q_num = content_items[item_name]["question_num"]
-                if content_items[item_name]["answers"][0]["value"] == '$RANDOM':
-                    rnd_ans = "".join(random.choice(string.ascii_letters + string.digits) for _ in range(8))
-                    content["contentDefinitions"]["Question" + str(q_num)]["answers"][0]["value"] = rnd_ans
-                    flags.append(rnd_ans)
+            flags = []
+            for item_name, item in content_items.items():
+                if item["type"] == "question":
+                    q_num = item["question_num"]
+                    if item["answers"][0]["value"] == '$RANDOM':
+                        rnd_ans = "".join(random.choice(string.ascii_letters + string.digits) for _ in range(8))
+                        content["contentDefinitions"]["Question" + str(q_num)]["answers"][0]["value"] = rnd_ans
+                        flags.append(rnd_ans)
 
-        with open("guide_content.yml", "w") as outfile:
-            yaml.dump(content, outfile, indent=4)   
-        
-        lowest_avail_octet = claimOctet()
+            with open("guide_content.yml", "w") as outfile:
+                yaml.dump(content, outfile, indent=4)
 
-        # Write provider and networks
-        find_and_copy_template(scen_type, "network")
-        adjust_network(str(lowest_avail_octet), scen_name)
-        os.system("terraform init")
-        os.system("terraform plan -out network")
+            lowest_avail_octet = claimOctet()
 
-        logger.info("All flags: {}".format(flags))
+            try:
+                find_and_copy_template(scen_type, "main")
+                logger.debug("find_and_copy complete")
+                
 
-        # Each container and their names are pulled from the 'scen_type'.json file
-        for i, c in enumerate(c_names):
-            find_and_copy_template(scen_type, c)
-            write_resource(
-                str(lowest_avail_octet), scen_name, scen_type, i, usernames, passwords,
-                s_files[i], g_files[i], u_files[i], flags, c_names
+                adjust = adjust_network(str(lowest_avail_octet), scen_name, logger)
+                if adjust:
+                    logger.debug("Network adjustment complete")
+
+            except Exception as e:
+                logger.error(f"An error occurred while adjusting network or running Terraform: {str(e)}")
+                return {"result": "error", "message": str(e)}
+
+            logger.debug("All flags: {}".format(flags))
+
+            for i, c in enumerate(c_names):
+                find_and_copy_template(scen_type, c)
+                write_resource(
+                    str(lowest_avail_octet), scen_name, scen_type, i, usernames, passwords,
+                    s_files[i], g_files[i], u_files[i], flags, c_names
+                )
+
+            scenario.update(
+                status=0,
+                octet=lowest_avail_octet
             )
 
-        scenario.update(
-            status=0,
-            octet=lowest_avail_octet
-        )
-        os.chdir("../../..")
+            os.chdir("../../..")
+            
+            ScenarioGroups.create(group_id=grp_id, scenario_id=scen_id)
 
-        ScenarioGroups.create(group_id=grp_id, scenario_id=scen_id)
-
-        return {
-            "result": "success", 
-            "new_status": 0,
-            "scenario_id": scen_id
-        }
-
+            return {
+                "result": "success", 
+                "new_status": 0,
+                "scenario_id": scen_id
+            }
+        
+    except Exception as e:
+        logger.error(f"An error occurred in the create_scenario: {str(e)}")
+        return {"result": "error", "message": str(e)}
 
 @celery.task(bind=True)
 def start_scenario_task(self, scenario_id):
@@ -141,21 +178,22 @@ def start_scenario_task(self, scenario_id):
     from py_flask.utils.instructor_utils import NotifyCapture
 
     app = current_app
-    logger.info(
+    logger.debug(
         "Executing task id {0.id}, args: {0.args!r} kwargs: {0.kwargs!r}".format(
             self.request
         )
     )
     with app.test_request_context():
         scenario = Scenarios.query.filter_by(id=scenario_id).first()
-        logger.info("Found Scenario: {}".format(scenario))
+        logger.debug("Found Scenario: {}".format(scenario))
         name = str(scenario.name)
         name = "".join(e for e in name if e.isalnum())
         gateway = name + "_gateway"
         start = name + "_StartingLine"
         start_ip = "10." + str(scenario.octet) + ".0.2"
+
         if int(scenario.status) != 0:
-            logger.info("Invalid Status")
+            logger.error("Invalid Status")
             NotifyCapture("Failed to start scenario " + name + ": Invalid Status")
             return {
                 "result": "failure",
@@ -163,12 +201,19 @@ def start_scenario_task(self, scenario_id):
                 "scenario_id": scenario_id,
                 "message": "Scenario must be stopped before starting"
                 }
+        
         elif os.path.isdir(os.path.join("./scenarios/tmp/", name)):
             scenario.update(status=3)
-            logger.info("Folder Found")
+            logger.debug("Folder Found")
             os.chdir("./scenarios/tmp/" + name)
-            os.system("terraform apply network")
-            os.system("terraform apply --auto-approve")
+            
+            os.system("terraform init -upgrade")
+            os.system("terraform providers lock -platform=linux_amd64")
+            os.system("terraform apply -auto-approve")
+
+            # os.system("terraform apply network")
+            # os.system("terraform apply --auto-approve")
+            
             os.system("../../../shell_scripts/scenario_movekeys.sh {} {} {}".format(gateway, start, start_ip))
             os.chdir("../../..")
             scenario.update(status=1)
@@ -179,7 +224,7 @@ def start_scenario_task(self, scenario_id):
                 "scenario_id": scenario_id
                 }
         else:
-            logger.info("Scenario folder could not be found -- " + os.path.join("./scenarios/tmp/", name))
+            logger.debug("Scenario folder could not be found -- " + os.path.join("./scenarios/tmp/", name))
             NotifyCapture("Failed to start scenario " + name + ": Scenario folder could not be found. -- " + os.path.join("./scenarios/tmp/", name))
             return {
                 "result": "failure",
@@ -193,25 +238,28 @@ def stop_scenario_task(self, scenario_id):
     from py_flask.utils.instructor_utils import NotifyCapture
 
     app = current_app
-    logger.info(
+    logger.debug(
         "Executing task id {0.id}, args: {0.args!r} kwargs: {0.kwargs!r}".format(
             self.request
         )
     )
     with app.test_request_context():
         scenario = Scenarios.query.filter_by(id=scenario_id).first()
-        logger.info("Found Scenario: {}".format(scenario))
+        logger.debug("Found Scenario: {}".format(scenario))
         name = str(scenario.name)
         name = "".join(e for e in name if e.isalnum())
         if int(scenario.status) != 1:
-            logger.info("Invalid Status")
+            logger.error("Invalid Status")
             NotifyCapture("Failed to stop scenario " + name + ": Invalid Status")
             flash("Scenario is not ready to start", "warning")
-        elif os.path.isdir(os.path.join("./scenarios/tmp/", name)):
-            logger.info("Folder Found")
+        if os.path.isdir(os.path.join("./scenarios/tmp/", name)):
+            logger.debug("Folder Found")
             scenario.update(status=4)
             os.chdir("./scenarios/tmp/" + name)
+            
+            # Destroy the resources            
             os.system("terraform destroy --auto-approve")
+            
             os.chdir("../../..")
             scenario.update(status=0)
             NotifyCapture("Scenario " + name + " has successfully stopped.")
@@ -221,7 +269,7 @@ def stop_scenario_task(self, scenario_id):
                 "scenario_id": scenario_id
                 }
         else:
-            logger.info("Something went wrong")
+            logger.error("Something went wrong")
             NotifyCapture("Failed to stop scenario " + name + ": Invalid Status")
             return {
                 "result": "failure",
@@ -235,7 +283,7 @@ def update_scenario_task(self, scenario_id):
     from py_flask.utils.instructor_utils import NotifyCapture
 
     app = current_app
-    logger.info(
+    logger.debug(
         "Executing task id {0.id}, args: {0.args!r} kwargs: {0.kwargs!r}".format(
             self.request
         )
@@ -246,11 +294,11 @@ def update_scenario_task(self, scenario_id):
         name = str(scenario.name)
         name = "".join(e for e in name if e.isalnum())
         if int(scenario.status) != 1:
-            logger.info("Invalid Status")
+            logger.error("Invalid Status")
             NotifyCapture("Failed to stop scenario " + name + ": Invalid Status")
             flash("Scenario is not ready to start", "warning")
         elif os.path.isdir(os.path.join("./scenarios/tmp/", name)):
-            logger.info("Folder Found")
+            logger.debug("Folder Found")
             scenario.update(status=4)
             os.chdir("./scenarios/tmp/" + name)
             os.system("terraform destroy --auto-approve")
@@ -258,7 +306,7 @@ def update_scenario_task(self, scenario_id):
             scenario.update(status=0)
             NotifyCapture("Scenario " + name + " has successfully stopped.")
         else:
-            logger.info("Something went wrong")
+            logger.error("Something went wrong")
             NotifyCapture("Failed to stop scenario " + name + ": Invalid Status")
             flash("Something went wrong", "warning")
 
@@ -268,7 +316,7 @@ def destroy_scenario_task(self, scenario_id):
     from py_flask.utils.instructor_utils import NotifyCapture
 
     app = current_app
-    logger.info(
+    logger.debug(
         "Executing task id {0.id}, args: {0.args!r} kwargs: {0.kwargs!r}".format(
             self.request
         )
@@ -279,13 +327,13 @@ def destroy_scenario_task(self, scenario_id):
     with app.test_request_context():
         scenario = Scenarios.query.filter_by(id=scenario_id).first()
         if scenario is not None:
-            logger.info("Found Scenario: {}".format(scenario))
+            logger.debug("Found Scenario: {}".format(scenario))
             name = str(scenario.name)
             name = "".join(e for e in name if e.isalnum())
             s_id = str(scenario.id)
             s_group = ScenarioGroups.query.filter_by(scenario_id=s_id).first()
             if int(scenario.status) != 0:
-                logger.info("Invalid Status")
+                logger.error("Invalid Status")
                 NotifyCapture("Failed to delete scenario" + name + ": Invalid Status")
                 raise Exception(f"Scenario in an Invalid state for Destruction")
             s_responses = Responses.query.filter_by(scenario_id=s_id).all()
@@ -293,9 +341,12 @@ def destroy_scenario_task(self, scenario_id):
                 r.delete()
             if os.path.isdir(os.path.join("./scenarios/tmp/", name)):
                 logger.info("Folder Found, current directory: {}".format(os.getcwd()))
-                os.chdir("./scenarios/tmp/")
-                shutil.rmtree(name)
-                os.chdir("../..")
+                
+                # Lock network-related operations
+                with network_lock:
+                    os.chdir("./scenarios/tmp/")
+                    shutil.rmtree(name)
+                    os.chdir("../..")
                 if s_group:
                     s_group.delete()
 
@@ -307,7 +358,7 @@ def destroy_scenario_task(self, scenario_id):
                     "scenario_id": scenario_id,
                     }
             else:
-                logger.info("Scenario files not found, assuming broken scenario and deleting")
+                logger.error("Scenario files not found, assuming broken scenario and deleting")
                 NotifyCapture("Failed to delete scenario " + name + ": Scenario files could not be found.")
                 scenario.delete()
                 return {
@@ -359,8 +410,9 @@ def scenarioCollectLogs(self, arg):
     files = files.split('\n')[:-1]
     for scenario_name in scenario_nameList:
         try:  # DEV_FIX This is dangerous, may want to substitute for subprocess.call
-            os.system(f'docker cp {scenario_name}_gateway:/usr/local/src/merged_logs.csv logs/{scenario_name}_gateway.csv')
-            os.system(f'docker cp {scenario_name}_gateway:/usr/local/src/raw_logs.zip logs/{scenario_name}_gateway.zip')
+            with network_lock:
+                os.system(f'docker cp {scenario_name}_gateway:/usr/local/src/merged_logs.csv logs/{scenario_name}_gateway.csv')
+                os.system(f'docker cp {scenario_name}_gateway:/usr/local/src/raw_logs.zip logs/{scenario_name}_gateway.zip')
         except FileNotFoundError as e:
             print(f'{e}')
         if os.path.isdir(f'scenarios/tmp/{scenario_name}'):
