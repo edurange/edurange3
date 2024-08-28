@@ -22,36 +22,13 @@ def generate_hint(language_model, logs_dict, scenario_name):
       chat_history = logs_dict['chat']
       answer_history = logs_dict['responses']
 
-      #learning_objectives_string = load_learning_objectives_from_txt(scenario_name)
+      learning_objectives = load_learning_objectives_from_txt(scenario_name)
 
-      finalized_system_prompt = f'''
+      finalized_system_prompt = "You assist a student through a bash command based cybersecurity exercise called a scenario. Students interact with the scenario online using a bash terminal, they can then submit answers with web-based forms and ask the teacher questions via a chat messaging system. For context you will be provided a document outlining the scenario's learning objectives along with the student's recent logs for bash commands, chat messages and answers. Taking all of these into account you generate them a single sentence long hint, prioritizing assisting them in debugging syntactical errors or questions asked in their chat messages. Assist them in understanding the relavant topics, ideas and vocabulary. Never reveal the answer to the scenario task entirely."
+      finalized_user_prompt = f"CONTEXT: The scenario learning objectives: {learning_objectives}. The student's recent bash commands: {bash_history}. The student's recent chat messages: {chat_history}. The student's recent answers: {answer_history}. "
 
-            ROLE: 
-            Your are an AI assistant that only instructs and does conversate or ask questions, you assist students in completing a cyber-security scenario by generating them a short and concise hint based off their bash commands, chat messages, and or answers.
-            
-            # Still deciding how to feed context to the model's prompt.
-
-            CONTEXT: 
-            For context this is the scenario's learning objectives: " ". 
-
-            '''
-            
-      finalized_user_prompt = f'''
-
-            CONTEXT: 
-            You will now be provided with the student's recent bash, chat and question/answer response history.
-
-            The student's recent bash commands: {bash_history}. 
-            The student's recent chat messages: {chat_history}.
-            The student's recent question/answer responses: {answer_history}.
-
-            TASK:
-            Using the student's recent bash commands, recent chat messages and or recent question/answer responses as context, now generate them a simple hint based off the learning objective. 
-            Prioritize assisting the student in debuging errors you see in their bash history if applicable and or helping them understand technical definitions expressed in their chat or answers history if applicable. 
-
-            '''
       result = language_model(
-            f"<|system|>\n{finalized_system_prompt}<|end|>\n<|user|>\n{finalized_user_prompt}<|end|>\n<|assistant|> ",
+            f"<|system|>{finalized_system_prompt}<|end|>\n<|user|>\n{finalized_user_prompt}<|end|>\n<|assistant|> ",
             max_tokens=-1,
             stop=["<|end|>"], 
             echo=False, 
