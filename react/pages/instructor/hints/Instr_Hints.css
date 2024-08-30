@@ -150,8 +150,14 @@
     font-weight: bold;
   }
 
+  .checkbox label {
+    font-size: 12px;
+    display: flex;
+    max-width: 50%;
+  }
+
   .loading-overlay {
-     position: absolute;
+    position: absolute;
     top: 0;
     left: 0;
     width: 100%;

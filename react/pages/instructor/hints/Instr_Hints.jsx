@@ -36,6 +36,12 @@ const Instr_Hints = () => {
   const [error, set_error] = useState('');
   const [isEditing, set_isEditing] = useState(false);
   const [newHint, set_newHint] = useState('');
+  const [checked, setChecked] = React.useState(false);
+  
+  const handleChangeCheck = () => {
+    setChecked(!checked);
+  };
+
 
   const requestHint = async() => {
     set_loading(true);
@@ -45,6 +51,7 @@ const Instr_Hints = () => {
       const reqJSON = {
         scenario_name: selectedScenario_state.scenario_type.toLowerCase(),
         student_id: selectedUser_state.id,
+        enable_scenario_context: checked,
       };
 
       const response = await axios.post(
@@ -276,6 +283,15 @@ const Instr_Hints = () => {
             ))}
             </select>
         </div>
+      </div>
+      <div className="checkbox">
+        <label>
+          <input 
+            type="checkbox"
+            checked={checked}
+            onChange={handleChangeCheck}
+          />Use scenario context for generation? (Enable for better hint quality, but can take up to twice as long to generate)
+        </label>
       </div>          
     <button onClick={requestHint} className="request-hint-button">Generate Hint ✨</button>
     

@@ -21,8 +21,8 @@ from llama_cpp import Llama
 from llama_index.core import Settings
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from contextlib import contextmanager
-
 from memory_profiler import profile, memory_usage
+
 
 @contextmanager
 def timing_context(description: str):
@@ -58,7 +58,7 @@ def initialize_model():
             gpu_resources = determine_gpu_resources()
             print("\n__________________________________________\n")
             print (f"\n* CPU threads used: {cpu_resources}\n")
-            print (f"* GPU's used: {gpu_resources}\n")
+            if gpu_resources == -1 print (f"* GPU Found and Enabled\n") else print("No GPU found")
 
             language_model = Llama.from_pretrained(
             repo_id="microsoft/Phi-3-mini-4k-instruct-gguf",
@@ -66,34 +66,33 @@ def initialize_model():
             verbose=False,
             n_ctx=4086, 
             n_threads=cpu_resources, 
-            n_gpu_layers=gpu_resources, 
+            n_gpu_layers=gpu_resources,
+            flash_attn=True,
             use_mlock=True,
       )
 
             return language_model
 
+def load_scenario_learning_objectives_file_contents(scenario_name):
 
-def load_learning_objectives_from_txt(scenario_name):
+      file_path = f"machine_learning/context_files/scenario_learning_objectives/{scenario_name}.txt"
 
-      file_path = f"machine_learning/learning_objectives_files/{scenario_name}.txt"
-      with open(file_path, 'r', encoding='utf-8') as file:
-            file_content = file.read()
-      
-      return file_content
+      try: 
+            with open(file_path, 'r', encoding='utf-8') as file:
+                  scenario_learning_objectives = file.read()
+            return scenario_learning_objectives
+
+      except Exception as e:
+            print(f"Failed to load context file contents: {e}")
 
 
 # @profile
-def generate_hint(language_model, scenario_name, student_logs):
+def generate_hint(language_model, scenario_name):
       
       with timing_context("Hint generated in "):      
-            #Set logs to what you want for student
-            bash_history = student_logs['bash_logs']
-            chat_history = student_logs['chat_logs']
-            answer_history = student_logs['answer_logs']
-
-            learning_objectives = load_learning_objectives_from_txt(scenario_name)
-            finalized_system_prompt = "You assist a student through a bash command based cybersecurity exercise called a scenario. Students interact with the scenario online using a bash terminal, they can then submit answers with web-based forms and ask the teacher questions via a chat messaging system. For context you will be provided a document outlining the scenario's learning objectives along with the student's recent logs for bash commands, chat messages and answers. Taking all of these into account you generate them a single sentence long hint, prioritizing assisting them in debugging syntactical errors or questions asked in their chat messages. Assist them in understanding the relavant topics, ideas and vocabulary. Never reveal the answer to the scenario task entirely."
-            finalized_user_prompt = f"CONTEXT: The scenario learning objectives: {learning_objectives}. The student's recent bash commands: {bash_history}. The student's recent chat messages: {chat_history}. The student's recent answers: {answer_history}. "
+            scenario_learning_objectives = load_scenario_learning_objectives_file_contents(scenario_name)
+            finalized_system_prompt = "You generate hint's for a cybersecurity scenario, go through the provided document and generate a list of hints."
+            finalized_user_prompt = f"DOCUMENT:  {scenario_learning_objectives}"
 
             result = language_model(
                   f"<|system|>{finalized_system_prompt}<|end|>\n<|user|>\n{finalized_user_prompt}<|end|>\n<|assistant|> ",
@@ -121,25 +120,21 @@ def cli_prompt():
       print(f"Author: Taylor Wolff\n")
 
       scenario_name = input("Scenario name?: ")
-      bash_logs = input("Enter bash command logs, dilineate within an array ex: '[1. ls, 2. pwd]'  : \n")
-      chat_logs = input("Enter bash chat logs, dilineate within an array ex: '[1. Hi, 2. I need help]'  : \n")
-      answer_logs = input("Enter bash answer logs, dilineate within an array ex: '[1. man, 2. man pwd]' : \n")
-      student_logs = {'bash_logs': bash_logs, 'chat_logs': chat_logs, 'answer_logs': answer_logs}
       num_of_hints = int(input("How many hints to generate?: \n"))
       export_to_csv_option = input("Export to csv? Type Y for yes: \n").strip().upper()
 
-      return scenario_name, student_logs, num_of_hints, export_to_csv_option
+      return scenario_name, num_of_hints, export_to_csv_option
 
-def generate_num_of_hints(num_of_hints, export_to_csv_option, language_model, scenario_name, student_logs):
+def generate_num_of_hints(num_of_hints, export_to_csv_option, language_model, scenario_name):
       for i in range(num_of_hints): 
-            generated_hint = generate_hint(language_model, scenario_name, student_logs)
+            generated_hint = generate_hint(language_model, scenario_name)
             if export_to_csv_option == 'Y':
                   export_hint_to_csv(scenario_name, generated_hint)
       
 def main():
-      scenario_name, student_logs, num_of_hints, export_to_csv_option = cli_prompt()
+      scenario_name, num_of_hints, export_to_csv_option = cli_prompt()
       language_model = initialize_model()
-      generate_num_of_hints(num_of_hints, export_to_csv_option, language_model, scenario_name, student_logs)
+      generate_num_of_hints(num_of_hints, export_to_csv_option, language_model, scenario_name)
 
 if __name__ == "__main__":
     main()

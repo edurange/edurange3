@@ -474,10 +474,13 @@ def add_user_to_container():
 @jwt_and_csrf_required
 def get_hint():
     requestJSON = request.json
+
     this_scenario_name = requestJSON["scenario_name"]
     this_student_id= requestJSON["student_id"]
+    this_enable_scenario_context = requestJSON["enable_scenario_context"]
+
     logs_dict = getLogs_for_hint.delay(this_student_id).get(timeout=None)
-    result = request_and_generate_hint.delay(this_scenario_name, logs_dict).get(timeout=None)
+    result = request_and_generate_hint.delay(this_scenario_name, logs_dict, this_enable_scenario_context).get(timeout=None)
     
     return jsonify(result)
 
@@ -493,5 +496,6 @@ def init_model():
 @jwt_and_csrf_required
 def cancel_generate_hint_route():
     result = cancel_generate_hint_celery.delay().get(timeout=None)
-    return jsonify({'status': result})
+    
+    return jsonify({'cancel_hint_req_status': result})
 

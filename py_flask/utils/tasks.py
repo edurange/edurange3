@@ -445,7 +445,7 @@ def setup_periodic_tasks(sender, **kwargs):
     sender.add_periodic_task(60.0, scenarioCollectLogs.s(''))
 
 
-@celery.task(bind=True, worker_prefetch_multiplier=1, priority=1, concurrency=1)
+@celery.task(bind=True, worker_prefetch_multiplier=1, priority=1)
 def initialize_model(self):
     
     def determine_cpu_resources():   
@@ -454,7 +454,7 @@ def initialize_model(self):
         if num_cpus is None or num_cpus <= 0:
             raise ValueError(f"Invalid CPU count: {num_cpus}")
         else:   
-            return math.floor(num_cpus * cpu_resource_scaler)    
+            return math.floor(num_cpus * cpu_resource_scaler)
 
 
     def determine_gpu_resources():
@@ -468,7 +468,6 @@ def initialize_model(self):
                     return 0   
 
         except Exception as GPU_NOT_FOUND:
-
             return 0
 
     cpu_resources = determine_cpu_resources()
@@ -476,14 +475,13 @@ def initialize_model(self):
       
     language_model = Llama.from_pretrained(
         repo_id="microsoft/Phi-3-mini-4k-instruct-gguf",
-        filename="Phi-3-mini-4k-instruct-q4.gguf",
-        verbose=False,
-        n_ctx=4086, 
-        n_threads=cpu_resources, 
-        n_gpu_layers=gpu_resources, 
-        use_mmap=True,
-        use_mlock=False,
-        flash_attn=True,
+            filename="Phi-3-mini-4k-instruct-q4.gguf",
+            verbose=False,
+            n_ctx=4086, 
+            n_threads=cpu_resources, 
+            n_gpu_layers=gpu_resources,
+            flash_attn=True,
+            use_mlock=True,
     )
 
     r = redis.StrictRedis(host='localhost', port=6379, db=1)
@@ -502,24 +500,26 @@ def getLogs_for_hint(self, user_id):
     return logs_dict
 
 
-@celery.task(bind=True, worker_prefetch_multiplier=1, priority=1, concurrency=1)
-def request_and_generate_hint(self, scenario_name, logs_dict):
+@celery.task(bind=True, worker_prefetch_multiplier=1, priority=1)
+def request_and_generate_hint(self, scenario_name, logs_dict, enable_scenario_context):
     
     r = redis.StrictRedis(host='localhost', port=6379, db=1)
     task_id = self.request.id
     generate_hint_task_id_pickle = pickle.dumps(task_id)
+
     r.set('generate_hint_task_id', generate_hint_task_id_pickle)
+
     language_model = load_language_model_from_redis()
 
     cpu_and_gpu_resources = load_cpu_and_gpu_resources_from_redis()
     
-    answer = generate_hint(language_model, logs_dict, scenario_name)
+    answer = generate_hint(language_model, logs_dict, scenario_name, enable_scenario_context)
 
     return {'generated_hint': answer, 'logs_dict': logs_dict, 'cpu_resources_used': cpu_and_gpu_resources[0], 'gpu_rescources_used': cpu_and_gpu_resources[1]}
 
 
 
-@celery.task(bind=True, worker_prefetch_multiplier=1, priority=1, concurrency=1)
+@celery.task(bind=True, worker_prefetch_multiplier=1, priority=1)
 def cancel_generate_hint_celery(self):
     generate_hint_task_id = load_generate_hint_task_id_from_redis()
     self.app.control.revoke(generate_hint_task_id, terminate=True)
