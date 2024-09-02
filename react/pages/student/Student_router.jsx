@@ -8,7 +8,7 @@ import Frame_side from '@frame/sidenav/Frame_side';
 export const StudentRouter_context = React.createContext();
 import '@assets/css/dashboard.css';
 import { HomeRouter_context } from '../pub/Home_router';
-import Scenario_controller2 from './scenarios/Scenario_controller2';
+import Scenario_controller from './scenarios/Scenario_controller';
 
 function Student_router() {
 
@@ -62,7 +62,7 @@ function Student_router() {
                     message_type: 'keepalive',
                     message: 'ping'
                 }));
-            }
+            } 
         }, pingInterval);
         // cleanup
         return () => {
@@ -89,9 +89,15 @@ function Student_router() {
                 
                 updateChatHistory(message?.data)
 
-            } else if (message.message_type === 'chatError') {
+            } 
+            else if (message.message_type === 'chatError') {
                 console.error('Chat error:', message.data);
-            }
+            } 
+            // else if (message.message_type === 'handshake') {
+            //     if (message.chat_logs)
+            //     set_chatObjs_UL_state(message.chat_logs);
+            //     set_aliasDict_state(message.aliasDict ?? {});
+            // }
         };
 
         if (socket_ref.current) {
@@ -131,8 +137,8 @@ function Student_router() {
                         }}>
                             <Routes>
                                 <Route path="/" element={<Scenarios_home />} />
-                                <Route path="/:scenarioID" element={<Scenario_controller2 />} />
-                                <Route path="/:scenarioID/:pageID" element={<Scenario_controller2 />} />
+                                <Route path="/:scenarioID" element={<Scenario_controller />} />
+                                <Route path="/:scenarioID/:pageID" element={<Scenario_controller />} />
                                 <Route path="/:scenarioID/chat" element={<Chat_Student />} />
                             </Routes>
                         </StudentRouter_context.Provider>

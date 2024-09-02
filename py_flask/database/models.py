@@ -3,7 +3,6 @@
 import datetime as dt
 import random
 import string
-from sqlalchemy import inspect
 
 from py_flask.database.db_classes import (
     Column,
@@ -67,7 +66,7 @@ class Users(Edu3Mixin, SurrogatePK, Model):
     created_at = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
     active = Column(db.Boolean(), default=False)
     is_admin = Column(db.Boolean(), default=False)
-    is_instructor = Column(db.Boolean(), default=False)
+    is_staff = Column(db.Boolean(), default=False)
     is_static = Column(db.Boolean(), default=False) # static: user belongs to one group only (for generated groups)
     def __init__(self, username, password=None, **kwargs):
         """Create instance."""
@@ -139,9 +138,9 @@ class ChatMessages(Edu3Mixin, SurrogatePK, Model):
 
     scenario_type = Column(db.String(50), nullable=False, unique=False)
     scenario_id = reference_col("scenarios", nullable=False)
+    scenario_name = Column(db.String(50), nullable=False, unique=False)
     scenario = relationship("Scenarios", backref="chat_messages", viewonly=True)
 
-    # CHANGED FROM 'channel' TO 'channel_id' 7/8/24 -exoriparian
     channel_id = reference_col("channels", nullable=False)
     timestamp = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
     content = Column(db.String(5000), nullable=False, unique=False)

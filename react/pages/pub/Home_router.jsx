@@ -7,7 +7,7 @@ import Register from './login/Register';
 import InfoRouter from './info/Info_router';
 import SessionKeeper from './SessionKeeper';
 import Logout from './login/Logout';
-import Instructor_router from '../instructor/Instructor_router';
+import Staff_router from '../staff/Staff_router';
 import { Instructor_context } from '../../modules/context/Instructor_context';
 import { Student_context } from '../../modules/context/Student_context';
 import Student_router from '../student/Student_router';
@@ -52,7 +52,9 @@ function Home_router() {
       return;
     }
 
-    const roleToUse = userData_state?.role ?? 'logout';
+    let roleToUse = userData_state?.role ?? 'logout';
+
+    if (roleToUse === "instructor") {roleToUse = 'staff'}
 
     if (!(desiredNavStub in navArrays[roleToUse])) {
       console.error('navStub not found in role navItemData as key');
@@ -106,9 +108,9 @@ function Home_router() {
                       <Student_router />
                     </Student_context>
                   } />
-                  <Route path="/instructor/*" element={
+                  <Route path="/staff/*" element={
                     <Instructor_context>
-                      <Instructor_router />
+                      <Staff_router />
                     </Instructor_context>
                     }>
                   </Route>

@@ -9,12 +9,14 @@
     color: rgb(255, 170, 127);
     border: 1px solid rgb(234, 164, 95);
     background-color: rgba(255, 98, 0, 0.139);
+    box-sizing: border-box;
 }
 .bframe-outgoing{
     color: aquamarine;
     border: 1px solid rgb(123, 151, 142);
     background-color: rgba(127, 255, 212, 0.139);
     margin-left: auto;
+    box-sizing: border-box;
 }
 .bubble-carpet{
     display:flex;
@@ -38,6 +40,14 @@
 }
 .bubble-header-item{
     display: flex;
+}
+.bubble-msg-footer{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding: 3px 10px;
 }
 .bubble-timestamp{
     background-color: rgba(255, 255, 255, 0.618);

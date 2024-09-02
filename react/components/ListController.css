@@ -9,11 +9,13 @@
 }
 .chat-listController-bar {
     display: flex;
-    height: 100%;
     width: 100%;
-    justify-content: space-between;
+    /* justify-content: space-between; user-filter is disabled */
+    justify-content: flex-end;
     border: 1px solid goldenrod;
     border-radius: 8px;
+    max-height: 40px;
+    min-height: 40px;
 }
 .userSelect-frame{
     display: flex;

@@ -83,7 +83,7 @@ This env will have values that are likely unique to YOUR installtion.  It is rec
 This file is in the repo's .gitignore, which means it will not be added to your git commits.
 
 ### Instructor orientation
-As an instructor, you can create student groups, create 'dummy accounts', and  create scenarios, all from the 'Dashboard' (click the nav link on the left sidebar).
+As admin, you can create student groups, create 'dummy accounts', and  create scenarios, all from the 'Dashboard' (click the nav link on the left sidebar).
 
 In order to create a Scenario, you must have at least 1 student group that will be assigned to it.
 If you do not already have a student group, create a Student Group on the Dashboard BEFORE you create the Scenario (optionally, create test users to go with it).

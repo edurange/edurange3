@@ -1,10 +1,17 @@
 
 import React, { useContext } from "react";
 import './Msg_Bubble.css';
-import { InstructorRouter_context } from "../../instructor/Instructor_router";
+import { InstructorRouter_context } from "../../staff/Staff_router";
 
-function Msg_Bubble({ is_instructor, message_obj, user_id, is_outgoing }) {
-    const { selectedMessage_state, set_selectedMessage_state } = is_instructor ? useContext(InstructorRouter_context) : { selectedMessage_state: null, set_selectedMessage_state: null };
+function Msg_Bubble({ is_staff, message_obj, user_id, is_outgoing }) {
+    const {
+        aliasDict_state,
+        selectedMessage_state, 
+        set_selectedMessage_state 
+    } = is_staff ? useContext(InstructorRouter_context) : { 
+        selectedMessage_state: null, 
+        set_selectedMessage_state: null
+    };
 
     function handleSelectionClick(event, message) {
         event.stopPropagation();
@@ -22,27 +29,43 @@ function Msg_Bubble({ is_instructor, message_obj, user_id, is_outgoing }) {
             </div>
 
             <div className={is_outgoing ? "bubble-frame bframe-outgoing" : "bubble-frame"}>
-                <div 
-                    className={`${!is_outgoing && (message_obj === selectedMessage_state && is_instructor) ? "selected-chat-item" : !is_outgoing && is_instructor ? "selectable-chat-item" : "unselectable-chat-item"}`}
+                <div
+                    className={`${!is_outgoing && (message_obj === selectedMessage_state && is_staff) ? "selected-chat-item" : !is_outgoing && is_staff ? "selectable-chat-item" : "unselectable-chat-item"}`}
                     onClick={(event) => handleSelectionClick(event, message_obj)}
                 >
                     <div className="bubble-items-container">
                         <div className='bubble-header'>
+
                             <div className="bubble-header-item">
-                                {is_outgoing ? "Me" : message_obj.user_id === 1 ? "Instructor" : message_obj?.user_alias ?? 'n/a'}
+                                {is_outgoing ? "Me" : message_obj.user_id === 1 ? "eduRange Staff" : aliasDict_state[message_obj?.user_id] ?? 'n/a'}
                             </div>
+
+                            <div className="bubble-header-item">
+                            {new Date(message_obj?.timestamp).toLocaleDateString()} {` at `} {new Date(message_obj?.timestamp).toLocaleTimeString()}
+                            </div>
+
                             <div className="bubble-header-item">
                                 chnl: {message_obj?.channel_id ?? 'missing'}
                             </div>
-                        </div>
 
-                        <div className='bubble-header bubble-timestamp'>
-                            {new Date(message_obj?.timestamp).toLocaleDateString()} {` at `} {new Date(message_obj?.timestamp).toLocaleTimeString()}
                         </div>
+                            <div className="bubble-msg-footer">
+                                <div>
+                                    Scen Type: {message_obj?.scenario_type}
+                                </div>
+                                <div>
+                                    Scen Name: {message_obj?.scenario_name ?? "undef"}
+                                </div>
+                                <div>
+                                    Scen ID: {message_obj?.scenario_id}
+                                </div>
+                            </div>
 
                         <div className="bubble-msg-frame">
                             {message_obj?.content}
                         </div>
+
+
                     </div>
                 </div>
             </div>

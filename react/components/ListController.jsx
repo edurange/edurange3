@@ -17,7 +17,7 @@ function ListController({
 
     return (
         <>
-            <div className='userSelect-frame'>
+            {/* <div className='userSelect-frame'>
                 <div className='userSelect-label'>
                     USER
                 </div>
@@ -28,7 +28,7 @@ function ListController({
                     <option value="desc">User2example</option>
                     <option value="desc">User3example</option>
                 </select>
-            </div>
+            </div> */}
             <div className='sortBy-frame'>
                 <select value={sortDirection_state} onChange={handleDirectionChange}>
                     <option value="asc">Ascending</option>
