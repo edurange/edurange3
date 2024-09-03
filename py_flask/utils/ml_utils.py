@@ -64,8 +64,8 @@ def generate_hint(language_model, logs_dict, scenario_name, enable_scenario_cont
             function_duration = round(stop_time - start_time, 2)
 
             return generated_hint, function_duration
-            machine_learning/rt_generated_hint_results
             
+
 def load_language_model_from_redis():
 
       r = redis.StrictRedis(host='localhost', port=6379, db=1)
