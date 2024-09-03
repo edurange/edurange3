@@ -25,7 +25,7 @@ cp /home/ubuntu/student_home/toLearn/* $studentDIR/toLearn/
 chown -R $player:$player $studentDIR/toLearn
 chmod -R 440 $studentDIR/toLearn
 
-cp /home/ubuntu/student_home/stuff/* $studentDIR/multimedia-data/
+cp /home/ubuntu/student_home/multimedia-data/* $studentDIR/multimedia-data/
 chown -R $player:$player $studentDIR/multimedia-data
 chmod 440 $player:$player $studentDIR/multimedia-data
 

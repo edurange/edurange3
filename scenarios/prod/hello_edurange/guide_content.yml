@@ -751,7 +751,7 @@ contentDefinitions:
     content: Use chmod to make 'you_cant_read_me.txt' in your home directory readable. What is the flag it contains?
     options: []
     answers: 
-      - value: "FLAG{M0D3_CH4NG3R}"
+      - value: "$RANDOM"
       - answer_type: String
       - points_possible: 10
     points_possible: 10
@@ -761,7 +761,7 @@ contentDefinitions:
     content: In the multimedia-content directory, which file is actually an OpenSSH RSA public key?
     options: []
     answers: 
-      - value: ""
+      - value: "staff_schedule2.docx"
       - answer_type: String
       - points_possible: 10
     points_possible: 10
