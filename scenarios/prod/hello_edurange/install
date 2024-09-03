@@ -8,19 +8,19 @@ while read line; do
 done</usr/local/src/user_names.txt
 
 mkdir /usr/special/
-mkdir /usr/special/secrets
-cp /home/ubuntu/final-mission/U348bdks8cowFJS8dJF3hHDFj.jpg /usr/special/secrets/
-cp /home/ubuntu/final-mission/.donthackme /usr/special/secrets/
-chmod 666 /usr/special/secrets/U348bdks8cowFJS8dJF3hHDFj.jpg
-chmod 666 /usr/special/secrets/.donthackme
+mkdir /usr/special/secrets/uncategorized
+cp /home/ubuntu/final-mission/U348bdks8shad0w_syn8dJF3hHDFj.jpg /usr/special/secrets/uncategorized
+cp /home/ubuntu/final-mission/.donthackme /usr/special/secrets/uncategorized
+chmod 666 /usr/special/secrets/uncategorizedU348bdks8shad0w_syn8dJF3hHDFj.jpg
+chmod 666 /usr/special/secrets/uncategorized/.donthackme
 rm -rf /final-mission
 rm -rf /stuff
 rm -rf /toLearn
 rm -rf /images
 rm -rf /home/ubuntu/install
 rm -rf /home/ubuntu/setup_home
-rm -rf /home/ubuntu/stuff
-rm -rf /home/ubuntu/toLearn
-rm -rf /home/ubuntu/images
-rm -rf /home/ubuntu/final-mission
+rm -rf /home/ubuntu/student_home/stuff
+rm -rf /home/ubuntu/student_home/toLearn
+rm -rf /home/ubuntu/student_home/images
+rm -rf /home/ubuntu/student_home/final-mission
 

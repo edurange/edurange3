@@ -751,7 +751,7 @@ contentDefinitions:
     content: Use chmod to make 'you_cant_read_me.txt' in your home directory readable. What is the flag it contains?
     options: []
     answers: 
-      - value: "$RANDOM"
+      - value: "FLAG{M0D3_CH4NG3R}"
       - answer_type: String
       - points_possible: 10
     points_possible: 10
