@@ -27,7 +27,7 @@ chmod -R 440 $studentDIR/toLearn
 
 cp /home/ubuntu/student_home/multimedia-data/* $studentDIR/multimedia-data/
 chown -R $player:$player $studentDIR/multimedia-data
-chmod 440 $player:$player $studentDIR/multimedia-data
+chmod 440 $studentDIR/multimedia-data
 
 echo "SECRET CODE: $super_secret I wonder what it's for?" > $studentDIR/multimedia-data/imatextfiletoo.txt
 
