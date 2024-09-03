@@ -16,30 +16,32 @@ mkdir -p $studentDIR/followMe/keepGOING/another\ folder\ wee/im.another.folder/W
 touch $studentDIR/followMe/keepGOING/another\ folder\ wee/im.another.folder/WOOT/dontstop/okYouAreHERE\!/$follow_me_filename
 mkdir $studentDIR/multimedia-data
 chown -R $player:$player $studentDIR/followMe
-chmod -R 440 /$studentDIR/followMe
+chmod -R 550 /$studentDIR/followMe
 chown -R $player:$player $studentDIR/multimedia-data
-chmod -R 440 /$studentDIR/multimedia-data
+chmod -R 550 /$studentDIR/multimedia-data
 
 mkdir $studentDIR/toLearn
 cp /home/ubuntu/student_home/toLearn/* $studentDIR/toLearn/
 chown -R $player:$player $studentDIR/toLearn
-chmod -R 440 $studentDIR/toLearn
+chmod -R 550 $studentDIR/toLearn
 
 cp /home/ubuntu/student_home/multimedia-data/* $studentDIR/multimedia-data/
 chown -R $player:$player $studentDIR/multimedia-data
-chmod 440 $studentDIR/multimedia-data
+chmod 550 $studentDIR/multimedia-data
 
 echo "SECRET CODE: $super_secret I wonder what it's for?" > $studentDIR/multimedia-data/imatextfiletoo.txt
+chown -R $player:player $studentDIR/multimedia-data/imatextfiletoo.txt
+chmod 550 $studentDIR/multimedia-data/imatextfiletoo
 
 # More setting up for the scenario
 mkdir $studentDIR/permit_requests
 cp /home/ubuntu/student_home/permit_requests/* $studentDIR/permit_requests
 chown -R $player:$player $studentDIR/permit_requests
-chmod -R 660 $studentDIR/permit_requests
+chmod -R 550 $studentDIR/permit_requests
 
-echo -e "SECRET CODE: FLAG{M0D3_CH4NG3R}" > $studentDIR/you_cant_read_me.txt
+echo -e "SECRET CODE: FLAG{$super_secret}" > $studentDIR/you_cant_read_me.txt
 chown -R $player:$player $studentDIR/you_cant_read_me.txt
-chmod -R 000 $studentDIR/you_cant_read_me.txt
+chmod 000 $studentDIR/you_cant_read_me.txt
 
 # This is a nifty way to create multiple folders all at once :3
 mkdir -p /$studentDIR/i/{a,b,c,d,z,y,x}/{e,f,g}/{h,kitty,j}/{k,l,m}/{n,o,p,q,r,s}/{t,u,v,w}
@@ -53,42 +55,42 @@ do
 done
 
 chown -R $player:$player $studentDIR/i
-chmod -R 440 $studentDIR/i
+chmod -R 550 $studentDIR/i
 
 cp /home/ubuntu/student_home/bar $studentDIR/bar
 chown -R $player:$player $studentDIR/bar
-chmod 440 $studentDIR/bar
+chmod 660 $studentDIR/bar
 
 cp /home/ubuntu/student_home/for_hire.txt $studentDIR/for_hire.txt
 chown -R $player:$player $studentDIR/for_hire.txt
-chmod 440 $studentDIR/for_hire.txt
+chmod 660 $studentDIR/for_hire.txt
 
 cp /home/ubuntu/student_home/galley_manifest.txt $studentDIR/galley_manifest.txt
 chown -R $player:$player $studentDIR/galley_manifest.txt
-chmod 440 $studentDIR/galley_manifest.txt
+chmod 660 $studentDIR/galley_manifest.txt
 
 cp /home/ubuntu/student_home/navigation_check.txt $studentDIR/navigation_check.txt
 chown -R $player:$player $studentDIR/navigation_check.txt
-chmod 440 $studentDIR/navigation_check.txt
+chmod 660 $studentDIR/navigation_check.txt
 
 cp /home/ubuntu/student_home/radio_logs.txt $studentDIR/radio_logs.txt
 chown -R $player:$player $studentDIR/radio_logs.txt
-chmod 440 $studentDIR/radio_logs.txt
+chmod 660 $studentDIR/radio_logs.txt
 
 cp /home/ubuntu/student_home/.captains-logs.txt $studentDIR/.captains-logs.txt
 chown -R $player:$player $studentDIR/.captains-logs.txt
-chmod 440 $studentDIR/.captains-logs.txt
+chmod 660 $studentDIR/.captains-logs.txt
 
 cp /home/ubuntu/student_home/.lasers.wav $studentDIR/.lasers.wav
 chown -R $player:$player $studentDIR/.lasers.wav
-chmod 440 $studentDIR/.lasers.wav
+chmod 660 $studentDIR/.lasers.wav
 
 cp /home/ubuntu/student_home/.network-diagram.jpg $studentDIR/.network-diagram.jpg
 chown -R $player:$player $studentDIR/.network-diagram.jpg
-chmod 440 $studentDIR/.network-diagram.jpg
+chmod 660 $studentDIR/.network-diagram.jpg
 
 cp /home/ubuntu/student_home/.station-schematics $studentDIR/.station-schematics
 chown -R $player:$player $studentDIR/.station-schematics
-chmod 440 studentDIR/.station-schematics
+chmod 660 studentDIR/.station-schematics
 
 find $studentDIR -type d -print0 | xargs -0 chmod +x
