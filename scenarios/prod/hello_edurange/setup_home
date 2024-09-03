@@ -57,7 +57,7 @@ chmod -R 440 $studentDIR/i
 
 cp /home/ubuntu/student_home/bar $studentDIR/bar
 chown -R $player:$player $studentDIR/bar
-chmod 440 $player:$player/$studentDIR/bar
+chmod 440 $player:$player $studentDIR/bar
 
 cp /home/ubuntu/student_home/for_hire.txt $studentDIR/for_hire.txt
 chown -R $player:$player $studentDIR/for_hire.txt
