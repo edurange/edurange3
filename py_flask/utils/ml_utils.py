@@ -9,20 +9,23 @@ import yaml
 import csv
 import pickle
 import redis
+
 import llama_cpp
 from llama_cpp import Llama
 from llama_index.core import Settings
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from memory_profiler import profile, memory_usage
 
+
 def generate_hint(language_model, logs_dict, scenario_name, enable_scenario_context):
+      start_time = time.time()
 
       bash_history = logs_dict['bash']
       chat_history = logs_dict['chat']
       answer_history = logs_dict['responses']
 
       if enable_scenario_context:
-            
+                  
             scenario_summary = load_context_file_contents('scenario_summaries', scenario_name)
             finalized_system_prompt = "You directly assist a student through a bash command based cybersecurity exercise called a scenario. Students interact with the scenario online using a bash terminal, they can then submit answers with web-based forms and ask the teacher questions via a chat messaging system. For context you will be provided the scenario's summary and the student's recent logs for bash commands, chat messages and answers. Generate them a ONE SENTENCE LONG hint, do not echo back any of their logs. If present, prioritize helping them debug errors found in their bash history and or questions they ask in their chat history."
             finalized_user_prompt = f" The scenario summary: {scenario_summary}. Recent bash commands: {bash_history}. The student's recent chat messages: {chat_history}. The student's recent answers: {answer_history}. "
@@ -37,10 +40,13 @@ def generate_hint(language_model, logs_dict, scenario_name, enable_scenario_cont
 
             generated_hint = result["choices"][0]["text"]
 
-            return generated_hint
+            stop_time = time.time()
+            function_duration = round(stop_time - start_time, 2)
+      
+            return generated_hint, function_duration
 
       else: 
-            
+                  
             finalized_system_prompt = "You directly assist a student through a bash command based cybersecurity exercise called a scenario. Students interact with the scenario online using a bash terminal, they can then submit answers with web-based forms and ask the teacher questions via a chat messaging system. For context you will be provided the student's recent logs for bash commands, chat messages and answers. Generate them a ONE SENTENCE LONG hint, do not echo back any of their logs. If present, prioritize helping them debug errors found in their bash history and or questions they ask in their chat history."
             finalized_user_prompt = f"  Recent bash commands: {bash_history}. The student's recent chat messages: {chat_history}. The student's recent answers: {answer_history}. "
 
@@ -54,8 +60,12 @@ def generate_hint(language_model, logs_dict, scenario_name, enable_scenario_cont
 
             generated_hint = result["choices"][0]["text"]
 
-            return generated_hint
+            stop_time = time.time()
+            function_duration = round(stop_time - start_time, 2)
 
+            return generated_hint, function_duration
+            machine_learning/rt_generated_hint_results
+            
 def load_language_model_from_redis():
 
       r = redis.StrictRedis(host='localhost', port=6379, db=1)
@@ -110,6 +120,12 @@ def load_context_file_contents(context_file_type, scenario_name):
 
       except Exeption as e:
             print(f"Failed to load context file contents: {e}")
+
+def export_hint_to_csv(scenario_name, generated_hint, function_duration):
+      file_path = f"machine_learning/rt_generated_hint_results/{scenario_name}.csv"
+      with open(file_path, 'a', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow([scenario_name, generated_hint, function_duration])
 
 
 

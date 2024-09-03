@@ -27,7 +27,7 @@ from flask import current_app, flash, jsonify
 from py_flask.utils.terraform_utils import adjust_network, find_and_copy_template, write_resource
 from py_flask.config.settings import CELERY_BROKER_URL, CELERY_RESULT_BACKEND
 from py_flask.utils.scenario_utils import claimOctet
-from py_flask.utils.ml_utils import generate_hint, load_language_model_from_redis, load_generate_hint_task_id_from_redis, load_cpu_and_gpu_resources_from_redis
+from py_flask.utils.ml_utils import generate_hint, load_language_model_from_redis, load_generate_hint_task_id_from_redis, load_cpu_and_gpu_resources_from_redis, export_hint_to_csv
 from py_flask.utils.instructor_utils import getLogs, getNumOfRecentLogsForHint
 
 
@@ -513,9 +513,11 @@ def request_and_generate_hint(self, scenario_name, logs_dict, enable_scenario_co
 
     cpu_and_gpu_resources = load_cpu_and_gpu_resources_from_redis()
     
-    answer = generate_hint(language_model, logs_dict, scenario_name, enable_scenario_context)
+    generated_hint, function_duration = generate_hint(language_model, logs_dict, scenario_name, enable_scenario_context)
 
-    return {'generated_hint': answer, 'logs_dict': logs_dict, 'cpu_resources_used': cpu_and_gpu_resources[0], 'gpu_rescources_used': cpu_and_gpu_resources[1]}
+    export_hint_to_csv(scenario_name, generated_hint, function_duration)
+
+    return {'generated_hint': generated_hint, 'logs_dict': logs_dict, 'cpu_resources_used': cpu_and_gpu_resources[0], 'gpu_rescources_used': cpu_and_gpu_resources[1]}
 
 
 

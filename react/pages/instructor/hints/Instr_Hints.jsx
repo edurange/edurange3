@@ -19,6 +19,10 @@ const Instr_Hints = () => {
   } = useContext(AppContext);
 
   const [hint_state, set_hint_state] = useState('');
+  const [student_bash_logs_state, set_student_bash_logs_state] = useState('');
+  const [student_chat_logs_state, set_student_chat_logs_state] = useState('');
+  const [student_responses_logs_state, set_student_responses_logs_state] = useState('');
+
   const [selectedScenario_state, set_selectedScenario_state] = useState({
     id: -1,
     name: 'n/a',
@@ -37,6 +41,15 @@ const Instr_Hints = () => {
   const [isEditing, set_isEditing] = useState(false);
   const [newHint, set_newHint] = useState('');
   const [checked, setChecked] = React.useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [isClicked, setIsClicked] = useState(false);
+  
+
+  const toggleExpand = () => {
+      setIsExpanded(!isExpanded);
+      setIsClicked(!isClicked);
+  };
+  
   
   const handleChangeCheck = () => {
     setChecked(!checked);
@@ -64,9 +77,32 @@ const Instr_Hints = () => {
         }
       );
 
-      set_hint_state(response.data.generated_hint);
-      console.log(response);
+      set_hint_state(response.data.generated_hint)
 
+      const student_logs_bash_returned_obj = response.data.logs_dict.bash;
+      const student_logs_bash_concatenated_string = student_logs_bash_returned_obj
+        .filter(entry => entry.bashEntry !== null)
+        .map(entry => `Entry ${entry.index + 1}: [${entry.bashEntry}] `) 
+        .join(', ');
+      let student_logs_bash_stringified = JSON.stringify(student_logs_bash_concatenated_string);
+      set_student_bash_logs_state(student_logs_bash_stringified);
+
+      const student_logs_chat_returned_obj = response.data.logs_dict.chat
+      const student_logs_chat_concatenated_string = student_logs_chat_returned_obj
+        .filter(entry => entry.chatEntry !== null)
+        .map(entry => `Entry ${entry.index + 1}: [${entry.chatEntry}] `) 
+        .join(', ');
+      let student_logs_chat_stringified = JSON.stringify(student_logs_chat_concatenated_string);
+      set_student_chat_logs_state(student_logs_chat_stringified);
+
+      const student_logs_responses_returned_obj = response.data.logs_dict.responses
+      const student_logs_responses_concatenated_string = student_logs_responses_returned_obj
+        .filter(entry => entry.responsesEntry !== null)
+        .map(entry => `Entry ${entry.index + 1}: [${entry.responsesEntry}] `) 
+        .join(', ');
+      let student_logs_responses_stringified = JSON.stringify(student_logs_responses_concatenated_string);
+      set_student_responses_logs_state(student_logs_responses_stringified);
+      
     } catch (error) {
       console.error("Error fetching hint:", error);
       set_error('Failed to fetch hint.');
@@ -181,7 +217,7 @@ const Instr_Hints = () => {
       </div>
         <span className="elapsed-time-counter"> Elapsed time: {elapsedTime} seconds </span>
       <div>
-        <button onClick={cancelHint} className="cancel-hint-button">CANCEL HINT </button>
+        <button onClick={cancelHint} className="cancel-hint-button">CANCEL HINT 🚫 </button>
       </div>
     </div>
   );
@@ -196,12 +232,12 @@ const Instr_Hints = () => {
               rows={10}
               value={newHint}
               onChange={(e) => set_newHint(e.target.value)}
-              className="textarea"
+              className="hint-textarea"
               placeholder="Generate a hint then edit it here"
             />
             <div className="hint-section-buttons">
-              <button onClick={onSave} className="below-textbox-button">Save</button>
-              <button onClick={onCancel} className="below-textbox-button">Cancel</button>
+              <button onClick={onSave} className="below-textbox-button">Save 💾</button>
+              <button onClick={onCancel} className="below-textbox-button">Cancel 🚫</button>
             </div>
           </>
         ) : (
@@ -211,13 +247,50 @@ const Instr_Hints = () => {
               value={hintState}
               readOnly 
               aria-live="polite"
-              className="textarea"
+              className="hint-textarea"
               placeholder="Hint will appear here"
             />
             <div className="hint-section-buttons">
               <button onClick={onEditHint} className="below-textbox-button">Edit Hint 📝</button>
-              <button onClick={onHintSend} className="below-textbox-button">Send Hint To Student ➡️</button>
+              <button onClick={onHintSend} className="below-textbox-button">Send Hint To Student 📫 </button>
             </div>
+            <div className="expandable-container">
+                <button onClick={toggleExpand} className={`student-logs-expand-button ${isClicked ? 'clicked' : ''}`}>Student Logs 📟 </button>
+                  {isExpanded && (
+                <div className="expandable-content">
+                  <label htmlFor="student-bash-logs" className="textarea-label">Bash Logs:</label>
+                  <textarea
+                    id="student-bash-logs"
+                    value={student_bash_logs_state}
+                    rows={1}
+                    readOnly 
+                    aria-live="polite"
+                    className="logs-textarea"
+                    placeholder="Student bash logs used for hint generation will appear here"
+                  />
+                  <label htmlFor="student-chat-logs" className="textarea-label">Chat Logs:</label>
+                  <textarea
+                    id="student-chat-logs"
+                    value={student_chat_logs_state}
+                    rows={1}
+                    readOnly 
+                    aria-live="polite"
+                    className="logs-textarea"
+                    placeholder="Student chat logs used for hint generation will appear here"
+                  />
+                  <label htmlFor="student-responses-logs" className="textarea-label">Answer Logs:</label>
+                  <textarea
+                    id="student-responses-logs"
+                    value={student_responses_logs_state}
+                    rows={1}
+                    readOnly 
+                    aria-live="polite"
+                    className="logs-textarea"
+                    placeholder="Student answer logs used for hint generation will appear here"
+                  />
+                </div>
+                )}
+              </div>
           </>
         )}
       </div>
@@ -226,14 +299,13 @@ const Instr_Hints = () => {
 
   return (
     <div className="hints-dashboard-ui">
-
+    
       {loading && <LoadingOverlay />}
-
+      
       <div className="pageHeader">
         <h1 className="pageTitle">Hints💡</h1>
         <h4 className="pageSubtitle">An A.I Powered Dashboard for Instructors</h4>
-      </div>
-
+        
       <div className="dropdowns-container">
         <div className="scenario-select">
           <label htmlFor="scenarioSelectLabel">Scenario:</label>
@@ -290,25 +362,26 @@ const Instr_Hints = () => {
             type="checkbox"
             checked={checked}
             onChange={handleChangeCheck}
-          />Use scenario context for generation? (Enable for better hint quality, but can take up to twice as long to generate)
+          />Use scenario context for generation? <br/> (Enable for better hints that take longer to generate)
         </label>
       </div>          
-    <button onClick={requestHint} className="request-hint-button">Generate Hint ✨</button>
-    
-    <HintSection
-      hintState={hint_state}
-      onEditHint={() => {
-        set_newHint(hint_state); 
-        set_isEditing(true); 
-      }}
-      onHintSend={handleHintSend}
-      isEditing={isEditing}
-      onSave={handleSaveHint}
-      onCancel={handleCancelEdit}
-      onChange={handleHintChange}
-    />
-
+        <button onClick={requestHint} className="request-hint-button">Generate Hint ✨</button>
+      </div>
+      <HintSection
+        hintState={hint_state}
+        onEditHint={() => {
+          set_newHint(hint_state); 
+          set_isEditing(true); 
+        }}
+        onHintSend={handleHintSend}
+        isEditing={isEditing}
+        onSave={handleSaveHint}
+        onCancel={handleCancelEdit}
+        onChange={handleHintChange}
+      />
     </div>
+
+
   );
 }
 

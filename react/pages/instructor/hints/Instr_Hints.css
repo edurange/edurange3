@@ -1,9 +1,10 @@
+
 .hints-dashboard-ui {
     margin: 0px 30px;
     display: flex;
     flex-direction: column;
     gap: 15px; 
-    position: relative; 
+    position: relative;
   }
 
   .pageTitle {
@@ -38,7 +39,8 @@
     gap: 10px; 
   }
   
-  .textarea {
+  .hint-textarea {
+    display: flex;
     font-family: monospace;
     font-size: 16px;
     background-color: #000000;
@@ -46,25 +48,43 @@
     padding: 10px;
     border: 2px solid #deb14f;
     border-radius: 5px;
-    max-height: 100%;
-    max-width: 100%;
+    width: 95%;
     overflow-y: auto;
     resize: none;
   }
+
+  .logs-textarea {
+    display: flex;
+    font-family: monospace;
+    font-size: 12px;
+    background-color: #000000;
+    color: #FFFFFF;
+    padding: 10px;
+    border: 1px solid #deb14f;
+    border-radius: 5px;
+    width: 95%;
+    overflow-y: auto;
+    overflow-x: auto;
+    resize: none;
+    margin: 5px;
+    gap: 5px;
+  }
   
+
   .dropdowns-container {
     display: flex;
     flex-direction: row;
-    gap: 5px; 
     cursor: pointer;
   }
 
   .scenario-select{
+    width: 50%;
     display: flex;
     flex-direction: column;
   }
 
   .user-select {
+    width: 50%;
     display: flex;
     flex-direction: column;
   }
@@ -91,6 +111,7 @@
     border-radius: 10px;
     cursor: pointer;
     transition: transform 0.3s ease;
+    margin-top: 10px;
   }
 
   .request-hint-button:hover {
@@ -98,7 +119,6 @@
     background-color: #deb14f; 
     color: #000000;
     transform: translate(3px, -3px);
-    
   }
 
   .cancel-hint-button {
@@ -124,16 +144,27 @@
     box-sizing: flex; 
     cursor: pointer;
     transition: transform 0.3s ease;
-    
-    
+  }
+
+  .student-logs-expand-button {
+    font-size: 13px;
+    width: 100%; 
+    border-radius: 10px;
+    box-sizing: flex; 
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    align-items: center; 
+    justify-content: center; 
+  }
+
+  .student-logs-expand-button.clicked {
+    background-color: #deb14f;
   }
 
   .below-textbox-button:hover {
-    
     background-color: #deb14f; 
     color: #000000;
     transform: translate(3px, -3px);
-    
   }
   
   .loading-overlay div {
@@ -151,29 +182,39 @@
   }
 
   .checkbox label {
+    margin-top: 10px;
     font-size: 12px;
     display: flex;
-    max-width: 50%;
+    max-width: 60%;
   }
 
   .loading-overlay {
-    position: absolute;
+    position: fixed; 
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 5px;
+    width: 100vw; 
+    height: 100vh; 
+    background-color: rgba(0, 0, 0, 0.8); 
+    color: #fff; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    border-radius: 5px; 
     z-index: 1000;
-    font-size: 18px;
-    font-weight: bold;
-    text-align: center;
+    font-size: 18px; 
+    font-weight: bold; 
+    text-align: center; 
     flex-direction: column;
-    }
+}
+
+  .textarea-label {
+    display: flex;    
+    margin-top: 5px;     
+    margin-bottom: 5px;  
+    font-size: 12px;   
+  }
+
+
 
   .elapsed-time-counter {
       margin-top: 10px;
