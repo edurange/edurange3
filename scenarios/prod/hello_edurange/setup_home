@@ -63,8 +63,8 @@ cp /home/ubuntu/student_home/for_hire.txt $studentDIR/for_hire.txt
 chown -R $player:$player $studentDIR/for_hire.txt
 chmod 440 $studentDIR/for_hire.txt
 
-cp /home/ubuntu/student_home/gallery_manifest.txt $studentDIR/gallery_manifest.txt
-chown -R $player:$player $studentDIR/gallery_manifest.txt
+cp /home/ubuntu/student_home/galley_manifest.txt $studentDIR/galley_manifest.txt
+chown -R $player:$player $studentDIR/galley_manifest.txt
 chmod 440 $studentDIR/gallery_manifest.txt
 
 cp /home/ubuntu/student_home/navigation_check.txt $studentDIR/navigation_check.txt
