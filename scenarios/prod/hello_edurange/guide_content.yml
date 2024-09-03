@@ -545,6 +545,7 @@ contentDefinitions:
   Reading10: &reading10
     type: reading
     content: |
+      # File Manipulation
       So far we’ve looked at commands that browse and alter the filesystem, where data is saved. Next we’ll introduce some command line programs for reading and writing the data inside files, as well as some shell features that give us greater power over storing and manipulating that data.
 
       ## Commands
@@ -627,7 +628,7 @@ contentDefinitions:
   Reading11: &reading11
     type: reading
     content: |
-      # Pagers and editors
+      # Pagers and Editors
       ## Pager Utilities
 
       “*Pagers*” are a group of command line utilities that allows users to view text one page at a time. This is particularly useful when dealing with output that is too large to fit on a single screen, as it prevents the information from scrolling past too quickly to read.
@@ -677,12 +678,233 @@ contentDefinitions:
         - Use a command that generates output, such as `dmesg`, and pipe it to tail like this: `dmesg | tail -n 15`.
         - Observe the last 15 lines of the output.
         - Experiment with different commands and line counts.
+      
+      ## Text Editors
+
+      There are many ways to create and modify text files on the command line. When you need all the features of an interactive text editor, there are a number of choices.
+
+      We use the minimal editor “`nano`” for most examples in eduRange unless otherwise stated. In these exercises, `nano` is all you’ll need, but we’ll mention a few common alternatives by name so you know them when you see them.
+
+
+      Often the convention in Unix-like systems is for tools to change data without asking. `nano` and other command line editors don’t change files until you save, and many of them offer conveniences like undo histories. It may seem like a small thing coming from graphical desktop environments, but editors are somewhat special in that they allow you to check your changes before committing them to disk.
+
+      ### `nano`
+
+      Like the name implies, “`nano`” is a small text editor. Called with no arguments, it opens an editor session for an unnamed file; when you go to save, it will allow you to specify a path to write out to. Called with an argument, `nano` attempts to open and read the file at the path provided. If no file exists, a new one will be created when saving.
+
+      As with `man` or `less`, once `nano` starts, it is controlled differently than the shell. If you type, your text will be entered into the file to be written. Text is inserted at the blinking cursor, which can be moved around with arrow keys. At the bottom of the screen is a summary of command keystrokes. (Remember, “`^`” is shorthand for the Control key modifier.)
+
+      The most important are:
+
+      - `^O` to “*write **o**ut*” (when you type you’re writing to a temporary buffer; it doesn’t save to the actual file until you write out)
+      - `^X` to “*e**x**it*”
+      - `^G` to “***g**et help*” if you’re curious about the others
+
+      The keystrokes are case-insensitive.
+
+      ### `pico`
+
+      Kind of like `less` is to `more`, `nano` is to `pico`. `pico` was developed at the University of Washington and `nano` is a clone by the GNU Project that was produced to succeed it.
+
+      Unlike `less` and `more`, the controls and capabilities of `pico` are near identical to `nano` above.
+
+      Originally the open source status of `pico` was unclear, and so GNU was motivated to produce `nano` as a free replacement. UW has since moved newer versions of `pico` to a different license and continued development (whereas `more` became a relic after `less` was created). Today, both `nano` and `pico` have open licenses and are commonly present together on many systems.
+
+      ### `vim` and `vi`
+
+      You’ll probably come across references to `vim` or its predecessor `vi`. These have powerful tools related to searching and batch editing files, but we won’t have use for those features in this exercise.
+
+      Many power users prefer `vim` (which stands for “**`vi`** I**m**proved”) - however `vi` is more likely to be preinstalled on most Unix distributions.
+
+      `vi` has different control modes for navigating a file as opposed to editing it, so it can be confusing for beginners. For that reason we favor `nano` here. But it’s interesting to note that the keystroke conventions for browsing files with `less` are shared by `vi` and `vim`.
+
+      ### `emacs`
+
+      You might also hear mention of `emacs`, another editor associated with the GNU Project. `emacs` has many features and reaches clear outside the realm of a simple text editor. If you program in other languages on the command line, you may come back to `emacs` as part of your development environment.
   
   Reading12: &reading12
     type: reading
     content: |
-      # Redirections, Filters, and Command Composition
+      # Redirection and Command Composition
+
+      ## Input/Output Redirection
+
+      Redirection operators - written with angle brackets like “`>`” and “`<`” - are used to write the output of a command to a file or a file to the input of a command. They have many uses.
+
+      ((Introduce STDIN/STDOUT))
+
+      ### Output Redirection With `>` and `>>`
+
+      The “`>`” “*redirects output*” to a file. `<command> > <path>` will write a file to “`path`” with what is output by the “`command`” on the left hand side. If the file already exists, `>` will overwrite the file with what you sent it, in effect deleting the previous content. In contrast if you use `>>`, it will append what you sent to the end of the file, leaving the existing data intact.
+
+      Let's give it a try. Try:
+
+      ```sh
+      echo "This is cool" > newfile
+      cat newfile
+      ```
+
+      Next type:
+
+      ```sh
+      echo "This is cool too" > newfile
+      cat newfile
+      ```
+
+      You can see that `>` will replace any text with what you send it, while `>>` will append to a file. Enter the following:
+
+      ```sh
+      echo "This is another thing" >> secondfile
+      echo "Hello World" >> secondfile
+      cat secondfile
+      ```
+
+      By using `>>`, both lines were saved to `secondfile`.
+
+      Now let's use `>>` to combine the two files. Type:
+
+      ```sh
+      cat newfile >> secondfile
+      cat secondfile
+      ```
+
+      You can see the contents of `newfile` appended to the end of `secondfile` whereas if you `cat newfile` it will still only have what we wrote to it earlier.
+
+      ### Input Redirection With `<`
+
+      The “`<`” operator “*redirects input*” into a command from a file - the opposite of `>`. The command still comes first, followed by the operator and then the file (input) path. A command that reads keyboard input will then receive the contents of the input file rather than interacting with your terminal session.
+
+      Remember, `man bash` (or your particular shell) has the documentation on shell language features like redirection.
+
+      ### Input and Output Redirection With Pipes `|`
+
+      `<` and `>` and their relatives help get data to and from the command line to the filesystem. The “*pipe*” operator, written as “`|`”, takes the output of one command and provides it as the input to another command. This allows you to combine the functionality of two commands in a single statement, without needing to save the intermediate data to file.
+
+      We’ll practice using pipes a lot, as they’re widely used. Before that, here’s a couple notes related to finding information on pipes.
+
+      First, when they appear as a redirect operator, the “`|`” is usually read as “pipe”, but be aware that you may see it used as punctuation or as an operator in other languages. It can also be read as “bar” and “vertical bar” and in other languages may represent logical “or”.
+
+      Second, there’s a related term called a “named pipe”. Named pipes are special types of files. They are also for moving data from place to place, so they’re conceptually similar to these pipes, but named pipes are not redirection operators. We won’t use them today - just don’t confuse them with redirections.
+
+      ((Refer to relevant section of `man bash` because redirections are not a command nor sys call per se))
+
+      TASK: There is a directory in your home called `textfiles`. Inside are three files; append them all to a new file called `alltogether.txt` in your home directory.
+
+      ((Original question 5?: What command or list of commands did you use to create a file with the contents of the three files in the textfiles directory? (Endless approaches, this question will not be graded automatically)))
+
+      ### Tip: Use Redirection to Filter Output Streams
+
+      One useful trick you can do with redirection operators is suppress error messages.
+
+      Say you have a command that produces lots of output (like searching through every sub-directory of a big directory with `find`) and sometimes that command produces errors (for instance when `find` tries to search a directory for which you don't have permissions).
+
+      If you want to just focus on the normal output and suppress the error messages that may result, you can add '2>/dev/null' to your command. For example:
+
+      ```sh
+      find . filename 2>/dev/null
+      ```
+
+      There’s a little magic going on here. The “`2`” is short for “`STDERR`”. Like `STDIN` and `STDOUT`, `STDERR` is a sort of file that the shell and shell commands use to communicate text. Normally `STDERR` prints to the same place as `STDOUT`, but we’re sending it some place else so we don’t see it on `STDOUT` here.
+
+      Why “`2`” instead of `STDERR`? You won’t need the details for this lesson, but the numeric representation is called a “file descriptor” and discussion can be found in `man bash` and related `man` pages.
+
+      Similarly you won’t need to know much about the contents of `/dev` here, but for the curious, `/dev/null` is a special file that is always empty. It never changes, never stores data written to it, and contains only the end-of-file character when read. Unlike an invalid path, reading and writing to `/dev/null` always succeeds, so it’s used as a shortcut when a path is a required argument for some operation but you don’t need the results and would discard them anyways. Because it can’t be changed, `/dev/null` is a rare exception to the rule of `/dev` being a sensitive area.
+
+  Reading17: &reading17
+    type: reading
+    content: |
+      ## Question List
+
+      On this tab you can find the master list of questions for this scenario.
+      They will also be interleaved into the readings, but if your ever worried you missed one you can check here and it should reflect your points earned correctly.
+
+  Reading18: &reading18
+    type: reading
+    content: |
+      ## Filters
+      
+      “*Filters*” are a category of commands that take input (generally text), apply some operation to the input and then print the result back out to standard output. Some examples of operations could be sorting, searching or counting.
+
+      ### `sort`
+
+      The “`sort`” command is a tool that is used to **sort** lines of text. It’s handy for sorting lists that are out of order. It can sort specific columns or entire lines alphabetically, numerically, or even in reverse order.
+
+      `sort` by default will sort the list in alphabetical order according to the first letter of each line. Lowercase characters are listed before uppercase letters.
+
+      - The option `-r` sorts the list in reverse order.
+      - The option `-n` will sort the list numerically.
+      - You can sort a specific column using the option `-k` and a numeric argument.
+
+      One use for the `sort` command is to reorder the output of a shell command, such as `ls`, through the use of a pipe.
+
+      Task: Using `ls`, `sort`, and a pipe, organize the files in your home directory in reverse alphabetical order.
+
+      It should look like `<source> | <filter>` where:
+
+      - “`source`” is the `ls` output you want to `sort` and
+      - “`filter`” is the `sort` command and relevant options.
+
+      ((To add: sort a text file or piped input eg sort a table of IP addresses by a time column))
+
+      - ((Make static file))
+
+      ### `uniq`
+
+      The `uniq` command is used to reduce the number of repeated lines that are printed while viewing a file, and, as a result, it is very often used with `sort` (using a pipe). It only prints the first instance of a line, and does not print repetitions of that line that follow after that instance. Though it’s called “***uniq**ue*”, `uniq` doesn’t guarantee to remove all repetitions - just those that follow one another. 
+
+      Run on the input:
+
+      ```sh
+      A
+      A
+      B
+      A
+      A
+      ```
+
+      `uniq` alone would produce:
+
+      ```sh
+      A
+      B
+      A
+      ```
+
+      `uniq` only compares against the most recent line it has seen. For that reason, you’ll usually find it used in conjunction with `sort`. The syntax of the `uniq` command, used with `sort`, would look like this: `sort [file ...] | uniq`. This would give you lines *unique* to the entire file. But they must be sorted in some way, alphabetical or otherwise, so that repeated lines are all adjacent.
+
+  Reading19: &reading19
+    type: reading
+    content: |
+      ### grep and Regular Expressions
+
+      The “`grep`” command has a similar use to `find`, however, instead of searching for files, `grep` searches within files for lines that contain a string you specify. Unlike the *glob patterns* used by `find`, `grep` uses a convention called *regular expressions*.
+
+      “`grep`” stands for “**g**lobal / **r**egular **e**xpression search / and **p**rint” - originally it was a series of commands in an editor, but was so useful someone turned it into a utility of its own. The general syntax of the command is:
+
+      `grep [pattern] [file ...]`
+
+      Some options for `grep` include:
+
+      - Case insensitivity (“`-i`”)
+      - Only print the filename that contains the pattern (“`-l`”)
+      - Print out line numbers along with the matching criteria (“`-n`”)
+      - Print lines that do not match the criteria (“`-v`”).
+
+      ((Explain regular expressions))
+
+      #### Regular Expressions
+
+      “*Regular expressions*” are another style of text patterns. They have similar basic uses to globs, but are much more complex and powerful. We’ll only present a few of their applications here.
+
+      First, note that some symbols and ideas are shared between regular expressions (“*regexes*”) and glob-style patterns. The “`*`” is not a wildcard in a regex, but it does something similar; when “`*`” follows a sub-pattern in a regex, the resulting pattern matches zero or more occurrences of the sub-pattern.
+
+      Regexes allow you to specify the number of matches separately from the expression that is matched, whereas glob wildcards do both in a single symbol. Here globs are shorter, but regexes are more flexible.
   
+  Reading20: &reading20
+    type: reading
+    content: |
+      TODO: Instructions for the final mission
+
   Question1: &question1
     question_num: 2
     type: question
@@ -878,6 +1100,7 @@ studentGuide:
     - chapter_num: 2
       title: Questions
       content_array:
+        - *reading17
         - *question3
         - *question1
         - *question2
@@ -887,13 +1110,13 @@ studentGuide:
         - *question7
         - *question8
         - *question9
+        - *question16
         - *question10
         - *question11
         - *question12
         - *question13
         - *question14
         - *question15
-        - *question16
     - chapter_num: 3
       title: Man Pages
       content_array:
@@ -929,14 +1152,13 @@ studentGuide:
         - *question8
         - *reading16
         - *question9
-
     - chapter_num: 8
       title: File Manipulation
       content_array:
         - *reading10
         - *question16
     - chapter_num: 9
-      title: Pages
+      title: Pagers
       content_array:
         - *reading11
         - *question10
@@ -945,3 +1167,16 @@ studentGuide:
       title: Redirection
       content_array:
         - *reading12
+    - chapter_num: 11
+      title: Filters, Grep, and Regex
+      content_array:
+        - *reading18
+        - *question12
+        - *question13
+        - *reading19
+        - *question14
+    - chapter_num: 12
+      title: Finale
+      -content_array:
+        - *reading20
+        - *question15
