@@ -941,12 +941,11 @@ contentDefinitions:
     content: What is the name of the hidden file in your home directory that is over 1 megabyte?
     options: []
     answers:
-      - value: file — determine file type
+      - value: ".lasers.wav"
         answer_type: String
         points_possible: 15
-      - value: file - determine file type
-        answer_type: String
-        points_possible: 15
+    points_possible: 15
+
   Question5: &question5
     question_num: 5
     type: question
@@ -1128,15 +1127,15 @@ studentGuide:
       title: Filesystem
       content_array:
         - *reading4
-        - *question4
+        - *question3
         - *reading14
     - chapter_num: 5
       title: Commands and Navigation
       content_array:
         - *reading6
-        - *question3
         - *question4
         - *reading15
+        - *reading5
         - *question5
         - *reading7
         - *question6
