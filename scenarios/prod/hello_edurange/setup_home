@@ -30,8 +30,8 @@ chown -R $player:$player $studentDIR/multimedia-data
 chmod 550 $studentDIR/multimedia-data
 
 echo "SECRET CODE: $super_secret I wonder what it's for?" > $studentDIR/multimedia-data/imatextfiletoo.txt
-chown -R $player:player $studentDIR/multimedia-data/imatextfiletoo.txt
-chmod 550 $studentDIR/multimedia-data/imatextfiletoo
+chown -R $player:$player $studentDIR/multimedia-data/imatextfiletoo.txt
+chmod 550 $studentDIR/multimedia-data/imatextfiletoo.txt
 
 # More setting up for the scenario
 mkdir $studentDIR/permit_requests
