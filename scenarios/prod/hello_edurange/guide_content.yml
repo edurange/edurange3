@@ -906,7 +906,7 @@ contentDefinitions:
       TODO: Instructions for the final mission
 
   Question1: &question1
-    question_num: 2
+    question_num: 1
     type: question
     content: What is the full "FLAG{...}" string that is provided after ssh-ing in?
     options: []
@@ -988,7 +988,7 @@ contentDefinitions:
       - points_possible: 10
     points_possible: 10
   Question9: &question9
-    question_num: 
+    question_num: 9
     type: question
     content: |
       What are the filenames (with extensions) of the six image files hidden somewhere within your home directory that contain top_secret in their name? 
@@ -1177,6 +1177,6 @@ studentGuide:
         - *question14
     - chapter_num: 12
       title: Finale
-      -content_array:
+      content_array:
         - *reading20
         - *question15
