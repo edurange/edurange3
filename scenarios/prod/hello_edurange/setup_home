@@ -57,22 +57,38 @@ chmod -R 440 $studentDIR/i
 
 cp /home/ubuntu/student_home/bar $studentDIR/bar
 chown -R $player:$player $studentDIR/bar
-chmod -R $player
+chmod 440 $player:$player/$studentDIR/bar
 
 cp /home/ubuntu/student_home/for_hire.txt $studentDIR/for_hire.txt
 chown -R $player:$player $studentDIR/for_hire.txt
-chmod -R $player
+chmod -R $player:$player $studentDIR/for_hire.txt
 
 cp /home/ubuntu/student_home/gallery_manifest.txt $studentDIR/gallery_manifest.txt
 chown -R $player:$player $studentDIR/gallery_manifest.txt
-chmod -R $player
+chmod -R $player:$player $studentDIR/gallery_manifest.txt
 
 cp /home/ubuntu/student_home/navigation_check.txt $studentDIR/navigation_check.txt
 chown -R $player:$player $studentDIR/navigation_check.txt
-chmod -R $player
+chmod -R $player:$player $studentDIR/navigation_check.txt
 
 cp /home/ubuntu/student_home/radio_logs.txt $studentDIR/radio_logs.txt
 chown -R $player:$player $studentDIR/radio_logs.txt
-chmod -R $player
+chmod -R $player:$player $studentDIR/radio_logs.txt
+
+cp /home/ubuntu/student_home/.captains-logs.txt $studentDIR/.captains-logs.txt
+chown -R $player:$player $studentDIR/.captains-logs.txt
+chmod -R $player:$player $studentDIR/.captains-logs.txt
+
+cp /home/ubuntu/student_home/.lasers.wav $studentDIR/.lasers.wav
+chown -R $player:$player $studentDIR/.lasers.wav
+chmod -R $player:$player $studentDIR/.lasers.wav
+
+cp /home/ubuntu/student_home/.network-diagram.jpg $studentDIR/.network-diagram.jpg
+chown -R $player:$player $studentDIR/.network-diagram.jpg
+chmod -R $player:$player $studentDIR/.network-diagram.jpg
+
+cp /home/ubuntu/student_home/.station-schematics $studentDIR/.station-schematics
+chown -R $player:$player $studentDIR/.station-schematics
+chmod -R $player:$player $studentDIR/.station-schematics
 
 find $studentDIR -type d -print0 | xargs -0 chmod +x
