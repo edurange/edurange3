@@ -124,10 +124,22 @@ class Ransomware_shell {
     };
 };
 
+class Hello_Edurange_shell {
+    constructor(input = {}) {
+	this.keywords = ["Linux shell"];
+	this.scenario_type = 'Hello_Edurange';
+	this.icon = gettingStarted;
+	this.description_short = 'New Introductory Scenario';
+	this.description_long = ("this is where the longer description goes");
+	this.resources = [ resData.ssh, resData.ls, resData.file, resData.echo, resData.touch, resData.angle_brackets, resData.vim, resData.find ]
+    };
+};
+
 export const scenarioShells = {
     Elf_Infection:      new ELF_Infection_shell,
     File_Wrangler:      new File_Wrangler_shell,
     Getting_Started:    new Getting_Started_shell,
+    Hello_Edurange:     new Hello_Edurange_shell,
     Metasploitable:     new Metasploitable_shell,
     Ransomware:         new Ransomware_shell,
     Ssh_Inception:      new Ssh_Inception_shell,
