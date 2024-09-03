@@ -931,7 +931,7 @@ contentDefinitions:
     content: How many files and directories are in your home directory? (EXCLUDING hidden files and . or ..)
     options: []
     answers:
-      - value: "TODO"
+      - value: "11"
         answer_type: String
         points_possible: 15
     points_possible: 15
@@ -1101,9 +1101,9 @@ studentGuide:
       title: Questions
       content_array:
         - *reading17
-        - *question3
         - *question1
         - *question2
+        - *question3
         - *question4
         - *question5
         - *question6
