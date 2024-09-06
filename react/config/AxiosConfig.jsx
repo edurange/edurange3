@@ -10,19 +10,28 @@
 // If edurange3 were set up to accept the cookie value as the CSRF
 // being submitted, a CSRF check would be mostly self-defeating.
 
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import ErrorModal from '../components/ErrorModal';
-
 export const AppContext = React.createContext();
 
 function AxiosConfig({ children }) {
-    const [csrfToken_state, set_csrfToken_state] = useState();
-    const [errorModal_state, set_errorModal_state] = useState(null);
-    const [desiredNavMetas_state, set_desiredNavMetas_state] = useState(['/', 'home']);
+
+    const [csrfToken_state, set_csrfToken_state] = useState()
+    const [errorModal_state, set_errorModal_state] = useState();
+    const [desiredNavMetas_state, set_desiredNavMetas_state] = useState(['/', 'home'])
     const [clipboard_state, set_clipboard_state] = useState('');
 
-    const showDetailedErrors = true; // Set to false in production
+    const showDetailedErrors = false; // wall of red ; use sparingly.
+    // IMPORTANT NOTES
+    // - NO trailing slash on the baseURL 
+    // - ASSUMES domain, not numeric IP 
+    // - Do NOT add port if using domain w/ nginx reverse proxy 
+    // - NO leading slash for axios calls. e.g.: 'axios.post('someRoute')'
+    axios.defaults.baseURL = '/api'; 
+    axios.defaults.headers.common['X-XSRF-TOKEN'] = csrfToken_state || "";
+    axios.defaults.withCredentials = true; // very important
+    axios.defaults.headers.post['Content-Type'] = 'application/json';
 
     useEffect(() => {
         async function getCSRFfromCookie() {
@@ -30,62 +39,55 @@ function AxiosConfig({ children }) {
             const value = `; ${document.cookie}`;
             const parts = value.split(`; ${name}=`);
             if (parts.length === 2) {
-                return parts.pop().split(';').shift();
-            }
+                const cookieReturn = parts.pop().split(';').shift();
+                return cookieReturn;
+            };
             return null;
-        }
-
-        const setConfig = async () => {
-            try {
-                const csrfToken = await getCSRFfromCookie();
-                set_csrfToken_state(csrfToken);
-
-                axios.defaults.baseURL = '/api';
-                axios.defaults.headers.common['X-XSRF-TOKEN'] = csrfToken || "";
-                axios.defaults.withCredentials = true;
-                axios.defaults.headers.post['Content-Type'] = 'application/json';
-
-                axios.interceptors.response.use(
-                    response => response,
-                    error => {
-                        const errorObject = {
-                            message: error.response?.data?.message || error.message,
-                            status_code: error.response?.status,
-                            stack: showDetailedErrors ? error.stack : undefined,
-                            details: showDetailedErrors ? error.response?.data : undefined
-                        };
-                        set_errorModal_state(errorObject);
-                        console.error("API Error:", errorObject);
-                        return Promise.reject(error);
-                    }
-                );
-            } catch (error) {
-                console.error("Config Error:", error);
-                set_errorModal_state({
-                    message: "Failed to set up API configuration",
-                    status_code: 500,
-                    stack: showDetailedErrors ? error.stack : undefined
-                });
-            }
         };
 
+        async function setConfig(){
+            const csrfToken = getCSRFfromCookie();
+            set_csrfToken_state(csrfToken);
+            axios.defaults.baseURL = '/api'; 
+            axios.defaults.headers.common['X-XSRF-TOKEN'] = csrfToken || "";
+            axios.defaults.withCredentials = true; // very important
+            axios.defaults.headers.post['Content-Type'] = 'application/json';
+            axios.interceptors.response.use(response => {
+                // triggers on 200-series status code
+                return response;
+            }, error => {
+                // triggers on any non-200-series status code
+                console.error(error.message, ": ", error.response?.data?.error)
+                if (showDetailedErrors) {
+                    console.error("Detailed Error:", error);
+                }
+                set_errorModal_state(error)
+                return Promise.reject(error);
+            });
+        }
         setConfig();
     }, []);
 
-    if (axios?.defaults?.baseURL !== "/api" || !csrfToken_state) {
-        return null;
+    if (String(axios?.defaults?.baseURL) !== String("/api") || !csrfToken_state) {
+        return null
     }
-
-    return (
-        <AppContext.Provider value={{
+    else {
+        return (
+        <>
+            <AppContext.Provider value={{
             errorModal_state, set_errorModal_state,
             desiredNavMetas_state, set_desiredNavMetas_state,
             clipboard_state, set_clipboard_state
         }}>
-            {errorModal_state && <ErrorModal error={errorModal_state} />}
+            {
+            errorModal_state
+                && <ErrorModal 
+                    message={errorModal_state?.response?.data?.error ?? errorModal_state?.data?.error ?? 'Unknown Error'} 
+                    status_code={errorModal_state.response?.status ?? errorModal_state.status ?? 500}/>
+            }
             {children}
-        </AppContext.Provider>
-    );
+            </AppContext.Provider>
+        </>
+    );}
 }
-
 export default AxiosConfig;
