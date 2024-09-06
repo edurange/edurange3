@@ -973,8 +973,8 @@ contentDefinitions:
     options: []
     answers: 
       - value: "$RANDOM"
-      - answer_type: String
-      - points_possible: 10
+        answer_type: String
+        points_possible: 10
     points_possible: 10
   Question8: &question8
     question_num: 8
@@ -983,8 +983,8 @@ contentDefinitions:
     options: []
     answers: 
       - value: "staff_schedule2.docx"
-      - answer_type: String
-      - points_possible: 10
+        answer_type: String
+        points_possible: 10
     points_possible: 10
   Question9: &question9
     question_num: 9
@@ -1050,8 +1050,8 @@ contentDefinitions:
     options: []
     answers:
       - value: "13"
-      - answer_type: String
-      - points_possible: 10
+        answer_type: String
+        points_possible: 10
     points_possible: 10
   Question14: &question14
     question_num: 14
@@ -1060,8 +1060,8 @@ contentDefinitions:
     options: []
     answers:
       - value: "24"
-      - answer_type: String
-      - points_possible: 20
+        answer_type: String
+        points_possible: 20
     points_possible: 20
   Question15: &question15
     question_num: 15
@@ -1072,8 +1072,8 @@ contentDefinitions:
     options: []
     answers:
       - value: "/usr/special/secrets/uncategorized/"
-      - answer_type: String
-      - points_possible: 15
+        answer_type: String
+        points_possible: 15
     points_possible: 15
   Question16: &question16
     question_num: 16
@@ -1083,8 +1083,8 @@ contentDefinitions:
     options: []
     answers:
       - value: "req9A323.txt"
-      - answer_type: String
-      - points_possible: 20
+        answer_type: String
+        points_possible: 20
     points_possible: 20
 
 
