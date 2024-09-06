@@ -214,6 +214,10 @@
     font-size: 12px;   
   }
 
+  .expandable-logs-container {
+    margin-top: 5px;
+  }
+
 
 
   .elapsed-time-counter {

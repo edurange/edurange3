@@ -254,43 +254,7 @@ const Instr_Hints = () => {
               <button onClick={onEditHint} className="below-textbox-button">Edit Hint 📝</button>
               <button onClick={onHintSend} className="below-textbox-button">Send Hint To Student 📫 </button>
             </div>
-            <div className="expandable-container">
-                <button onClick={toggleExpand} className={`student-logs-expand-button ${isClicked ? 'clicked' : ''}`}>Student Logs 📟 </button>
-                  {isExpanded && (
-                <div className="expandable-content">
-                  <label htmlFor="student-bash-logs" className="textarea-label">Bash Logs:</label>
-                  <textarea
-                    id="student-bash-logs"
-                    value={student_bash_logs_state}
-                    rows={1}
-                    readOnly 
-                    aria-live="polite"
-                    className="logs-textarea"
-                    placeholder="Student bash logs used for hint generation will appear here"
-                  />
-                  <label htmlFor="student-chat-logs" className="textarea-label">Chat Logs:</label>
-                  <textarea
-                    id="student-chat-logs"
-                    value={student_chat_logs_state}
-                    rows={1}
-                    readOnly 
-                    aria-live="polite"
-                    className="logs-textarea"
-                    placeholder="Student chat logs used for hint generation will appear here"
-                  />
-                  <label htmlFor="student-responses-logs" className="textarea-label">Answer Logs:</label>
-                  <textarea
-                    id="student-responses-logs"
-                    value={student_responses_logs_state}
-                    rows={1}
-                    readOnly 
-                    aria-live="polite"
-                    className="logs-textarea"
-                    placeholder="Student answer logs used for hint generation will appear here"
-                  />
-                </div>
-                )}
-              </div>
+            
           </>
         )}
       </div>
@@ -356,6 +320,43 @@ const Instr_Hints = () => {
             </select>
         </div>
       </div>
+      <div className="expandable-logs-container">
+        <button onClick={toggleExpand} className={`student-logs-expand-button ${isClicked ? 'clicked' : ''}`}>Student Logs 📟 </button>
+          {isExpanded && (
+            <div className="expandable-content">
+              <label htmlFor="student-bash-logs" className="textarea-label">Bash Logs:</label>
+              <textarea
+                id="student-bash-logs"
+                  value={student_bash_logs_state}
+                  rows={1}
+                  readOnly 
+                  aria-live="polite"
+                  className="logs-textarea"
+                  placeholder="Student bash logs used for hint generation will appear here"
+              />
+              <label htmlFor="student-chat-logs" className="textarea-label">Chat Logs:</label>
+              <textarea
+                id="student-chat-logs"
+                value={student_chat_logs_state}
+                rows={1}
+                readOnly 
+                aria-live="polite"
+                className="logs-textarea"
+                placeholder="Student chat logs used for hint generation will appear here"
+              />
+              <label htmlFor="student-responses-logs" className="textarea-label">Answer Logs:</label>
+              <textarea
+                id="student-responses-logs"
+                value={student_responses_logs_state}
+                rows={1}
+                readOnly 
+                aria-live="polite"
+                className="logs-textarea"
+                placeholder="Student answer logs used for hint generation will appear here"
+              />
+            </div>
+          )}
+        </div>
       <div className="checkbox">
         <label>
           <input 

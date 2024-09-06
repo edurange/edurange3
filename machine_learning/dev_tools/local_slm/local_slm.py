@@ -58,7 +58,10 @@ def initialize_model():
             gpu_resources = determine_gpu_resources()
             print("\n__________________________________________\n")
             print (f"\n* CPU threads used: {cpu_resources}\n")
-            if gpu_resources == -1 print (f"* GPU Found and Enabled\n") else print("No GPU found")
+            if gpu_resources == -1: 
+                  print (f"* GPU Found and Enabled\n") 
+            else:
+                  print("No GPU found")
 
             language_model = Llama.from_pretrained(
             repo_id="microsoft/Phi-3-mini-4k-instruct-gguf",
