@@ -13,6 +13,7 @@ import { HomeRouter_context } from '../pub/Home_router';
 import Staff_LogsViewer from './logs_dir/Staff_LogsViewer';
 import Instr_Hints from './hints/Instr_Hints';
 import Chat_Staff from './chat/Chat_Staff';
+import Scenario_controller from '../student/scenarios/Scenario_controller';
 
 export const InstructorRouter_context = React.createContext();
 
@@ -195,7 +196,8 @@ function Staff_router() {
                     <Routes>
                         <Route path="/*" element={<Staff_Dash />} />
                         <Route path="/scenarios/*" element={<Staff_Scenarios />} />
-                        <Route path="/scenarios/:scenarioID" element={<Staff_ScenDetail />} />
+                        <Route path="/scenarios/:scenarioID" element={<Scenario_controller />} />
+                        {/* <Route path="/scenarios/:scenarioID" element={<Staff_ScenDetail />} /> */}
                         <Route path="/groups/*" element={<Staff_Groups />} />
                         <Route path="/groups/:groupID/*" element={<Staff_GroupDetail />} />
                         <Route path="/students/*" element={<Staff_Users />} />
