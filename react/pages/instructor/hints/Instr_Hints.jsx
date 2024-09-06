@@ -55,6 +55,56 @@ const Instr_Hints = () => {
     setChecked(!checked);
   };
 
+  const getStudentLogs = async() => {
+    set_error('');
+
+    try {
+      const reqJSON = {
+        student_id: selectedUser_state.id,
+      };
+
+      const response = await axios.post(
+        "get_student_logs",
+        reqJSON,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        }
+      );
+
+      const student_logs_bash_returned_obj = response.data.bash;
+      const student_logs_bash_concatenated_string = student_logs_bash_returned_obj
+        .filter(entry => entry.bashEntry !== null)
+        .map(entry => `Entry ${entry.index + 1}: [${entry.bashEntry}] `) 
+        .join(', ');
+      let student_logs_bash_stringified = JSON.stringify(student_logs_bash_concatenated_string);
+      set_student_bash_logs_state(student_logs_bash_stringified);
+
+      const student_logs_chat_returned_obj = response.data.chat;
+      const student_logs_chat_concatenated_string = student_logs_chat_returned_obj
+        .filter(entry => entry.chatEntry !== null)
+        .map(entry => `Entry ${entry.index + 1}: [${entry.chatEntry}] `) 
+        .join(', ');
+      let student_logs_chat_stringified = JSON.stringify(student_logs_chat_concatenated_string);
+      set_student_chat_logs_state(student_logs_chat_stringified);
+
+      const student_logs_responses_returned_obj = response.data.responses;
+      const student_logs_responses_concatenated_string = student_logs_responses_returned_obj
+        .filter(entry => entry.responsesEntry !== null)
+        .map(entry => `Entry ${entry.index + 1}: [${entry.responsesEntry}] `) 
+        .join(', ');
+      let student_logs_responses_stringified = JSON.stringify(student_logs_responses_concatenated_string);
+      set_student_responses_logs_state(student_logs_responses_stringified);
+      
+    } catch (error) {
+      console.error("Error fetching hint:", error);
+      set_error('Failed to fetch hint.');
+
+    } finally {
+      set_loading(false);
+    }
+  };
 
   const requestHint = async() => {
     set_loading(true);
@@ -78,30 +128,6 @@ const Instr_Hints = () => {
       );
 
       set_hint_state(response.data.generated_hint)
-
-      const student_logs_bash_returned_obj = response.data.logs_dict.bash;
-      const student_logs_bash_concatenated_string = student_logs_bash_returned_obj
-        .filter(entry => entry.bashEntry !== null)
-        .map(entry => `Entry ${entry.index + 1}: [${entry.bashEntry}] `) 
-        .join(', ');
-      let student_logs_bash_stringified = JSON.stringify(student_logs_bash_concatenated_string);
-      set_student_bash_logs_state(student_logs_bash_stringified);
-
-      const student_logs_chat_returned_obj = response.data.logs_dict.chat
-      const student_logs_chat_concatenated_string = student_logs_chat_returned_obj
-        .filter(entry => entry.chatEntry !== null)
-        .map(entry => `Entry ${entry.index + 1}: [${entry.chatEntry}] `) 
-        .join(', ');
-      let student_logs_chat_stringified = JSON.stringify(student_logs_chat_concatenated_string);
-      set_student_chat_logs_state(student_logs_chat_stringified);
-
-      const student_logs_responses_returned_obj = response.data.logs_dict.responses
-      const student_logs_responses_concatenated_string = student_logs_responses_returned_obj
-        .filter(entry => entry.responsesEntry !== null)
-        .map(entry => `Entry ${entry.index + 1}: [${entry.responsesEntry}] `) 
-        .join(', ');
-      let student_logs_responses_stringified = JSON.stringify(student_logs_responses_concatenated_string);
-      set_student_responses_logs_state(student_logs_responses_stringified);
       
     } catch (error) {
       console.error("Error fetching hint:", error);
@@ -181,6 +207,12 @@ const Instr_Hints = () => {
     set_newHint(hint_state); 
     set_isEditing(false); 
   };
+
+  useEffect(() => {
+    if (selectedUser_state) {
+      getStudentLogs();
+    }
+  }, [selectedUser_state]); 
 
   useEffect(() => {
     
@@ -305,7 +337,7 @@ const Instr_Hints = () => {
                 const selectedId = Number(e.target.value);
                 const selectedOption = users_state.find(option => Number(option.id) === selectedId);
                 if (selectedOption) {
-                  set_selectedUser_state(selectedOption);
+                  set_selectedUser_state(selectedOption); 
                 } else {
                   console.error('No matching user found!');
                 }

@@ -484,6 +484,17 @@ def get_hint():
     
     return jsonify(result)
 
+@blueprint_instructor.route("/get_student_logs", methods=['POST'])
+@jwt_and_csrf_required
+def get_student_logs():
+    requestJSON = request.json
+
+    this_student_id = requestJSON["student_id"]
+    
+    logs_dict = getLogs_for_hint.delay(this_student_id).get(timeout=None)
+
+    return jsonify(logs_dict)
+
 @blueprint_instructor.route("/init_model", methods=['POST'])
 @jwt_and_csrf_required
 def init_model():

@@ -146,6 +146,10 @@
     transition: transform 0.3s ease;
   }
 
+  .expandable-logs-container {
+    margin-bottom: 20px;
+  }
+
   .student-logs-expand-button {
     font-size: 13px;
     width: 100%; 
@@ -155,6 +159,7 @@
     transition: transform 0.3s ease;
     align-items: center; 
     justify-content: center; 
+    margin-top: 10px;
   }
 
   .student-logs-expand-button.clicked {
