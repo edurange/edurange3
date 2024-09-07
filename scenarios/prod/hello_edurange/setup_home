@@ -103,4 +103,8 @@ cp /home/ubuntu/student_home/.station-schematics $studentDIR/.station-schematics
 chown -R $player:$player $studentDIR/.station-schematics
 chmod 660 $studentDIR/.station-schematics
 
+cp /home/ubuntu/student_home/comms_record.txt $studentDIR/comms_record.txt
+chown -R $player:$player $studentDIR/comms_record.txt
+chmod 660 $studentDIR/comms_record.txt
+
 find $studentDIR -type d -print0 | xargs -0 chmod +x
