@@ -37,8 +37,8 @@ function Login() {
                 sessionStorage.setItem('userData', JSON.stringify(userData));
                 sessionStorage.setItem('login', true);
                 sessionStorage.setItem('loginExpiry', newExpiry);
-                if ((userData?.role === 'instructor') || (userData?.role === 'admin')) {
-                    set_desiredNavMetas_state(['/instructor', 'dash']);
+                if ((userData?.role === 'staff') || (userData?.role === 'admin')) {
+                    set_desiredNavMetas_state(['/staff', 'dash']);
                 } else {
                     set_desiredNavMetas_state(['/scenarios', 'dash']);
                 }

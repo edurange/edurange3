@@ -2,12 +2,12 @@
 every function in the utils directory; please update this w/ changes
 
 auth_utils:
-    instructor_only
+    staff_only
     jwt_and_csrf_required
     login_er3
     register_user
 
-instructor_utils:
+staff_utils:
     assignUserToGroup
     createUserGroup
     generateTestAccts
@@ -28,7 +28,7 @@ csv_utils:
     readCSV
     groupCSV
 
-instructorData_utils:
+staffData_utils:
     get_user
     get_users
     get_groups
@@ -36,7 +36,7 @@ instructorData_utils:
     get_scenarios
     get_scenario_groups
     get_student_responses 
-    get_instructor_data
+    get_staff_data
 
 guide_utils:
     getContent ( gets generic data, unique data, and user credentials for scenarios, for UI )

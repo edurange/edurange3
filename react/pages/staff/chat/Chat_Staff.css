@@ -1,0 +1,115 @@
+
+html, body{
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+.chatStaff-frame {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  height: 100%;
+  width: 100%;
+}
+
+.chat-listController-bar {
+  grid-row: 1 / 2;
+}
+
+.chatStaff-messageBox-frame {
+  grid-row: 2 / 3;
+  overflow-y: auto;
+  max-height: calc(100vh - 100px);  
+}
+
+.chatStaff-messageBox-carpet{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  box-sizing: border-box;
+  position: relative;
+  padding: 12px;
+  gap: 2px;
+}
+
+.chatStaff-input-frame{
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  box-sizing: border-box;
+  max-height: 40px;
+  min-height: 40px;
+  grid-row: 3 / 4;
+}
+
+.chatStaff-sender-text{
+  width: 100%;
+  display: flex;
+  align-items: center;
+  align-content: center;
+  justify-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.chatStaff-sender-button{
+  width: 55px;
+  display: flex;
+  height: 100%;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+  max-height: inherit;
+  min-height: inherit;
+}
+
+
+.chatStaff-historyBox{
+  width: 100%;
+  position: relative;
+  top: 2px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+
+.chat-historybox-frame{
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 99%;
+}
+.chat-historybox-carpet{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  border: 1px solid black;
+  box-sizing: border-box;
+  position: relative;
+  padding: 12px;
+  gap: 2px;
+}
+.chat-responsebox-frame{
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 44dvh;
+}
+.chatStaff-senderbox-frame{
+  display: flex;
+  min-height: 40px;
+  max-height: 40px;
+}

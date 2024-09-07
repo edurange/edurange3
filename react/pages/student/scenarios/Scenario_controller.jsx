@@ -10,13 +10,13 @@ import { HomeRouter_context } from '@pub/Home_router';
 import './Scenario_controller.css';
 import "@frame/frame.css";
 import { StudentRouter_context } from '../Student_router';
-import ErrorModal from '../../../components/ErrorModal';
-import Student_Hints from '../../instructor/hints/Student_Hints';
+import { InstructorRouter_context } from '../../staff/Staff_router';
 
 function Scenario_controller() {
 
-    const { responseData_state, set_responseData_state } = useContext(StudentRouter_context);
+    
     const { userData_state } = useContext(HomeRouter_context);
+
     const [guideContent_state, set_guideContent_state] = useState({});
     
     const [leftPaneName_state, set_leftPaneName_state] = useState("info");
@@ -29,17 +29,23 @@ function Scenario_controller() {
     const rightOffset = `${sliderNum_state}%`;
     
     const { scenarioID, pageID } = useParams();
-
+    
     if (!userData_state?.role) return (<>Log in to continue.</>)
+        
+    const { responseData_state, set_responseData_state } = userData_state?.role === "student" ? useContext(StudentRouter_context) : useContext(InstructorRouter_context);
 
     function handleSliderChange(event) {
         set_SliderNum_state(event.target.value);
     };
 
+    
     if (!scenarioID) return (<>Missing Scenario ID</>)
     if (!guideContent_state) return (<>Missing Content</>)
-
+            
     const scenario_type = guideContent_state?.scenario_meta?.scenario_type;
+    const scenario_name = guideContent_state?.scenario_meta?.scenario_name;
+
+    console.log('wassi scenario name ', scenario_name)
 
     useEffect(() => {
         async function getYaml() {
@@ -93,7 +99,7 @@ function Scenario_controller() {
             scenarioID={scenarioID} 
             pageID={pageID}
             />),
-        chat: (<Chat_Student scenario_id={scenarioID} scenario_type={scenario_type} />),
+        chat: (<Chat_Student scenario_id={scenarioID} scenario_type={scenario_type} scenario_name={scenario_name} />),
         ssh: (
             <SSH_web
                 scenario_id={scenarioID}
@@ -101,12 +107,7 @@ function Scenario_controller() {
                 SSH_username={SSH_username}
                 SSH_password={SSH_password}
             />
-        ),
-        hint: (
-            <Student_Hints
-            scenario_type={scenario_type}
-            />
-        ),
+        )
     };
 
     const leftPaneToShow = panes[leftPaneName_state];

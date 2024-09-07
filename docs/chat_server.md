@@ -5,7 +5,7 @@
 user_id: int;
 jwt: string;
 socket: WebSocket;
-is_instructor: bool;
+is_staff: bool;
 open_channels: Array<int>;
 
 // functions

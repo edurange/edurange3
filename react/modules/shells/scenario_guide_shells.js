@@ -24,24 +24,24 @@ export class GuideQuestion_shell {
 
 export class GuidePage_shell {
     constructor(input = {}) {
-        this.uid = input.uid ?? nanoid(8); // the unique page ID Or index within the scenario. mostly used for React functionality -- can be exposed in UI
-        this.pageNumber = input.pageNumber ?? 0;  // which page in the scenario guide is this
+        this.uid = input.uid ?? nanoid(8); 
+        this.pageNumber = input.pageNumber ?? 0; 
         this.questions = input.questions || [];
     };
 };
 
 export class ScenarioGuide_shell {
     constructor(input = {}) {
-        this.dbid = input.dbid ?? "none"; // the actual database id for the scenario instance. should not be exposed in UI (except admin/instructor if needed)
-        this.uid = input.uid ?? nanoid(8); // the unique scenario ID - can be exposed in UI (is same as URL extension)
-        this.title = input.title ?? "bad_title";  // scenario title e.g. "Getting_Started"
+        this.dbid = input.dbid ?? "none"; 
+        this.uid = input.uid ?? nanoid(8);
+        this.title = input.title ?? "bad_title";
         this.active = input.status ?? false;
     };
 };
 
 export class UserScenarioCatalog_shell {
     constructor(input = {}) {
-        this.uid = input.uid ?? nanoid(8); // the unique catalog ID - can be exposed in UI
-        this.scenarios = input.scenarios ?? [];  // all the scenarios in the catalog
+        this.uid = input.uid ?? nanoid(8); 
+        this.scenarios = input.scenarios ?? []; 
     };
 };

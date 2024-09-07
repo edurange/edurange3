@@ -54,6 +54,8 @@ import {
 import { 
     MdNotifications, 
     MdNotificationsActive,
+    MdOutlineChat,
+    MdOutlineMarkUnreadChatAlt
   } from "react-icons/md";
 
 import { 
@@ -67,6 +69,8 @@ import {
     bell : <MdNotifications/>,
     bell_ringing : <MdNotificationsActive/>,
     gear : <FaGear/>,
+    chatBubble: <MdOutlineChat/>,
+    chatBubble_unread: <MdOutlineMarkUnreadChatAlt/>,
     home : <FaHouseChimney />,
     file : <FaFileLines />,
     book : <FaBook/>,
@@ -87,7 +91,7 @@ import {
     user: <FaPerson/>,
     key: <FaKey/>,
     palette: <FaPalette/>,
-    instructor: <FaGraduationCap/>,
+    staff: <FaGraduationCap/>,
     admin: <FaWandMagicSparkles/>,
     chevron_up: <FaChevronUp />,
     chevron_down: <FaChevronDown />,

@@ -54,7 +54,7 @@ def get_user_data():
             "membership": group_id,
             "channel_data": channel_data,
             "scenarios": [{"id": s.id, "name": s.name} for s in user.scenarios],
-            "is_instructor": user.is_instructor,
+            "is_staff": user.is_staff,
             "is_admin": user.is_admin
         }
         user_data.append(user_info)

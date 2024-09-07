@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import copyToClipboard from '@modules/utils/util_modules';
 import edurange_icons from '@modules/ui/edurangeIcons';
 import { HomeRouter_context } from '@pub/Home_router';
-import '../pages/instructor/notifications/items/TempUsers_table.css';
+import '../pages/staff/notifications/items/TempUsers_table.css';
 import './Copy_button_flex.css';
 
 function Copy_button_flex({ thingToCopy, textLabel, checkedLabel, bg_is_light }) {

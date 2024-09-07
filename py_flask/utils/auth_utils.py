@@ -53,8 +53,8 @@ def jwt_and_csrf_required(fn):
     
     return wrapper
 
-def instructor_only():
-    if g.current_user_role not in ('instructor', 'admin'):
+def staff_only():
+    if g.current_user_role not in ('staff', 'admin'):
         custom_abort("Insufficient role privileges.", 403)
 
 def admin_only():
@@ -98,7 +98,7 @@ def login_er3(userObj):
 
 
 ####
-# account utils available to student (e.g. non-instructor) routes
+# account utils available to student (e.g. non-staff) routes
 ####
 
 

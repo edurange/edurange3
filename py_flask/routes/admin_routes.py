@@ -66,7 +66,7 @@ def editRole(userID_list, is_promoting):
     for user_id in userID_list:
         user = Users.query.get(user_id)
         if user:
-            user.is_instructor = is_promoting
+            user.is_staff = is_promoting
             db_ses.commit()
             editedUsers_idList.append(user_id)
 

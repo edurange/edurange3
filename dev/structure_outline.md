@@ -21,7 +21,7 @@ edurange3
     /pages (react component 'zones', note more shallow structure)
       /home
       /scenarios
-      /instructor
+      /staff
     /entry (only contains index.html and entry.jsx, to load react initial script)
   /node 
     /node_modules # non-react node modules to support the socket server
