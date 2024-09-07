@@ -128,18 +128,23 @@ contentDefinitions:
       - The leaves of the tree are the individual files.
       - This means that if you want to search the entire file system, you need to start at `/`.
       
-      ```mermaid
-      flowchart TD
-      A["/"] --> B(/bin)
-      A --> C(/home)
-      C --> C1(/home/user1)
-      C --> C2(/home/user2)
-      C --> CElipsis(...)
-      C --> CHomeDir(~ [aka you!])
-      A --> D(/usr)
-      D --> D1(/usr/bin)
-      D --> DElipsis(...)
-      A --> E(...)
+      It is common to represent the filesystem tree in a manner like this:
+      ```
+      /
+      ├── bin
+      ├── dev
+      ├── etc
+      ├── home
+      │   ├── user1
+      │   ├── user2
+      │   └── ...
+      ├── mnt
+      ├── root
+      ├── usr
+      │   ├── bin
+      │   └── ...
+      ├── var
+      └── ...
       ```
 
       ### Exploring the Filesystem With ls
@@ -931,7 +936,7 @@ contentDefinitions:
     content: How many files and directories are in your home directory? (EXCLUDING hidden files and . or ..)
     options: []
     answers:
-      - value: "11"
+      - value: "13"
         answer_type: String
         points_possible: 15
     points_possible: 15

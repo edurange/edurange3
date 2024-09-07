@@ -21,6 +21,14 @@ contentDefinitions:
   Reading2: &reading2
     type: reading
     content: |
+      ## Question List
+
+      On this tab you can find the master list of questions for this scenario.
+      They will also be interleaved into the readings, but if your ever worried you missed one you can check here and it should reflect your points earned correctly.
+  
+  Reading3: &reading3
+    type: reading
+    content: |
       
       “*`man` pages*" is short for “**man**ual” pages. These are text documents
       with lots of information on things installed on your system. “`man`” is a
@@ -56,12 +64,25 @@ contentDefinitions:
       - “`b`” will take you “**b**ack”.
       - Remember, “`q`” to “**q**uit” when you’re done.
   
-  Reading3: &reading3
+  Reading4: &reading4
     type: reading
     content: |
       - `man` pages are an important resource because they are specific to the software actually installed on the system you’re currently using.
       - Some commands have different behavior depending on their version.
       - An online resource may or may not have information specific to your system, but `man` always contains documentation for what you have installed.
+  
+  Reading5: &reading5
+    type: reading
+    content: |
+      ### Exploring the Filesystem with ls
+
+      Let's take a look at what files are in our current folder using "`ls`"
+
+      Type:
+      ```
+      ls
+      ```
+
 
   Question1: &question1
     question_num: 1
@@ -89,7 +110,7 @@ contentDefinitions:
     content: How many files and directories are in your home directory? (EXCLUDING hidden files and . or ..)
     options: []
     answers:
-      - value: "11"
+      - value: "13"
         answer_type: String
         points_possible: 15
     points_possible: 15
@@ -260,5 +281,29 @@ studentGuide:
       title: Questions
       content_array:
         - *reading2
+        - *question1
         - *question2
         - *question3
+        - *question4
+        - *question5
+        - *question6
+        - *question7
+        - *question8
+        - *question9
+        - *question16
+        - *question10
+        - *question11
+        - *question12
+        - *question13
+        - *question14
+        - *question15
+    - chapter_num: 3
+      title: Man Pages
+      content_array:
+        - *reading3
+        - *question2
+        - *reading4
+    - chapter_num: 4
+      title: Filesystem and Navigation
+      content_array:
+        - *reading5
