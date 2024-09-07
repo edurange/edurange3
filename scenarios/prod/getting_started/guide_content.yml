@@ -1038,7 +1038,7 @@ contentDefinitions:
     type: question
     content: |
         Take a look at the format of "comms_record.txt" in your home directory. Use "`sort`" to reorder the records based on their Stardate.
-        You will need to look in the man page to find which option allows you to select a *field* to sort over. Typically, fields are defined by whitespace, but there is another option that would allow you to set your own separator.
+        You will need to look in the man page to find which option allows you to select a *field* to sort over. 
         How many status updates were sent on date "2398.1"?
     options: []
     answers: 
