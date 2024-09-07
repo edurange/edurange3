@@ -12,7 +12,7 @@ chmod 444 /usr/local/src/wrangled.txt
 cp /home/ubuntu/python/wrangle_flag /bin/wrangle_flag
 chmod +x /bin/wrangle_flag
 
-cp /home/ubuntu/final-mission/xQrTData_operation_shad0w_N10034.txt /etc/xQrTData_operation_shad0w_N10034.txt
+cp /home/ubuntu/final-task/xQrTData_operation_shad0w_N10034.txt /etc/xQrTData_operation_shad0w_N10034.txt
 chmod 666 /etc/xQrTData_operation_shad0w_N10034.txt
 
 mkdir /usr/special/secrets
