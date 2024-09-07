@@ -1016,7 +1016,7 @@ contentDefinitions:
   Question10: &question10
     question_num: 10
     type: question
-    content: What is the very first line of "comms_record.txt" in your home directory?
+    content: What is the very first line of "navigation_check.txt" in your home directory?
     options: []
     answers:
       - value: "Begin Nav Check: Z94732"
@@ -1026,7 +1026,7 @@ contentDefinitions:
   Question11: &question11
     question_num: 11
     type: question
-    content: What is the very last line of "comms_record.txt" in your home directory?
+    content: What is the very last line of "navigation_check.txt" in your home directory?
     options: []
     answers:
       - value: "Date: 8764.56.14"
@@ -1036,10 +1036,13 @@ contentDefinitions:
   Question12: &question12
     question_num: 12
     type: question
-    content: What is the numerical value of the first "Quantity" listed when sorting the "cargo_manifest.txt" in your home directory alphabetically?
+    content: |
+        Take a look at the format of "comms_record.txt" in your home directory. Use "`sort`" to reorder the records based on their Stardate.
+        You will need to look in the man page to find which option allows you to select a *field* to sort over. Typically, fields are defined by whitespace, but there is another option that would allow you to set your own separator.
+        How many status updates were sent on date "2398.1"?
     options: []
     answers: 
-      - value: "100"
+      - value: "4"
         answer_type: String
         points_possible: 10
     points_possible: 10
