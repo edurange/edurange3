@@ -1,1 +1,264 @@
+ScenarioTitle: File Wrangler
 
+# Define content sections with aliases
+contentDefinitions:
+  Reading1: &reading1
+    type: reading
+    content: |
+      ### How to Connect
+      Use the credentials and IP address provided in the bottom left of this 
+      scenario page to SSH into the exercise. 
+      
+      SSH is an important network protocol that is used in most of our 
+      scenarios, so you need some minimal knowledge on how to use it on your OS.
+      
+      If you need a backup, you can use the WebSSH button also in the bottom 
+      left, but it is missing many convenience features provided by more 
+      standard terminals.
+
+      #### If you'd like to read a more detailed and segmented version of this exercise, head back to your scenarios and click on "Getting Started"
+  
+  Reading2: &reading2
+    type: reading
+    content: |
+      
+      “*`man` pages*" is short for “**man**ual” pages. These are text documents
+      with lots of information on things installed on your system. “`man`” is a
+      command for reading the `man` pages.
+
+      Try opening the "`man`" page for `ls` using:
+      ```
+      man ls
+      ```
+      To exit `man`, just type "`q`" to “***q**uit*”.
+
+      ### `man` Page Key Points: SYNOPSIS and EXAMPLES
+
+      For many commands, there’s an overwhelming amount of information in the `man` pages. The pages are divided up into sections.
+
+      Most every `man` page includes two particularly useful sections:
+
+      - A *synopsis* showing how the command is written in the format discussed earlier, and 
+      - A series of *examples* showing exact instances of the command in particular uses.
+
+      When in a `man` page, you can type a slash “`/`” to search for text.
+
+      The headers are in all capitals, so after opening up a particular page, to search for the synopsis you’d type:
+
+      ```sh
+      /SYNOPSIS
+      ```
+
+      and then hit enter.
+
+      - `man` will highlight all instances of the text “`SYNOPSIS`”.
+      - Typing “`n`” will bring you to the “**n**ext” search result.
+      - “`b`” will take you “**b**ack”.
+      - Remember, “`q`” to “**q**uit” when you’re done.
+  
+  Reading3: &reading3
+    type: reading
+    content: |
+      - `man` pages are an important resource because they are specific to the software actually installed on the system you’re currently using.
+      - Some commands have different behavior depending on their version.
+      - An online resource may or may not have information specific to your system, but `man` always contains documentation for what you have installed.
+
+  Question1: &question1
+    question_num: 1
+    type: question
+    content: What is the full "FLAG{...}" string that is provided after ssh-ing in?
+    options: []
+    answers:
+      - value: "FLAG{WELCOME}"
+        answer_type: String
+        points_possible: 15
+    points_possible: 15
+  Question2: &question2
+    question_num: 2
+    type: question
+    content: Open the `man` page for `cp`. What option would provide verbose output? It’s worth noting that many commands provide an option with this name, not just `cp`.
+    options: []
+    answers:
+      - value: "-v"
+        answer_type: String
+        points_possible: 15
+    points_possible: 15
+  Question3: &question3
+    question_num: 3
+    type: question
+    content: How many files and directories are in your home directory? (EXCLUDING hidden files and . or ..)
+    options: []
+    answers:
+      - value: "11"
+        answer_type: String
+        points_possible: 15
+    points_possible: 15
+  Question4: &question4
+    question_num: 4
+    type: question
+    content: What is the name of the hidden file in your home directory that is over 1 megabyte?
+    options: []
+    answers:
+      - value: ".lasers.wav"
+        answer_type: String
+        points_possible: 15
+    points_possible: 15
+
+  Question5: &question5
+    question_num: 5
+    type: question
+    content: In your home directory there is subdirectory named followMe. Travel into the directory as far as you can go. At the end there is a file. What is the name of the file?
+    options: []
+    answers:
+      - value: "$RANDOM"
+        answer_type: String
+        points_possible: 15
+    points_possible: 15
+  Question6: &question6
+    question_num: 6
+    type: question
+    content: In the file-practice directory, rename file_1.txt to renamed_file1.txt and copy file2.txt to copied_file2.txt. What is the output of 'wrangle_flag' if you run it as a command?
+    options: []
+    answers:
+      - value: "$RANDOM"
+        answer_type: Essay
+        points_possible: 15
+    points_possible: 15
+  Question7: &question7
+    question_num: 7
+    type: question
+    content: Use chmod to make 'you_cant_read_me.txt' in your home directory readable. What is the flag it contains?
+    options: []
+    answers: 
+      - value: "$RANDOM"
+        answer_type: String
+        points_possible: 10
+    points_possible: 10
+  Question8: &question8
+    question_num: 8
+    type: question
+    content: In the multimedia-content directory, which file is actually an OpenSSH RSA public key?
+    options: []
+    answers: 
+      - value: "staff_schedule2.docx"
+        answer_type: String
+        points_possible: 10
+    points_possible: 10
+  Question9: &question9
+    question_num: 9
+    type: question
+    content: |
+      What are the filenames (with extensions) of the six image files hidden somewhere within your home directory that contain top_secret in their name? 
+      Please enter the filesnames as a comma separated list, e.g. ("file1.jpg, file2.png, file3.gif").
+    options: []
+    answers:
+      - value: 4top_secret.jpg
+        answer_type: String
+        points_possible: 3
+      - value: do_not_share_top_secret.png
+        answer_type: String
+        points_possible: 3
+      - value: still_top_secret.gif
+        answer_type: String
+        points_possible: 3
+      - value: top_secret002.jpg
+        answer_type: String
+        points_possible: 3
+      - value: top_secret3.GIF
+        answer_type: String
+        points_possible: 3
+      - value: top_secret5meow.JPG
+        answer_type: String
+        points_possible: 3
+    points_possible: 18
+  Question10: &question10
+    question_num: 10
+    type: question
+    content: What is the very first line of "navigation_check.txt" in your home directory?
+    options: []
+    answers:
+      - value: "Begin Nav Check: Z94732"
+        answer_type: String
+        points_possible: 20
+    points_possible: 20
+  Question11: &question11
+    question_num: 11
+    type: question
+    content: What is the very last line of "navigation_check.txt" in your home directory?
+    options: []
+    answers:
+      - value: "Date: 8764.56.14"
+        answer_type: String
+        points_possible: 20
+    points_possible: 20
+  Question12: &question12
+    question_num: 12
+    type: question
+    content: |
+        Take a look at the format of "comms_record.txt" in your home directory. Use "`sort`" to reorder the records based on their Stardate.
+        You will need to look in the man page to find which option allows you to select a *field* to sort over. 
+        How many status updates were sent on date "2398.1"?
+    options: []
+    answers: 
+      - value: "4"
+        answer_type: String
+        points_possible: 10
+    points_possible: 10
+  Question13: &question13
+    question_num: 13
+    type: question
+    content: How many unique jobs are available on the ship according to "for_hire.txt" - Remember that `uniq` requires sorted input.
+    options: []
+    answers:
+      - value: "13"
+        answer_type: String
+        points_possible: 10
+    points_possible: 10
+  Question14: &question14
+    question_num: 14
+    type: question
+    content: How many unique *sender* ip addresses are in radio_logs.txt?
+    options: []
+    answers:
+      - value: "24"
+        answer_type: String
+        points_possible: 20
+    points_possible: 20
+  Question15: &question15
+    question_num: 15
+    type: question
+    content: |
+      In the "final-task" directory in your home directory, there is a file called "hidden-instructions.txt". 
+      Combine all the skills you've learned so far to find and follow the instructions inside.
+      
+    options: []
+    answers:
+      - value: "$RANDOM"
+        answer_type: String
+        points_possible: 15
+    points_possible: 15
+  Question16: &question16
+    question_num: 16
+    type: question
+    content: |
+      In the "permit_request" directory in your home directory, which file has an md5sum hash that ends with "e3e3"?:
+    options: []
+    answers:
+      - value: "req9A323.txt"
+        answer_type: String
+        points_possible: 20
+    points_possible: 20
+
+studentGuide:
+  chapters:
+    - chapter_num: 1
+      title: Welcome to Cybersec
+      content_array:
+        - *reading1
+        - *question1
+    - chapter_num: 2
+      title: Questions
+      content_array:
+        - *reading2
+        - *question2
+        - *question3
