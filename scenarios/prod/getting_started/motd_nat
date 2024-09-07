@@ -27,5 +27,7 @@ The answer to the first question is:
 FLAG{WELCOME}
 
 EOF
+
+echo 'alias sort="sort -b"' >> /etc/bash.bashrc
 echo 'export TERM=xterm-256color' >> /etc/bash.bashrc
 echo 'cat /etc/motd' >> /etc/bash.bashrc
