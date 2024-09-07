@@ -1,0 +1,6 @@
+Ship: Stellar Vortex
+Current Clearance: Level 3
+Affiliation: United Galactic Federation
+Requested Level: Level 5
+Reason: Access to restricted star lanes for urgent diplomatic mission
+Contact: Captain Elara Raine
