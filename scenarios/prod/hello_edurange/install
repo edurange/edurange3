@@ -7,20 +7,41 @@ while read line; do
 	bash /home/ubuntu/setup_home $line $2 $1
 done</usr/local/src/user_names.txt
 
-mkdir /usr/special/
-mkdir /usr/special/secrets/uncategorized
-cp /home/ubuntu/final-mission/U348bdks8shad0w_syn8dJF3hHDFj.jpg /usr/special/secrets/uncategorized
-cp /home/ubuntu/final-mission/.donthackme /usr/special/secrets/uncategorized
-chmod 666 /usr/special/secrets/uncategorizedU348bdks8shad0w_syn8dJF3hHDFj.jpg
-chmod 666 /usr/special/secrets/uncategorized/.donthackme
+echo "SUCCESS! Here is your answer: $3" > /usr/local/src/wrangled.txt
+chmod 444 /usr/local/src/wrangled.txt
+cp /home/ubuntu/python/wrangle_flag /bin/wrangle_flag
+chmod +x /bin/wrangle_flag
+
+
+cp /home/ubuntu/final-mission/xQrTData_operation_shad0w_N10034.txt /etc/xQrTData_operation_shad0w_N10034.txt
+chmod 666 /etc/xQrTData_operation_shad0w_N10034.txt
+
+mkdir /usr/special/secrets
+for run in {1..10}; do
+  rand_num=$(echo $((1 + $RANDOM % 10)))
+  filename="789b"
+  filename+="_$rand_num.txt"
+  mkdir /usr/special/secrets/$rand_num
+  chmod 555 /usr/special/secrets/$rand_num
+  secret_file="/usr/special/secrets/$rand_num/$filename"
+  if [ "$run" -eq "3" ]; then
+    echo "Here is your final an5wer: $4" >> $secret_file
+  else
+    echo "This is a decoy: $rand_num" >> $secret_file
+  fi
+
+  chmod 666 $secret_file
+done
+
 rm -rf /final-mission
-rm -rf /stuff
+rm -rf /multimedia-data
 rm -rf /toLearn
 rm -rf /images
 rm -rf /home/ubuntu/install
 rm -rf /home/ubuntu/setup_home
-rm -rf /home/ubuntu/student_home/stuff
+rm -rf /home/ubuntu/student_home/multimedia-data
 rm -rf /home/ubuntu/student_home/toLearn
 rm -rf /home/ubuntu/student_home/images
 rm -rf /home/ubuntu/student_home/final-mission
+rm -rf /home/ubuntu/final-task
 
