@@ -27,5 +27,5 @@ The answer to the first question is:
 FLAG{WELCOME}
 
 EOF
-
+echo 'export TERM=xterm-256color' >> /etc/bash.bashrc
 echo 'cat /etc/motd' >> /etc/bash.bashrc

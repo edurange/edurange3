@@ -43,5 +43,3 @@ rm -rf /home/ubuntu/student_home/toLearn
 rm -rf /home/ubuntu/student_home/images
 rm -rf /home/ubuntu/student_home/final-mission
 rm -rf /home/ubuntu/final-task
-
-sed -i "`wc -l < /etc/bash.bashrc`i\\export TERM=xterm-256color\\" /etc/bash.bashrc
