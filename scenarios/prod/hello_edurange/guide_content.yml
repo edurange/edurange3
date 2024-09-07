@@ -962,7 +962,7 @@ contentDefinitions:
     content: In the file-practice directory, rename file_1.txt to renamed_file1.txt and copy file2.txt to copied_file2.txt. What is the output of 'wrangle_flag' if you run it as a command?
     options: []
     answers:
-      - value: "FLAG{WR4NGL3R}"
+      - value: "$RANDOM"
         answer_type: Essay
         points_possible: 15
     points_possible: 15
