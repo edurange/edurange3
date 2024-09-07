@@ -74,6 +74,33 @@ contentDefinitions:
   Reading5: &reading5
     type: reading
     content: |
+      # Unix Filesystems
+      
+      Unix folders and files are arranged in a tree structure, where the root node is the beginning of a path to any file in the entire file system.
+      
+      - The “*root node*” (or “*root directory*”) of the filesystem is written with the slash character “`/`”.
+      - The leaves of the tree are the individual files.
+      - This means that if you want to search the entire file system, you need to start at `/`.
+      
+      It is common to represent the filesystem tree in a manner like this:
+      ```
+      /
+      ├── bin
+      ├── dev
+      ├── etc
+      ├── home
+      │   ├── user1
+      │   ├── user2
+      │   └── ...
+      ├── mnt
+      ├── root
+      ├── usr
+      │   ├── bin
+      │   └── ...
+      ├── var
+      └── ...
+      ```
+
       ### Exploring the Filesystem with ls
 
       Let's take a look at what files are in our current folder using "`ls`"
@@ -263,7 +290,7 @@ contentDefinitions:
   Reading11: &reading11
     type: reading
     content: |
-      # 3 File manipulation
+      # File manipulation
 
       So far we’ve looked at commands that browse and alter the filesystem, where data is saved. Next we’ll introduce some command line programs for reading and writing the data inside files, as well as some shell features that give us greater power over storing and manipulating that data.
 
