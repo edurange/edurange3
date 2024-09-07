@@ -15,7 +15,7 @@ chmod +x /bin/wrangle_flag
 cp /home/ubuntu/final-task/xQrTData_operation_shad0w_N10034.txt /etc/xQrTData_operation_shad0w_N10034.txt
 chmod 666 /etc/xQrTData_operation_shad0w_N10034.txt
 
-mkdir /usr/special/secrets
+mkdir -p /usr/special/secrets
 for run in {1..10}; do
   rand_num=$(echo $((1 + $RANDOM % 10)))
   filename="789b"
