@@ -4,10 +4,10 @@ set -euxo pipefail
 awk -F: '$3 >= 1000 && $1 != "nobody" {print $1}' /etc/passwd > /usr/local/src/user_names.txt
 
 while read line; do
-	bash /home/ubuntu/setup_home $line $2 $1
+	bash /home/ubuntu/setup_home $line $1 $3
 done</usr/local/src/user_names.txt
 
-echo "SUCCESS! Here is your answer: $3" > /usr/local/src/wrangled.txt
+echo "SUCCESS! Here is your answer: $2" > /usr/local/src/wrangled.txt
 chmod 444 /usr/local/src/wrangled.txt
 cp /home/ubuntu/python/wrangle_flag /bin/wrangle_flag
 chmod +x /bin/wrangle_flag

@@ -2,8 +2,8 @@
 set -euxo pipefail
 
 player=$1
-super_secret=$2
-follow_me_filename=$3
+follow_me_filename=$2
+super_secret=$3
 
 studentDIR=/home/$player
 
@@ -42,10 +42,6 @@ chown -R $player:$player $studentDIR/multimedia-data
 chmod 550 $studentDIR/multimedia-data
 chmod 440 $studentDIR/multimedia-data/*
 
-echo "SECRET CODE: $super_secret I wonder what it's for?" > $studentDIR/multimedia-data/imatextfiletoo.txt
-chown -R $player:$player $studentDIR/multimedia-data/imatextfiletoo.txt
-chmod 440 $studentDIR/multimedia-data/imatextfiletoo.txt
-
 # More setting up for the scenario
 mkdir $studentDIR/permit_requests
 cp /home/ubuntu/student_home/permit_requests/* $studentDIR/permit_requests
@@ -53,7 +49,7 @@ chown -R $player:$player $studentDIR/permit_requests
 chmod 550 $studentDIR/permit_requests
 chmod 440 $studentDIR/permit_requests/*
 
-echo -e "SECRET CODE: FLAG{$super_secret}" > $studentDIR/you_cant_read_me.txt
+echo -e "SUCCESS! ANSWER: $super_secret" > $studentDIR/you_cant_read_me.txt
 chown -R $player:$player $studentDIR/you_cant_read_me.txt
 chmod 000 $studentDIR/you_cant_read_me.txt
 
