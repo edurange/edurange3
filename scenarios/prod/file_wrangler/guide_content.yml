@@ -613,6 +613,8 @@ contentDefinitions:
     content: |
       What are the filenames (with extensions) of the six image files hidden somewhere within your home directory that contain top_secret in their name? 
       Please enter the filesnames as a comma separated list, e.g. ("file1.jpg, file2.png, file3.gif").
+
+      THIS QUESTION IS CURRENTLY BROKEN
     options: []
     answers:
       - value: 4top_secret.jpg
