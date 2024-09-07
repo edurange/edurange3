@@ -1067,11 +1067,12 @@ contentDefinitions:
     question_num: 15
     type: question
     content: |
-      Somewhere on your system outside of your home directory, there is suspected to be a secret file. It contains "shad0w_syn" in its name. 
-      what is the full absolute path to the directory it is in? (Just the directory, don't include the filename)
+      In the "final-task" directory in your home directory, there is a file called "hidden-instructions.txt". 
+      Combine all the skills you've learned so far to find and follow the instructions inside.
+      
     options: []
     answers:
-      - value: "/usr/special/secrets/uncategorized/"
+      - value: "$RANDOM"
         answer_type: String
         points_possible: 15
     points_possible: 15
