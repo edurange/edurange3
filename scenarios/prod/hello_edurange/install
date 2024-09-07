@@ -17,7 +17,7 @@ chmod 666 /etc/xQrTData_operation_shad0w_N10034.txt
 
 mkdir -p /usr/special/secrets
 for run in {1..10}; do
-  rand_num=$(echo $((1 + $RANDOM % 10)))
+  rand_num=$(echo $RANDOM)
   filename="789b"
   filename+="_$rand_num.txt"
   mkdir /usr/special/secrets/$rand_num
