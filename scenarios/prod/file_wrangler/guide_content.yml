@@ -84,7 +84,8 @@ contentDefinitions:
       ```
 
       You should see something similar to:
-      ````
+      
+      ```
       bar               followMe         navigation_check.txt  you_cant_read_me.txt
       comms_record.txt  for_hire.txt     permit_requests
       file-practice     i                radio_logs.txt
