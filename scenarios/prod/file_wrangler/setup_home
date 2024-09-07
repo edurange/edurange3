@@ -75,10 +75,6 @@ cp /home/ubuntu/student_home/for_hire.txt $studentDIR/for_hire.txt
 chown -R $player:$player $studentDIR/for_hire.txt
 chmod 660 $studentDIR/for_hire.txt
 
-cp /home/ubuntu/student_home/galley_manifest.txt $studentDIR/galley_manifest.txt
-chown -R $player:$player $studentDIR/galley_manifest.txt
-chmod 660 $studentDIR/galley_manifest.txt
-
 cp /home/ubuntu/student_home/navigation_check.txt $studentDIR/navigation_check.txt
 chown -R $player:$player $studentDIR/navigation_check.txt
 chmod 660 $studentDIR/navigation_check.txt
