@@ -28,8 +28,8 @@ chmod -R 550 $studentDIR/toLearn
 mkdir $studentDIR/file-practice
 cp /home/ubuntu/student_home/file-practice/* $studentDIR/file-practice
 chown -R $player:$player $studentDIR/file-practice
-chmod 550 $studentDIR/file-practice
-chmod 660 $studentDIR/file-practice/*
+chmod 770 $studentDIR/file-practice
+chmod 440 $studentDIR/file-practice/*
 
 mkdir $studentDIR/final-task
 cp /home/ubuntu/student_home/final-task/* $studentDIR/final-task
@@ -105,6 +105,6 @@ chmod 660 $studentDIR/.network-diagram.jpg
 
 cp /home/ubuntu/student_home/.station-schematics $studentDIR/.station-schematics
 chown -R $player:$player $studentDIR/.station-schematics
-chmod 660 studentDIR/.station-schematics
+chmod 660 $studentDIR/.station-schematics
 
 find $studentDIR -type d -print0 | xargs -0 chmod +x
