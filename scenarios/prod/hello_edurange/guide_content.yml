@@ -1040,13 +1040,13 @@ contentDefinitions:
     options: []
     answers: 
       - value: "100"
-      - answer_type: String
-      - points_possible: 10
+        answer_type: String
+        points_possible: 10
     points_possible: 10
   Question13: &question13
     question_num: 13
     type: question
-    content: How many unique jobs are available on the ship according to "assignments.txt" - Remember that `uniq` requires sorted input.
+    content: How many unique jobs are available on the ship according to "for_hire.txt" - Remember that `uniq` requires sorted input.
     options: []
     answers:
       - value: "13"
@@ -1056,7 +1056,7 @@ contentDefinitions:
   Question14: &question14
     question_num: 14
     type: question
-    content: How many unique *Sender* ip addresses are in radio_logs.txt?
+    content: How many unique *sender* ip addresses are in radio_logs.txt?
     options: []
     answers:
       - value: "24"
@@ -1080,7 +1080,7 @@ contentDefinitions:
     question_num: 16
     type: question
     content: |
-      In the "permit_request" directory in your home directory, which file has an md5sum hash that begins with "c3c9" and ends with "e3e3"?:
+      In the "permit_request" directory in your home directory, which file has an md5sum hash that ends with "e3e3"?:
     options: []
     answers:
       - value: "req9A323.txt"
@@ -1178,5 +1178,4 @@ studentGuide:
     - chapter_num: 12
       title: Finale
       content_array:
-        - *reading20
         - *question15
