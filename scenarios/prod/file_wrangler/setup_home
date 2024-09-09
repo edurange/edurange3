@@ -8,8 +8,8 @@ super_secret=$3
 studentDIR=/home/$player
 
 # imageLoc is an array used to disperse images to multiple locations that I set up later
-imageLoc=($studentDIR/i/b/e/j/l/s/v/ $studentDIR/i/a/g/kitty/m/q/w/ $studentDIR/i/c/e/h/k/ $studentDIR/i/a/e/kitty/ $studentDIR/i/z/g/j/l/o/w/ $studentDIR/i/d/f/kitty/k/n/t/)
-imageName=(4top_secret.jpg do_not_share_top_secret.gif still_top_secret.gif top_secret002.jpg top_secret3.GIF top_secret5meow.JPG)
+imageLoc=($studentDIR/i/b/e/j/l/s/v/ $studentDIR/i/a/g/kitty/m/q/w/ $studentDIR/i/c/e/h/k/ $studentDIR/i/a/e/kitty/ $studentDIR/i/z/g/j/l/o/w/)
+imageName=(4top_secret.jpg do_not_share_top_secret.png still_top_secret.gif top_secret002.jpg top_secret5meow.JPG)
 
 # Making directories and chmoding them for the scenario
 mkdir -p $studentDIR/followMe/keepGOING/another\ folder\ wee/im.another.folder/WOOT/dontstop/okYouAreHERE\!

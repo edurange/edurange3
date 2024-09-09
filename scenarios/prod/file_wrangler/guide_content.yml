@@ -269,7 +269,7 @@ contentDefinitions:
 
       To find out what a **file** really is regardless of its extension, you could examine the byte data inside, but `file` can often do this for us automatically.
 
-      Try using "`file`" to inspect the files in the "multimedia-content" directory.
+      Try using "`file`" to inspect the files in the "multimedia-data" directory.
   
   Reading10: &reading10
     type: reading
@@ -611,31 +611,35 @@ contentDefinitions:
     question_num: 9
     type: question
     content: |
-      What are the filenames (with extensions) of the six image files hidden somewhere within your home directory that contain top_secret in their name? 
-      Please enter the filesnames as a comma separated list, e.g. ("file1.jpg, file2.png, file3.gif").
-
-      THIS QUESTION IS CURRENTLY BROKEN
+      What is the full filename of the image containing top_secret, with the extension of .png?
     options: []
     answers:
-      - value: 4top_secret.jpg
-        answer_type: String
-        points_possible: 3
       - value: do_not_share_top_secret.png
         answer_type: String
-        points_possible: 3
+        points_possible: 6
+    points_possible: 6
+  Question17: &question17
+    question_num: 17
+    type: question
+    content: |
+      What is the full filename of the image containing top_secret, with the extension of .gif?
+    options: []
+    answers:
       - value: still_top_secret.gif
         answer_type: String
-        points_possible: 3
-      - value: top_secret002.jpg
-        answer_type: String
-        points_possible: 3
-      - value: top_secret3.GIF
-        answer_type: String
-        points_possible: 3
+        points_possible: 6
+    points_possible: 6
+  Question18: &question18
+    question_num: 18
+    type: question
+    content: |
+      What is the full filename of the file containing 'top_secret' and 'meow'?
+    options: []
+    answers:
       - value: top_secret5meow.JPG
         answer_type: String
-        points_possible: 3
-    points_possible: 18
+        points_possible: 6
+    points_possible: 6
   Question10: &question10
     question_num: 10
     type: question
@@ -734,6 +738,8 @@ studentGuide:
         - *question7
         - *question8
         - *question9
+        - *question17
+        - *question18
         - *question16
         - *question10
         - *question11
@@ -763,6 +769,8 @@ studentGuide:
         - *question8
         - *reading10
         - *question9
+        - *question17
+        - *question18
     - chapter_num: 5
       title: File Manipulation
       content_array:
