@@ -120,14 +120,13 @@ def identify_state(name, state):
     addresses = {}
     c_names = []
     name = "".join(e for e in name if e.isalnum())
+    
     if os.path.isdir(os.path.join("./scenarios/tmp/", name)):
 
         try:
-            state_file = open("./scenarios/tmp/" + name + "/network/terraform.tfstate", "r")
             container_state_file = open("./scenarios/tmp/" + name + "/container/terraform.tfstate", "r")
             
             try:
-                network_data = json.load(state_file)
                 container_data = json.load(container_state_file)
             except json.decoder.JSONDecodeError:
                 logger.error("error in identify_state fucntion in scen_utils")
@@ -138,8 +137,7 @@ def identify_state(name, state):
                 if c != "string" and c not in c_names:
                     c_names.append(c)
 
-            public_ips = item_generator(network_data, "ip_address_public")
-            logger.info('**network_data*:', network_data)
+            public_ips = item_generator(container_data, "ip_address_public")
             miss = 0
             for i, a in enumerate(list(public_ips)):
                 if a != "string": addresses[c_names[i - miss]] = a
