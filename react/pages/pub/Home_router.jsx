@@ -33,9 +33,9 @@ function Home_router() {
   const [userData_state, set_userData_state] = useState();
   const [chatData_state, set_chatData_state] = useState([]);
   const [login_state, set_login_state] = useState(false);
+  const [responseData_state, set_responseData_state] = useState({});
   const [chatSocket_state, set_chatSocket_state] = useState();
   const {
-    errorModal_state, set_errorModal_state,
     desiredNavMetas_state, set_desiredNavMetas_state,
     clipboard_state, set_clipboard_state
 } = useContext(AppContext);
@@ -57,7 +57,7 @@ function Home_router() {
     if (roleToUse === "instructor") {roleToUse = 'staff'}
 
     if (!(desiredNavStub in navArrays[roleToUse])) {
-      console.error('navStub not found in role navItemData as key');
+      // console.error('navStub not found in role navItemData as key');
       return;
     }
 
@@ -86,6 +86,7 @@ function Home_router() {
         desiredNavMetas_state, set_desiredNavMetas_state,
         chatSocket_state, set_chatSocket_state,
         chatData_state, set_chatData_state,
+        responseData_state, set_responseData_state
       }}>
         <SessionKeeper/>
         <Frame_head />

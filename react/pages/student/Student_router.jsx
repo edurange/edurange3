@@ -18,7 +18,6 @@ function Student_router() {
         message: "something"
     }]
     const { login_state, userData_state, set_chatData_state, chatData_state, } = useContext(HomeRouter_context);
-    const [responseData_state, set_responseData_state] = useState({});
     const [chatObjs_UL_state, set_chatObjs_UL_state] = useState([]); // unordered array of all chats
     const [aliasDict_state, set_aliasDict_state] = useState({});
 
@@ -135,7 +134,6 @@ function Student_router() {
                             guideBook_state, set_guideBook_state,
                             notifsArray_state, set_notifsArray_state,
                             socket_ref,
-                            responseData_state, set_responseData_state,
                             chatObjs_UL_state, set_chatObjs_UL_state,
                             aliasDict_state
                         }}>

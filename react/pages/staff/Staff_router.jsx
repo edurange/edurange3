@@ -31,6 +31,7 @@ function Staff_router() {
     const [scenarioDetail_state, set_scenarioDetail_state] = useState({})
     const [userDetail_state, set_userDetail_state] = useState({})
     const [tempUsers_state, set_tempUsers_state] = useState([]);
+    const [responseData_state, set_responseData_state] = useState([]);
     const [selectedMessage_state, set_selectedMessage_state] = useState(null);
     const [logs_state, set_logs_state] = useState({
         bash: [],
@@ -190,7 +191,8 @@ function Staff_router() {
                     logs_state, set_logs_state,
                     taAssignments_state, set_taAssignments_state,
                     taDict_state, set_taDict_state,
-                    aliasDict_state
+                    aliasDict_state,
+                    responseData_state, set_responseData_state
                 }}>
 
                     <Routes>

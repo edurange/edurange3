@@ -9,6 +9,7 @@ import './Staff_Dash.css';
 import Staff_ScenGrid from '../scenarios/Staff_ScenGrid.jsx';
 import Staff_GroupsGrid from '../groups/Staff_GroupsGrid.jsx';
 import Staff_UsersGrid from '../users/Staff_UsersGrid.jsx';
+import { HomeRouter_context } from '../../pub/Home_router.jsx';
 
 function Staff_Dash() {
 
@@ -17,7 +18,13 @@ function Staff_Dash() {
         set_scenarioDetail_state, 
         tempUsers_state } = useContext(InstructorRouter_context);
 
-    if (!scenarios_state) { return <></> }
+    const {
+        userData_state } = useContext(HomeRouter_context);
+
+    if (!scenarios_state || !userData_state) { return <></> }
+
+    console.log(userData_state)
+    
 
     return (
         <div className='staff-dash-frame'>
@@ -34,7 +41,7 @@ function Staff_Dash() {
                     <Staff_GroupsGrid />
                 </div>
 
-                <div className='staff-dash-section'>
+                {userData_state?.is_admin ? (<div className='staff-dash-section'>
                     <Placard 
                         placard_text='SCENARIOS' 
                         textSize={'large'}
@@ -42,7 +49,17 @@ function Staff_Dash() {
                         is_button={true} />
                     <CreateScenario />
                     <Staff_ScenGrid set_scenarioDetail_state={set_scenarioDetail_state} />
-                </div>
+                </div>) : (<></>)}
+
+                {/* <div className='staff-dash-section'>
+                    <Placard 
+                        placard_text='SCENARIOS' 
+                        textSize={'large'}
+                        navMetas={['/staff/scenarios', 'dash']} 
+                        is_button={true} />
+                    <CreateScenario />
+                    <Staff_ScenGrid set_scenarioDetail_state={set_scenarioDetail_state} />
+                </div> */}
 
                 <div className='staff-dash-section'>
                     <Placard 
