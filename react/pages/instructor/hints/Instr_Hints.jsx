@@ -7,6 +7,7 @@ import { ChatMessage } from '../../../modules/utils/chat_modules';
 import './Instr_Hints.css';
 
 const Instr_Hints = () => {
+  
   const { socket_ref, scenarios_state, users_state, groups_state } = useContext(InstructorRouter_context);
   const { userData_state } = useContext(HomeRouter_context);
   const {
@@ -17,6 +18,9 @@ const Instr_Hints = () => {
     clipboard_state,
     set_clipboard_state
   } = useContext(AppContext);
+
+
+
 
   const [hint_state, set_hint_state] = useState('');
   const [student_bash_logs_state, set_student_bash_logs_state] = useState('');
@@ -36,23 +40,33 @@ const Instr_Hints = () => {
 
   const [userIDinput, set_userIDinput] = useState('');
   const [loading, set_loading] = useState(false);
-  const [elapsedTime, setElapsedTime] = useState(0);
+  const [elapsedTime, set_elapsedTime] = useState(0);
   const [error, set_error] = useState('');
   const [isEditing, set_isEditing] = useState(false);
   const [newHint, set_newHint] = useState('');
-  const [checked, setChecked] = React.useState(false);
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [isClicked, setIsClicked] = useState(false);
-  
+  const [checked, set_checked] = React.useState(false);
+  const [isExpanded, set_isExpanded] = useState(false);
+  const [isClicked, set_isClicked] = useState(false);
+
+  const [experimentalConfirmLock, set_experimentalConfirmLock] = useState(() => {
+    const localStorageValue = localStorage.getItem('experimentalFeatureLockValue');
+    return localStorageValue ? JSON.parse(localStorageValue) : true;
+  });
+
+  useEffect(() => {
+
+    localStorage.setItem('experimentalFeatureLockValue', JSON.stringify(experimentalConfirmLock));
+  }, [experimentalConfirmLock]);
+
 
   const toggleExpand = () => {
-      setIsExpanded(!isExpanded);
-      setIsClicked(!isClicked);
+      set_isExpanded(!isExpanded);
+      set_isClicked(!isClicked);
   };
   
   
   const handleChangeCheck = () => {
-    setChecked(!checked);
+    set_checked(!checked);
   };
 
   const getStudentLogs = async() => {
@@ -194,6 +208,7 @@ const Instr_Hints = () => {
     }
   };
 
+
   const handleSaveHint = () => {
     set_hint_state(newHint); 
     set_isEditing(false); 
@@ -206,6 +221,11 @@ const Instr_Hints = () => {
   const handleCancelEdit = () => {
     set_newHint(hint_state); 
     set_isEditing(false); 
+  };
+
+  const handleOkExperimentalFeature = () => {
+    set_experimentalConfirmLock(false);
+    set_experimentalConfirmLockInLocalStorage();
   };
 
   useEffect(() => {
@@ -221,21 +241,25 @@ const Instr_Hints = () => {
     }
   }, [hint_state, isEditing]);
 
+
+
   useEffect(() => {
     let timer;
     
     if (loading) {
       timer = setInterval(() => {
-        setElapsedTime(prevTime => prevTime +1);
+        set_elapsedTime(prevTime => prevTime +1);
       }, 1000);
     }
     else {
-      setElapsedTime(0);
+      set_elapsedTime(0);
     }
       return () => {
         clearInterval(timer);
       };
   }, [loading]);
+
+  
 
 
   const LoadingOverlay = () => (
@@ -250,6 +274,18 @@ const Instr_Hints = () => {
         <span className="elapsed-time-counter"> Elapsed time: {elapsedTime} seconds </span>
       <div>
         <button onClick={cancelHint} className="cancel-hint-button">CANCEL HINT 🚫 </button>
+      </div>
+    </div>
+  );
+
+  const ExperimentalFeatureConfirmLockOverlay = () => (
+    <div className="experimental-feature-confirm-lock-overlay">
+      <div>
+        <span>EXPERIMENTAL FEATURE AHEAD: <br></br>
+       EXPECT CRASHES, WOULD YOU LIKE TO CONTINUE? </span>
+      </div>
+      <div>
+        <button onClick={handleOkExperimentalFeature} className="ok-button"> 🆗 </button>
       </div>
     </div>
   );
@@ -294,17 +330,18 @@ const Instr_Hints = () => {
   }
 
   return (
-    <div className="hints-dashboard-ui">
     
+    <div className="hints-dashboard-ui">
+      {experimentalConfirmLock && <ExperimentalFeatureConfirmLockOverlay/>}
       {loading && <LoadingOverlay />}
       
       <div className="pageHeader">
-        <h1 className="pageTitle">Hints💡</h1>
-        <h4 className="pageSubtitle">An A.I Powered Dashboard for Instructors</h4>
+        <h1 className="pageTitle">EDUHints💡</h1>
+        <h4 className="pageSubtitle">A Machine Learning Powered Dashboard for Instructors</h4>
         
       <div className="dropdowns-container">
         <div className="scenario-select">
-          <label htmlFor="scenarioSelectLabel">Scenario:</label>
+          <label htmlFor="scenarioSelectLabel">Group:</label>
           <select
             id="scenarioSelect"
             value={selectedScenario_state ? selectedScenario_state.id : ""}
@@ -395,8 +432,7 @@ const Instr_Hints = () => {
             type="checkbox"
             checked={checked}
             onChange={handleChangeCheck}
-          />Use scenario context for generation? <br/> (Enable for better hints that take longer to generate)
-        </label>
+          /> Enable scenario context</label>
       </div>          
         <button onClick={requestHint} className="request-hint-button">Generate Hint ✨</button>
       </div>
