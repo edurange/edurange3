@@ -20,7 +20,6 @@ from py_flask.database.models import Scenarios, ScenarioGroups, Responses, BashH
 from py_flask.utils.csv_utils import readCSV
 from py_flask.config.extensions import db
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.orm import Session
 
 # Create a custom logger
 logger = get_task_logger(__name__)
@@ -133,7 +132,12 @@ def create_scenario_task(self, scen_name, scen_type, students_list, grp_id, scen
             with open("guide_content.yml", "w") as outfile:
                 yaml.dump(content, outfile, indent=4)
 
-            lowest_avail_octet = claimOctet()
+            try:
+                lowest_avail_octet = claimOctet()
+            except ValueError as e:
+                logger.error(f"Error claiming octet: {str(e)}")
+                return {"result": "error", "message": str(e)}
+            
 
             try:
                 find_and_copy_template(scen_type, "main")
@@ -158,10 +162,14 @@ def create_scenario_task(self, scen_name, scen_type, students_list, grp_id, scen
                     s_files[i], g_files[i], u_files[i], flags, c_names, logger
                 )
 
-            scenario.update(
-                status=0,
-                octet=lowest_avail_octet
-            )
+            with app.app_context():
+                scenario = Scenarios.query.filter_by(id=scen_id).first()
+                if scenario:
+                    scenario.status = 0
+                    scenario.octet = lowest_avail_octet
+                    db.session.commit()
+                else:
+                    logger.error(f"No scenario found with id {scen_id}")
 
             os.chdir("../container")
             os.system("terraform init")
