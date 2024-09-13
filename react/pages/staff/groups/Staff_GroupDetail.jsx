@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useContext } from 'react';
-import { InstructorRouter_context } from '../Staff_router';
+import { StaffRouter_context } from '../Staff_router';
 import { useParams } from 'react-router-dom';
 import Placard from '@components/Placard';
 import Table from '@components/Table';
@@ -10,7 +10,7 @@ import '@assets/css/tables.css';
 function Staff_GroupDetail() {
 
     const { groupID } = useParams();
-    const { groups_state, set_groups_state, users_state, scenarios_state } = useContext(InstructorRouter_context);
+    const { groups_state, set_groups_state, users_state, scenarios_state } = useContext(StaffRouter_context);
 
     let thisGroup = groups_state
         .filter(group => group.id === parseInt(groupID))

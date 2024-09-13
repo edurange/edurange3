@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useState, useContext } from 'react';
-import { InstructorRouter_context } from '../Staff_router';
+import { StaffRouter_context } from '../Staff_router';
 import '../dashboard/Staff_Dash.css';
 import '@assets/css/tables.css';
 
@@ -12,7 +12,7 @@ function CreateGroup() {
     const {
         set_groups_state,
         set_tempUsers_state
-    } = useContext(InstructorRouter_context);
+    } = useContext(StaffRouter_context);
     const [buttonDisabled_state, set_buttonDisabled_state] = useState(true);
 
     const handle_newGroup_name_change = (event) => {

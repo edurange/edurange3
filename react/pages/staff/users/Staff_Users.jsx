@@ -1,12 +1,12 @@
 import React, { useContext } from 'react';
 import Placard from '@components/Placard';
-import { InstructorRouter_context } from '../Staff_router';
+import { StaffRouter_context } from '../Staff_router';
 import '@assets/css/tables.css';
 import Staff_UsersGrid from './Staff_UsersGrid';
 
 function Staff_Users() {
 
-    const { groups_state } = useContext(InstructorRouter_context);
+    const { groups_state } = useContext(StaffRouter_context);
     if (!groups_state) { return <></> }
 
     return (

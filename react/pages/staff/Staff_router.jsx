@@ -7,7 +7,6 @@ import Staff_GroupDetail from './groups/Staff_GroupDetail';
 import Frame_side from '../../frame/sidenav/Frame_side';
 import Staff_Scenarios from './scenarios/Staff_Scenarios';
 import Staff_Users from './users/Staff_Users';
-import Staff_ScenDetail from './scenarios/Staff_ScenDetail';
 import Staff_UserDetail from './users/Staff_UserDetail';
 import { HomeRouter_context } from '../pub/Home_router';
 import Staff_LogsViewer from './logs_dir/Staff_LogsViewer';
@@ -15,7 +14,7 @@ import Instr_Hints from './hints/Instr_Hints';
 import Chat_Staff from './chat/Chat_Staff';
 import Scenario_controller from '../student/scenarios/Scenario_controller';
 
-export const InstructorRouter_context = React.createContext();
+export const StaffRouter_context = React.createContext();
 
 function Staff_router() {
 
@@ -175,7 +174,7 @@ function Staff_router() {
 
                 <Frame_side />
 
-                <InstructorRouter_context.Provider value={{
+                <StaffRouter_context.Provider value={{
 
                     users_state, set_users_state,
                     groups_state, set_groups_state,
@@ -209,7 +208,7 @@ function Staff_router() {
                         <Route path="/logs/" element={<Staff_LogsViewer />} />
                         <Route path="/hints/" element={<Instr_Hints />} />
                     </Routes>
-                </InstructorRouter_context.Provider>
+                </StaffRouter_context.Provider>
 
             </div>
         </div>

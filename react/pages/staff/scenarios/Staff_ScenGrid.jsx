@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useContext } from 'react';
-import { InstructorRouter_context } from '../Staff_router';
+import { StaffRouter_context } from '../Staff_router';
 import { HomeRouter_context } from '@pub/Home_router';
 import edurange_icons from '../../../modules/ui/edurangeIcons';
 import { AppContext } from '../../../config/AxiosConfig';
@@ -24,7 +24,7 @@ function Staff_ScenGrid() {
     const {
         groups_state,
         scenarios_state, set_scenarios_state
-    } = useContext(InstructorRouter_context);
+    } = useContext(StaffRouter_context);
     const {
         desiredNavMetas_state, set_desiredNavMetas_state,
     } = useContext(AppContext);

@@ -1,6 +1,6 @@
 
 import React, { useContext } from 'react';
-import { InstructorRouter_context } from '../Staff_router';
+import { StaffRouter_context } from '../Staff_router';
 import Copy_button_flex from '@components/Copy_button_flex';
 import '../scenarios/Staff_TableGrid.css'; 
 import axios from 'axios';
@@ -10,7 +10,7 @@ import { AppContext } from '../../../config/AxiosConfig';
 function Staff_GroupsGrid() {
     const {
         groups_state, set_groups_state
-    } = useContext(InstructorRouter_context);
+    } = useContext(StaffRouter_context);
 
     const {
         errorModal_state, set_errorModal_state,

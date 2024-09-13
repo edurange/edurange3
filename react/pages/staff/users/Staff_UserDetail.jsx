@@ -1,7 +1,7 @@
 
 import React, { useContext } from 'react';
 import { useParams } from 'react-router-dom';
-import { InstructorRouter_context } from '../Staff_router';
+import { StaffRouter_context } from '../Staff_router';
 import '../chat/Chat_Staff.css';
 import Chat_Staff from '../chat/Chat_Staff';
 
@@ -12,7 +12,7 @@ function Staff_UserDetail() {
         users_state,
         chatObjs_UL_state,
         channelAccess_state
-    } = useContext(InstructorRouter_context);
+    } = useContext(StaffRouter_context);
 
     const thisUser = users_state.filter(user => user.id === parseInt(userID))?.[0]
                         
