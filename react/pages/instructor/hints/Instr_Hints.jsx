@@ -7,7 +7,7 @@ import { ChatMessage } from '../../../modules/utils/chat_modules';
 import './Instr_Hints.css';
 
 const Instr_Hints = () => {
-  
+
   const { socket_ref, scenarios_state, users_state, groups_state } = useContext(InstructorRouter_context);
   const { userData_state } = useContext(HomeRouter_context);
   const {
@@ -19,9 +19,6 @@ const Instr_Hints = () => {
     set_clipboard_state
   } = useContext(AppContext);
 
-
-
-
   const [hint_state, set_hint_state] = useState('');
   const [student_bash_logs_state, set_student_bash_logs_state] = useState('');
   const [student_chat_logs_state, set_student_chat_logs_state] = useState('');
@@ -32,11 +29,7 @@ const Instr_Hints = () => {
     name: 'n/a',
     scenario_type: 'n/a'
   });
-  const [selectedUser_state, set_selectedUser_state] = useState({
-    id: -1,
-    name: 'n/a',
-    group: 'n/a'
-  });
+  const [selectedUser_state, set_selectedUser_state] = useState('');
 
   const [userIDinput, set_userIDinput] = useState('');
   const [loading, set_loading] = useState(false);
@@ -44,30 +37,118 @@ const Instr_Hints = () => {
   const [error, set_error] = useState('');
   const [isEditing, set_isEditing] = useState(false);
   const [newHint, set_newHint] = useState('');
-  const [checked, set_checked] = React.useState(false);
-  const [isExpanded, set_isExpanded] = useState(false);
-  const [isClicked, set_isClicked] = useState(false);
-
-  const [experimentalConfirmLock, set_experimentalConfirmLock] = useState(() => {
+  const [checkForDisableScenarioContext, set_checked_for_disable_scenario_context] = React.useState(false);
+  const [checkForGPUDisable, set_checked_for_gpu_disable] = React.useState(false);
+  const [isExpandedLogs, set_isExpandedLogs] = useState(false);
+  const [isExpandedSettings, set_isExpandedSettings] = useState(false);
+  const [isClickedLogs, set_isClickedLogs] = useState(false);
+  const [isClickedSettings, set_isClickedSettings] = useState(false);
+  const [experimentalConfirmLock, set_experimentalConfirmLock] = React.useState(() => {
     const localStorageValue = localStorage.getItem('experimentalFeatureLockValue');
     return localStorageValue ? JSON.parse(localStorageValue) : true;
   });
 
-  useEffect(() => {
+  const [cpu_resources_detected, set_cpu_resources_detected] = useState('');
+  const [gpu_resources_detected, set_gpu_resources_detected] = useState('');
 
+  useEffect(() => {
     localStorage.setItem('experimentalFeatureLockValue', JSON.stringify(experimentalConfirmLock));
   }, [experimentalConfirmLock]);
 
 
-  const toggleExpand = () => {
-      set_isExpanded(!isExpanded);
-      set_isClicked(!isClicked);
+  const getResources = async() => {
+    try {
+      const reqJSON = { };
+
+      const response = await axios.post(
+        "/get_resources",
+        reqJSON,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        }
+      );
+
+      set_cpu_resources_detected(response.data.cpu_resources_detected)
+      set_gpu_resources_detected(response.data.gpu_resources_detected);
+      
+
+    } catch (error) {
+      console.error("Error fetching resources:", error);
+      set_error('Failed to fetch resources.');
+    }
+  };
+
+  useEffect(() => {
+    getResources();
+  }, []);
+
+
+  const [cpu_resources_selected, set_cpu_resources_selected] = useState(Number(cpu_resources_detected));
+  const [gpu_resources_selected, set_gpu_resources_selected] = useState(Number(gpu_resources_detected));
+
+  const handleCPUSliderChange = (e) => {
+    const newValue = e.target.value;
+    set_cpu_resources_selected(newValue);
   };
   
-  
-  const handleChangeCheck = () => {
-    set_checked(!checked);
+
+  const reinitializeModelWithNewSettings = async() => {
+    try {
+      const reqJSON = {
+        this_cpu_resources_selected: cpu_resources_selected,
+        this_gpu_resources_selected: gpu_resources_selected,
+        this_scenario_context_disabled: checkForDisableScenarioContext
+      };
+
+      console.log("Sending this data:", reqJSON);
+
+      const response = await axios.post(
+        "/init_model",
+        reqJSON,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        }
+      );
+
+    } catch (error) {
+      console.error("Error reinitalizing model:", error);
+      set_error('Failed to reinitialize model with new settings.');
+    }
   };
+
+
+  const toggleExpandLogs = () => {
+      set_isExpandedLogs(!isExpandedLogs);
+      set_isClickedLogs(!isClickedLogs);
+  };
+
+  const toggleExpandSettings = () => {
+    set_isExpandedSettings(!isExpandedSettings);
+    set_isClickedSettings(!isClickedSettings);
+};
+  
+  
+  const handleChangeCheckForDisableScenarioContext = () => {
+    set_checked_for_disable_scenario_context(!checkForDisableScenarioContext);
+  };
+
+  const handleChangeCheckForGPUDisable = () => {
+    set_checked_for_gpu_disable(!checkForGPUDisable);
+  };
+
+  const handleChangeCPUResourcesSelected = (e) => {
+    set_cpu_resources_selected(e.target.value);
+  };
+
+  const handleChangeGPUResourcesSelected = (e) => {
+    set_gpu_resources_selected(e.target.value);
+  };
+
+  
 
   const getStudentLogs = async() => {
     set_error('');
@@ -128,7 +209,7 @@ const Instr_Hints = () => {
       const reqJSON = {
         scenario_name: selectedScenario_state.scenario_type.toLowerCase(),
         student_id: selectedUser_state.id,
-        enable_scenario_context: checked,
+        enable_scenario_context: checkForDisableScenarioContext,
       };
 
       const response = await axios.post(
@@ -229,7 +310,7 @@ const Instr_Hints = () => {
   };
 
   useEffect(() => {
-    if (selectedUser_state) {
+    if (selectedUser_state != '') {
       getStudentLogs();
     }
   }, [selectedUser_state]); 
@@ -390,51 +471,106 @@ const Instr_Hints = () => {
         </div>
       </div>
       <div className="expandable-logs-container">
-        <button onClick={toggleExpand} className={`student-logs-expand-button ${isClicked ? 'clicked' : ''}`}>Student Logs 📟 </button>
-          {isExpanded && (
-            <div className="expandable-content">
-              <label htmlFor="student-bash-logs" className="textarea-label">Bash Logs:</label>
-              <textarea
-                id="student-bash-logs"
-                  value={student_bash_logs_state}
-                  rows={1}
-                  readOnly 
-                  aria-live="polite"
-                  className="logs-textarea"
-                  placeholder="Student bash logs used for hint generation will appear here"
-              />
-              <label htmlFor="student-chat-logs" className="textarea-label">Chat Logs:</label>
-              <textarea
-                id="student-chat-logs"
-                value={student_chat_logs_state}
+        <button onClick={toggleExpandLogs} className={`student-logs-expand-button ${isClickedLogs ? 'clicked' : ''}`}>Student Logs 📟 </button>
+        {isExpandedLogs && (
+          <div className="expandable-logs-content">
+            <label htmlFor="student-bash-logs" className="logs-textarea-label">Bash Logs:</label>
+            <textarea
+              id="student-bash-logs"
+                value={student_bash_logs_state}
                 rows={1}
                 readOnly 
                 aria-live="polite"
                 className="logs-textarea"
-                placeholder="Student chat logs used for hint generation will appear here"
-              />
-              <label htmlFor="student-responses-logs" className="textarea-label">Answer Logs:</label>
+                placeholder="Student bash logs used for hint generation will appear here"
+            />
+            <label htmlFor="student-chat-logs" className="logs-textarea-label">Chat Logs:</label>
+            <textarea
+              id="student-chat-logs"
+              value={student_chat_logs_state}
+              rows={1}
+              readOnly 
+              aria-live="polite"
+              className="logs-textarea"
+              placeholder="Student chat logs used for hint generation will appear here"
+            />
+            <label htmlFor="student-responses-logs" className="logs-textarea-label">Answer Logs:</label>
+            <textarea
+              id="student-responses-logs"
+              value={student_responses_logs_state}
+              rows={1}
+              readOnly 
+              aria-live="polite"
+              className="logs-textarea"
+              placeholder="Student answer logs used for hint generation will appear here"
+            />
+          </div>
+        )}
+      </div>
+      <div className="expandable-settings-container">
+        <button onClick={toggleExpandSettings} className={`settings-expand-button ${isClickedSettings ? 'clicked' : ''}`}>Settings ⚙️</button>
+        {isExpandedSettings && (
+          <div className="expandable-settings-content">
+            <label htmlFor="CPU_resource_settings" className="settings-textarea-label">CPU cores:</label>
               <textarea
-                id="student-responses-logs"
-                value={student_responses_logs_state}
+                value={cpu_resources_selected}
                 rows={1}
                 readOnly 
                 aria-live="polite"
                 className="logs-textarea"
-                placeholder="Student answer logs used for hint generation will appear here"
+                placeholder={cpu_resources_detected}
+              />
+            <div class="slider-container">
+              <input 
+                type="range" 
+                id="cpuSliderRange" 
+                min='0'
+                max={cpu_resources_detected} 
+                step='1'
+                value={cpu_resources_selected}
+                onChange={handleCPUSliderChange}
               />
             </div>
-          )}
-        </div>
-      <div className="checkbox">
-        <label>
-          <input 
-            type="checkbox"
-            checked={checked}
-            onChange={handleChangeCheck}
-          /> Enable scenario context</label>
-      </div>          
-        <button onClick={requestHint} className="request-hint-button">Generate Hint ✨</button>
+
+            <label htmlFor="GPU_resource_settings" className="settings-textarea-label">GPU resources: </label>
+
+            <div class="gpu_resources_display">
+              <textarea
+                value={gpu_resources_selected}
+                rows={1}
+                readOnly 
+                aria-live="polite"
+                className="logs-textarea"
+                placeholder={gpu_resources_detected == 0 ? 'NO GPU DETECTED': gpu_resources_detected}
+              />
+            </div>
+            <div className="disable-gpu-checkbox">
+              <label>
+                <input 
+                  type="checkbox"
+                  checked={checkForGPUDisable}
+                  onChange={handleChangeCheckForGPUDisable}
+                /> Disable GPU usage:
+              </label>
+            </div>
+            <div className="disable-scenario-context-checkbox">
+              <label>
+                <input 
+                  type="checkbox"
+                  checked={checkForDisableScenarioContext}
+                  onChange={handleChangeCheckForDisableScenarioContext}
+                /> Disable scenario context: 
+              </label>
+            </div> 
+            <button onClick={reinitializeModelWithNewSettings} className="Save 💾 ">Reinitialize model with settings</button>
+
+
+          </div>
+        )}
+      </div>
+
+               
+      <button onClick={requestHint} className="request-hint-button">Generate Hint ✨</button>
       </div>
       <HintSection
         hintState={hint_state}

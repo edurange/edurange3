@@ -78,17 +78,17 @@ def load_language_model_from_redis():
       else:
             raise valueError('No language model found from Redis db')
 
-def load_cpu_and_gpu_resources_from_redis():
+def get_available_cpu_and_gpu_resources_from_redis():
 
       r = redis.StrictRedis(host='localhost', port=6379, db=1)
 
-      cpu_resources_pickle = r.get('language_model_cpu_resources')
+      cpu_resources_pickle = r.get('cpu_resources')
       if cpu_resources_pickle:
             cpu_resources = pickle.loads(cpu_resources_pickle)
       else:
             raise ValueError("CPU count value not found in redis cache")
       
-      gpu_resources_pickle = r.get('language_model_gpu_resources')
+      gpu_resources_pickle = r.get('gpu_resources')
       if gpu_resources_pickle:
             gpu_resources = pickle.loads(gpu_resources_pickle)
       else:

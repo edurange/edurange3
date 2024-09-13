@@ -1,3 +1,7 @@
+html, body {
+
+  overflow-y: auto; /* Enable vertical scrolling */
+}
 
 .hints-dashboard-ui {
     margin: 0px 30px;
@@ -6,6 +10,8 @@
     gap: 15px; 
     width: 25%;
     position: relative;
+    overflow-y: auto;
+    overflow-x: auto;
   }
 
   .pageTitle {
@@ -28,6 +34,15 @@
     display: flex;
     gap: 10px; 
   }
+
+  .expandable-settings-container .expandable-settings-content .slider-container {
+    width: 100%;
+  }
+
+  input[type="range"] {
+    width: 100%; /* Full width of the container */
+    margin: 0;
+}
   
   .hint-section {
     display: flex;
@@ -112,7 +127,6 @@
     border-radius: 10px;
     cursor: pointer;
     transition: transform 0.3s ease;
-    margin-top: 10px;
   }
 
   .request-hint-button:hover {
@@ -148,7 +162,11 @@
   }
 
   .expandable-logs-container {
-    margin-bottom: 20px;
+    margin-bottom: 10px;
+  }
+
+  .expandable-settings-container {
+    margin-bottom: 10px;
   }
 
   .student-logs-expand-button {
@@ -164,6 +182,21 @@
   }
 
   .student-logs-expand-button.clicked {
+    background-color: #deb14f;
+  }
+
+  .settings-expand-button {
+    font-size: 13px;
+    width: 100%; 
+    border-radius: 10px;
+    box-sizing: flex; 
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    align-items: center; 
+    justify-content: center; 
+  }
+
+  .settings-expand-button.clicked {
     background-color: #deb14f;
   }
 
@@ -222,6 +255,14 @@
     flex-direction: column;
 }
 
+.disable-scenario-context-checkbox {
+  font-size: 10px;
+}
+
+.disable-gpu-checkbox {
+  font-size: 10px;
+}
+
 .experimental-feature-confirm-lock-overlay {
   position: fixed; 
   top: 0;
@@ -241,7 +282,15 @@
   flex-direction: column;
 }
 
-  .textarea-label {
+
+  .logs-textarea-label {
+    display: flex;    
+    margin-top: 5px;     
+    margin-bottom: 5px;  
+    font-size: 12px;   
+  }
+
+  .settings-textarea-label {
     display: flex;    
     margin-top: 5px;     
     margin-bottom: 5px;  
@@ -251,6 +300,8 @@
   .expandable-logs-container {
     margin-top: 5px;
   }
+  
+
 
 
 

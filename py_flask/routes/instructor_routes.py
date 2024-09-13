@@ -6,7 +6,7 @@ from py_flask.utils.dataBuilder import get_group_data, get_user_data, get_scenar
 from py_flask.config.extensions import db
 from py_flask.utils.chat_utils import gen_chat_names, getChatLibrary
 from py_flask.utils.tasks import request_and_generate_hint, initialize_model, getLogs_for_hint, cancel_generate_hint_celery
-
+from py_flask.utils.ml_utils import get_available_cpu_and_gpu_resources_from_redis
 from flask import (
     Blueprint,
     request,
@@ -498,8 +498,17 @@ def get_student_logs():
 @blueprint_instructor.route("/init_model", methods=['POST'])
 @jwt_and_csrf_required
 def init_model():
+    requestJSON = request.json
+
+    this_cpu_resources_str = requestJSON["this_cpu_resources_selected"]
+    this_gpu_resources_str = requestJSON["this_gpu_resources_selected"]
+
+    this_cpu_resources_int = int(this_cpu_resources_str)
+    this_gpu_resources_int = int(this_gpu_resources_str)
+
     try:
-        initialize_model.delay()
+        initialize_model.delay(this_cpu_resources_int, this_gpu_resources_int)
+        return jsonify({'status': 'model reinitialized successfully'})
     except Exception as e:
         return jsonify({'error': 'model failed to initialize'})
 
@@ -509,4 +518,23 @@ def cancel_generate_hint_route():
     result = cancel_generate_hint_celery.delay().get(timeout=None)
     
     return jsonify({'cancel_hint_req_status': result})
+
+@blueprint_instructor.route("/get_resources", methods=['POST'])
+@jwt_and_csrf_required
+def get_resources():
+    result = get_available_cpu_and_gpu_resources_from_redis()
+    cpu_resources_detected_str = result[0]
+    gpu_resources_detected_str = result[1]
+
+    if cpu_resources_detected_str == " ":
+        cpu_resources_detected_int = 0
+    else:
+        cpu_resources_detected_int = int(cpu_resources_detected_str)
+
+    if gpu_resources_detected_str == " ":
+        gpu_resources_detected_int = 0
+    else:
+        gpu_resources_detected_int = int(cpu_resources_detected_str)
+
+    return jsonify({'cpu_resources_detected': cpu_resources_detected_int, 'gpu_resources_detected': gpu_resources_detected_int})
 
