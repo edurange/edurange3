@@ -47,7 +47,7 @@ logger.addHandler(file_handler)
 logger.addHandler(console_handler)
 
 # Ensure propagation is set to True
-logger.propagate = True
+logger.propagate = False
 
 
 path_to_directory = os.path.dirname(os.path.abspath(__file__))
@@ -132,12 +132,7 @@ def create_scenario_task(self, scen_name, scen_type, students_list, grp_id, scen
             with open("guide_content.yml", "w") as outfile:
                 yaml.dump(content, outfile, indent=4)
 
-            try:
-                lowest_avail_octet = claimOctet()
-            except ValueError as e:
-                logger.error(f"Error claiming octet: {str(e)}")
-                return {"result": "error", "message": str(e)}
-            
+            lowest_avail_octet = claimOctet()
 
             try:
                 find_and_copy_template(scen_type, "main")
@@ -162,14 +157,10 @@ def create_scenario_task(self, scen_name, scen_type, students_list, grp_id, scen
                     s_files[i], g_files[i], u_files[i], flags, c_names, logger
                 )
 
-            with app.app_context():
-                scenario = Scenarios.query.filter_by(id=scen_id).first()
-                if scenario:
-                    scenario.status = 0
-                    scenario.octet = lowest_avail_octet
-                    db.session.commit()
-                else:
-                    logger.error(f"No scenario found with id {scen_id}")
+            scenario.update(
+                status=0,
+                octet=lowest_avail_octet
+            )
 
             os.chdir("../container")
             os.system("terraform init")
@@ -236,9 +227,6 @@ def start_scenario_task(self, scenario_id):
                 os.chdir("../container")
                 os.system("terraform apply --auto-approve")
 
-                #not needed but an attempt to manipulate the state change
-                os.system("terraform apply -refresh-only --auto-approve")
-
                 os.chdir("..")
                 
                 os.system("../../../shell_scripts/scenario_movekeys.sh {} {} {}".format(gateway, start, start_ip))
@@ -268,10 +256,10 @@ def start_scenario_task(self, scenario_id):
         logger.error('Error encoutnered in start scenario function in tasks.py')
         logger.exception(e)
         return {
-                    "result": "failure",
-                    "new_status": 5,
-                    "scenario_id": scenario_id
-                    }
+                "result": "failure",
+                "new_status": 5,
+                "scenario_id": scenario_id
+                }
 
 
 @celery.task(bind=True)

@@ -159,9 +159,9 @@ def claimOctet():
 
     candidate_octet = lowest_octet
         
-    while candidate_octet <= 255:
+    while True:
         if candidate_octet not in octets_intList:
             return candidate_octet
         candidate_octet += 1
-
-    raise ValueError("No available subnet octet")
+        if candidate_octet > 255:
+            return False
