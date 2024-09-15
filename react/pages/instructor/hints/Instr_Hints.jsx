@@ -39,10 +39,20 @@ const Instr_Hints = () => {
   const [newHint, set_newHint] = useState('');
   const [checkForDisableScenarioContext, set_checked_for_disable_scenario_context] = React.useState(false);
   const [checkForGPUDisable, set_checked_for_gpu_disable] = React.useState(false);
+
   const [isExpandedLogs, set_isExpandedLogs] = useState(false);
   const [isExpandedSettings, set_isExpandedSettings] = useState(false);
+  const [isExpandedAdvancedSettings, set_isExpandedAdvancedSettings] = useState(false);
+  
+
   const [isClickedLogs, set_isClickedLogs] = useState(false);
   const [isClickedSettings, set_isClickedSettings] = useState(false);
+  const [isClickedAdvancedSettings, set_isClickedAdvancedSettings] = useState(false);
+
+  const [isClickedSpeedSetting, set_isClickedSpeedSetting] = useState(false);
+  const [isClickedBalancedSetting, set_isClickedBalancedSetting] = useState(true);
+  const [isClickedQualitySetting, set_isClickedQualitySetting] = useState(false);
+
   const [experimentalConfirmLock, set_experimentalConfirmLock] = React.useState(() => {
     const localStorageValue = localStorage.getItem('experimentalFeatureLockValue');
     return localStorageValue ? JSON.parse(localStorageValue) : true;
@@ -87,6 +97,7 @@ const Instr_Hints = () => {
 
   const [cpu_resources_selected, set_cpu_resources_selected] = useState(Number(cpu_resources_detected));
   const [gpu_resources_selected, set_gpu_resources_selected] = useState(Number(gpu_resources_detected));
+  const [temp_selected, set_temp_selected] = useState(0.8);
 
   const handleCPUSliderChange = (e) => {
     const newValue = e.target.value;
@@ -98,11 +109,8 @@ const Instr_Hints = () => {
     try {
       const reqJSON = {
         this_cpu_resources_selected: cpu_resources_selected,
-        this_gpu_resources_selected: gpu_resources_selected,
-        this_scenario_context_disabled: checkForDisableScenarioContext
+        this_gpu_resources_selected: gpu_resources_selected
       };
-
-      console.log("Sending this data:", reqJSON);
 
       const response = await axios.post(
         "/init_model",
@@ -129,6 +137,11 @@ const Instr_Hints = () => {
   const toggleExpandSettings = () => {
     set_isExpandedSettings(!isExpandedSettings);
     set_isClickedSettings(!isClickedSettings);
+  };
+
+  const toggleExpandAdvancedSettings = () => {
+    set_isExpandedAdvancedSettings(!isExpandedAdvancedSettings);
+    set_isClickedAdvancedSettings(!isClickedAdvancedSettings);
 };
   
   
@@ -136,7 +149,31 @@ const Instr_Hints = () => {
     set_checked_for_disable_scenario_context(!checkForDisableScenarioContext);
   };
 
+  
+  const handleChangeToggleForSpeedSetting = () => {
+    set_isClickedBalancedSetting(false);
+    set_isClickedQualitySetting(false);
+    set_isClickedSpeedSetting(!isClickedSpeedSetting);
+    //Speed settings:
+    set_checked_for_disable_scenario_context(true);
+    set_cpu_resources_selected(cpu_resources_detected);
+    set_checked_for_gpu_disable(false);
+  };
+
+  
+
+  const handleChangeToggleForQualitySetting = () => {
+    set_isClickedSpeedSetting(false);
+    set_isClickedBalancedSetting(false);
+    set_isClickedQualitySetting(!isClickedQualitySetting);
+    //Quality settings:
+    set_checked_for_disable_scenario_context(false);
+    set_cpu_resources_selected(cpu_resources_detected);
+    set_checked_for_gpu_disable(false);
+  };
+
   const handleChangeCheckForGPUDisable = () => {
+    handleChangeToggleDeselectForAllPresetSettings()
     set_checked_for_gpu_disable(!checkForGPUDisable);
   };
 
@@ -146,6 +183,10 @@ const Instr_Hints = () => {
 
   const handleChangeGPUResourcesSelected = (e) => {
     set_gpu_resources_selected(e.target.value);
+  };
+
+  const handleChangeTempSelected = (e) => {
+    set_temp_selected(e.target.value);
   };
 
   
@@ -209,8 +250,11 @@ const Instr_Hints = () => {
       const reqJSON = {
         scenario_name: selectedScenario_state.scenario_type.toLowerCase(),
         student_id: selectedUser_state.id,
-        enable_scenario_context: checkForDisableScenarioContext,
+        disable_scenario_context: checkForDisableScenarioContext,
+        temperature: temp_selected
       };
+
+      console.log("EDUHint Request Object: ", reqJSON)
 
       const response = await axios.post(
         "get_hint",
@@ -221,8 +265,9 @@ const Instr_Hints = () => {
           }
         }
       );
-
+      
       set_hint_state(response.data.generated_hint)
+      console.log("EDUHint Response Object", response)
       
     } catch (error) {
       console.error("Error fetching hint:", error);
@@ -267,11 +312,13 @@ const Instr_Hints = () => {
       return
     }
 
+    const eduhint_content = "EDUHint: " + hint_state.trim()
+
     const chatMsg = new ChatMessage(
       filteredUserHomeChan, // channel id
-      "Instructor Hint", // user alias
+      "EDUHint", // user alias
       selectedScenario_state.scenario_type, // scenario type
-      hint_state.trim(), // 'content'
+      eduhint_content, // 'content'
       selectedScenario_state.id // 'scenario_id' 
     );
 
@@ -316,7 +363,6 @@ const Instr_Hints = () => {
   }, [selectedUser_state]); 
 
   useEffect(() => {
-    
     if (!isEditing) {
       set_newHint(hint_state);
     }
@@ -385,8 +431,8 @@ const Instr_Hints = () => {
               placeholder="Generate a hint then edit it here"
             />
             <div className="hint-section-buttons">
-              <button onClick={onSave} className="below-textbox-button">Save 💾</button>
-              <button onClick={onCancel} className="below-textbox-button">Cancel 🚫</button>
+              <button onClick={onSave} className="below-textbox-save-button">Save 💾</button>
+              <button onClick={onCancel} className="below-textbox-cancel-button">Cancel 🚫</button>
             </div>
           </>
         ) : (
@@ -400,8 +446,8 @@ const Instr_Hints = () => {
               placeholder="Hint will appear here"
             />
             <div className="hint-section-buttons">
-              <button onClick={onEditHint} className="below-textbox-button">Edit Hint 📝</button>
-              <button onClick={onHintSend} className="below-textbox-button">Send Hint To Student 📫 </button>
+              <button onClick={onEditHint} className="below-textbox-edit-button">Edit Hint 📝</button>
+              <button onClick={onHintSend} className="below-textbox-send-button">Send Hint To Student 📫 </button>
             </div>
             
           </>
@@ -510,62 +556,95 @@ const Instr_Hints = () => {
       <div className="expandable-settings-container">
         <button onClick={toggleExpandSettings} className={`settings-expand-button ${isClickedSettings ? 'clicked' : ''}`}>Settings ⚙️</button>
         {isExpandedSettings && (
-          <div className="expandable-settings-content">
-            <label htmlFor="CPU_resource_settings" className="settings-textarea-label">CPU cores:</label>
-              <textarea
-                value={cpu_resources_selected}
-                rows={1}
-                readOnly 
-                aria-live="polite"
-                className="logs-textarea"
-                placeholder={cpu_resources_detected}
-              />
-            <div class="slider-container">
-              <input 
-                type="range" 
-                id="cpuSliderRange" 
-                min='0'
-                max={cpu_resources_detected} 
-                step='1'
-                value={cpu_resources_selected}
-                onChange={handleCPUSliderChange}
-              />
-            </div>
-
-            <label htmlFor="GPU_resource_settings" className="settings-textarea-label">GPU resources: </label>
-
-            <div class="gpu_resources_display">
-              <textarea
-                value={gpu_resources_selected}
-                rows={1}
-                readOnly 
-                aria-live="polite"
-                className="logs-textarea"
-                placeholder={gpu_resources_detected == 0 ? 'NO GPU DETECTED': gpu_resources_detected}
-              />
-            </div>
-            <div className="disable-gpu-checkbox">
-              <label>
-                <input 
-                  type="checkbox"
-                  checked={checkForGPUDisable}
-                  onChange={handleChangeCheckForGPUDisable}
-                /> Disable GPU usage:
-              </label>
-            </div>
-            <div className="disable-scenario-context-checkbox">
-              <label>
-                <input 
-                  type="checkbox"
-                  checked={checkForDisableScenarioContext}
-                  onChange={handleChangeCheckForDisableScenarioContext}
-                /> Disable scenario context: 
-              </label>
-            </div> 
-            <button onClick={reinitializeModelWithNewSettings} className="Save 💾 ">Reinitialize model with settings</button>
-
-
+        
+        
+        <>
+          <div className="resource-preset-buttons">
+            <button onClick={handleChangeToggleForSpeedSetting} className={`select-speed-setting-button ${isClickedSpeedSetting ? 'clicked' : ''}`}><span style={{ textDecoration: 'underline', fontWeight: 'bold', fontSize: '14px' }}>PRIORITIZE SPEED⚡</span>< br/>< br/>Select this if you want hints to generate as fast as possible but with reduced quality</button> 
+         
+            <button onClick={handleChangeToggleForQualitySetting} className={`select-quality-setting-button ${isClickedQualitySetting ? 'clicked' : ''}`}><span style={{ textDecoration: 'underline', fontWeight: 'bold', fontSize: '14px' }}>PRIORITIZE QUALITY🏆</span>< br/>< br/>Select this you want the highest quality of hints and are willing to wait longer. This is the default and recommended setting.</button> 
           </div>
+
+          <button onClick={toggleExpandAdvancedSettings} className={`advanced-settings-expand-button ${isClickedAdvancedSettings ? 'clicked' : ''}`}>Advanced Settings ⚙️</button>  
+          
+          {isExpandedAdvancedSettings && (
+            <div className="expandable-settings-content">
+              <label htmlFor="CPU_resource_settings" className="settings-textarea-label">CPU cores:</label>
+                <textarea
+                  value={cpu_resources_selected}
+                  rows={1}
+                  readOnly 
+                  aria-live="polite"
+                  className="logs-textarea"
+                  placeholder={cpu_resources_detected}
+                />
+              <div class="slider-container">
+                <input 
+                  type="range" 
+                  id="cpuSliderRange" 
+                  min='0'
+                  max={cpu_resources_detected} 
+                  step='1'
+                  value={cpu_resources_selected}
+                  onChange={handleCPUSliderChange}
+                />
+              </div>
+
+
+              <label htmlFor="GPU_resource_settings" className="settings-textarea-label">GPU resources: </label>
+
+              <div class="gpu_resources_display">
+                <textarea
+                  value={gpu_resources_selected}
+                  rows={1}
+                  readOnly 
+                  aria-live="polite"
+                  className="logs-textarea"
+                  placeholder={gpu_resources_detected == 0 ? 'NO GPU DETECTED': gpu_resources_detected}
+                />
+              </div>
+              <label htmlFor="temp_resources_display" className="settings-textarea-label">Model temperature: </label>
+              <textarea
+                  value={temp_selected}
+                  rows={1}
+                  readOnly 
+                  aria-live="polite"
+                  className="logs-textarea"
+                  placeholder={"1"}
+                />
+              <div class="slider-container">
+                <input 
+                  type="range" 
+                  id="tempSliderRange" 
+                  min='0.1'
+                  max={1} 
+                  step='0.1'
+                  value={temp_selected}
+                  onChange={handleChangeTempSelected}
+                />
+              </div>
+              <div className="disable-gpu-checkbox">
+                <label>
+                  <input 
+                    type="checkbox"
+                    checked={checkForGPUDisable}
+                    onChange={handleChangeCheckForGPUDisable}
+                  /> Disable GPU usage:
+                </label>
+              </div>
+              <div className="disable-scenario-context-checkbox">
+                <label>
+                  <input 
+                    type="checkbox"
+                    checked={checkForDisableScenarioContext}
+                    onChange={handleChangeCheckForDisableScenarioContext}
+                  /> Disable scenario context: 
+                </label>
+              </div> 
+              <button onClick={reinitializeModelWithNewSettings} className="save-settings">Save 💾 </button>
+            </div>
+          )}  
+          </>
         )}
       </div>
 

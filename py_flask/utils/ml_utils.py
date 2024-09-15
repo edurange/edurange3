@@ -17,14 +17,34 @@ from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from memory_profiler import profile, memory_usage
 
 
-def generate_hint(language_model, logs_dict, scenario_name, enable_scenario_context):
+def generate_hint(language_model, logs_dict, scenario_name, disable_scenario_context, temperature):
       start_time = time.time()
 
       bash_history = logs_dict['bash']
       chat_history = logs_dict['chat']
       answer_history = logs_dict['responses']
 
-      if enable_scenario_context:
+      if disable_scenario_context:
+                  
+            finalized_system_prompt = "##You directly assist a student through a bash command based cybersecurity exercise called a scenario. Students interact with the scenario online using a bash terminal, they can then submit answers with web-based forms and ask the teacher questions via a chat messaging system. For context you will be provided the student's recent logs for bash commands, chat messages and answers. Generate them a ONE SENTENCE LONG hint, do not echo back any of their logs. If present, prioritize helping them debug errors found in their bash history and or questions they ask in their chat history."
+            finalized_user_prompt = f"  Recent bash commands: {bash_history}. The student's recent chat messages: {chat_history}. The student's recent answers: {answer_history}. "
+
+            result = language_model(
+                  f"<|system|>{finalized_system_prompt}<|end|>\n<|user|>\n{finalized_user_prompt}<|end|>\n<|assistant|> ",
+                  max_tokens=50,
+                  stop=["<|end|>"], 
+                  echo=False, 
+                  temperature=0.8,
+            ) 
+
+            generated_hint = result["choices"][0]["text"]
+
+            stop_time = time.time()
+            function_duration = round(stop_time - start_time, 2)
+
+            return generated_hint, function_duration
+
+      else: 
                   
             scenario_summary = load_context_file_contents('scenario_summaries', scenario_name)
             finalized_system_prompt = "You directly assist a student through a bash command based cybersecurity exercise called a scenario. Students interact with the scenario online using a bash terminal, they can then submit answers with web-based forms and ask the teacher questions via a chat messaging system. For context you will be provided the scenario's summary and the student's recent logs for bash commands, chat messages and answers. Generate them a ONE SENTENCE LONG hint, do not echo back any of their logs. If present, prioritize helping them debug errors found in their bash history and or questions they ask in their chat history."
@@ -43,26 +63,6 @@ def generate_hint(language_model, logs_dict, scenario_name, enable_scenario_cont
             stop_time = time.time()
             function_duration = round(stop_time - start_time, 2)
       
-            return generated_hint, function_duration
-
-      else: 
-                  
-            finalized_system_prompt = "You directly assist a student through a bash command based cybersecurity exercise called a scenario. Students interact with the scenario online using a bash terminal, they can then submit answers with web-based forms and ask the teacher questions via a chat messaging system. For context you will be provided the student's recent logs for bash commands, chat messages and answers. Generate them a ONE SENTENCE LONG hint, do not echo back any of their logs. If present, prioritize helping them debug errors found in their bash history and or questions they ask in their chat history."
-            finalized_user_prompt = f"  Recent bash commands: {bash_history}. The student's recent chat messages: {chat_history}. The student's recent answers: {answer_history}. "
-
-            result = language_model(
-                  f"<|system|>{finalized_system_prompt}<|end|>\n<|user|>\n{finalized_user_prompt}<|end|>\n<|assistant|> ",
-                  max_tokens=50,
-                  stop=["<|end|>"], 
-                  echo=False, 
-                  temperature=0.8,
-            ) 
-
-            generated_hint = result["choices"][0]["text"]
-
-            stop_time = time.time()
-            function_duration = round(stop_time - start_time, 2)
-
             return generated_hint, function_duration
             
 

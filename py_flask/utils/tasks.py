@@ -449,12 +449,11 @@ def setup_periodic_tasks(sender, **kwargs):
 def initialize_model(self, cpu_resources=0, gpu_resources=0):
     
     def determine_cpu_resources():   
-        cpu_resource_scaler = 1 # Multiplicative scaler for CPU cores to be used.
         num_cpus = os.cpu_count()
         if num_cpus is None or num_cpus <= 0:
             raise ValueError(f"Invalid CPU count: {num_cpus}")
         else:   
-            return math.floor(num_cpus * cpu_resource_scaler)
+            return num_cpus
 
 
     def determine_gpu_resources():
@@ -509,7 +508,7 @@ def getLogs_for_hint(self, user_id):
 
 
 @celery.task(bind=True, worker_prefetch_multiplier=1, priority=1)
-def request_and_generate_hint(self, scenario_name, logs_dict, enable_scenario_context):
+def request_and_generate_hint(self, scenario_name, logs_dict, disable_scenario_context, temperature):
     
     r = redis.StrictRedis(host='localhost', port=6379, db=1)
     task_id = self.request.id
@@ -522,11 +521,11 @@ def request_and_generate_hint(self, scenario_name, logs_dict, enable_scenario_co
 
     available_cpu_and_gpu_resources = get_available_cpu_and_gpu_resources_from_redis()
     
-    generated_hint, function_duration = generate_hint(language_model, logs_dict, scenario_name, enable_scenario_context)
+    generated_hint, function_duration = generate_hint(language_model, logs_dict, scenario_name, disable_scenario_context, temperature)
 
     export_hint_to_csv(scenario_name, generated_hint, function_duration)
 
-    return {'generated_hint': generated_hint, 'logs_dict': logs_dict, 'cpu_resources_used': available_cpu_and_gpu_resources[0], 'gpu_rescources_used': available_cpu_and_gpu_resources[1]}
+    return {'generated_hint': generated_hint, 'logs_dict': logs_dict, 'cpu_resources_used': available_cpu_and_gpu_resources[0], 'gpu_rescources_used': available_cpu_and_gpu_resources[1], 'temperature': temperature}
 
 
 

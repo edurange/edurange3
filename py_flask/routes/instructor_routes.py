@@ -477,10 +477,13 @@ def get_hint():
 
     this_scenario_name = requestJSON["scenario_name"]
     this_student_id= requestJSON["student_id"]
-    this_enable_scenario_context = requestJSON["enable_scenario_context"]
+    this_disable_scenario_context = requestJSON["disable_scenario_context"]
+    this_temperature = requestJSON["temperature"]
+
+
 
     logs_dict = getLogs_for_hint.delay(this_student_id).get(timeout=None)
-    result = request_and_generate_hint.delay(this_scenario_name, logs_dict, this_enable_scenario_context).get(timeout=None)
+    result = request_and_generate_hint.delay(this_scenario_name, logs_dict, this_disable_scenario_context, this_temperature).get(timeout=None)
     
     return jsonify(result)
 
