@@ -97,7 +97,7 @@ const Instr_Hints = () => {
 
   const [cpu_resources_selected, set_cpu_resources_selected] = useState(Number(cpu_resources_detected));
   const [gpu_resources_selected, set_gpu_resources_selected] = useState(Number(gpu_resources_detected));
-  const [temp_selected, set_temp_selected] = useState(0.8);
+  const [temp_selected, set_temp_selected] = useState(0.3);
 
   const handleCPUSliderChange = (e) => {
     const newValue = e.target.value;
@@ -105,7 +105,7 @@ const Instr_Hints = () => {
   };
   
 
-  const reinitializeModelWithNewSettings = async() => {
+  const updateModelWithNewSettings = async() => {
     try {
       const reqJSON = {
         this_cpu_resources_selected: cpu_resources_selected,
@@ -113,7 +113,7 @@ const Instr_Hints = () => {
       };
 
       const response = await axios.post(
-        "/init_model",
+        "/update_model",
         reqJSON,
         {
           headers: {
@@ -123,8 +123,8 @@ const Instr_Hints = () => {
       );
 
     } catch (error) {
-      console.error("Error reinitalizing model:", error);
-      set_error('Failed to reinitialize model with new settings.');
+      console.error("Error updating model:", error);
+      set_error('Failed to update  model with new settings.');
     }
   };
 
@@ -424,7 +424,7 @@ const Instr_Hints = () => {
         {isEditing ? (
           <>
             <textarea
-              rows={10}
+              rows={5}
               value={newHint}
               onChange={(e) => set_newHint(e.target.value)}
               className="hint-textarea"
@@ -438,7 +438,7 @@ const Instr_Hints = () => {
         ) : (
           <>
             <textarea
-              rows={10}
+              rows={5}
               value={hintState}
               readOnly 
               aria-live="polite"
@@ -641,7 +641,7 @@ const Instr_Hints = () => {
                   /> Disable scenario context: 
                 </label>
               </div> 
-              <button onClick={reinitializeModelWithNewSettings} className="save-settings">Save 💾 </button>
+              <button onClick={updateModelWithNewSettings} className="save-settings">Save 💾 </button>
             </div>
           )}  
           </>

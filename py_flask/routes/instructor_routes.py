@@ -5,8 +5,9 @@ from py_flask.database.models import Users, StudentGroups, ScenarioGroups, Group
 from py_flask.utils.dataBuilder import get_group_data, get_user_data, get_scenario_data
 from py_flask.config.extensions import db
 from py_flask.utils.chat_utils import gen_chat_names, getChatLibrary
-from py_flask.utils.tasks import request_and_generate_hint, initialize_model, getLogs_for_hint, cancel_generate_hint_celery
-from py_flask.utils.ml_utils import get_available_cpu_and_gpu_resources_from_redis
+from py_flask.utils.tasks import request_and_generate_hint, initialize_model, update_model, get_recent_student_logs, cancel_generate_hint_celery
+from py_flask.utils.common_utils import handleRedisIO
+
 from flask import (
     Blueprint,
     request,
@@ -29,8 +30,7 @@ from py_flask.utils.instructor_utils import (
     clearGroups,
     deleteUsers,
     NotifyCapture,
-    getLogs,
-    getNumOfRecentLogsForHint
+    getLogs
     )
 from py_flask.utils.tasks import (
     create_scenario_task, 
@@ -38,6 +38,7 @@ from py_flask.utils.tasks import (
     stop_scenario_task, 
     update_scenario_task,
     destroy_scenario_task,
+    get_recent_student_logs
 )
 from py_flask.utils.error_utils import (
     custom_abort
@@ -479,55 +480,69 @@ def get_hint():
     this_student_id= requestJSON["student_id"]
     this_disable_scenario_context = requestJSON["disable_scenario_context"]
     this_temperature = requestJSON["temperature"]
+    this_number_of_logs = 3
 
 
+    logs_dict = get_recent_student_logs.delay(this_student_id, this_number_of_logs).get(timeout=None)
 
-    logs_dict = getLogs_for_hint.delay(this_student_id).get(timeout=None)
     result = request_and_generate_hint.delay(this_scenario_name, logs_dict, this_disable_scenario_context, this_temperature).get(timeout=None)
     
     return jsonify(result)
 
 @blueprint_instructor.route("/get_student_logs", methods=['POST'])
 @jwt_and_csrf_required
-def get_student_logs():
+def get_student_logs_route():
     requestJSON = request.json
 
     this_student_id = requestJSON["student_id"]
+
+    this_number_of_logs = 3
     
-    logs_dict = getLogs_for_hint.delay(this_student_id).get(timeout=None)
+    logs_dict = get_recent_student_logs.delay(this_student_id, this_number_of_logs).get(timeout=None)
 
     return jsonify(logs_dict)
 
-@blueprint_instructor.route("/init_model", methods=['POST'])
+@blueprint_instructor.route("/update_model", methods=['POST'])
 @jwt_and_csrf_required
-def init_model():
+def update_model_route():
+    
     requestJSON = request.json
 
-    this_cpu_resources_str = requestJSON["this_cpu_resources_selected"]
-    this_gpu_resources_str = requestJSON["this_gpu_resources_selected"]
+    try: 
+        this_cpu_resources_selected = int(requestJSON["this_cpu_resources_selected"])
+        this_gpu_resources_selected = int(requestJSON["this_gpu_resources_selected"])
 
-    this_cpu_resources_int = int(this_cpu_resources_str)
-    this_gpu_resources_int = int(this_gpu_resources_str)
+    except Exception as e:
+        this_cpu_resources_selected = None
+        this_gpu_resources_selected = None
 
     try:
-        initialize_model.delay(this_cpu_resources_int, this_gpu_resources_int)
-        return jsonify({'status': 'model reinitialized successfully'})
+        update_model.delay(this_cpu_resources_selected, this_gpu_resources_selected)
+        return jsonify({'Status': 'Model reinitialized successfully'})
+
     except Exception as e:
-        return jsonify({'error': 'model failed to initialize'})
+        return jsonify({f'Error': 'Model failed to initialize '})
 
 @blueprint_instructor.route("/cancel_hint", methods=['POST'])
 @jwt_and_csrf_required
 def cancel_generate_hint_route():
-    result = cancel_generate_hint_celery.delay().get(timeout=None)
+    cancel_hint_response = cancel_generate_hint_celery.delay().get(timeout=None)
     
-    return jsonify({'cancel_hint_req_status': result})
+    return jsonify({'cancel_hint_req_status': response})
 
 @blueprint_instructor.route("/get_resources", methods=['POST'])
 @jwt_and_csrf_required
+
 def get_resources():
-    result = get_available_cpu_and_gpu_resources_from_redis()
-    cpu_resources_detected_str = result[0]
-    gpu_resources_detected_str = result[1]
+
+    r_specifiers = {
+        'host': 'localHost',
+        'port': '6379',
+        'db': '1'
+    }
+    
+    cpu_resources_detected_str = handleRedisIO("load", r_specifiers, "cpu_resources")
+    gpu_resources_detected_str = handleRedisIO("load", r_specifiers, "gpu_resources")
 
     if cpu_resources_detected_str == " ":
         cpu_resources_detected_int = 0
@@ -540,4 +555,3 @@ def get_resources():
         gpu_resources_detected_int = int(cpu_resources_detected_str)
 
     return jsonify({'cpu_resources_detected': cpu_resources_detected_int, 'gpu_resources_detected': gpu_resources_detected_int})
-

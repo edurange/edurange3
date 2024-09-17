@@ -27,9 +27,9 @@ from flask import current_app, flash, jsonify
 from py_flask.utils.terraform_utils import adjust_network, find_and_copy_template, write_resource
 from py_flask.config.settings import CELERY_BROKER_URL, CELERY_RESULT_BACKEND
 from py_flask.utils.scenario_utils import claimOctet
-from py_flask.utils.ml_utils import generate_hint, load_language_model_from_redis, load_generate_hint_task_id_from_redis, get_available_cpu_and_gpu_resources_from_redis, export_hint_to_csv
-from py_flask.utils.instructor_utils import getLogs, getNumOfRecentLogsForHint
-
+from py_flask.utils.ml_utils import generate_hint, export_hint_to_csv, get_system_resources, create_model_object
+from py_flask.utils.instructor_utils import getLogs, getRecentStudentLogs
+from py_flask.utils.common_utils import handleRedisIO
 
 logger = get_task_logger(__name__)
 path_to_directory = os.path.dirname(os.path.abspath(__file__))
@@ -444,96 +444,107 @@ def scenarioCollectLogs(self, arg):
 def setup_periodic_tasks(sender, **kwargs):
     sender.add_periodic_task(60.0, scenarioCollectLogs.s(''))
 
+# Machine learning tasks 
 
 @celery.task(bind=True, worker_prefetch_multiplier=1, priority=1)
-def initialize_model(self, cpu_resources=0, gpu_resources=0):
-    
-    def determine_cpu_resources():   
-        num_cpus = os.cpu_count()
-        if num_cpus is None or num_cpus <= 0:
-            raise ValueError(f"Invalid CPU count: {num_cpus}")
-        else:   
-            return num_cpus
-
-
-    def determine_gpu_resources():
+def initialize_model(self):
+    try: 
+        system_resources = get_system_resources()
+        cpu_resources = system_resources[0]
+        gpu_resources = system_resources[1]
         try:
-            platforms = cl.get_platforms()
-            for platform in platforms:
-                gpu_device = platform.get_devices(device_type=cl.device_type.GPU)
-                if gpu_device:
-                    return -1
-                else:
-                    return 0   
+            language_model_object = create_model_object(cpu_resources, gpu_resources)
+            try: 
+                r_specifiers = {
+                    host: 'localHost',
+                    port: '6379',
+                    db: '1',
+                }
 
-        except Exception as GPU_NOT_FOUND:
-            return 0
-    
-    def create_model_object(cpu_resources, gpu_resources):  
-        language_model_object = Llama.from_pretrained(
-            repo_id="microsoft/Phi-3-mini-4k-instruct-gguf",
-                filename="Phi-3-mini-4k-instruct-q4.gguf",
-                verbose=False,
-                n_ctx=4086, 
-                n_threads=cpu_resources, 
-                n_gpu_layers=gpu_resources,
-                flash_attn=True,
-                use_mlock=True,
-        )
-        return language_model_object
-    
-    def cache_initialization_data(language_model_object, cpu_resources, gpu_resources):
-        r = redis.StrictRedis(host='localhost', port=6379, db=1)
-        language_model_pickle = pickle.dumps(language_model_object)
-        cpu_resources_pickle = pickle.dumps(cpu_resources)
-        gpu_resources_pickle = pickle.dumps(gpu_resources)
-        r.set('language_model', language_model_pickle)
-        r.set('cpu_resources', cpu_resources_pickle)
-        r.set('gpu_resources', gpu_resources_pickle)
+                language_model_store_result = handleRedisIO("store", r_specifiers, "language_model", language_model_object)
+                cpu_resources_store_result = handleRedisIO("store", r_specifiers, "cpu_resources", cpu_resources)
+                gpu_resources_store_result = handleRedisIO("store", r_specifiers, "gpu_resources", gpu_resources)
 
-    if cpu_resources is 0:
-        cpu_resources = determine_cpu_resources()
+                print(f"Language Model: {language_model_store_result}")
+                print(f"CPU Resources: {cpu_resources_store_result}")
+                print(f"GPU Resources: {gpu_resources_store_result}")
+                print("Model initialized succesfully")
 
-    if gpu_resources is 0:
-        gpu_resources = determine_gpu_resources()
+            except Exception as e:
+                print(f"ERROR: Failed to cache model and system resources in redis cache. {e}")
 
-    language_model_object = create_model_object(cpu_resources, gpu_resources)
-    cache_initialization_data(language_model_object, cpu_resources, gpu_resources)
-    
+        except Exception as e:
+            print(f"ERROR: Failed to create model object {e}")
+
+    except Exception as e:
+        print(f"ERROR: Failed to initialize model {e}")
+
+
 @celery.task(bind=True, worker_prefetch_multiplier=1, priority=1)
-def getLogs_for_hint(self, user_id):
-    logs_dict = getNumOfRecentLogsForHint(user_id)
+def update_model(self, cpu_resources, gpu_resources):
+
+    if cpu_resources is None:
+        system_resources = get_system_resources()
+        if cpu_resources is None:
+            cpu_resources = system_resources[0]
+        if gpu_resources is None:
+            gpu_resources = system_resources[1]
+        
+    language_model_object = create_model_object(cpu_resources, gpu_resources)
+
+    r_specifiers = {
+        'host': 'localHost',
+        'port': '6379',
+        'db': '1'
+    }
+
+    language_model_store_result = handleRedisIO("store", r_specifiers, "language_model", language_model_object)
+    cpu_resources_store_result = handleRedisIO("store", r_specifiers, "cpu_resources", cpu_resources)
+    gpu_resources_store_result = handleRedisIO("store", r_specifiers, "gpu_resources", gpu_resources)
+
+    
+
+@celery.task(bind=True, worker_prefetch_multiplier=1, priority=1)
+def get_recent_student_logs(self, student_id, number_of_logs):
+
+    logs_dict = getRecentStudentLogs(student_id, number_of_logs)
 
     return logs_dict
 
 
 @celery.task(bind=True, worker_prefetch_multiplier=1, priority=1)
 def request_and_generate_hint(self, scenario_name, logs_dict, disable_scenario_context, temperature):
+    r_specifiers = {
+        'host': 'localHost',
+        'port': '6379',
+        'db': '1'
+    }
+
+    generate_hint_task_id = self.request.id
+    generate_hint_task_id_store_result = handleRedisIO("store", r_specifiers, "generate_hint_task_id", generate_hint_task_id)
     
-    r = redis.StrictRedis(host='localhost', port=6379, db=1)
-    task_id = self.request.id
-
-    generate_hint_task_id_pickle = pickle.dumps(task_id)
-
-    r.set('generate_hint_task_id', generate_hint_task_id_pickle)
-
-    language_model = load_language_model_from_redis()
-
-    available_cpu_and_gpu_resources = get_available_cpu_and_gpu_resources_from_redis()
+    language_model = handleRedisIO("load", r_specifiers, "language_model")
+    cpu_resources_available = handleRedisIO("load", r_specifiers, "cpu_resources")
+    gpu_resources_available = handleRedisIO("load", r_specifiers, "gpu_resources")
     
     generated_hint, function_duration = generate_hint(language_model, logs_dict, scenario_name, disable_scenario_context, temperature)
-
     export_hint_to_csv(scenario_name, generated_hint, function_duration)
 
-    return {'generated_hint': generated_hint, 'logs_dict': logs_dict, 'cpu_resources_used': available_cpu_and_gpu_resources[0], 'gpu_rescources_used': available_cpu_and_gpu_resources[1], 'temperature': temperature}
-
+    return {'generated_hint': generated_hint, 'logs_dict': logs_dict, 'cpu_resources_used': cpu_resources_available, 'gpu_rescources_used': gpu_resources_available, 'temperature': temperature}
 
 
 @celery.task(bind=True, worker_prefetch_multiplier=1, priority=1)
 def cancel_generate_hint_celery(self):
-    generate_hint_task_id = load_generate_hint_task_id_from_redis()
+    r_specifiers = {
+        'host': 'localHost',
+        'port': '6379',
+        'db': '1'
+    }
+    generate_hint_task_id = handleRedisIO("load", r_specifiers, "generate_hint_task_id")
     self.app.control.revoke(generate_hint_task_id, terminate=True)
     
     return {'status': generate_hint_task_id}
+
+
 
       

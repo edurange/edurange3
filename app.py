@@ -46,11 +46,7 @@ if admin: a_id = admin.id
 
 if not group: create_all_group(a_id)
 
-try:
-    initialize_model.delay()
-    print(" * Phi-3 Model initialized and available in redis cache")
-    
-except exception as e:
-    print(" !! Model initialization failed !! ")
+initialize_model.delay()
+
 
 

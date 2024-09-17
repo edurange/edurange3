@@ -169,24 +169,22 @@ def getLogs(optional_user_id=None):
 
     return returnDict
 
-def getNumOfRecentLogsForHint(student_id, numOfRecentLogs=2):
+def getRecentStudentLogs(student_id, number_of_logs):
 
     def get_logsTable(model):
         query = model.query.filter_by(user_id=student_id)
-        return query.order_by(model.timestamp.desc()).limit(numOfRecentLogs).all()
+        return query.order_by(model.timestamp.desc()).limit(number_of_logs).all()
     
     bashLogs = get_logsTable(BashHistory)
     chatLogs = get_logsTable(ChatMessages)
     responseLogs = get_logsTable(Responses)
 
     returnDict = {
-        "bash": [{"index": i, "bashEntry": log.to_dict().get('content')} for i, log in enumerate(bashLogs)],
+        "bash": [{"index": i, "bashEntry": log.to_dict().get('input')} for i, log in enumerate(bashLogs)],
         "chat": [{"index": i, "chatEntry": log.to_dict().get('content')} for i, log in enumerate(chatLogs)],
         "responses": [{"index": i, "responsesEntry": log.to_dict().get('content')} for i, log in enumerate(responseLogs)]
     }
 
     return returnDict
-
-
-
+    
 
