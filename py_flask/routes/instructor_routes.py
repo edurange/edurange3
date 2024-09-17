@@ -474,12 +474,6 @@ def add_user_to_container():
 @blueprint_instructor.route("/get_hint", methods=['POST'])
 @jwt_and_csrf_required
 def get_hint():
-    r_specifiers = {
-        'host': 'localHost',
-        'port': '6379',
-        'db': '1'
-    }
-
     requestJSON = request.json
 
     this_scenario_name = requestJSON["scenario_name"]
@@ -494,19 +488,10 @@ def get_hint():
 @blueprint_instructor.route("/get_student_logs", methods=['POST'])
 @jwt_and_csrf_required
 def get_student_logs_route():
-
-    r_specifiers = {
-        'host': 'localHost',
-        'port': '6379',
-        'db': '1'
-    }
-
     requestJSON = request.json
-
-    this_student_id = requestJSON["student_id"]
-
-    this_number_of_logs = 3
     
+    this_student_id = requestJSON["student_id"]
+    this_number_of_logs = 3
     logs_dict = get_recent_student_logs.delay(this_student_id, this_number_of_logs).get(timeout=None)
     
     return jsonify(logs_dict)
@@ -544,14 +529,10 @@ def cancel_generate_hint_route():
 
 def get_resources():
 
-    r_specifiers = {
-        'host': 'localHost',
-        'port': '6379',
-        'db': '1'
-    }
+    r_specifiers = {'host': 'localHost', 'port': '6379', 'db': '1'}
     
-    cpu_resources_detected_str = handleRedisIO("load", r_specifiers, "cpu_resources")
-    gpu_resources_detected_str = handleRedisIO("load", r_specifiers, "gpu_resources")
+    cpu_resources_detected_str = handleRedisIO(operation="load", r_specifiers=r_specifiers, key="cpu_resources")
+    gpu_resources_detected_str = handleRedisIO(operation="load", r_specifiers=r_specifiers, key="gpu_resources")
 
     if cpu_resources_detected_str == " ":
         cpu_resources_detected_int = 0

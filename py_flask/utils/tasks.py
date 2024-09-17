@@ -449,6 +449,9 @@ def setup_periodic_tasks(sender, **kwargs):
 
 @celery.task(bind=True, worker_prefetch_multiplier=1, priority=1)
 def initialize_model(self):
+
+    r_specifiers = {'host': 'localHost', 'port': '6379', 'db': '1'}
+
     try: 
         system_resources = get_system_resources()
         cpu_resources = system_resources[0]
@@ -456,15 +459,10 @@ def initialize_model(self):
         try:
             language_model_object = create_model_object(cpu_resources, gpu_resources)
             try: 
-                r_specifiers = {
-                    host: 'localHost',
-                    port: '6379',
-                    db: '1',
-                }
-
-                language_model_store_result = handleRedisIO("store", r_specifiers, "language_model", language_model_object)
-                cpu_resources_store_result = handleRedisIO("store", r_specifiers, "cpu_resources", cpu_resources)
-                gpu_resources_store_result = handleRedisIO("store", r_specifiers, "gpu_resources", gpu_resources)
+                
+                language_model_store_result = handleRedisIO(operation="store", r_specifiers=r_specifiers, key="language_model", input_data=language_model_object)
+                cpu_resources_store_result = handleRedisIO(operation="store", r_specifiers=r_specifiers, key="cpu_resources", input_data=cpu_resources)
+                gpu_resources_store_result = handleRedisIO(operation="store", r_specifiers=r_specifiers, key="gpu_resources", input_data=gpu_resources)
 
                 print(f"Language Model: {language_model_store_result}")
                 print(f"CPU Resources: {cpu_resources_store_result}")
@@ -484,6 +482,8 @@ def initialize_model(self):
 @celery.task(bind=True, worker_prefetch_multiplier=1, priority=1)
 def update_model(self, cpu_resources, gpu_resources):
 
+    r_specifiers = {'host': 'localHost', 'port': '6379', 'db': '1'}
+
     if cpu_resources is None:
         system_resources = get_system_resources()
         if cpu_resources is None:
@@ -493,30 +493,22 @@ def update_model(self, cpu_resources, gpu_resources):
         
     language_model_object = create_model_object(cpu_resources, gpu_resources)
 
-    r_specifiers = {
-        'host': 'localHost',
-        'port': '6379',
-        'db': '1'
-    }
-
-    language_model_store_result = handleRedisIO("store", r_specifiers, "language_model", language_model_object)
-    cpu_resources_store_result = handleRedisIO("store", r_specifiers, "cpu_resources", cpu_resources)
-    gpu_resources_store_result = handleRedisIO("store", r_specifiers, "gpu_resources", gpu_resources)
+    language_model_store_result = handleRedisIO(operation="store", r_specifiers=r_specifiers, key="language_model", input_data=language_model_object)
+    cpu_resources_store_result = handleRedisIO(operation="store", r_specifiers=r_specifiers, key="cpu_resources", input_data=cpu_resources)
+    gpu_resources_store_result = handleRedisIO(operation="store", r_specifiers=r_specifiers, key="gpu_resources", input_data=gpu_resources)
 
     
 
 @celery.task(bind=True, worker_prefetch_multiplier=1, priority=1)
 def get_recent_student_logs(self, student_id, number_of_logs):
-    r_specifiers = {
-            'host': 'localHost',
-            'port': '6379',
-            'db': '1'
-        }
+
+    r_specifiers = {'host': 'localHost', 'port': '6379', 'db': '1'}
+
     try:
         logs_dict = getRecentStudentLogs(student_id, number_of_logs)
 
         try: 
-            handleRedisIO("store", r_specifiers, "logs_dict", logs_dict)
+            handleRedisIO(operation="store", r_specifiers=r_specifiers, key="logs_dict", input_data=logs_dict)
             return logs_dict
 
         except Exception as e:
@@ -528,18 +520,15 @@ def get_recent_student_logs(self, student_id, number_of_logs):
 
 @celery.task(bind=True, worker_prefetch_multiplier=1, priority=1)
 def request_and_generate_hint(self, scenario_name, disable_scenario_context, temperature):
-    r_specifiers = {
-        'host': 'localHost',
-        'port': '6379',
-        'db': '1'
-    }
+
+    r_specifiers = {'host': 'localHost', 'port': '6379', 'db': '1'}
 
     generate_hint_task_id = self.request.id
-    generate_hint_task_id_store_result = handleRedisIO("store", r_specifiers, "generate_hint_task_id", generate_hint_task_id)
+    generate_hint_task_id_store_result = handleRedisIO(operation="store", r_specifiers=r_specifiers, key="generate_hint_task_id", input_data=generate_hint_task_id)
 
     try:
-        language_model = handleRedisIO("load", r_specifiers, "language_model")
-        logs_dict = handleRedisIO("load", r_specifiers, "logs_dict")
+        language_model = handleRedisIO(operation="load", r_specifiers=r_specifiers, key="language_model")
+        logs_dict = handleRedisIO(operation="load", r_specifiers=r_specifiers, key="logs_dict")
         
     except Exception as e:
         print(f"ERROR: Failed to load items from Redis cache: {e}")
@@ -553,12 +542,9 @@ def request_and_generate_hint(self, scenario_name, disable_scenario_context, tem
 
 @celery.task(bind=True, worker_prefetch_multiplier=1, priority=1)
 def cancel_generate_hint_celery(self):
-    r_specifiers = {
-        'host': 'localHost',
-        'port': '6379',
-        'db': '1'
-    }
-    generate_hint_task_id = handleRedisIO("load", r_specifiers, "generate_hint_task_id")
+    r_specifiers = {'host': 'localHost', 'port': '6379', 'db': '1'}
+    
+    generate_hint_task_id = handleRedisIO(operation="load", r_specifiers=r_specifiers, key="generate_hint_task_id")
     self.app.control.revoke(generate_hint_task_id, terminate=True)
     
     return {'status': generate_hint_task_id}
