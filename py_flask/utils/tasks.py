@@ -34,6 +34,7 @@ from py_flask.utils.common_utils import handleRedisIO
 logger = get_task_logger(__name__)
 path_to_directory = os.path.dirname(os.path.abspath(__file__))
 
+
 def get_path(file_name):
     mail_path = os.path.normpath(
         os.path.join(path_to_directory, "templates/utils", file_name)
@@ -506,14 +507,27 @@ def update_model(self, cpu_resources, gpu_resources):
 
 @celery.task(bind=True, worker_prefetch_multiplier=1, priority=1)
 def get_recent_student_logs(self, student_id, number_of_logs):
+    r_specifiers = {
+            'host': 'localHost',
+            'port': '6379',
+            'db': '1'
+        }
+    try:
+        logs_dict = getRecentStudentLogs(student_id, number_of_logs)
 
-    logs_dict = getRecentStudentLogs(student_id, number_of_logs)
+        try: 
+            handleRedisIO("store", r_specifiers, "logs_dict", logs_dict)
+            return logs_dict
 
-    return logs_dict
+        except Exception as e:
+            print(f"ERROR: Failed to store logs to Redis")
+            
 
+    except Exception as e:
+        print(f"ERROR: Failed to get recent logs {e}")
 
 @celery.task(bind=True, worker_prefetch_multiplier=1, priority=1)
-def request_and_generate_hint(self, scenario_name, logs_dict, disable_scenario_context, temperature):
+def request_and_generate_hint(self, scenario_name, disable_scenario_context, temperature):
     r_specifiers = {
         'host': 'localHost',
         'port': '6379',
@@ -522,15 +536,19 @@ def request_and_generate_hint(self, scenario_name, logs_dict, disable_scenario_c
 
     generate_hint_task_id = self.request.id
     generate_hint_task_id_store_result = handleRedisIO("store", r_specifiers, "generate_hint_task_id", generate_hint_task_id)
+
+    try:
+        language_model = handleRedisIO("load", r_specifiers, "language_model")
+        logs_dict = handleRedisIO("load", r_specifiers, "logs_dict")
+        
+    except Exception as e:
+        print(f"ERROR: Failed to load items from Redis cache: {e}")
     
-    language_model = handleRedisIO("load", r_specifiers, "language_model")
-    cpu_resources_available = handleRedisIO("load", r_specifiers, "cpu_resources")
-    gpu_resources_available = handleRedisIO("load", r_specifiers, "gpu_resources")
     
     generated_hint, function_duration = generate_hint(language_model, logs_dict, scenario_name, disable_scenario_context, temperature)
     export_hint_to_csv(scenario_name, generated_hint, function_duration)
 
-    return {'generated_hint': generated_hint, 'logs_dict': logs_dict, 'cpu_resources_used': cpu_resources_available, 'gpu_rescources_used': gpu_resources_available, 'temperature': temperature}
+    return {'generated_hint': generated_hint, 'logs_dict': logs_dict}
 
 
 @celery.task(bind=True, worker_prefetch_multiplier=1, priority=1)

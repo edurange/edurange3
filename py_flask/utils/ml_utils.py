@@ -46,13 +46,13 @@ def create_model_object(cpu_resources, gpu_resources):
       try:
             language_model_object = Llama.from_pretrained(
                   repo_id="microsoft/Phi-3-mini-4k-instruct-gguf",
-                        filename="Phi-3-mini-4k-instruct-q4.gguf",
-                        verbose=False,
-                        n_ctx=4086, 
-                        n_threads=cpu_resources, 
-                        n_gpu_layers=gpu_resources,
-                        flash_attn=True,
-                        use_mlock=True,
+                  filename="Phi-3-mini-4k-instruct-q4.gguf",
+                  verbose=False,
+                  n_ctx=4086, 
+                  n_threads=cpu_resources, 
+                  n_gpu_layers=gpu_resources,
+                  flash_attn=True,
+                  use_mlock=True,
             )
             return language_model_object
 

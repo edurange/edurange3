@@ -474,24 +474,33 @@ def add_user_to_container():
 @blueprint_instructor.route("/get_hint", methods=['POST'])
 @jwt_and_csrf_required
 def get_hint():
+    r_specifiers = {
+        'host': 'localHost',
+        'port': '6379',
+        'db': '1'
+    }
+
     requestJSON = request.json
 
     this_scenario_name = requestJSON["scenario_name"]
     this_student_id= requestJSON["student_id"]
     this_disable_scenario_context = requestJSON["disable_scenario_context"]
     this_temperature = requestJSON["temperature"]
-    this_number_of_logs = 3
 
-
-    logs_dict = get_recent_student_logs.delay(this_student_id, this_number_of_logs).get(timeout=None)
-
-    result = request_and_generate_hint.delay(this_scenario_name, logs_dict, this_disable_scenario_context, this_temperature).get(timeout=None)
+    hint = request_and_generate_hint.delay(this_scenario_name, this_disable_scenario_context, this_temperature).get(timeout=None)
     
-    return jsonify(result)
+    return jsonify(hint)
 
 @blueprint_instructor.route("/get_student_logs", methods=['POST'])
 @jwt_and_csrf_required
 def get_student_logs_route():
+
+    r_specifiers = {
+        'host': 'localHost',
+        'port': '6379',
+        'db': '1'
+    }
+
     requestJSON = request.json
 
     this_student_id = requestJSON["student_id"]
@@ -499,7 +508,7 @@ def get_student_logs_route():
     this_number_of_logs = 3
     
     logs_dict = get_recent_student_logs.delay(this_student_id, this_number_of_logs).get(timeout=None)
-
+    
     return jsonify(logs_dict)
 
 @blueprint_instructor.route("/update_model", methods=['POST'])
