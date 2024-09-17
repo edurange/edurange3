@@ -249,7 +249,6 @@ const Instr_Hints = () => {
     try {
       const reqJSON = {
         scenario_name: selectedScenario_state.scenario_type.toLowerCase(),
-        student_id: selectedUser_state.id,
         disable_scenario_context: checkForDisableScenarioContext,
         temperature: temp_selected
       };

@@ -27,7 +27,7 @@ from flask import current_app, flash, jsonify
 from py_flask.utils.terraform_utils import adjust_network, find_and_copy_template, write_resource
 from py_flask.config.settings import CELERY_BROKER_URL, CELERY_RESULT_BACKEND
 from py_flask.utils.scenario_utils import claimOctet
-from py_flask.utils.ml_utils import generate_hint, export_hint_to_csv, get_system_resources, create_model_object
+from py_flask.utils.ml_utils import query_small_language_model_util, export_hint_to_csv, get_system_resources, create_model_object
 from py_flask.utils.instructor_utils import getLogs, getRecentStudentLogs
 from py_flask.utils.common_utils import handleRedisIO
 
@@ -519,36 +519,24 @@ def get_recent_student_logs(self, student_id, number_of_logs):
         print(f"ERROR: Failed to get recent logs {e}")
 
 @celery.task(bind=True, worker_prefetch_multiplier=1, priority=1)
-def request_and_generate_hint(self, scenario_name, disable_scenario_context, temperature):
-
+def cancel_generate_hint_celery(self):
     r_specifiers = {'host': 'localHost', 'port': '6379', 'db': '1'}
 
-    generate_hint_task_id = self.request.id
-    generate_hint_task_id_store_result = handleRedisIO(operation="store", r_specifiers=r_specifiers, key="generate_hint_task_id", input_data=generate_hint_task_id)
-
-    try:
-        language_model = handleRedisIO(operation="load", r_specifiers=r_specifiers, key="language_model")
-        logs_dict = handleRedisIO(operation="load", r_specifiers=r_specifiers, key="logs_dict")
-        
-    except Exception as e:
-        print(f"ERROR: Failed to load items from Redis cache: {e}")
+    query_small_language_model_task_id = handleRedisIO(operation="load", r_specifiers=r_specifiers, key="query_small_language_model_task_id")
+    self.app.control.revoke(query_small_language_model_task_id, terminate=True)
     
-    
-    generated_hint, function_duration = generate_hint(language_model, logs_dict, scenario_name, disable_scenario_context, temperature)
-    export_hint_to_csv(scenario_name, generated_hint, function_duration)
-
-    return {'generated_hint': generated_hint, 'logs_dict': logs_dict}
+    return {'status': query_small_language_model_task_id}
 
 
 @celery.task(bind=True, worker_prefetch_multiplier=1, priority=1)
-def cancel_generate_hint_celery(self):
-    r_specifiers = {'host': 'localHost', 'port': '6379', 'db': '1'}
-    
-    generate_hint_task_id = handleRedisIO(operation="load", r_specifiers=r_specifiers, key="generate_hint_task_id")
-    self.app.control.revoke(generate_hint_task_id, terminate=True)
-    
-    return {'status': generate_hint_task_id}
+def query_small_language_model_task(self, task, r_specifiers, generation_specifiers):
 
+    query_small_language_model_task_id = self.request.id
+    query_small_language_model_task_id_store_result = handleRedisIO(operation="store", r_specifiers=r_specifiers, key="query_small_language_model_task_id", input_data=query_small_language_model_task_id)
+    
+    response = query_small_language_model_util(task, r_specifiers, generation_specifiers)
+
+    return response
 
 
       

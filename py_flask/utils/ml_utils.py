@@ -15,6 +15,7 @@ from llama_cpp import Llama
 from llama_index.core import Settings
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from memory_profiler import profile, memory_usage
+from py_flask.utils.common_utils import handleRedisIO
 
 def get_system_resources():
       
@@ -69,58 +70,111 @@ def load_context_file_contents(context_file_type, scenario_name):
       except Exception as e:
             print(f"Failed to load context file contents: {e}")
 
-def generate_hint(language_model, logs_dict, scenario_name, disable_scenario_context, temperature):
-      start_time = time.time()
-      bash_history = logs_dict['bash']
-      chat_history = logs_dict['chat']
-      answer_history = logs_dict['responses']
-
-      if disable_scenario_context:
-                  
-            finalized_system_prompt = "##A student is completing a cyber-security scenario, look at their bash, chat and question/answer history and provide them a single concise hint on what to do next. The hint must not exceed two sentences in length."
-            finalized_user_prompt = f"  The student's Recent bash commands: {bash_history}. The student's recent chat messages: {chat_history}. The student's recent answers: {answer_history}. "
-
-            result = language_model(
-                  f"<|system|>{finalized_system_prompt}<|end|>\n<|user|>\n{finalized_user_prompt}<|end|>\n<|assistant|> ",
-                  max_tokens=30,
-                  stop=["<|end|>"], 
-                  echo=False, 
-                  temperature=temperature,
-            ) 
-
-            generated_hint = result["choices"][0]["text"]
-
-            stop_time = time.time()
-            function_duration = round(stop_time - start_time, 2)
-
-            return generated_hint, function_duration
-
-      else: 
-                  
-            scenario_summary = load_context_file_contents('scenario_summaries', scenario_name)
-            finalized_system_prompt = "##A student is completing a cyber-security scenario, review the scenario guide along with their bash, chat and question/answer history and provide them a single concise hint on what to do next. The hint must not exceed two sentences in length."
-            finalized_user_prompt = f" The scenario summary: {scenario_summary}. The student's recent bash commands: {bash_history}. The student's recent chat messages: {chat_history}. The student's recent answers: {answer_history}. "
-
-            result = language_model(
-                  f"<|system|>{finalized_system_prompt}<|end|>\n<|user|>\n{finalized_user_prompt}<|end|>\n<|assistant|> ",
-                  max_tokens=30,
-                  stop=["<|end|>"], 
-                  echo=False, 
-                  temperature=temperature,
-            ) 
-
-            generated_hint = result["choices"][0]["text"]
-
-            stop_time = time.time()
-            function_duration = round(stop_time - start_time, 2)
+def query_small_language_model_util(task, r_specifiers, generation_specifiers):
       
-            return generated_hint, function_duration
+      def custom_query(r_specifiers, generation_specifiers):
+            start_time = time.time()
 
-def export_hint_to_csv(scenario_name, generated_hint, function_duration):
+            #Query generation specifiers.
+            temperature = generation_specifiers['temperature']
+            max_tokens = generation_specifiers['max_tokens']
+            system_prompt = generation_specifiers['system_prompt'] 
+            user_prompt = generation_specifiers['system_prompt'] 
+
+            #Load language model object from Redis.
+            try:
+                  language_model = handleRedisIO(operation="load", r_specifiers=r_specifiers, key="language_model")
+            except Exception as e:
+                  print(f"ERROR: Failed to load items from Redis cache: {e}")
+
+            #Generate response
+            result = language_model(
+                  f"<|system|>{system_prompt}<|end|>\n<|user|>\n{user_prompt}<|end|>\n<|assistant|> ",
+                  max_tokens=max_tokens,
+                  stop=["<|end|>"], 
+                  echo=False, 
+                  temperature=temperature,
+            ) 
+
+            response = result["choices"][0]["text"]
+            stop_time = time.time()
+            duration = round(stop_time - start_time, 2)
+            return response, duration
+
+
+
+      def generate_hint(r_specifiers, generation_specifiers):
+            start_time = time.time()
+       
+            #Hint generation specifiers.
+            scenario_name = generation_specifiers['scenario_name']
+            disable_scenario_context = generation_specifiers['disable_scenario_context']
+            temperature = generation_specifiers['temperature']
+
+            #Load model and logs from Redis.
+            try:
+                  language_model = handleRedisIO(operation="load", r_specifiers=r_specifiers, key="language_model")
+                  logs_dict = handleRedisIO(operation="load", r_specifiers=r_specifiers, key="logs_dict")
+                
+            except Exception as e:
+                  print(f"ERROR: Failed to load items from Redis cache: {e}")
+            
+
+            bash_history = logs_dict['bash']
+            chat_history = logs_dict['chat']
+            answer_history = logs_dict['responses']
+
+            if disable_scenario_context:
+                  
+                  finalized_system_prompt = "##A student is completing a cyber-security scenario, look at their bash, chat and question/answer history and provide them a single concise hint on what to do next. The hint must not exceed two sentences in length."
+                  finalized_user_prompt = f"  The student's Recent bash commands: {bash_history}. The student's recent chat messages: {chat_history}. The student's recent answers: {answer_history}. "
+
+                  result = language_model(
+                        f"<|system|>{finalized_system_prompt}<|end|>\n<|user|>\n{finalized_user_prompt}<|end|>\n<|assistant|> ",
+                        max_tokens=30,
+                        stop=["<|end|>"], 
+                        echo=False, 
+                        temperature=temperature,
+                  ) 
+
+                  generated_hint = result["choices"][0]["text"]
+                  stop_time = time.time()
+                  duration = round(stop_time - start_time, 2)
+                  export_hint_to_csv(scenario_name, generated_hint, duration)
+
+                  return generated_hint, logs_dict, duration
+
+            else: 
+                        
+                  scenario_summary = load_context_file_contents('scenario_summaries', scenario_name)
+                  finalized_system_prompt = "##A student is completing a cyber-security scenario, review the scenario guide along with their bash, chat and question/answer history and provide them a single concise hint on what to do next. The hint must not exceed two sentences in length."
+                  finalized_user_prompt = f" The scenario summary: {scenario_summary}. The student's recent bash commands: {bash_history}. The student's recent chat messages: {chat_history}. The student's recent answers: {answer_history}. "
+
+                  result = language_model(
+                        f"<|system|>{finalized_system_prompt}<|end|>\n<|user|>\n{finalized_user_prompt}<|end|>\n<|assistant|> ",
+                        max_tokens=30,
+                        stop=["<|end|>"], 
+                        echo=False, 
+                        temperature=temperature,
+                  ) 
+
+                  generated_hint = result["choices"][0]["text"]
+
+                  stop_time = time.time()
+                  duration = round(stop_time - start_time, 2)
+                  export_hint_to_csv(scenario_name, generated_hint, duration)
+            
+                  return generated_hint, logs_dict, duration
+
+      if task == "generate_hint":
+            generated_hint, logs_dict, duration = generate_hint(r_specifiers, generation_specifiers)
+            return {'generated_hint': generated_hint, 'logs_dict': logs_dict, 'duration': duration}
+
+def export_hint_to_csv(scenario_name, generated_hint, duration):
       file_path = f"machine_learning/rt_generated_hint_results/{scenario_name}.csv"
       with open(file_path, 'a', newline='') as file:
         writer = csv.writer(file)
-        writer.writerow([scenario_name, generated_hint, function_duration])
+        writer.writerow([scenario_name, generated_hint, duration])
 
 
 

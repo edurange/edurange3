@@ -5,7 +5,7 @@ from py_flask.database.models import Users, StudentGroups, ScenarioGroups, Group
 from py_flask.utils.dataBuilder import get_group_data, get_user_data, get_scenario_data
 from py_flask.config.extensions import db
 from py_flask.utils.chat_utils import gen_chat_names, getChatLibrary
-from py_flask.utils.tasks import request_and_generate_hint, initialize_model, update_model, get_recent_student_logs, cancel_generate_hint_celery
+from py_flask.utils.tasks import query_small_language_model_task, initialize_model, update_model, get_recent_student_logs, cancel_generate_hint_celery
 from py_flask.utils.common_utils import handleRedisIO
 
 from flask import (
@@ -471,17 +471,31 @@ def add_user_to_container():
         # internal_command = f"useradd --home-dir /home/USERNAME --create-home --shell /bin/bash --password $(echo PASSWORD | openssl passwd -1 -stdin) USERNAME"
         # os.system(f"docker exec {internal_command} {c}")
 
+
+@blueprint_instructor.route("/custom_query_slm", methods=['POST'])
+@jwt_and_csrf_required
+def custom_query_small_language_model():
+    requestJSON = request.json
+    
+    r_specifiers = requestJSON['r_specifiers']
+    generation_specifiers = requestJSON['generation_specifiers']
+
+    response = query_small_language_model_task.delay(task="custom", r_specifiers=r_specifiers, generation_specifiers=generation_specifiers).get(timeout=None)
+    
+    return jsonify(response)
+
 @blueprint_instructor.route("/get_hint", methods=['POST'])
 @jwt_and_csrf_required
 def get_hint():
     requestJSON = request.json
+    r_specifiers = {'host': 'localHost', 'port': '6379', 'db': '1'}
 
     this_scenario_name = requestJSON["scenario_name"]
-    this_student_id= requestJSON["student_id"]
     this_disable_scenario_context = requestJSON["disable_scenario_context"]
     this_temperature = requestJSON["temperature"]
 
-    hint = request_and_generate_hint.delay(this_scenario_name, this_disable_scenario_context, this_temperature).get(timeout=None)
+    generation_specifiers = {'scenario_name': this_scenario_name, 'disable_scenario_context': this_disable_scenario_context, 'temperature': this_temperature}
+    hint = query_small_language_model_task.delay(task="generate_hint", r_specifiers=r_specifiers, generation_specifiers=generation_specifiers).get(timeout=None)
     
     return jsonify(hint)
 
@@ -528,20 +542,9 @@ def cancel_generate_hint_route():
 @jwt_and_csrf_required
 
 def get_resources():
-
     r_specifiers = {'host': 'localHost', 'port': '6379', 'db': '1'}
-    
-    cpu_resources_detected_str = handleRedisIO(operation="load", r_specifiers=r_specifiers, key="cpu_resources")
-    gpu_resources_detected_str = handleRedisIO(operation="load", r_specifiers=r_specifiers, key="gpu_resources")
 
-    if cpu_resources_detected_str == " ":
-        cpu_resources_detected_int = 0
-    else:
-        cpu_resources_detected_int = int(cpu_resources_detected_str)
+    cpu_resources_detected = int(handleRedisIO(operation="load", r_specifiers=r_specifiers, key="cpu_resources"))
+    gpu_resources_detected = int(handleRedisIO(operation="load", r_specifiers=r_specifiers, key="gpu_resources"))
 
-    if gpu_resources_detected_str == " ":
-        gpu_resources_detected_int = 0
-    else:
-        gpu_resources_detected_int = int(cpu_resources_detected_str)
-
-    return jsonify({'cpu_resources_detected': cpu_resources_detected_int, 'gpu_resources_detected': gpu_resources_detected_int})
+    return jsonify({'cpu_resources_detected': cpu_resources_detected, 'gpu_resources_detected': gpu_resources_detected})

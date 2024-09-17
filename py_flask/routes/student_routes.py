@@ -15,7 +15,6 @@ from py_flask.utils.auth_utils import jwt_and_csrf_required
 from py_flask.utils.chat_utils import getChannelDictList_byUser, getChatHistory_byUser
 from sqlalchemy.exc import SQLAlchemyError
 # from machine_learning.local_slm.phi_3_slm import generate_hint
-from py_flask.utils.tasks import request_and_generate_hint
 
 from py_flask.utils.error_utils import (
     custom_abort,
