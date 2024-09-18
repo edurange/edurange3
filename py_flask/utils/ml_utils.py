@@ -79,7 +79,7 @@ def query_small_language_model_util(task, r_specifiers, generation_specifiers):
             temperature = generation_specifiers['temperature']
             max_tokens = generation_specifiers['max_tokens']
             system_prompt = generation_specifiers['system_prompt'] 
-            user_prompt = generation_specifiers['system_prompt'] 
+            user_prompt = generation_specifiers['user_prompt'] 
 
             #Load language model object from Redis.
             try:

@@ -248,6 +248,10 @@ const Instr_Hints = () => {
 
     try {
       const reqJSON = {
+        host: 'localHost',
+        port: '6379',
+        db: '1',
+        task: "generate_hint",
         scenario_name: selectedScenario_state.scenario_type.toLowerCase(),
         disable_scenario_context: checkForDisableScenarioContext,
         temperature: temp_selected
@@ -256,7 +260,7 @@ const Instr_Hints = () => {
       console.log("EDUHint Request Object: ", reqJSON)
 
       const response = await axios.post(
-        "get_hint",
+        "/query_slm",
         reqJSON,
         {
           headers: {

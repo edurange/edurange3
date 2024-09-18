@@ -472,32 +472,39 @@ def add_user_to_container():
         # os.system(f"docker exec {internal_command} {c}")
 
 
-@blueprint_instructor.route("/custom_query_slm", methods=['POST'])
+@blueprint_instructor.route("/query_slm", methods=['POST'])
 @jwt_and_csrf_required
-def custom_query_small_language_model():
+def query_small_language_model():
     requestJSON = request.json
-    
-    r_specifiers = requestJSON['r_specifiers']
-    generation_specifiers = requestJSON['generation_specifiers']
+    this_task = requestJSON['task']
 
-    response = query_small_language_model_task.delay(task="custom", r_specifiers=r_specifiers, generation_specifiers=generation_specifiers).get(timeout=None)
+    #Redis parameters
+    this_host = requestJSON['host']
+    this_port = requestJSON['port']
+    this_db = requestJSON['db']
+    r_specifiers = {'host': this_host, 'port': this_port, 'db': this_db}
+
+    #General generation parameters
+    this_temperature = requestJSON['temperature']
+
+    if this_task == "generate_hint":
+        #Machine learning generation parameters
+        this_scenario_name = requestJSON['scenario_name']
+        this_disable_scenario_context = requestJSON['disable_scenario_context']
+
+        generation_specifiers = {'scenario_name': this_scenario_name, 'disable_scenario_context': this_disable_scenario_context, 'temperature': this_temperature}
+
+    if this_task == "custom_query":
+        this_max_tokens = requestJSON['max_tokens']
+        this_system_prompt = requestJSON['system_prompt'] 
+        this_user_prompt = requestJSON['user_prompt'] 
+
+        generation_specifiers = {'max_tokens': this_max_tokens, 'system_prompt': this_system_prompt, 'user_prompt': this_user_prompt}
+     
+
+    response = query_small_language_model_task.delay(task=this_task, r_specifiers=r_specifiers, generation_specifiers=generation_specifiers).get(timeout=None)
     
     return jsonify(response)
-
-@blueprint_instructor.route("/get_hint", methods=['POST'])
-@jwt_and_csrf_required
-def get_hint():
-    requestJSON = request.json
-    r_specifiers = {'host': 'localHost', 'port': '6379', 'db': '1'}
-
-    this_scenario_name = requestJSON["scenario_name"]
-    this_disable_scenario_context = requestJSON["disable_scenario_context"]
-    this_temperature = requestJSON["temperature"]
-
-    generation_specifiers = {'scenario_name': this_scenario_name, 'disable_scenario_context': this_disable_scenario_context, 'temperature': this_temperature}
-    hint = query_small_language_model_task.delay(task="generate_hint", r_specifiers=r_specifiers, generation_specifiers=generation_specifiers).get(timeout=None)
-    
-    return jsonify(hint)
 
 @blueprint_instructor.route("/get_student_logs", methods=['POST'])
 @jwt_and_csrf_required
