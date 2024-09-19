@@ -31,13 +31,6 @@ logger.addHandler(console_handler)
 # Ensure propagation is set to True
 # logger.propagate = True
 
-# def find_and_copy_template(s_type, c_name):
-#     try:
-#         shutil.copy(path + '/' + c_name + '.tf.json', c_name + '.tf.json')
-#     except FileNotFoundError:
-#         return "Template not found, or path error"
-
-
 def find_and_copy_template(s_type, c_name):
     path = '../../../scenarios/prod/' + s_type
     # Validate inputs
