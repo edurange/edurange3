@@ -17,6 +17,35 @@ from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from memory_profiler import profile, memory_usage
 from py_flask.utils.common_utils import handleRedisIO
 
+
+"""
+For local generation we use the Phi-3 small language model, provided is it's license:
+
+Microsoft.
+Copyright (c) Microsoft Corporation.
+
+MIT License
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED *AS IS*, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+"""
+
 def get_system_resources():
       
       def determine_cpu_resources():   
@@ -43,7 +72,8 @@ def get_system_resources():
 
       return cpu_resources, gpu_resources
 
-def create_model_object(cpu_resources, gpu_resources):  
+def create_model_object(cpu_resources: int, gpu_resources: int) -> None:  
+
       try:
             language_model_object = Llama.from_pretrained(
                   repo_id="microsoft/Phi-3-mini-4k-instruct-gguf",
@@ -60,8 +90,10 @@ def create_model_object(cpu_resources, gpu_resources):
       except Exception as e:
             raise Exception(f"Failed to initialize model object: {e}")
 
-def load_context_file_contents(context_file_type, scenario_name):
+def load_context_file_contents(context_file_type: str, scenario_name: str) -> str:
+
       file_path = f"machine_learning/context_files/{context_file_type}/{scenario_name}.txt"
+
       try: 
             with open(file_path, 'r', encoding='utf-8') as file:
                   context_file_content = file.read()
@@ -70,13 +102,14 @@ def load_context_file_contents(context_file_type, scenario_name):
       except Exception as e:
             print(f"Failed to load context file contents: {e}")
 
-def query_small_language_model_util(task, r_specifiers, generation_specifiers):
+def query_small_language_model_util(task: str, r_specifiers: dict, generation_specifiers: dict) -> dict:
       
-      def custom_query(r_specifiers, generation_specifiers):
+      def custom_query(r_specifiers: dict, generation_specifiers: dict) -> tuple[str, int]:
+
             start_time = time.time()
 
             #Query generation specifiers.
-            temperature = generation_specifiers['temperature']
+            temperature = float(generation_specifiers['temperature'])
             max_tokens = generation_specifiers['max_tokens']
             system_prompt = generation_specifiers['system_prompt'] 
             user_prompt = generation_specifiers['user_prompt'] 
@@ -97,21 +130,23 @@ def query_small_language_model_util(task, r_specifiers, generation_specifiers):
             ) 
 
             response = result["choices"][0]["text"]
+
             stop_time = time.time()
             duration = round(stop_time - start_time, 2)
+
             return response, duration
 
 
 
-      def generate_hint(r_specifiers, generation_specifiers):
+      def generate_hint(r_specifiers: dict, generation_specifiers: dict) -> list[str, dict, int]:
+
             start_time = time.time()
        
             #Hint generation specifiers.
             scenario_name = generation_specifiers['scenario_name']
             disable_scenario_context = generation_specifiers['disable_scenario_context']
-            temperature = generation_specifiers['temperature']
+            temperature = float(generation_specifiers['temperature'])
 
-            #Load model and logs from Redis.
             try:
                   language_model = handleRedisIO(operation="load", r_specifiers=r_specifiers, key="language_model")
                   logs_dict = handleRedisIO(operation="load", r_specifiers=r_specifiers, key="logs_dict")
@@ -119,7 +154,6 @@ def query_small_language_model_util(task, r_specifiers, generation_specifiers):
             except Exception as e:
                   print(f"ERROR: Failed to load items from Redis cache: {e}")
             
-
             bash_history = logs_dict['bash']
             chat_history = logs_dict['chat']
             answer_history = logs_dict['responses']
@@ -131,7 +165,7 @@ def query_small_language_model_util(task, r_specifiers, generation_specifiers):
 
                   result = language_model(
                         f"<|system|>{finalized_system_prompt}<|end|>\n<|user|>\n{finalized_user_prompt}<|end|>\n<|assistant|> ",
-                        max_tokens=30,
+                        max_tokens=-1,
                         stop=["<|end|>"], 
                         echo=False, 
                         temperature=temperature,
@@ -152,7 +186,7 @@ def query_small_language_model_util(task, r_specifiers, generation_specifiers):
 
                   result = language_model(
                         f"<|system|>{finalized_system_prompt}<|end|>\n<|user|>\n{finalized_user_prompt}<|end|>\n<|assistant|> ",
-                        max_tokens=30,
+                        max_tokens=-1,
                         stop=["<|end|>"], 
                         echo=False, 
                         temperature=temperature,
@@ -170,8 +204,10 @@ def query_small_language_model_util(task, r_specifiers, generation_specifiers):
             generated_hint, logs_dict, duration = generate_hint(r_specifiers, generation_specifiers)
             return {'generated_hint': generated_hint, 'logs_dict': logs_dict, 'duration': duration}
 
-def export_hint_to_csv(scenario_name, generated_hint, duration):
+def export_hint_to_csv(scenario_name: str, generated_hint: str, duration: int):
+
       file_path = f"machine_learning/rt_generated_hint_results/{scenario_name}.csv"
+
       with open(file_path, 'a', newline='') as file:
         writer = csv.writer(file)
         writer.writerow([scenario_name, generated_hint, duration])
