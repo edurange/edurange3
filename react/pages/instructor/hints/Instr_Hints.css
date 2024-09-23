@@ -253,8 +253,8 @@
   }
 
   .resource-preset-buttons {
-    display: flex; /* Enable flexbox layout */
-    gap: 5px; /* Space between buttons */
+    display: flex; 
+    gap: 5px; 
     margin-top: 10px;
     margin-bottom: 10px;
   }
@@ -270,7 +270,7 @@
     width: 50%; 
     cursor: pointer;
     transition: transform 0.3s ease;
-    white-space: normal; /* Allow text to wrap */
+    white-space: normal; 
     word-wrap: break-word;
     box-sizing: border-box;
   }
@@ -395,11 +395,16 @@
   }
   
 
+  @keyframes rotate {
+    0% { transform: rotate(0deg); }
+    25% { transform: rotate(90deg); }
+    50% { transform: rotate(180deg); }
+    75% { transform: rotate(270deg); }
+    100% { transform: rotate(360deg); }
+}
 
-
-
-  .elapsed-time-counter {
-      margin-top: 10px;
-      font-size: 15px;
-  }
-    
+.hourglass{
+  animation: rotate 3s infinite steps(1);
+  margin: 5px;
+  font-size: 24px;
+}

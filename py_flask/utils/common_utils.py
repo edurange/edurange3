@@ -1,6 +1,7 @@
 import random
 import redis
 import pickle
+import pyopencl as cl
 
 def generate_alphanum(length):
     alphanums = '1234567890abcdefghijklmnopqrstuvwxyz'
@@ -65,3 +66,27 @@ def handleRedisIO(operation, r_specifiers, key, input_data=None):
 
         else:
             raise Exception(f"Operation not valid, only store, load and delete are available.")
+
+    
+def get_system_resources():
+    def determine_cpu_resources():   
+        num_cpus = os.cpu_count()
+        if num_cpus and num_cpus > 0:
+            return num_cpus
+        else:   
+            raise ValueError(f"Invalid CPU count: {num_cpus}")
+
+    def determine_gpu_resources():
+        try:
+            platforms = cl.get_platforms()
+            for platform in platforms:
+                gpu_device = platform.get_devices(device_type=cl.device_type.GPU)
+                if gpu_device:
+                    return -1
+            return 0   
+
+        except Exception as GPU_NOT_FOUND:
+            return 0
+      
+      
+    return determine_cpu_resources(), determine_gpu_resources()

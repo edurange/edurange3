@@ -8,6 +8,7 @@ import './Instr_Hints.css';
 
 const Instr_Hints = () => {
 
+  // States for initialization
   const { socket_ref, scenarios_state, users_state, groups_state } = useContext(InstructorRouter_context);
   const { userData_state } = useContext(HomeRouter_context);
   const {
@@ -19,11 +20,26 @@ const Instr_Hints = () => {
     set_clipboard_state
   } = useContext(AppContext);
 
+  // State for resources
+  const [cpu_resources_detected, set_cpu_resources_detected] = useState('');
+  const [gpu_resources_detected, set_gpu_resources_detected] = useState('');
+
+  // State for overlay lock
+  const [experimentalConfirmLock, set_experimentalConfirmLock] = React.useState(() => {
+    const localStorageValue = localStorage.getItem('experimentalFeatureLockValue');
+    return localStorageValue ? JSON.parse(localStorageValue) : true;
+  });
+
+  // States for hints
   const [hint_state, set_hint_state] = useState('');
+  const [newHint, set_newHint] = useState('');
+
+  // States for student logs
   const [student_bash_logs_state, set_student_bash_logs_state] = useState('');
   const [student_chat_logs_state, set_student_chat_logs_state] = useState('');
   const [student_responses_logs_state, set_student_responses_logs_state] = useState('');
 
+  // States for selecting from scenario / student dropdowns 
   const [selectedScenario_state, set_selectedScenario_state] = useState({
     id: -1,
     name: 'n/a',
@@ -31,40 +47,42 @@ const Instr_Hints = () => {
   });
   const [selectedUser_state, set_selectedUser_state] = useState('');
 
-  const [userIDinput, set_userIDinput] = useState('');
-  const [loading, set_loading] = useState(false);
-  const [elapsedTime, set_elapsedTime] = useState(0);
-  const [error, set_error] = useState('');
+  //Editing, loading and error states
   const [isEditing, set_isEditing] = useState(false);
-  const [newHint, set_newHint] = useState('');
-  const [checkForDisableScenarioContext, set_checked_for_disable_scenario_context] = React.useState(false);
-  const [checkForGPUDisable, set_checked_for_gpu_disable] = React.useState(false);
+  const [loading, set_loading] = useState(false);
+  const [error, set_error] = useState('');
 
-  const [isExpandedLogs, set_isExpandedLogs] = useState(false);
-  const [isExpandedSettings, set_isExpandedSettings] = useState(false);
-  const [isExpandedAdvancedSettings, set_isExpandedAdvancedSettings] = useState(false);
-  
+  // States for dropdown click / expand
 
   const [isClickedLogs, set_isClickedLogs] = useState(false);
   const [isClickedSettings, set_isClickedSettings] = useState(false);
   const [isClickedAdvancedSettings, set_isClickedAdvancedSettings] = useState(false);
 
+  const [isExpandedLogs, set_isExpandedLogs] = useState(false);
+  const [isExpandedSettings, set_isExpandedSettings] = useState(false);
+  const [isExpandedAdvancedSettings, set_isExpandedAdvancedSettings] = useState(false);
+
+  // States for generation specifications
+  const [checkForDisableScenarioContext, set_checked_for_disable_scenario_context] = React.useState(false);
+  const [checkForGPUDisable, set_checked_for_gpu_disable] = React.useState(false);
+
+  // States for generation presets
   const [isClickedSpeedSetting, set_isClickedSpeedSetting] = useState(false);
-  const [isClickedBalancedSetting, set_isClickedBalancedSetting] = useState(true);
   const [isClickedQualitySetting, set_isClickedQualitySetting] = useState(false);
 
-  const [experimentalConfirmLock, set_experimentalConfirmLock] = React.useState(() => {
-    const localStorageValue = localStorage.getItem('experimentalFeatureLockValue');
-    return localStorageValue ? JSON.parse(localStorageValue) : true;
-  });
-
-  const [cpu_resources_detected, set_cpu_resources_detected] = useState('');
-  const [gpu_resources_detected, set_gpu_resources_detected] = useState('');
+  
+  // Logic for overlay lock
 
   useEffect(() => {
     localStorage.setItem('experimentalFeatureLockValue', JSON.stringify(experimentalConfirmLock));
   }, [experimentalConfirmLock]);
 
+  const handleOkExperimentalFeature = () => {
+    set_experimentalConfirmLock(false);
+    set_experimentalConfirmLockInLocalStorage();
+  };
+
+  // Logic for resource allocation
 
   const getResources = async() => {
     try {
@@ -94,7 +112,6 @@ const Instr_Hints = () => {
     getResources();
   }, []);
 
-
   const [cpu_resources_selected, set_cpu_resources_selected] = useState(Number(cpu_resources_detected));
   const [gpu_resources_selected, set_gpu_resources_selected] = useState(Number(gpu_resources_detected));
   const [temp_selected, set_temp_selected] = useState(0.3);
@@ -104,6 +121,7 @@ const Instr_Hints = () => {
     set_cpu_resources_selected(newValue);
   };
   
+  // Logic for updating model
 
   const updateModelWithNewSettings = async() => {
     try {
@@ -129,6 +147,9 @@ const Instr_Hints = () => {
   };
 
 
+
+  // Logic for dropdown click / expand
+
   const toggleExpandLogs = () => {
       set_isExpandedLogs(!isExpandedLogs);
       set_isClickedLogs(!isClickedLogs);
@@ -143,39 +164,39 @@ const Instr_Hints = () => {
     set_isExpandedAdvancedSettings(!isExpandedAdvancedSettings);
     set_isClickedAdvancedSettings(!isClickedAdvancedSettings);
 };
-  
+
+
+  // Logic for generation settings
   
   const handleChangeCheckForDisableScenarioContext = () => {
     set_checked_for_disable_scenario_context(!checkForDisableScenarioContext);
-  };
-
-  
-  const handleChangeToggleForSpeedSetting = () => {
-    set_isClickedBalancedSetting(false);
-    set_isClickedQualitySetting(false);
-    set_isClickedSpeedSetting(!isClickedSpeedSetting);
-    //Speed settings:
-    set_checked_for_disable_scenario_context(true);
-    set_cpu_resources_selected(cpu_resources_detected);
-    set_checked_for_gpu_disable(false);
-  };
-
-  
-
-  const handleChangeToggleForQualitySetting = () => {
-    set_isClickedSpeedSetting(false);
-    set_isClickedBalancedSetting(false);
-    set_isClickedQualitySetting(!isClickedQualitySetting);
-    //Quality settings:
-    set_checked_for_disable_scenario_context(false);
-    set_cpu_resources_selected(cpu_resources_detected);
-    set_checked_for_gpu_disable(false);
   };
 
   const handleChangeCheckForGPUDisable = () => {
     handleChangeToggleDeselectForAllPresetSettings()
     set_checked_for_gpu_disable(!checkForGPUDisable);
   };
+
+  
+  // Logic for generation presets
+
+  const handleChangeToggleForSpeedSetting = () => {
+    set_isClickedQualitySetting(false);
+    set_isClickedSpeedSetting(!isClickedSpeedSetting);
+    set_checked_for_disable_scenario_context(true);
+    set_cpu_resources_selected(cpu_resources_detected);
+    set_checked_for_gpu_disable(false);
+  };
+
+  const handleChangeToggleForQualitySetting = () => {
+    set_isClickedSpeedSetting(false);
+    set_isClickedQualitySetting(!isClickedQualitySetting);
+    set_checked_for_disable_scenario_context(false);
+    set_cpu_resources_selected(cpu_resources_detected);
+    set_checked_for_gpu_disable(false);
+  };
+
+  // Logic for resource allocation
 
   const handleChangeCPUResourcesSelected = (e) => {
     set_cpu_resources_selected(e.target.value);
@@ -191,6 +212,7 @@ const Instr_Hints = () => {
 
   
 
+  // Logic for retrieving student logs
   const getStudentLogs = async() => {
     set_error('');
 
@@ -242,6 +264,15 @@ const Instr_Hints = () => {
     }
   };
 
+  useEffect(() => {
+    if (selectedUser_state != '') {
+      getStudentLogs();
+    }
+  }, [selectedUser_state]); 
+
+
+  // Logic for requesting / cancelling hints
+
   const requestHint = async() => {
     set_loading(true);
     set_error('');
@@ -281,6 +312,7 @@ const Instr_Hints = () => {
     }
   };
 
+
   const cancelHint = async() => {
     if(loading)
       try {
@@ -304,6 +336,8 @@ const Instr_Hints = () => {
         set_loading(false);
       }
   };
+
+  // Logic for sending hint through chat
 
   const filteredUser = users_state.filter((user) => user.id === 3)[0];
   const filteredUserHomeChan = filteredUser?.channel_data?.home_channel;
@@ -339,6 +373,8 @@ const Instr_Hints = () => {
     }
   };
 
+  // Logic for editing hint
+
 
   const handleSaveHint = () => {
     set_hint_state(newHint); 
@@ -354,17 +390,6 @@ const Instr_Hints = () => {
     set_isEditing(false); 
   };
 
-  const handleOkExperimentalFeature = () => {
-    set_experimentalConfirmLock(false);
-    set_experimentalConfirmLockInLocalStorage();
-  };
-
-  useEffect(() => {
-    if (selectedUser_state != '') {
-      getStudentLogs();
-    }
-  }, [selectedUser_state]); 
-
   useEffect(() => {
     if (!isEditing) {
       set_newHint(hint_state);
@@ -373,41 +398,26 @@ const Instr_Hints = () => {
 
 
 
-  useEffect(() => {
-    let timer;
-    
-    if (loading) {
-      timer = setInterval(() => {
-        set_elapsedTime(prevTime => prevTime +1);
-      }, 1000);
-    }
-    else {
-      set_elapsedTime(0);
-    }
-      return () => {
-        clearInterval(timer);
-      };
-  }, [loading]);
 
-  
-
-
+  // Component for hint generation loading screen
   const LoadingOverlay = () => (
     <div className="loading-overlay">
       <div>
         <span>GENERATING HINT</span>
+      </div>
+      <div>
         <span className="hourglass">⌛</span>
       </div>
       <div>
         <span>Please remain on the page...</span>
       </div>
-        <span className="elapsed-time-counter"> Elapsed time: {elapsedTime} seconds </span>
       <div>
         <button onClick={cancelHint} className="cancel-hint-button">CANCEL HINT 🚫 </button>
       </div>
     </div>
   );
 
+  // Component for experimental confirm lock overlay
   const ExperimentalFeatureConfirmLockOverlay = () => (
     <div className="experimental-feature-confirm-lock-overlay">
       <div>
@@ -420,7 +430,7 @@ const Instr_Hints = () => {
     </div>
   );
 
-
+  // Component for hint section
   const HintSection = ({ hintState, onEditHint, onHintSend, isEditing, onSave, onCancel, onChange }) => {
     return (
       <div className="hint-section">

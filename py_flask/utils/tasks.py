@@ -27,7 +27,7 @@ from flask import current_app, flash, jsonify
 from py_flask.utils.terraform_utils import adjust_network, find_and_copy_template, write_resource
 from py_flask.config.settings import CELERY_BROKER_URL, CELERY_RESULT_BACKEND
 from py_flask.utils.scenario_utils import claimOctet
-from py_flask.utils.ml_utils import query_small_language_model_util, export_hint_to_csv, get_system_resources, create_model_object
+from py_flask.utils.eduhints_utils import get_system_resources, create_model_object, load_context_file_contents, export_hint_to_csv
 from py_flask.utils.instructor_utils import getLogs, getRecentStudentLogs
 from py_flask.utils.common_utils import handleRedisIO
 
@@ -534,9 +534,108 @@ def query_small_language_model_task(self, task, r_specifiers, generation_specifi
     query_small_language_model_task_id = self.request.id
     query_small_language_model_task_id_store_result = handleRedisIO(operation="store", r_specifiers=r_specifiers, key="query_small_language_model_task_id", input_data=query_small_language_model_task_id)
     
-    response = query_small_language_model_util(task, r_specifiers, generation_specifiers)
+    
+    def custom_query(r_specifiers: dict, generation_specifiers: dict) -> tuple[str, int]:
 
-    return response
+        start_time = time.time()
+
+        #Query generation specifiers.
+        temperature = float(generation_specifiers['temperature'])
+        max_tokens = generation_specifiers['max_tokens']
+        system_prompt = generation_specifiers['system_prompt'] 
+        user_prompt = generation_specifiers['user_prompt'] 
+
+        #Load language model object from Redis.
+        try:
+            language_model = handleRedisIO(operation="load", r_specifiers=r_specifiers, key="language_model")
+        except Exception as e:
+            print(f"ERROR: Failed to load items from Redis cache: {e}")
+
+        #Generate response
+        result = language_model(
+            f"<|system|>{system_prompt}<|end|>\n<|user|>\n{user_prompt}<|end|>\n<|assistant|> ",
+            max_tokens=max_tokens,
+            stop=["<|end|>"], 
+            echo=False, 
+            temperature=temperature,
+        ) 
+
+        response = result["choices"][0]["text"]
+
+        stop_time = time.time()
+        duration = round(stop_time - start_time, 2)
+
+        return response, duration
+
+
+
+    def generate_hint(r_specifiers: dict, generation_specifiers: dict) -> list[str, dict, int]:
+
+        start_time = time.time()
+       
+        #Hint generation specifiers.
+        scenario_name = generation_specifiers['scenario_name']
+        disable_scenario_context = generation_specifiers['disable_scenario_context']
+        temperature = float(generation_specifiers['temperature'])
+
+        try:
+            language_model = handleRedisIO(operation="load", r_specifiers=r_specifiers, key="language_model")
+            logs_dict = handleRedisIO(operation="load", r_specifiers=r_specifiers, key="logs_dict")
+                
+        except Exception as e:
+            print(f"ERROR: Failed to load items from Redis cache: {e}")
+            
+        bash_history = logs_dict['bash']
+        chat_history = logs_dict['chat']
+        answer_history = logs_dict['responses']
+
+        if disable_scenario_context:
+                  
+            finalized_system_prompt = "##A student is completing a cyber-security scenario, look at their bash, chat and question/answer history and provide them a single concise hint on what to do next. The hint must not exceed two sentences in length."
+            finalized_user_prompt = f"  The student's Recent bash commands: {bash_history}. The student's recent chat messages: {chat_history}. The student's recent answers: {answer_history}. "
+
+            result = language_model(
+                f"<|system|>{finalized_system_prompt}<|end|>\n<|user|>\n{finalized_user_prompt}<|end|>\n<|assistant|> ",
+                max_tokens=-1,
+                stop=["<|end|>"], 
+                echo=False, 
+                temperature=temperature,
+            ) 
+
+            generated_hint = result["choices"][0]["text"]
+            stop_time = time.time()
+            duration = round(stop_time - start_time, 2)
+            export_hint_to_csv(scenario_name, generated_hint, duration)
+
+            return generated_hint, logs_dict, duration
+
+        else: 
+                        
+            scenario_summary = load_context_file_contents('scenario_summaries', scenario_name)
+            finalized_system_prompt = "##A student is completing a cyber-security scenario, review the scenario guide along with their bash, chat and question/answer history and provide them a single concise hint on what to do next. The hint must not exceed two sentences in length."
+            finalized_user_prompt = f" The scenario summary: {scenario_summary}. The student's recent bash commands: {bash_history}. The student's recent chat messages: {chat_history}. The student's recent answers: {answer_history}. "
+
+            result = language_model(
+                f"<|system|>{finalized_system_prompt}<|end|>\n<|user|>\n{finalized_user_prompt}<|end|>\n<|assistant|> ",
+                max_tokens=-1,
+                stop=["<|end|>"], 
+                echo=False, 
+                temperature=temperature,
+            ) 
+
+            generated_hint = result["choices"][0]["text"]
+
+            stop_time = time.time()
+            duration = round(stop_time - start_time, 2)
+            export_hint_to_csv(scenario_name, generated_hint, duration)
+            
+            return generated_hint, logs_dict, duration
+
+    if task == "generate_hint":
+        generated_hint, logs_dict, duration = generate_hint(r_specifiers, generation_specifiers)
+        return {'generated_hint': generated_hint, 'logs_dict': logs_dict, 'duration': duration}
+    else:
+        return { }
 
 
       
