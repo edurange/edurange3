@@ -39,10 +39,7 @@ function Home_router() {
     desiredNavMetas_state, set_desiredNavMetas_state,
     clipboard_state, set_clipboard_state
 } = useContext(AppContext);
-<<<<<<< HEAD
 
-=======
->>>>>>> origin/ml_dashboard
   const navigate = useNavigate();
 
   function begin_nav(navMetas) {
