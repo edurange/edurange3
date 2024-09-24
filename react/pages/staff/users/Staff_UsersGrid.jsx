@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useContext, useState, useEffect } from 'react';
-import { InstructorRouter_context } from '../Staff_router';
+import { StaffRouter_context } from '../Staff_router';
 import { HomeRouter_context } from '@pub/Home_router';
 import '../scenarios/Staff_TableGrid.css';
 import { AppContext } from '../../../config/AxiosConfig';
@@ -17,7 +17,7 @@ function Staff_UsersGrid() {
         chatObjs_UL_state, channelAccess_state,
         logs_state, taAssignments_state, set_taAssignments_state,
         taDict_state, set_taDict_state
-    } = useContext(InstructorRouter_context);
+    } = useContext(StaffRouter_context);
 
     const {
         userData_state

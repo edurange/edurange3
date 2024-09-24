@@ -7,13 +7,13 @@ import { useParams } from 'react-router-dom';
 import '@assets/css/tables.css';
 import './Staff_ScenDetail.css';
 
-import { InstructorRouter_context } from '../Staff_router';
+import { StaffRouter_context } from '../Staff_router';
 import { statusSwitch } from './Staff_ScenGrid';
 
 function Staff_ScenDetail() {
 
     const { scenarioID } = useParams();
-    const { scenarios_state, set_scenarios_state, groups_state } = useContext(InstructorRouter_context);
+    const { scenarios_state, set_scenarios_state, groups_state } = useContext(StaffRouter_context);
 
     const thisScenario = scenarios_state.filter(scenario => scenario.id === parseInt(scenarioID))?.[0]
                         

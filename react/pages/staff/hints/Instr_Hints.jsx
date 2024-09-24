@@ -1,15 +1,26 @@
 import React, { useState, useContext, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { InstructorRouter_context } from '../Staff_router';
+import { StaffRouter_context } from '../Staff_router';
 import { HomeRouter_context } from '../../pub/Home_router';
 import { AppContext } from '../../../config/AxiosConfig';
 import { ChatMessage } from '../../../modules/utils/chat_modules';
 import './Instr_Hints.css';
 
-const Instr_Hints = () => {
+function Instr_Hints() {
+    const {
+        users_state, set_users_state,
+        groups_state, set_groups_state,
+        scenarios_state, set_scenarios_state,
+        scenarioDetail_state, set_scenarioDetail_state,
+        userDetail_state, set_userDetail_state,
+        tempUsers_state, set_tempUsers_state,
+        chatObjs_UL_state, set_chatObjs_UL_state,
+        channelAccess_state, set_channelAccess_state,
+        selectedMessage_state, set_selectedMessage_state,
+        socket_ref, lastChat_ref, logs_state
+    } = useContext(StaffRouter_context);
 
   // States for initialization
-  const { socket_ref, scenarios_state, users_state, groups_state } = useContext(InstructorRouter_context);
   const { userData_state } = useContext(HomeRouter_context);
   const {
     errorModal_state,

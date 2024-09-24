@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect, useMemo } from 'react';
 import Dropdown from '@components/Dropdown.jsx';
 import '@components/Dropdown.css'
-import { InstructorRouter_context } from '../Staff_router.jsx';
+import { StaffRouter_context } from '../Staff_router.jsx';
 import LogTable from './LogTable.jsx';
 import Placard from '@components/Placard.jsx';
 
@@ -19,7 +19,7 @@ function Staff_LogsViewer() {
         logType_filter: false,
         dateRange_filter: false
     });
-    const { scenarios_state, users_state, logs_state } = useContext(InstructorRouter_context);
+    const { scenarios_state, users_state, logs_state } = useContext(StaffRouter_context);
     const [logsToShow_state, set_logsToShow_state] = useState(logs_state)
 
     if (!scenarios_state || !users_state) { return <></> }

@@ -1,7 +1,7 @@
 
 import React, { useContext } from "react";
 import './Msg_Bubble.css';
-import { InstructorRouter_context } from "../../staff/Staff_router";
+import { StaffRouter_context } from "../../staff/Staff_router";
 import { StudentRouter_context } from "../Student_router";
 
 function Msg_Bubble({ is_staff, message_obj, user_id, is_outgoing }) {
@@ -9,13 +9,7 @@ function Msg_Bubble({ is_staff, message_obj, user_id, is_outgoing }) {
         aliasDict_state,
         selectedMessage_state, 
         set_selectedMessage_state 
-    } = is_staff ? useContext(InstructorRouter_context) : useContext(StudentRouter_context)
-    // { 
-    //     selectedMessage_state: null, 
-    //     set_selectedMessage_state: null,
-    //     aliasDict_state
-    // }
-    ;
+    } = is_staff ? useContext(StaffRouter_context) : useContext(StudentRouter_context);
 
     function handleSelectionClick(event, message) {
         event.stopPropagation();

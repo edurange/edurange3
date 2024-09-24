@@ -1,14 +1,14 @@
 import axios from 'axios';
 import React, { useState, useContext } from 'react';
 import { scenarioShells } from '@modules/shells/scenarioType_shells';
-import { InstructorRouter_context } from '../Staff_router';
+import { StaffRouter_context } from '../Staff_router';
 import '../dashboard/Staff_Dash.css';
 
 function CreateScenario() {
     const [newScenType_state, set_newScenType_state] = useState('');
     const [newScenName_state, set_newScenName_state] = useState('');
     const [selectedGroup, setSelectedGroup] = useState(null);
-    const { scenarios_state, set_scenarios_state, groups_state, set_scenarioDetail_state } = useContext(InstructorRouter_context);
+    const { scenarios_state, set_scenarios_state, groups_state, set_scenarioDetail_state } = useContext(StaffRouter_context);
     const [buttonDisabled_state, set_buttonDisabled_state] = useState(true);
 
     const handle_scenType_change = (event) => {

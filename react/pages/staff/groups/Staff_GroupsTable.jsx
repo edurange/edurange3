@@ -2,7 +2,7 @@
 import React, { useContext } from 'react';
 import axios from 'axios';
 import Copy_button_flex from '@components/Copy_button_flex';
-import { InstructorRouter_context } from '../Staff_router';
+import { StaffRouter_context } from '../Staff_router';
 import { HomeRouter_context } from '@pub/Home_router';
 import '@assets/css/tables.css';
 import { AppContext } from '../../../config/AxiosConfig';
@@ -10,7 +10,7 @@ import { AppContext } from '../../../config/AxiosConfig';
 
 function Staff_GroupsTable() {
 
-    const { groups_state, set_groups_state } = useContext(InstructorRouter_context);
+    const { groups_state, set_groups_state } = useContext(StaffRouter_context);
 
     const {
         desiredNavMetas_state, set_desiredNavMetas_state,

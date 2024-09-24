@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import '@staff/chat/Chat_Staff.css';
-import { InstructorRouter_context } from '../Staff_router';
+import { StaffRouter_context } from '../Staff_router';
 import { HomeRouter_context } from '../../pub/Home_router';
 import { useSortedData } from '../../../modules/utils/sorting_modules';
 import ListController from '../../../components/ListController';
@@ -18,7 +18,7 @@ function Chat_Staff({is_allSeeing, selectedUser_obj}) {
         selectedMessage_state, set_selectedMessage_state,
         taDict_state,
         chatObjs_UL_state
-    } = useContext(InstructorRouter_context);
+    } = useContext(StaffRouter_context);
 
     const [messagesToDisplay_state, set_messagesToDisplay_state] = useState([]);
     const [sortDirection_state, set_sortDirection_state] = useState('asc');
