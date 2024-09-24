@@ -1,0 +1,6 @@
+Ship: Solar Wind
+Current Clearance: Level 2
+Affiliation: Free Trade Coalition
+Requested Level: Level 3
+Reason: Trade agreement negotiation in restricted diplomatic zones
+Contact: Diplomatic Envoy Lyra Keslin

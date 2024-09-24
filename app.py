@@ -27,7 +27,7 @@ def create_admin():
         password=password,
         active=True,
         is_admin=True,
-        is_instructor=True,
+        is_staff=True,
     )
 
 def create_all_group(id):

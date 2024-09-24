@@ -1,13 +1,13 @@
-*,pwd,*
-*,man\s{1}pwd,*
-*,ls,*
-*,man\sls,*
-*,ls\s-l,*
-*,cd\sview,*
-*,ls\s-a,*
-*,cd\s\.\.,*
-*,ls\s-l\s-a|ls\s-la|ls\s-al|ls\s-a\s-l,*
-*,mv\sfile1\.txt\srenamed_file1\.txt,*
-*,cp\sfile2\.txt\scopied_file2\.txt,*
-*,chmod\s660\scopied_perm1\.txt,*
-*,chmod\s764\scopied_perm2\.txt,*
+*,cd \/,*
+*,cd \/root,*
+*,man,*
+*,ls -la,*
+*,file \w+.jpg,*
+*,echo "This is cool" > \w+,*
+*,cat,*
+*,cat \w+ >> \w+,*
+*,cat alltogether.txt
+*,cd okYouAreHERE!,*
+*,vim .+,*
+*,find . -iname "?\*cowFJS\*\"? |find / -iname "?\*cowFJS\*\"? |find . -iname "?\*cowFJS\*\"? |find . -type f -iname "?\*cowFJS\*\"? |find / -type f -iname "?\*cowFJS\*\"?|find . -iname "?\*cowFJS\*\"?|find / -iname "?\*cowFJS\*\"?,*
+*,cowsay,*

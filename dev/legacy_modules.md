@@ -250,7 +250,7 @@
 │  │        │  │     └─ Test_controls.js
 │  │        │  ├─ instructor
 │  │        │  │  └─ src
-│  │        │  │     ├─ Instr_Dash.js
+│  │        │  │     ├─ Staff_Dash.js
 │  │        │  │     ├─ Instructor_ScenDetail.js
 │  │        │  │     ├─ Instr_ScenTable.js
 │  │        │  │     └─ Panopticon.js

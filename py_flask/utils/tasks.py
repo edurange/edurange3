@@ -138,7 +138,7 @@ def create_scenario_task(self, scen_name, scen_type, students_list, grp_id, scen
 @celery.task(bind=True)
 def start_scenario_task(self, scenario_id):
     from py_flask.database.models import Scenarios
-    from py_flask.utils.instructor_utils import NotifyCapture
+    from py_flask.utils.staff_utils import NotifyCapture
 
     app = current_app
     logger.info(
@@ -190,7 +190,7 @@ def start_scenario_task(self, scenario_id):
 @celery.task(bind=True)
 def stop_scenario_task(self, scenario_id):
     from py_flask.database.models import Scenarios
-    from py_flask.utils.instructor_utils import NotifyCapture
+    from py_flask.utils.staff_utils import NotifyCapture
 
     app = current_app
     logger.info(
@@ -232,7 +232,7 @@ def stop_scenario_task(self, scenario_id):
 @celery.task(bind=True)
 def update_scenario_task(self, scenario_id):
     from py_flask.database.models import Scenarios
-    from py_flask.utils.instructor_utils import NotifyCapture
+    from py_flask.utils.staff_utils import NotifyCapture
 
     app = current_app
     logger.info(
@@ -265,7 +265,7 @@ def update_scenario_task(self, scenario_id):
 @celery.task(bind=True)
 def destroy_scenario_task(self, scenario_id):
     from py_flask.database.models import Scenarios, ScenarioGroups, Responses
-    from py_flask.utils.instructor_utils import NotifyCapture
+    from py_flask.utils.staff_utils import NotifyCapture
 
     app = current_app
     logger.info(
@@ -328,7 +328,7 @@ def scenarioCollectLogs(self, arg):
     from py_flask.utils.csv_utils import readCSV
     from py_flask.config.extensions import db
     from py_flask.database.models import Scenarios, BashHistory, Users
-    from py_flask.utils.instructor_utils import NotifyCapture
+    from py_flask.utils.staff_utils import NotifyCapture
     
     with open('./logs/archive_id.txt', 'r') as log_id_file:
         this_archive_id = log_id_file.read().rstrip()

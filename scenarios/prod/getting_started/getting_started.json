@@ -14,10 +14,9 @@
                     ],
                     "user_files": [
                         "setup_home",
-                        "stuff",
-                        "images",
-                        "toLearn",
-                        "final-mission",
+                        "student_home",
+                        "python",
+                        "final-task",
                         "milestones.txt"
                     ]
                 }

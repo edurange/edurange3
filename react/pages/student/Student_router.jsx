@@ -8,7 +8,7 @@ import Frame_side from '@frame/sidenav/Frame_side';
 export const StudentRouter_context = React.createContext();
 import '@assets/css/dashboard.css';
 import { HomeRouter_context } from '../pub/Home_router';
-import Scenario_controller2 from './scenarios/Scenario_controller2';
+import Scenario_controller from './scenarios/Scenario_controller';
 
 function Student_router() {
 
@@ -19,6 +19,8 @@ function Student_router() {
     }]
     const { login_state, userData_state, set_chatData_state, chatData_state, } = useContext(HomeRouter_context);
     const [responseData_state, set_responseData_state] = useState({});
+    const [chatObjs_UL_state, set_chatObjs_UL_state] = useState([]); // unordered array of all chats
+    const [aliasDict_state, set_aliasDict_state] = useState({});
 
     const [notifsArray_state, set_notifsArray_state] = useState(fakeNotifs);
     const [guideBook_state, set_guideBook_state] = useState({});
@@ -62,7 +64,7 @@ function Student_router() {
                     message_type: 'keepalive',
                     message: 'ping'
                 }));
-            }
+            } 
         }, pingInterval);
         // cleanup
         return () => {
@@ -89,8 +91,14 @@ function Student_router() {
                 
                 updateChatHistory(message?.data)
 
-            } else if (message.message_type === 'chatError') {
+            } 
+            else if (message.message_type === 'chatError') {
                 console.error('Chat error:', message.data);
+            } 
+            else if (message.message_type === 'handshake') {
+                if (message.chat_logs)
+                set_chatObjs_UL_state(message.chat_logs);
+                set_aliasDict_state(message.aliasDict ?? {});
             }
         };
 
@@ -127,12 +135,14 @@ function Student_router() {
                             guideBook_state, set_guideBook_state,
                             notifsArray_state, set_notifsArray_state,
                             socket_ref,
-                            responseData_state, set_responseData_state
+                            responseData_state, set_responseData_state,
+                            chatObjs_UL_state, set_chatObjs_UL_state,
+                            aliasDict_state
                         }}>
                             <Routes>
                                 <Route path="/" element={<Scenarios_home />} />
-                                <Route path="/:scenarioID" element={<Scenario_controller2 />} />
-                                <Route path="/:scenarioID/:pageID" element={<Scenario_controller2 />} />
+                                <Route path="/:scenarioID" element={<Scenario_controller />} />
+                                <Route path="/:scenarioID/:pageID" element={<Scenario_controller />} />
                                 <Route path="/:scenarioID/chat" element={<Chat_Student />} />
                             </Routes>
                         </StudentRouter_context.Provider>

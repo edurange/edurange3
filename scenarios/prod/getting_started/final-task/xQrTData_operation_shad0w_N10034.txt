@@ -1,0 +1,4 @@
+We are taking extreme precautions.
+
+Elsewhere on this system, there are 10 files which contain the last four characters of the md5sum of this file in their name.
+One of those 10 files contains your final passcode.
