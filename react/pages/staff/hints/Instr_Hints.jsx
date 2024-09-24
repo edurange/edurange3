@@ -1,45 +1,13 @@
-<<<<<<< HEAD:react/pages/staff/hints/Instr_Hints.jsx
-import React, { useState, useContext, useEffect } from 'react';
-import { InstructorRouter_context } from '../Staff_router';
-import { HomeRouter_context } from '../../pub/Home_router';
-import axios from 'axios';
-import { AppContext } from '../../../config/AxiosConfig';
-=======
 import React, { useState, useContext, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { InstructorRouter_context } from '../Instructor_router';
+import { InstructorRouter_context } from '../Staff_router';
 import { HomeRouter_context } from '../../pub/Home_router';
 import { AppContext } from '../../../config/AxiosConfig';
 import { ChatMessage } from '../../../modules/utils/chat_modules';
 import './Instr_Hints.css';
->>>>>>> origin/ml_dashboard:react/pages/instructor/hints/Instr_Hints.jsx
 
 const Instr_Hints = () => {
 
-<<<<<<< HEAD:react/pages/staff/hints/Instr_Hints.jsx
-    const {
-        userData_state, set_userData_state,
-        login_state, set_login_state,
-        loginExpiry,
-        sideNav_isVisible_state, set_sideNav_isVisible_state,
-        sideNav_isSmall_state, set_sideNav_isSmall_state,
-        navArraysObj_state,
-        chatSocket_state, set_chatSocket_state,
-        chatData_state, set_chatData_state
-    } = useContext(HomeRouter_context);
-
-    const {
-        errorModal_state, set_errorModal_state,
-        desiredNavMetas_state, set_desiredNavMetas_state,
-        clipboard_state, set_clipboard_state
-    } = useContext(AppContext);
-
-
-    
-
-    return (
-        <div>
-=======
   // States for initialization
   const { socket_ref, scenarios_state, users_state, groups_state } = useContext(InstructorRouter_context);
   const { userData_state } = useContext(HomeRouter_context);
@@ -55,7 +23,6 @@ const Instr_Hints = () => {
   // State for resources
   const [cpu_resources_detected, set_cpu_resources_detected] = useState('');
   const [gpu_resources_detected, set_gpu_resources_detected] = useState('');
->>>>>>> origin/ml_dashboard:react/pages/instructor/hints/Instr_Hints.jsx
 
   // State for overlay lock
   const [experimentalConfirmLock, set_experimentalConfirmLock] = React.useState(() => {

@@ -12,7 +12,7 @@ import "@frame/frame.css";
 import { StudentRouter_context } from '../Student_router';
 import { InstructorRouter_context } from '../../staff/Staff_router';
 import ErrorModal from '../../../components/ErrorModal';
-import Student_Hints from '../../instructor/hints/Student_Hints';
+import Student_Hints from '../../staff/hints/Student_Hints';
 
 function Scenario_controller() {
 
@@ -32,8 +32,6 @@ function Scenario_controller() {
     const { scenarioID, pageID } = useParams();
 
     if (!userData_state?.role) return (<>Log in to continue.</>)
-        
-    const { responseData_state, set_responseData_state } = userData_state?.role === "student" ? useContext(StudentRouter_context) : useContext(InstructorRouter_context);
 
     function handleSliderChange(event) {
         set_SliderNum_state(event.target.value);

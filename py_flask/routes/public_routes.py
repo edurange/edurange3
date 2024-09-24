@@ -99,7 +99,6 @@ def registration():
 @blueprint_public.route("/error_test", methods=["POST"])
 def error_test():
     custom_abort('test error back at ya', 400)
-<<<<<<< HEAD
     return jsonify({'response': 'you shouldnt see this'})
 
 @blueprint_public.route("/feedback", methods=["POST"])
@@ -121,6 +120,3 @@ def submit_feedback():
     return jsonify(
         {'scenario_type': scenario_type, 'content': content}
         )
-=======
-    return jsonify({'response': 'you shouldnt see this'})
->>>>>>> origin/ml_dashboard

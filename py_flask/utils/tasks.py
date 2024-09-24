@@ -28,7 +28,7 @@ from py_flask.utils.terraform_utils import adjust_network, find_and_copy_templat
 from py_flask.config.settings import CELERY_BROKER_URL, CELERY_RESULT_BACKEND
 from py_flask.utils.scenario_utils import claimOctet
 from py_flask.utils.eduhints_utils import get_system_resources, create_model_object, load_context_file_contents, export_hint_to_csv
-from py_flask.utils.instructor_utils import getLogs, getRecentStudentLogs
+from py_flask.utils.staff_utils import getLogs, getRecentStudentLogs
 from py_flask.utils.common_utils import handleRedisIO
 
 logger = get_task_logger(__name__)

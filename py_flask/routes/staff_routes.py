@@ -150,25 +150,8 @@ def get_staff_data():
     gd = get_group_data()
     ud = get_user_data()
     sd = get_scenario_data()
-<<<<<<< HEAD:py_flask/routes/staff_routes.py
     td = get_taAssignment_data()
     logData = getLogs()
-=======
-
-    try:
-        logData = getLogs()
-        if logData is None:
-            raise custom_abort({
-                'message': 'Error retrieving logs',
-                'status_code': 400
-            })
-    except custom_abort as err:
-        return err.get_response()
-    except Exception as err:
-        generic_error = custom_abort({'message': str(err), 'status_code': 500})
-        return generic_error.get_response()
-
->>>>>>> origin/ml_dashboard:py_flask/routes/instructor_routes.py
 
     return_obj = {
         'groups': gd,
@@ -492,7 +475,7 @@ def add_user_to_container():
         # os.system(f"docker exec {internal_command} {c}")
 
 
-@blueprint_instructor.route("/query_slm", methods=['POST'])
+@blueprint_staff.route("/query_slm", methods=['POST'])
 @jwt_and_csrf_required
 def query_small_language_model():
     requestJSON = request.json
@@ -526,7 +509,7 @@ def query_small_language_model():
     
     return jsonify(response)
 
-@blueprint_instructor.route("/get_student_logs", methods=['POST'])
+@blueprint_staff.route("/get_student_logs", methods=['POST'])
 @jwt_and_csrf_required
 def get_student_logs_route():
     requestJSON = request.json
@@ -537,7 +520,7 @@ def get_student_logs_route():
     
     return jsonify(logs_dict)
 
-@blueprint_instructor.route("/update_model", methods=['POST'])
+@blueprint_staff.route("/update_model", methods=['POST'])
 @jwt_and_csrf_required
 def update_model_route():
     
@@ -558,14 +541,14 @@ def update_model_route():
     except Exception as e:
         return jsonify({f'Error': 'Model failed to initialize '})
 
-@blueprint_instructor.route("/cancel_hint", methods=['POST'])
+@blueprint_staff.route("/cancel_hint", methods=['POST'])
 @jwt_and_csrf_required
 def cancel_generate_hint_route():
     cancel_hint_response = cancel_generate_hint_celery.delay().get(timeout=None)
     
     return jsonify({'cancel_hint_req_status': response})
 
-@blueprint_instructor.route("/get_resources", methods=['POST'])
+@blueprint_staff.route("/get_resources", methods=['POST'])
 @jwt_and_csrf_required
 
 def get_resources():
