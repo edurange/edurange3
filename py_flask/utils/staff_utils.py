@@ -187,9 +187,9 @@ def deleteUsers(users_to_delete):
         return []
 
 def getLogs(optional_user_id=None):
-    method = "first" if optional_user_id else "all"
-
+    
     def get_logsTable(model):
+        method = "first" if optional_user_id else "all"
         query_result = model.query.filter_by(user_id=optional_user_id) if optional_user_id else model.query
         return getattr(query_result, method)()
 
@@ -202,4 +202,25 @@ def getLogs(optional_user_id=None):
         "bash": Edu3Mixin.to_list(bashLogs),
         "responses": Edu3Mixin.to_list(responseLogs)
     }
+
     return returnDict
+
+def getRecentStudentLogs(student_id, number_of_logs):
+
+    def get_logsTable(model):
+        query = model.query.filter_by(user_id=student_id)
+        return query.order_by(model.timestamp.desc()).limit(number_of_logs).all()
+    
+    bashLogs = get_logsTable(BashHistory)
+    chatLogs = get_logsTable(ChatMessages)
+    responseLogs = get_logsTable(Responses)
+
+    returnDict = {
+        "bash": [{"index": i, "bashEntry": log.to_dict().get('input')} for i, log in enumerate(bashLogs)],
+        "chat": [{"index": i, "chatEntry": log.to_dict().get('content')} for i, log in enumerate(chatLogs)],
+        "responses": [{"index": i, "responsesEntry": log.to_dict().get('content')} for i, log in enumerate(responseLogs)]
+    }
+
+    return returnDict
+    
+

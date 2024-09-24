@@ -2,15 +2,15 @@
 
 # Deployment
 gevent==24.2.1
-gunicorn>=21.2.0
+gunicorn==21.2.0
 supervisor==4.2.5
 
 # Flask
-Flask>=3.0.2
+Flask==3.0.2
 Werkzeug==3.0.3
 Flask-Bcrypt==1.0.1
 Speaklater==1.3
-click>=8.1.7
+click==8.1.7
 
 #
 celery==5.3.6
@@ -20,7 +20,7 @@ flower==2.0.1
 markdown==3.5.2
 
 # Database
-Flask-SQLAlchemy>=3.1.1
+Flask-SQLAlchemy==3.1.1
 SQLAlchemy~=2.0.27
 psycopg2-binary==2.9.9
 
@@ -34,7 +34,7 @@ Flask-Migrate==4.0.5
 docker==6.1.3
 
 # Caching
-Flask-Caching>=2.1.0
+Flask-Caching==2.1.0
 
 # Environment variable parsing
 environs==10.3.0
@@ -48,3 +48,27 @@ PyJWT==2.8.0
 marshmallow==3.20.2
 marshmallow-sqlalchemy==1.0.0
 flask-marshmallow==1.2.0
+
+#machine_learning
+pandas==2.2.2
+tqdm==4.66.4
+prettytable==3.10.0
+nltk==3.8.1
+numpy==1.26.3
+matplotlib==3.9.0
+seaborn==0.13.2
+joblib==1.4.2
+memory_profiler==0.61.0
+pyopencl==2024.2.7
+llama_cpp_python==0.2.81
+asyncio==3.4.3
+huggingface-hub==0.23.4
+llama-index==0.10.55
+llama-index-embeddings-huggingface==0.2.2
+torch==2.3.1
+
+
+
+
+
+

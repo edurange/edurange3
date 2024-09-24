@@ -5,6 +5,8 @@ from py_flask.database.models import Users, StudentGroups, ScenarioGroups, Group
 from py_flask.utils.dataBuilder import get_group_data, get_user_data, get_scenario_data, get_taAssignment_data
 from py_flask.config.extensions import db
 from py_flask.utils.chat_utils import gen_chat_names, getChatLibrary
+from py_flask.utils.tasks import query_small_language_model_task, initialize_model, update_model, get_recent_student_logs, cancel_generate_hint_celery
+from py_flask.utils.common_utils import handleRedisIO
 from flask import (
     Blueprint,
     request,
@@ -19,7 +21,6 @@ from py_flask.utils.guide_utils import (
     getContent, 
     getScenarioMeta,
     )
-
 from py_flask.utils.auth_utils import jwt_and_csrf_required, staff_only
 from py_flask.utils.staff_utils import generateTestAccts, addGroupUsers
 from py_flask.database.models import generate_registration_code as grc
@@ -36,6 +37,7 @@ from py_flask.utils.tasks import (
     stop_scenario_task, 
     update_scenario_task,
     destroy_scenario_task,
+    get_recent_student_logs
 )
 from py_flask.utils.error_utils import (
     custom_abort
@@ -148,8 +150,25 @@ def get_staff_data():
     gd = get_group_data()
     ud = get_user_data()
     sd = get_scenario_data()
+<<<<<<< HEAD:py_flask/routes/staff_routes.py
     td = get_taAssignment_data()
     logData = getLogs()
+=======
+
+    try:
+        logData = getLogs()
+        if logData is None:
+            raise custom_abort({
+                'message': 'Error retrieving logs',
+                'status_code': 400
+            })
+    except custom_abort as err:
+        return err.get_response()
+    except Exception as err:
+        generic_error = custom_abort({'message': str(err), 'status_code': 500})
+        return generic_error.get_response()
+
+>>>>>>> origin/ml_dashboard:py_flask/routes/instructor_routes.py
 
     return_obj = {
         'groups': gd,
@@ -471,3 +490,88 @@ def add_user_to_container():
         # do not use - pseudocode
         # internal_command = f"useradd --home-dir /home/USERNAME --create-home --shell /bin/bash --password $(echo PASSWORD | openssl passwd -1 -stdin) USERNAME"
         # os.system(f"docker exec {internal_command} {c}")
+
+
+@blueprint_instructor.route("/query_slm", methods=['POST'])
+@jwt_and_csrf_required
+def query_small_language_model():
+    requestJSON = request.json
+    this_task = requestJSON['task']
+
+    #Redis parameters
+    this_host = requestJSON['host']
+    this_port = requestJSON['port']
+    this_db = requestJSON['db']
+    r_specifiers = {'host': this_host, 'port': this_port, 'db': this_db}
+
+    #General generation parameters
+    this_temperature = requestJSON['temperature']
+
+    if this_task == "generate_hint":
+        #Machine learning generation parameters
+        this_scenario_name = requestJSON['scenario_name']
+        this_disable_scenario_context = requestJSON['disable_scenario_context']
+
+        generation_specifiers = {'scenario_name': this_scenario_name, 'disable_scenario_context': this_disable_scenario_context, 'temperature': this_temperature}
+
+    if this_task == "custom_query":
+        this_max_tokens = requestJSON['max_tokens']
+        this_system_prompt = requestJSON['system_prompt'] 
+        this_user_prompt = requestJSON['user_prompt'] 
+
+        generation_specifiers = {'max_tokens': this_max_tokens, 'system_prompt': this_system_prompt, 'user_prompt': this_user_prompt}
+     
+
+    response = query_small_language_model_task.delay(task=this_task, r_specifiers=r_specifiers, generation_specifiers=generation_specifiers).get(timeout=None)
+    
+    return jsonify(response)
+
+@blueprint_instructor.route("/get_student_logs", methods=['POST'])
+@jwt_and_csrf_required
+def get_student_logs_route():
+    requestJSON = request.json
+    
+    this_student_id = requestJSON["student_id"]
+    this_number_of_logs = 3
+    logs_dict = get_recent_student_logs.delay(this_student_id, this_number_of_logs).get(timeout=None)
+    
+    return jsonify(logs_dict)
+
+@blueprint_instructor.route("/update_model", methods=['POST'])
+@jwt_and_csrf_required
+def update_model_route():
+    
+    requestJSON = request.json
+
+    try: 
+        this_cpu_resources_selected = int(requestJSON["this_cpu_resources_selected"])
+        this_gpu_resources_selected = int(requestJSON["this_gpu_resources_selected"])
+
+    except Exception as e:
+        this_cpu_resources_selected = None
+        this_gpu_resources_selected = None
+
+    try:
+        update_model.delay(this_cpu_resources_selected, this_gpu_resources_selected)
+        return jsonify({'Status': 'Model reinitialized successfully'})
+
+    except Exception as e:
+        return jsonify({f'Error': 'Model failed to initialize '})
+
+@blueprint_instructor.route("/cancel_hint", methods=['POST'])
+@jwt_and_csrf_required
+def cancel_generate_hint_route():
+    cancel_hint_response = cancel_generate_hint_celery.delay().get(timeout=None)
+    
+    return jsonify({'cancel_hint_req_status': response})
+
+@blueprint_instructor.route("/get_resources", methods=['POST'])
+@jwt_and_csrf_required
+
+def get_resources():
+    r_specifiers = {'host': 'localHost', 'port': '6379', 'db': '1'}
+
+    cpu_resources_detected = int(handleRedisIO(operation="load", r_specifiers=r_specifiers, key="cpu_resources"))
+    gpu_resources_detected = int(handleRedisIO(operation="load", r_specifiers=r_specifiers, key="gpu_resources"))
+
+    return jsonify({'cpu_resources_detected': cpu_resources_detected, 'gpu_resources_detected': gpu_resources_detected})

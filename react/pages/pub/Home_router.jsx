@@ -39,7 +39,10 @@ function Home_router() {
     desiredNavMetas_state, set_desiredNavMetas_state,
     clipboard_state, set_clipboard_state
 } = useContext(AppContext);
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/ml_dashboard
   const navigate = useNavigate();
 
   function begin_nav(navMetas) {
@@ -71,6 +74,8 @@ function Home_router() {
     navigate(desiredNavPath);
   };
   useEffect(() => {begin_nav(desiredNavMetas_state);}, [desiredNavMetas_state]); 
+
+
 
   return (
     <div id='edurange-appframe'>

@@ -152,7 +152,7 @@ const student_hint = {
     title: "Hints",
     icon: edurange_icons.light_bulb,
     path: `/hints`,
-    navStub: 'guide'
+    extension: true,
 };
 
 const issues = {
@@ -211,7 +211,6 @@ export const navArrays = {
         // e.g. /dashboard/scenarios/5
         guide: {
             top: [feedback, scenarios, logout],
-            side: [scenarios, student_hint, issues, logout]
         }
     },
 

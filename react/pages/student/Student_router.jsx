@@ -34,25 +34,23 @@ function Student_router() {
 
     const proto = (window.location.protocol === "https:") ? "wss" : "ws";
     const socketURL = `${proto}://${window.location.host}/chat`;
-
-    if (!scenarioList_state) { return <></> }
-    if (!login_state) { return <></> }
-
-    async function fetchScenarioList() {
-        try {
-            const response = await axios.get("/get_group_scenarios");
-            if (response.data.scenarioTable) {
-                set_scenarioList_state(response.data.scenarioTable);
-            };
-        }
-        catch (error) { console.log('get_scenarios_list error:', error); };
-    };
-
+  
     const updateChatHistory = (message) => {
         set_chatData_state(prevHistory => [...prevHistory, message]);
     };
-
-    useEffect(() => { fetchScenarioList(); }, []);
+    
+    useEffect(() => { 
+        async function fetchScenarioList() {
+            try {
+                const response = await axios.get("/get_group_scenarios");
+                if (response.data.scenarioTable) {
+                    set_scenarioList_state(response.data.scenarioTable);
+                };
+            }
+            catch (error) { console.log('get_scenarios_list error:', error); };
+        };
+        fetchScenarioList(); 
+    }, []);
 
     // INITIALIZE ONLY SOCKET REF
     useEffect(() => {
@@ -118,6 +116,8 @@ function Student_router() {
             lastChat_ref.current.scrollIntoView({ behavior: 'smooth' });
         }
     }, [chatData_state]);
+    if (!scenarioList_state) { return <></> }
+    if (!login_state) { return <></> }
 
     return (
 
