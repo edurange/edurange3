@@ -102,11 +102,11 @@ function handleSliderChange(event) {
                 SSH_password={SSH_password}
             />
         ),
-        hint: (
-            <Student_Hints
-            scenario_type={scenario_type}
-            />
-        ),
+        //hint: (
+        //    <Student_Hints
+        //    scenario_type={scenario_type}
+        //    />
+        //),
     };
 
     const leftPaneToShow = panes[leftPaneName_state];

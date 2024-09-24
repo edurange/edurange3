@@ -192,7 +192,7 @@ class FeedbackMessage(Edu3Mixin, SurrogatePK, Model):
     """Feedback provided by users"""
     __tablename__ = "feedback_message"
 
-    timestamp = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
+    timestamp = Column(db.DateTime, nullable=False, default=datetime.now(timezone.utc))
 
     content = Column(db.String(4000), nullable=False, unique=False)
     scenario_type = Column(db.String(50), nullable=True, unique=False)

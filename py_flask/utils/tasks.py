@@ -31,7 +31,7 @@ from py_flask.utils.eduhints_utils import get_system_resources, create_model_obj
 from py_flask.utils.staff_utils import getLogs, getRecentStudentLogs
 from py_flask.utils.common_utils import handleRedisIO
 from py_flask.utils.scenario_utils import gather_files
-from py_flask.utils.instructor_utils import NotifyCapture
+from py_flask.utils.staff_utils import NotifyCapture
 from py_flask.database.models import Scenarios, ScenarioGroups, Responses, BashHistory, Users
 from py_flask.utils.csv_utils import readCSV
 from py_flask.config.extensions import db
