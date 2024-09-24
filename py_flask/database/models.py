@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """User models."""
-import datetime as dt
+from datetime import datetime, timezone
 import random
 import string
 
@@ -63,7 +63,7 @@ class Users(Edu3Mixin, SurrogatePK, Model):
     __tablename__ = "users"
     username = Column(db.String(80), unique=True, nullable=False)
     password = Column(db.LargeBinary(128), nullable=True)   # hashed
-    created_at = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
+    created_at = Column(db.DateTime, nullable=False, default=datetime.now(timezone.utc))
     active = Column(db.Boolean(), default=False)
     is_admin = Column(db.Boolean(), default=False)
     is_staff = Column(db.Boolean(), default=False)
@@ -95,8 +95,9 @@ class Scenarios(Edu3Mixin, SurrogatePK, Model):
     owner_id = reference_col("users", nullable=False)
     owner = relationship("Users", backref="scenarios", lazy="subquery")
     status = Column(db.Integer, default=0, nullable=False)
-    created_at = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
+    created_at = Column(db.DateTime, nullable=False, default=datetime.now(timezone.utc)) 
     resps = relationship("Responses", backref="scenarios", cascade="all, delete-orphan")
+    last_used = Column(db.DateTime, nullable=True, default=datetime.now(timezone.utc))
     def __repr__(self):
         """Represent instance as a unique string."""
         return f"<Scenario({self.name!r})>"
@@ -104,7 +105,7 @@ class Scenarios(Edu3Mixin, SurrogatePK, Model):
 
 class Notification(Edu3Mixin, SurrogatePK, Model):
     detail = Column(db.String(60), unique=False, nullable=False)
-    date = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
+    date = Column(db.DateTime, nullable=False, default=datetime.now(timezone.utc))
 
 class ScenarioGroups(Edu3Mixin, SurrogatePK, Model):
     """Groups associated with scenarios"""
@@ -142,7 +143,7 @@ class ChatMessages(Edu3Mixin, SurrogatePK, Model):
     scenario = relationship("Scenarios", backref="chat_messages", viewonly=True)
 
     channel_id = reference_col("channels", nullable=False)
-    timestamp = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
+    timestamp = Column(db.DateTime, nullable=False, default=datetime.now(timezone.utc))
     content = Column(db.String(5000), nullable=False, unique=False)
 
     archive_id = Column(db.String(8), nullable=False, unique=False)
@@ -152,7 +153,7 @@ class Responses(Edu3Mixin, SurrogatePK, Model):
     """Student responses to scenario questions"""
     __tablename__ = "responses"
 
-    timestamp = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
+    timestamp = Column(db.DateTime, nullable=False, default=datetime.now(timezone.utc))
     
     user_id = reference_col("users", nullable=False)
     user = relationship("Users", backref="responses")
@@ -172,7 +173,7 @@ class BashHistory(Edu3Mixin, SurrogatePK, Model):
     """Bash Histories, associated with users and scenarios"""
     __tablename__ = "bash_history"
 
-    timestamp = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
+    timestamp = Column(db.DateTime, nullable=False, default=datetime.now(timezone.utc))
 
     user_id = reference_col("users", nullable=False)
     user = relationship("Users", backref="bash_history")
