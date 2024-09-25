@@ -3,11 +3,6 @@
     max-height: 5%;
     min-width: 100%;
     max-width: 100%;
-    position: relative;
-    bottom: 0px; 
-    left: 0;
-    right: 0;
-    top: 0;
     display: flex;
     box-sizing: border-box;
     border-top: 1px solid rgba(218, 165, 32, 0.527);

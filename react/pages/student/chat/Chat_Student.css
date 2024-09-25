@@ -5,6 +5,9 @@ html, body{
   padding: 0;
   margin: 0;
 }
+textarea{
+  padding: 0;
+}
 
 .chatStu-frame{
   display: flex;
@@ -18,14 +21,7 @@ html, body{
   display: flex;
   flex-direction: column;
 }
-.chatInstr-historyBox{
-  width: 100%;
-  position: relative;
-  top: 2px;
-  height: 81%;
-  display: flex;
-  flex-direction: column;
-}
+
 .chatStu-chat-carpet{
   background-color: rgb(130, 154, 211);
   width: 99%;
@@ -47,7 +43,6 @@ html, body{
   justify-content: center;
   flex-direction: column;
   border-bottom: 1px solid black;
-  /* padding: 10px; */
   box-sizing: border-box;
   background-color: paleturquoise;
   color: black;
@@ -75,27 +70,17 @@ html, body{
 }
 .chatStu-input-frame{
   width: 100%;
-  height: 100%;
-  max-height: 22px;
-  min-height: 22px;
+  /* height: 100%; */
+  max-height: 28px;
+  min-height: 28px;
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
-  /* position: relative;
-  bottom: 0px; */
-  /* box-sizing: border-box; */
 }
-.chatInstr-input-frame{
+.chatStu-input-form{
+  display: block;
   width: 100%;
   height: 100%;
-  max-height: 22px;
-  min-height: 22px;
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  position: absolute;
-  bottom: 2px;
-  /* box-sizing: border-box; */
 }
 .sender-frame{
   width: 100%;
@@ -105,37 +90,59 @@ html, body{
   align-content: center;
   justify-items: center;
   justify-content: center;
+  height: inherit;
 }
 .sender-text{
   width: 100%;
-  /* height: auto; */
   display: flex;
   align-items: center;
   align-content: center;
   justify-items: center;
   justify-content: center;
-  max-height: 22px;
-  min-height: 22px;
+  height: inherit;
 }
 .sender-button{
   width: 55px;
   display: flex;
-  min-height: 27px; 
-  max-height: 27px;
-  height: 100%;
+  height: inherit;
   align-items: center;
   text-align: center;
   justify-content: center;
-}
-.connect-button{
-  height: 100%;
-  display: flex;  
-  /* min-height: 22px;
-  max-height: 22px; */
-  width: 55px;
 }
 .chatStu-input-item{
   display: flex;
   align-items: center;
   justify-content: center;
+  height: inherit;
+}
+
+.student-chathistory-frame{
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 99%;
+}
+.chat-responsebox-frame{
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 44dvh;
+}
+.student-chathistory-carpet{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  border: 1px solid black;
+  box-sizing: border-box;
+  position: relative;
+  padding: 12px;
+  gap: 2px;
 }

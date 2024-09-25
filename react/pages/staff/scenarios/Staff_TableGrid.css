@@ -1,0 +1,86 @@
+.table-scengrid {
+    display: grid;
+    grid-template-columns: .5fr 2.5fr 2.5fr 2.5fr 1.5fr 1fr;
+    width: 100%;
+    border: 1px solid rgb(135, 96, 12);
+    border-radius: 8px;
+    box-sizing: border-box;
+}
+.table-groupsgrid {
+    display: grid;
+    grid-template-columns: .5fr 2fr 1fr .5fr 1fr;
+    width: 100%;
+    border: 1px solid rgb(135, 96, 12);
+    border-radius: 8px;
+    box-sizing: border-box;
+}
+.table-usersgrid {
+    display: grid;
+    grid-template-columns: .5fr 1.5fr 1fr .5fr .5fr 1fr;
+    width: 100%;
+    border: 1px solid rgb(135, 96, 12);
+    border-radius: 8px;
+    box-sizing: border-box;
+}
+
+.table-tablegrid-header {
+    display: contents;
+    background-color: rgb(12, 20, 44);
+    color: white;
+    font-weight: bold;
+    border-bottom: 1px solid rgba(218, 165, 32, 0.717);
+}
+
+.table-tablegrid-row {
+    display: contents;
+    align-items: center;
+    border-bottom: 1px solid rgba(218, 165, 32, 0.602);
+    cursor: pointer;
+    /* background-color: purple; */
+}
+.table-tablegrid-row:hover {
+    cursor: pointer;
+    background-color: rgba(255, 202, 255, 0.574);
+}
+
+.tablegrid-header-item, .tablegrid-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    box-sizing: border-box;
+    border-right: 1px solid rgba(218, 165, 32, 0.247);
+    border-bottom: inherit;
+}
+
+.tablegrid-item{
+    background-color: inherit;
+}
+
+.table-tablegrid-row:hover {
+    background-color: rgba(255, 227, 156, 0.127);
+}
+
+.control-panel {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+}
+
+.tablegrid-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 5px;
+    font-size: small;
+    font-weight: 600;
+    letter-spacing: .8px;
+}
+
+.tablegrid-header-item.control-panel, .tablegrid-item.control-panel {
+    border-right: none;
+}
+
+.tablegrid-header-item:last-child, .tablegrid-item:last-child {
+    border-right: none;
+}

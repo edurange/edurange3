@@ -1,8 +1,13 @@
 .form-group {
     margin-bottom: 15px;
   }
+/* 
+  please avoid making updates to 'element type' rules, except
+  when neccessary, and then only do so in the base.css file 
+  this can cause unexpected and confusing effects throughout the app
+  */
   
-  label {
+  /* label {
     display: block;
     margin-bottom: 5px;
   }
@@ -15,7 +20,7 @@
     padding: 8px;
     box-sizing: border-box;
   }
-  
+   */
   .radio-group {
     display: flex;
     flex-direction: column;
@@ -29,15 +34,15 @@
     margin: 5px 0;
   }
   
-  input[type='submit'] {
+  /* input[type='submit'] {
     padding: 10px 20px;
     background-color: #4caf50;
     color: white;
     border: none;
     cursor: pointer;
-  }
+  } */
   
-  input[type='submit']:hover {
+  /* input[type='submit']:hover {
     background-color: #45a049;
   }
-  
+   */

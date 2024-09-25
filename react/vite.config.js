@@ -11,7 +11,7 @@ export default defineConfig({
             '@assets': path.resolve(__dirname, './assets'),
             '@modules': path.resolve(__dirname, './modules'),
             '@pub': path.resolve(__dirname, './pages/pub'),
-            '@instructor': path.resolve(__dirname, './pages/instructor'),
+            '@staff': path.resolve(__dirname, './pages/staff'),
             '@student': path.resolve(__dirname, './pages/student'),
             '@frame': path.resolve(__dirname, './frame'),
             '@config': path.resolve(__dirname, './config'),

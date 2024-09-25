@@ -7,7 +7,7 @@ import Register from './login/Register';
 import InfoRouter from './info/Info_router';
 import SessionKeeper from './SessionKeeper';
 import Logout from './login/Logout';
-import Instructor_router from '../instructor/Instructor_router';
+import Staff_router from '../staff/Staff_router';
 import { Instructor_context } from '../../modules/context/Instructor_context';
 import { Student_context } from '../../modules/context/Student_context';
 import Student_router from '../student/Student_router';
@@ -16,9 +16,8 @@ import Frame_head from '../../frame/head/Frame_head';
 import Frame_foot from '../../frame/foot/Frame_foot';
 import Account from '../student/account/Account';
 import './Home.css';
-import axios from 'axios';
-import ErrorModal from '../../components/ErrorModal';
 import { AppContext } from '../../config/AxiosConfig';
+import Feedback from '../feedback/Feedback';
 
 export const HomeRouter_context = React.createContext();
 
@@ -34,14 +33,14 @@ function Home_router() {
   const [userData_state, set_userData_state] = useState();
   const [chatData_state, set_chatData_state] = useState([]);
   const [login_state, set_login_state] = useState(false);
+  const [responseData_state, set_responseData_state] = useState({});
   const [chatSocket_state, set_chatSocket_state] = useState();
   const {
-    errorModal_state, set_errorModal_state,
     desiredNavMetas_state, set_desiredNavMetas_state,
     clipboard_state, set_clipboard_state
 } = useContext(AppContext);
-  const navigate = useNavigate();
 
+  const navigate = useNavigate();
 
   function begin_nav(navMetas) {
 
@@ -53,10 +52,12 @@ function Home_router() {
       return;
     }
 
-    const roleToUse = userData_state?.role ?? 'logout';
+    let roleToUse = userData_state?.role ?? 'logout';
+
+    if (roleToUse === "instructor") {roleToUse = 'staff'}
 
     if (!(desiredNavStub in navArrays[roleToUse])) {
-      console.error('navStub not found in role navItemData as key');
+      // console.error('navStub not found in role navItemData as key');
       return;
     }
 
@@ -87,6 +88,7 @@ function Home_router() {
         desiredNavMetas_state, set_desiredNavMetas_state,
         chatSocket_state, set_chatSocket_state,
         chatData_state, set_chatData_state,
+        responseData_state, set_responseData_state
       }}>
         <SessionKeeper/>
         <Frame_head />
@@ -103,14 +105,15 @@ function Home_router() {
                   <Route path="/options/*" element={<Options_controller />} />
                   <Route path="/info/*" element={<InfoRouter />} />
                   <Route path="/account" element={<Account />} />
+                  <Route path="/feedback" element={<Feedback />} />
                   <Route path="/scenarios/*" element={
                     <Student_context>
                       <Student_router />
                     </Student_context>
                   } />
-                  <Route path="/instructor/*" element={
+                  <Route path="/staff/*" element={
                     <Instructor_context>
-                      <Instructor_router />
+                      <Staff_router />
                     </Instructor_context>
                     }>
                   </Route>

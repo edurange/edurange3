@@ -90,4 +90,5 @@ function AxiosConfig({ children }) {
         </>
     );}
 }
+
 export default AxiosConfig;

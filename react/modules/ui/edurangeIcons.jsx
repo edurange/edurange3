@@ -37,7 +37,8 @@ import {
     FaTrashCan,
     FaTowerObservation,
     FaGithub,
-    FaCommentDots
+    FaCommentDots,
+    FaArrowsDownToPeople 
 } from "react-icons/fa6";
 
 import { 
@@ -53,11 +54,14 @@ import {
 import { 
     MdNotifications, 
     MdNotificationsActive,
+    MdOutlineChat,
+    MdOutlineMarkUnreadChatAlt
   } from "react-icons/md";
 
 import { 
     FaStopCircle,
-    FaPlayCircle 
+    FaPlayCircle,
+    FaWpforms,
  } from "react-icons/fa";
 
  const edurange_icons = {
@@ -65,6 +69,8 @@ import {
     bell : <MdNotifications/>,
     bell_ringing : <MdNotificationsActive/>,
     gear : <FaGear/>,
+    chatBubble: <MdOutlineChat/>,
+    chatBubble_unread: <MdOutlineMarkUnreadChatAlt/>,
     home : <FaHouseChimney />,
     file : <FaFileLines />,
     book : <FaBook/>,
@@ -85,7 +91,7 @@ import {
     user: <FaPerson/>,
     key: <FaKey/>,
     palette: <FaPalette/>,
-    instructor: <FaGraduationCap/>,
+    staff: <FaGraduationCap/>,
     admin: <FaWandMagicSparkles/>,
     chevron_up: <FaChevronUp />,
     chevron_down: <FaChevronDown />,
@@ -102,7 +108,9 @@ import {
     playSign: <FaPlayCircle />,
     trash: <FaTrashCan/>,
     tower: <FaTowerObservation/>, 
-    comments: <FaCommentDots />
+    comments: <FaCommentDots />,
+    form: <FaWpforms/>,
+    ta_assignments: <FaArrowsDownToPeople/>
 }
 export default edurange_icons
 

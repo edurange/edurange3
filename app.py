@@ -9,6 +9,9 @@ from py_flask.config.init import create_app
 from py_flask.config.extensions import db
 from py_flask.database.models import StudentGroups, Users
 from py_flask.utils.common_utils import generate_alphanum
+from py_flask.utils.tasks import initialize_model
+
+
 
 app = create_app()
 app.app_context().push()
@@ -27,7 +30,7 @@ def create_admin():
         password=password,
         active=True,
         is_admin=True,
-        is_instructor=True,
+        is_staff=True,
     )
 
 def create_all_group(id):
@@ -42,3 +45,8 @@ admin = Users.query.filter_by(username=os.environ["FLASK_USERNAME"]).first()
 if admin: a_id = admin.id
 
 if not group: create_all_group(a_id)
+
+initialize_model.delay()
+
+
+

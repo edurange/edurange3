@@ -1,12 +1,12 @@
 
 import { useState, useRef, useEffect, useContext } from 'react';
-import Chat_HistoryBox from './Chat_HistoryBox.jsx';
+import Student_ChatHistory from './Student_ChatHistory.jsx';
 import './Chat_Student.css';
 import { StudentRouter_context } from '../Student_router.jsx';
 import { ChatMessage } from '@modules/utils/chat_modules.jsx';
 import { HomeRouter_context } from '../../pub/Home_router.jsx';
 
-function Chat_Student({scenario_type, scenario_id}) {
+function Chat_Student({scenario_type, scenario_id, scenario_name}) {
 
     const { userData_state, chatData_state, set_chatData_state } = useContext (HomeRouter_context);
     const { socket_ref } = useContext (StudentRouter_context);
@@ -37,7 +37,14 @@ function Chat_Student({scenario_type, scenario_id}) {
 
     const sendMessage = () => {
 
-        const chatMsg = new ChatMessage(userData_state?.channel_data?.home_channel, userData_state?.user_alias, scenario_type, messageContent_state.trim(), scenario_id);
+        const chatMsg = new ChatMessage(
+            userData_state?.channel_data?.home_channel, 
+            userData_state?.user_alias, 
+            scenario_type, 
+            messageContent_state.trim(), 
+            scenario_id,
+            scenario_name
+        );
 
         if (chatMsg.content) {
             const newChat = {
@@ -55,14 +62,14 @@ function Chat_Student({scenario_type, scenario_id}) {
         <div className='chatStu-frame'>
             
             <div className="chatStu-historyBox">
-            <Chat_HistoryBox chatData_state={chatData_state} lastChat_ref={lastChat_ref} />
+            <Student_ChatHistory chatData_state={chatData_state} lastChat_ref={lastChat_ref} />
         </div>
 
             <div className='chatStu-input-frame'>
-                <form className='chatStu-input-frame' onSubmit={handleSubmit}>
-                    <div className='chatStu-input-item sender-frame'>
+                <form className='chatStu-input-form' onSubmit={handleSubmit}>
+                    <div className='chatStu-input-item'>
                         <textarea className='sender-text' value={messageContent_state} onChange={handleInputChange} onKeyPress={handleKeyPress} placeholder="Enter your message"></textarea>
-                        <button className='sender-button connect-button' type="submit">Send</button>
+                        <button className='sender-button' type="submit">Send</button>
                     </div>
                 </form>
             </div>

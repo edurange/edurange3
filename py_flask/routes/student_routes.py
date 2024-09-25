@@ -96,5 +96,3 @@ def get_chat_history():
 
     chatHistory_dictList = getChatHistory_byUser(g.current_user_id, g.current_username)
     return jsonify({'chat_history': chatHistory_dictList})
-
-

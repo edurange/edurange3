@@ -74,7 +74,9 @@ def handle_sqlalchemy_error(error):
 # catch-all handler
 @blueprint_scenarios.errorhandler(Exception)
 def general_error_handler(error):
+
     error_handler = custom_abort(error)
+
     return error_handler.get_response()
 
 ### Reviewed / Working Routes  ##############

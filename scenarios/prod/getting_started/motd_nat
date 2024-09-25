@@ -3,11 +3,31 @@
 set -eoux pipefail
 
 cat << \EOF >/etc/motd
-    #############  GETTING STARTED #############
-    Welcome to the Getting Started EDURange scenario!
-    You can use this bash environment to try out the commands shown in the student guide.
-    Follow the student guide and answer the questions on EDURange in browser.
-    ############################################
+ _______  _______  _______  _______  ___  __    _  _______ 
+|       ||       ||       ||       ||   ||  |  | ||       |   
+|    ___||    ___||_     _||_     _||   ||   |_| ||    ___|   
+|   | __ |   |___   |   |    |   |  |   ||       ||   | __    
+|   ||  ||    ___|  |   |    |   |  |   ||  _    ||   ||  |   
+|   |_| ||   |___   |   |    |   |  |   || | |   ||   |_| |   
+|_______||_______|  |___|    |___|  |___||_|  |__||_______|   
+ _______  _______  _______  ______  _______  _______  ______  
+|       ||       ||   _   ||    _ ||       ||       ||      | 
+|  _____||_     _||  |_|  ||   | |||_     _||    ___||  _    |
+| |_____   |   |  |       ||   |_||_ |   |  |   |___ | | |   |
+|_____  |  |   |  |       ||    __  ||   |  |    ___|| |_|   |
+ _____| |  |   |  |   _   ||   |  | ||   |  |   |___ |       |
+|_______|  |___|  |__| |__||___|  |_||___|  |_______||______| 
+
+Welcome to the first EDURange scenario!
+You can use this bash environment to try out the commands shown in the guide.
+Follow the student guide and answer the questions on EDURange in browser.
+
+The answer to the first question is:
+
+FLAG{WELCOME}
+
 EOF
 
+echo 'alias sort="sort -b"' >> /etc/bash.bashrc
+echo 'export TERM=xterm-256color' >> /etc/bash.bashrc
 echo 'cat /etc/motd' >> /etc/bash.bashrc

@@ -23,7 +23,8 @@ h4, h5, h6 {
 }
 
 /* Paragraph style */
-p {
+.markdownReading p {
+    font-family: Arial, sans-serif;
     line-height: 1.6;
     margin-bottom: 1em;
 }
@@ -53,14 +54,16 @@ blockquote {
     font-style: italic;
 }
 
-ul, ol {
+.markdownReading ul, ol {
     margin-left: 10px;
     padding-left: 0;
     list-style-type: disc;
     box-sizing: border-box;
 }
 
-li {
+.markdownReading li {
+    font-family: Arial, sans-serif;
+    margin-left: 2em;	
     margin-bottom: 0.5em;
 }
 
@@ -78,13 +81,13 @@ table {
     margin-bottom: 1em;
 }
 
-th, td {
+.markdownReading th, td {
     border: 1px solid #ddd;
     padding: 8px;
     text-align: left;
 }
 
-th {
+.markdownReading th {
     background-color: #f4f4f4;
 }
 
@@ -107,7 +110,7 @@ pre {
 code {
     border: rgba(218, 165, 32, 0.424) 1px solid;
     font-family: 'Courier New', Courier, monospace;
-    font-size: 14px; 
+    font-size: inherit; 
     color: rgb(149, 255, 255);
     background-color: #0000009e;
     padding: 1.5px 3px;
@@ -119,4 +122,7 @@ pre code {
     background-color: transparent;
     padding: 0;
   }
-  
+
+.markdownReading em {
+    font-style: italic;
+}

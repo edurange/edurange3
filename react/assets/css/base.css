@@ -144,7 +144,6 @@ body, html {
 .pucs-trim-warning{border: solid 3px black;}
 
 .my-table{
-    background-color: var(--blue-normal);
     border-left: 2px solid var(--blue-deep);
     border-right: 1px solid var(--blue-deep);
     border-top: 2px solid var(--blue-deep);

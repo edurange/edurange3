@@ -2,7 +2,7 @@
 
 .edu3-question-frame{
     border-top: rgba(218, 165, 32, 0.582) 1px solid;
-
+    border-bottom: rgba(218, 165, 32, 0.582) 1px solid;
 }
 .edu3-question-carpet{
     display: flex;
