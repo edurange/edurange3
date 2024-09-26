@@ -71,7 +71,7 @@
     ],
     "locals": [
         {
-            "SNAME_target_extern": "${tostring(docker_container.SNAME_target.ports[0].external)}"
+            "SNAME_target_extern": "HIDDEN"
         }
     ],
     "output": [
