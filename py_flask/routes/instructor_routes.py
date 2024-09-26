@@ -5,7 +5,7 @@ from py_flask.database.models import Users, StudentGroups, ScenarioGroups, Group
 from py_flask.utils.dataBuilder import get_group_data, get_user_data, get_scenario_data
 from py_flask.config.extensions import db
 from py_flask.utils.chat_utils import gen_chat_names, getChatLibrary
-from py_flask.utils.common_utils import handleRedisIO, get_system_resources
+from py_flask.utils.common_utils import get_system_resources
 import redis
 import json
 

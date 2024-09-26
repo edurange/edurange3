@@ -15,7 +15,7 @@ from llama_cpp import Llama
 from llama_index.core import Settings
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from memory_profiler import profile, memory_usage
-from py_flask.utils.common_utils import handleRedisIO, get_system_resources
+from py_flask.utils.common_utils import get_system_resources
 
 
 """
@@ -46,12 +46,12 @@ SOFTWARE.
 
 """
 
-
 def create_language_model_object_llama(cpu_resources: int, gpu_resources: int) -> None:  
 
       try:
-            language_model_object = Llama(
-                  model_path="machine_learning/eduhints/models/Phi-3-mini-4k-instruct-q4.gguf",
+            language_model_object = Llama.from_pretrained(
+                  repo_id="microsoft/Phi-3-mini-4k-instruct-gguf",
+                  filename="Phi-3-mini-4k-instruct-q4.gguf",
                   verbose=False,
                   n_ctx=4086, 
                   n_threads=cpu_resources, 
@@ -63,6 +63,7 @@ def create_language_model_object_llama(cpu_resources: int, gpu_resources: int) -
 
       except Exception as e:
             raise Exception(f"ERROR: Failed to initialize model object: {e}")
+
 
 def load_context_file_contents(context_file_type: str, scenario_name: str) -> str:
 
