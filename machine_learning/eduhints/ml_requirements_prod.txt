@@ -1,0 +1,4 @@
+pandas==2.2.2
+numpy==1.26.3
+pyopencl==2024.2.7
+llama_cpp_python==0.2.81

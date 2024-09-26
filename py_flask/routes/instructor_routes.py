@@ -5,8 +5,9 @@ from py_flask.database.models import Users, StudentGroups, ScenarioGroups, Group
 from py_flask.utils.dataBuilder import get_group_data, get_user_data, get_scenario_data
 from py_flask.config.extensions import db
 from py_flask.utils.chat_utils import gen_chat_names, getChatLibrary
-from py_flask.utils.tasks import query_small_language_model_task, initialize_model, update_model, get_recent_student_logs, cancel_generate_hint_celery
-from py_flask.utils.common_utils import handleRedisIO
+from py_flask.utils.common_utils import handleRedisIO, get_system_resources
+import redis
+import json
 
 from flask import (
     Blueprint,
@@ -38,7 +39,11 @@ from py_flask.utils.tasks import (
     stop_scenario_task, 
     update_scenario_task,
     destroy_scenario_task,
-    get_recent_student_logs
+    get_recent_student_logs_task,
+    query_small_language_model_task,
+    initialize_system_resources_task,
+    update_system_resources_task,
+    cancel_generate_hint_task
 )
 from py_flask.utils.error_utils import (
     custom_abort
@@ -476,44 +481,38 @@ def add_user_to_container():
 @jwt_and_csrf_required
 def query_small_language_model():
     requestJSON = request.json
+
     this_task = requestJSON['task']
+    
+    this_scenario_name = requestJSON.get('scenario_name', None)
+    this_disable_scenario_context = requestJSON.get('disable_scenario_context', None)
+    this_temperature = requestJSON.get('temperature', None)
+    this_max_tokens = requestJSON.get('max_tokens', None)
+    this_system_prompt = requestJSON.get('system_prompt', None)
+    this_user_prompt = requestJSON.get('user_prompt', None)
 
-    #Redis parameters
-    this_host = requestJSON['host']
-    this_port = requestJSON['port']
-    this_db = requestJSON['db']
-    r_specifiers = {'host': this_host, 'port': this_port, 'db': this_db}
-
-    #General generation parameters
-    this_temperature = requestJSON['temperature']
-
-    if this_task == "generate_hint":
-        #Machine learning generation parameters
-        this_scenario_name = requestJSON['scenario_name']
-        this_disable_scenario_context = requestJSON['disable_scenario_context']
-
-        generation_specifiers = {'scenario_name': this_scenario_name, 'disable_scenario_context': this_disable_scenario_context, 'temperature': this_temperature}
-
-    if this_task == "custom_query":
-        this_max_tokens = requestJSON['max_tokens']
-        this_system_prompt = requestJSON['system_prompt'] 
-        this_user_prompt = requestJSON['user_prompt'] 
-
-        generation_specifiers = {'max_tokens': this_max_tokens, 'system_prompt': this_system_prompt, 'user_prompt': this_user_prompt}
+    generation_parameters = {
+        'scenario_name': this_scenario_name, 
+        'disable_scenario_context': this_disable_scenario_context, 
+        'temperature': this_temperature, 
+        'max_tokens': this_max_tokens, 
+        'system_prompt': this_system_prompt, 
+        'user_prompt': this_user_prompt
+    }
      
-
-    response = query_small_language_model_task.delay(task=this_task, r_specifiers=r_specifiers, generation_specifiers=generation_specifiers).get(timeout=None)
+    response = query_small_language_model_task.delay(task=this_task, generation_parameters=generation_parameters).get(timeout=None)
     
     return jsonify(response)
 
-@blueprint_instructor.route("/get_student_logs", methods=['POST'])
+@blueprint_instructor.route("/get_recent_student_logs", methods=['POST'])
 @jwt_and_csrf_required
-def get_student_logs_route():
+def get_recent_student_logs_route():
     requestJSON = request.json
     
     this_student_id = requestJSON["student_id"]
     this_number_of_logs = 3
-    logs_dict = get_recent_student_logs.delay(this_student_id, this_number_of_logs).get(timeout=None)
+
+    logs_dict = get_recent_student_logs_task.delay(this_student_id, this_number_of_logs).get(timeout=None)
     
     return jsonify(logs_dict)
 
@@ -526,13 +525,18 @@ def update_model_route():
     try: 
         this_cpu_resources_selected = int(requestJSON["this_cpu_resources_selected"])
         this_gpu_resources_selected = int(requestJSON["this_gpu_resources_selected"])
-
+        
+        if this_cpu_resources_selected is None:
+            raise Exception (f"ERROR: cpu_resources is type None: Additional error reporting information: [{e}]")
+        
+        if this_gpu_resources_selected is None:
+            raise Exception (f"ERROR: gpu_resources is type None: Additional error reporting information: [{e}]")
+        
     except Exception as e:
-        this_cpu_resources_selected = None
-        this_gpu_resources_selected = None
+        raise Exception (f"ERROR: Failed to assign cpu/gpu resources. Additional error reporting information: [{e}]")
 
     try:
-        update_model.delay(this_cpu_resources_selected, this_gpu_resources_selected)
+        update_model_task.delay(this_cpu_resources_selected, this_gpu_resources_selected)
         return jsonify({'Status': 'Model reinitialized successfully'})
 
     except Exception as e:
@@ -540,7 +544,7 @@ def update_model_route():
 
 @blueprint_instructor.route("/cancel_hint", methods=['POST'])
 @jwt_and_csrf_required
-def cancel_generate_hint_route():
+def cancel_generate_hint_route(): 
     cancel_hint_response = cancel_generate_hint_celery.delay().get(timeout=None)
     
     return jsonify({'cancel_hint_req_status': response})
@@ -549,9 +553,14 @@ def cancel_generate_hint_route():
 @jwt_and_csrf_required
 
 def get_resources():
-    r_specifiers = {'host': 'localHost', 'port': '6379', 'db': '1'}
 
-    cpu_resources_detected = int(handleRedisIO(operation="load", r_specifiers=r_specifiers, key="cpu_resources"))
-    gpu_resources_detected = int(handleRedisIO(operation="load", r_specifiers=r_specifiers, key="gpu_resources"))
+    sys_db_redis_client = redis.Redis(host='localhost', port=6379, db=1)
 
-    return jsonify({'cpu_resources_detected': cpu_resources_detected, 'gpu_resources_detected': gpu_resources_detected})
+    cpu_resources_detected = sys_db_redis_client.get("cpu_resources")
+    gpu_resources_detected = sys_db_redis_client.get("gpu_resources")
+
+    cpu_resources_detected_int = int(cpu_resources_detected)
+    gpu_resources_detected_int = int(gpu_resources_detected)
+
+
+    return jsonify({'cpu_resources_detected': cpu_resources_detected_int, 'gpu_resources_detected': gpu_resources_detected_int})

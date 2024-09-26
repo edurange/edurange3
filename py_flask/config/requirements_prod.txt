@@ -51,21 +51,9 @@ flask-marshmallow==1.2.0
 
 #machine_learning
 pandas==2.2.2
-tqdm==4.66.4
-prettytable==3.10.0
-nltk==3.8.1
 numpy==1.26.3
-matplotlib==3.9.0
-seaborn==0.13.2
-joblib==1.4.2
-memory_profiler==0.61.0
 pyopencl==2024.2.7
 llama_cpp_python==0.2.81
-asyncio==3.4.3
-huggingface-hub==0.23.4
-llama-index==0.10.55
-llama-index-embeddings-huggingface==0.2.2
-torch==2.3.1
 
 
 

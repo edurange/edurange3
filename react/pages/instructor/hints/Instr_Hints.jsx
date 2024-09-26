@@ -108,9 +108,9 @@ const Instr_Hints = () => {
     }
   };
 
-  useEffect(() => {
-    getResources();
-  }, []);
+  // useEffect(() => {
+  //   getResources();
+  // }, []);
 
   const [cpu_resources_selected, set_cpu_resources_selected] = useState(Number(cpu_resources_detected));
   const [gpu_resources_selected, set_gpu_resources_selected] = useState(Number(gpu_resources_detected));
@@ -161,6 +161,7 @@ const Instr_Hints = () => {
   };
 
   const toggleExpandAdvancedSettings = () => {
+    getResources();
     set_isExpandedAdvancedSettings(!isExpandedAdvancedSettings);
     set_isClickedAdvancedSettings(!isClickedAdvancedSettings);
 };
@@ -181,6 +182,7 @@ const Instr_Hints = () => {
   // Logic for generation presets
 
   const handleChangeToggleForSpeedSetting = () => {
+    getResources();
     set_isClickedQualitySetting(false);
     set_isClickedSpeedSetting(!isClickedSpeedSetting);
     set_checked_for_disable_scenario_context(true);
@@ -189,6 +191,7 @@ const Instr_Hints = () => {
   };
 
   const handleChangeToggleForQualitySetting = () => {
+    getResources();
     set_isClickedSpeedSetting(false);
     set_isClickedQualitySetting(!isClickedQualitySetting);
     set_checked_for_disable_scenario_context(false);
@@ -222,7 +225,7 @@ const Instr_Hints = () => {
       };
 
       const response = await axios.post(
-        "get_student_logs",
+        "get_recent_student_logs",
         reqJSON,
         {
           headers: {
