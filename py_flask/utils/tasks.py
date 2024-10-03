@@ -214,22 +214,63 @@ def start_scenario_task(self, scenario_id):
                     }
             
             scenario_path = os.path.join("./scenarios/tmp/", name)
+
             if os.path.isdir(scenario_path):
                 scenario.update(status=3)
                 db.session.commit()
                 logger.debug("Folder Found")
                 
-                os.chdir(scenario_path)
+                # No need to change directory when using cwd in Popen
+                apply_command = ["terraform", "apply", "--auto-approve"]
                 
-                os.chdir("network")
-                os.system("terraform apply --auto-approve")
-                
-                os.chdir("../container")
-                os.system("terraform apply --auto-approve")
+                with subprocess.Popen(apply_command, cwd=os.path.join(scenario_path, "network"), text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE) as proc:
+                    logger.info("**** Starting network terraform ****")
+                    phrase1 = "Apply complete"
+                    phrase2 = "Saved the plan to: "
+                    phrase3 = "will be created"
+                    
+                    for line in proc.stdout:
+                        if proc.stdout is None:
+                            logger.error("Starting container terraform failed")
 
-                os.chdir("..")
-                
-                os.system("../../../shell_scripts/scenario_movekeys.sh {} {} {}".format(gateway, start, start_ip))
+                        elif phrase1 in line.strip():
+                            logger.info(line.strip())
+                        elif phrase2 in line.strip():
+                            logger.info(line.strip())
+                        elif phrase3 in line.strip():
+                            logger.info(line.strip())                         
+       
+                        stderr_output = proc.stderr.read()
+                        if stderr_output:
+                            logger.error(stderr_output.strip())
+               
+                try:
+                    with subprocess.Popen(apply_command, cwd=os.path.join(scenario_path, "container"), text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE) as proc:
+                        logger.info("**** Starting container terraform ****")
+                        phrase1 = "Apply complete"
+                        phrase2 = "Saved the plan to: "
+                        phrase3 = "will be created"
+
+                        for line in proc.stdout:
+                            if proc.stdout is None:
+                                logger.error("Starting container terraform failed")
+
+                            elif phrase1 in line.strip():
+                                logger.info(line.strip())
+                            elif phrase2 in line.strip():
+                                logger.info(line.strip())
+                            elif phrase3 in line.strip():
+                                logger.info(line.strip())                         
+       
+                        stderr_output = proc.stderr.read()
+                        if stderr_output:
+                            logger.error(stderr_output.strip())
+                except Exception as e:
+                    logger.error(e)
+
+                #TODO: reduce repeated code block or move to standalone function
+
+                os.system(os.path.join("./shell_scripts", "scenario_movekeys.sh") + " {} {} {}".format(gateway, start, start_ip))
                 os.chdir("../../..")
                 
                 scenario.update(status=1)
@@ -498,3 +539,11 @@ def scenarioCollectLogs(self, arg):
 @celery.on_after_configure.connect
 def setup_periodic_tasks(sender, **kwargs):
     sender.add_periodic_task(60.0, scenarioCollectLogs.s(''))
+
+# def run_command(command_with_args, scen_path_location):
+#     os.chdir(scen_path_location)
+#     with subprocess.Popen(command_with_args, tex=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE) as proc:
+#         phrase1 = "Apply Complete"
+#         for line in proc.stdout:
+#             if phrase1 in line:
+#                 logger.warning(line.strip())
