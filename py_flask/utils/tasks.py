@@ -222,56 +222,40 @@ def start_scenario_task(self, scenario_id):
                 
                 # No need to change directory when using cwd in Popen
                 apply_command = ["terraform", "apply", "--auto-approve"]
+                important_phrases = ["Apply complete", "Saved the plan to: ", "will be created"]  
                 
-                with subprocess.Popen(apply_command, cwd=os.path.join(scenario_path, "network"), text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE) as proc:
+                # Apply network terraform
+                with subprocess.Popen(apply_command, cwd=os.path.join(scenario_path, "network"), text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE) as network_proc:
                     logger.info("**** Starting network terraform ****")
-                    phrase1 = "Apply complete"
-                    phrase2 = "Saved the plan to: "
-                    phrase3 = "will be created"
                     
-                    for line in proc.stdout:
-                        if proc.stdout is None:
+                    for line in network_proc.stdout:  
+                        if any(phrase in line.strip() for phrase in important_phrases):  
+                            logger.info(line.strip())  
+
+                    for line in network_proc.stdout:
+                        if network_proc.stdout is None:
+                            logger.error("Starting network terraform failed")
+                    
+                    #TODO send all output to a log file
+               
+               # Apply container terraform
+                with subprocess.Popen(apply_command, cwd=os.path.join(scenario_path, "container"), text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE) as containter_proc:
+                    logger.info("**** Starting container terraform ****")
+                    
+                    for line in containter_proc.stdout:  
+                        if any(phrase in line.strip() for phrase in important_phrases):  
+                            logger.info(line.strip())  
+
+                    for line in containter_proc.stdout:
+                        if containter_proc.stdout is None:
                             logger.error("Starting container terraform failed")
 
-                        elif phrase1 in line.strip():
-                            logger.info(line.strip())
-                        elif phrase2 in line.strip():
-                            logger.info(line.strip())
-                        elif phrase3 in line.strip():
-                            logger.info(line.strip())                         
-       
-                        stderr_output = proc.stderr.read()
-                        if stderr_output:
-                            logger.error(stderr_output.strip())
-               
-                try:
-                    with subprocess.Popen(apply_command, cwd=os.path.join(scenario_path, "container"), text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE) as proc:
-                        logger.info("**** Starting container terraform ****")
-                        phrase1 = "Apply complete"
-                        phrase2 = "Saved the plan to: "
-                        phrase3 = "will be created"
-
-                        for line in proc.stdout:
-                            if proc.stdout is None:
-                                logger.error("Starting container terraform failed")
-
-                            elif phrase1 in line.strip():
-                                logger.info(line.strip())
-                            elif phrase2 in line.strip():
-                                logger.info(line.strip())
-                            elif phrase3 in line.strip():
-                                logger.info(line.strip())                         
-       
-                        stderr_output = proc.stderr.read()
-                        if stderr_output:
-                            logger.error(stderr_output.strip())
-                except Exception as e:
-                    logger.error(e)
-
-                #TODO: reduce repeated code block or move to standalone function
-
+                 #TODO send all output to a log file
+                
+                # Modified to be less relative 
                 os.system(os.path.join("./shell_scripts", "scenario_movekeys.sh") + " {} {} {}".format(gateway, start, start_ip))
-                os.chdir("../../..")
+                
+                os.chdir("../../..") # might not be necessary
                 
                 scenario.update(status=1)
                 db.session.commit()
