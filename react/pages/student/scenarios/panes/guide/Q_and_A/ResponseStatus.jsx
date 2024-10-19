@@ -2,16 +2,15 @@
 
 import React, { useContext } from 'react';
 import './Q_and_A.css'
-import { StudentRouter_context } from '@student/Student_router';
+import { HomeRouter_context } from '@pub/Home_router';
 
 function ResponseStatus({ question_num, points_possible }) {
 
-    const { responseData_state, set_responseData_state } = useContext (StudentRouter_context);
+    const { responseData_state, set_responseData_state } = useContext (HomeRouter_context);
 
     if (!responseData_state) {return};
 
     const current_best_score = responseData_state?.[question_num]?.points_awarded ?? 0
-    // const possible_points = responseData_state?.[question_num]?.points_possible ?? '?'
 
     return (
         <div className='response-status'>

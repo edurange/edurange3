@@ -3,14 +3,14 @@ import axios from 'axios';
 import React, { useContext, useState } from 'react';
 import './Q_and_A.css';
 import ResponseStatus from './ResponseStatus';
-import { StudentRouter_context } from '../../../../Student_router';
 import ReactMarkdown from 'react-markdown';
+import { HomeRouter_context } from '@pub/Home_router';
 
 
 function GuideQuestion({ scenario_id, questionObj, scenario_type }) {
     if (!questionObj?.content) { return null; }
 
-    const { responseData_state, set_responseData_state } = useContext(StudentRouter_context);
+    const { responseData_state, set_responseData_state } = useContext(HomeRouter_context);
     const [inputText_state, set_inputText_state] = useState('');
 
     const points_possible = questionObj?.points_possible ?? '?';
