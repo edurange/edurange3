@@ -205,7 +205,7 @@ def getLogs(optional_user_id=None):
 
     return returnDict
 
-def getRecentStudentLogs(student_id, number_of_logs):
+def getRecentLogs(student_id, number_of_logs):
 
     def get_logsTable(model):
         query = model.query.filter_by(user_id=student_id)

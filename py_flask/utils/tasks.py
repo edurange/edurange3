@@ -27,15 +27,15 @@ from flask import current_app, flash, jsonify
 from py_flask.utils.terraform_utils import adjust_network, find_and_copy_template, write_resource
 from py_flask.config.settings import CELERY_BROKER_URL, CELERY_RESULT_BACKEND
 from py_flask.utils.scenario_utils import claimOctet
-from py_flask.utils.eduhints_utils import get_system_resources, create_model_object, load_context_file_contents, export_hint_to_csv
-from py_flask.utils.staff_utils import getLogs, getRecentStudentLogs
-from py_flask.utils.common_utils import handleRedisIO
+from py_flask.utils.staff_utils import getLogs, getRecentLogs
 from py_flask.utils.scenario_utils import gather_files
 from py_flask.utils.staff_utils import NotifyCapture
 from py_flask.database.models import Scenarios, ScenarioGroups, Responses, BashHistory, Users
 from py_flask.utils.csv_utils import readCSV
 from py_flask.config.extensions import db
 from flask_sqlalchemy import SQLAlchemy
+from py_flask.utils.eduhints_utils import create_language_model_object_llama, load_context_file_contents, export_hint_to_csv
+from py_flask.utils.common_utils import get_system_resources
 
 # Create a custom logger
 logger = get_task_logger(__name__)
@@ -518,192 +518,243 @@ def setup_periodic_tasks(sender, **kwargs):
 
 # Machine learning tasks 
 
+#REWROTE
 @celery.task(bind=True, worker_prefetch_multiplier=1, priority=1)
-def initialize_model(self):
+def initialize_system_resources_task(self):
 
-    r_specifiers = {'host': 'localHost', 'port': '6379', 'db': '1'}
+    sys_db_redis_client = redis.Redis(host='localhost', port=6379, db=1)
 
     try: 
         system_resources = get_system_resources()
-        cpu_resources = system_resources[0]
-        gpu_resources = system_resources[1]
-        try:
-            language_model_object = create_model_object(cpu_resources, gpu_resources)
-            try: 
-                
-                language_model_store_result = handleRedisIO(operation="store", r_specifiers=r_specifiers, key="language_model", input_data=language_model_object)
-                cpu_resources_store_result = handleRedisIO(operation="store", r_specifiers=r_specifiers, key="cpu_resources", input_data=cpu_resources)
-                gpu_resources_store_result = handleRedisIO(operation="store", r_specifiers=r_specifiers, key="gpu_resources", input_data=gpu_resources)
+        cpu_resources = system_resources['cpu_resources']
+        gpu_resources = system_resources['gpu_resources']
 
-                print(f"Language Model: {language_model_store_result}")
-                print(f"CPU Resources: {cpu_resources_store_result}")
-                print(f"GPU Resources: {gpu_resources_store_result}")
-                print("Model initialized succesfully")
+        if cpu_resources is None:
+            raise Exception (f"ERROR: Failed to initialize model, cpu_resources cannot be type None: [{e}]")
 
-            except Exception as e:
-                print(f"ERROR: Failed to cache model and system resources in redis cache. {e}")
-
-        except Exception as e:
-            print(f"ERROR: Failed to create model object {e}")
+        if gpu_resources is None:
+            raise Exception (f"ERROR: Failed to initialize model, gpu_resources cannot be type None: [{e}]")
 
     except Exception as e:
-        print(f"ERROR: Failed to initialize model {e}")
+        raise Exception (f"ERROR: get_system_resources() or resource allocation failure: [{e}]")
+  
+    try:
+        sys_db_redis_client.set("cpu_resources", cpu_resources)
+        sys_db_redis_client.set("gpu_resources", gpu_resources)
 
+    except Exception as e:
+        raise Exception (f"ERROR: Failed to cache system resources in redis db2 [{e}]: ")
 
+  
+
+#REWROTE
 @celery.task(bind=True, worker_prefetch_multiplier=1, priority=1)
-def update_model(self, cpu_resources, gpu_resources):
-
-    r_specifiers = {'host': 'localHost', 'port': '6379', 'db': '1'}
+def update_system_resources_task(self, cpu_resources, gpu_resources):
 
     if cpu_resources is None:
-        system_resources = get_system_resources()
-        if cpu_resources is None:
-            cpu_resources = system_resources[0]
-        if gpu_resources is None:
-            gpu_resources = system_resources[1]
-        
-    language_model_object = create_model_object(cpu_resources, gpu_resources)
-
-    language_model_store_result = handleRedisIO(operation="store", r_specifiers=r_specifiers, key="language_model", input_data=language_model_object)
-    cpu_resources_store_result = handleRedisIO(operation="store", r_specifiers=r_specifiers, key="cpu_resources", input_data=cpu_resources)
-    gpu_resources_store_result = handleRedisIO(operation="store", r_specifiers=r_specifiers, key="gpu_resources", input_data=gpu_resources)
-
+        raise Exception (f"ERROR: Failed to update model, cpu_resources cannot be type None: [{e}]")
     
+    if gpu_resources is None:
+        raise Exception (f"ERROR: Failed to update model, gpu_resources cannot be type None: [{e}]")
 
-@celery.task(bind=True, worker_prefetch_multiplier=1, priority=1)
-def get_recent_student_logs(self, student_id, number_of_logs):
-
-    r_specifiers = {'host': 'localHost', 'port': '6379', 'db': '1'}
+    sys_db_redis_client = redis.Redis(host='localhost', port=6379, db=1)
 
     try:
-        logs_dict = getRecentStudentLogs(student_id, number_of_logs)
-
-        try: 
-            handleRedisIO(operation="store", r_specifiers=r_specifiers, key="logs_dict", input_data=logs_dict)
-            return logs_dict
-
-        except Exception as e:
-            print(f"ERROR: Failed to store logs to Redis")
-            
+        sys_db_redis_client.set("cpu_resources", cpu_resources)
+        sys_db_redis_client.set("gpu_resources", gpu_resources)
 
     except Exception as e:
-        print(f"ERROR: Failed to get recent logs {e}")
-
+            raise Exception (f"ERROR: Failed to cache model and system resources in redis db2 [{e}]: ")
+    
+#REWROTE
 @celery.task(bind=True, worker_prefetch_multiplier=1, priority=1)
-def cancel_generate_hint_celery(self):
-    r_specifiers = {'host': 'localHost', 'port': '6379', 'db': '1'}
+def get_recent_student_logs_task(self, student_id, number_of_logs):
 
-    query_small_language_model_task_id = handleRedisIO(operation="load", r_specifiers=r_specifiers, key="query_small_language_model_task_id")
+    user_db_redis_client = redis.Redis(host='localhost', port=6379, db=2)
+
+    try:
+        logs_dict = getRecentLogs(student_id, number_of_logs)
+
+    except Exception as e:
+            raise Exception(f"ERROR: Failed to retrieve logs with 'getRecentLogs()': {e}")
+         
+    try: 
+        logs_dict_pickle = pickle.dumps(logs_dict)
+
+    except Exception as e:
+        raise Exception (f"ERROR: Failed to convert logs to pickle: [{e}]")
+
+    try:
+        user_db_redis_client.set("logs_dict", logs_dict_pickle)
+    
+    except Exception as e:
+            raise Exception(f"ERROR: Failed to set 'logs_dict' to redis db1: {e}")
+
+    return logs_dict
+
+#REWROTE
+@celery.task(bind=True, worker_prefetch_multiplier=1, priority=1)
+def cancel_generate_hint_task(self):
+    user_db_redis_client = redis.Redis(host='localhost', port=6379, db=2)
+
+    query_small_language_model_task_id = user_db_redis_client.get("query_small_language_model_task_id")
+    
     self.app.control.revoke(query_small_language_model_task_id, terminate=True)
     
     return {'status': query_small_language_model_task_id}
 
-
+#REWROTE
 @celery.task(bind=True, worker_prefetch_multiplier=1, priority=1)
-def query_small_language_model_task(self, task, r_specifiers, generation_specifiers):
+def query_small_language_model_task(self, task, generation_parameters):
 
-    query_small_language_model_task_id = self.request.id
-    query_small_language_model_task_id_store_result = handleRedisIO(operation="store", r_specifiers=r_specifiers, key="query_small_language_model_task_id", input_data=query_small_language_model_task_id)
+    def get_resource_settings_from_redis(sys_db_redis_client):
+
+        try:
+            cpu_resources = sys_db_redis_client.get("cpu_resources")
+            gpu_resources = sys_db_redis_client.get("gpu_resources")
+
+        except Exception as e:
+            raise Exception (f"ERROR: Failed to retrieve cpu/gpu resources from redis db1. Additioanl information: [{e}]")
+        
+        return {'cpu_resources': cpu_resources, 'gpu_resources': gpu_resources}
     
+    def get_logs_dict_from_redis(user_db_redis_client):
+
+        try:
+            logs_dict_pickle = user_db_redis_client.get("logs_dict")
+
+        except Exception as e:
+            raise Exception (f"ERROR: Failed to retrieve 'logs_dict' from redis db2: [{e}]")
+
+        try:
+            logs_dict = pickle.loads(logs_dict_pickle)
+        
+        except Exception as e:
+            raise Exception (f"ERROR: Failed to load logs_dict pickle: [{e}]")
+        
+        return logs_dict
     
-    def custom_query(r_specifiers: dict, generation_specifiers: dict) -> tuple[str, int]:
+    def set_query_small_language_model_task_id():
+
+        try:
+            query_small_language_model_task_id = self.request.id
+            user_db_redis_client.set("query_small_language_model_task_id", query_small_language_model_task_id)
+        
+        except Exception as e:
+            raise Exception (f"ERROR: Failed to retrieve or set query_small_language_model_task_id to redis db2: [{e}]")
+
+
+    def custom_query(language_model_object_llama):
 
         start_time = time.time()
 
-        #Query generation specifiers.
-        temperature = float(generation_specifiers['temperature'])
-        max_tokens = generation_specifiers['max_tokens']
-        system_prompt = generation_specifiers['system_prompt'] 
-        user_prompt = generation_specifiers['user_prompt'] 
-
-        #Load language model object from Redis.
         try:
-            language_model = handleRedisIO(operation="load", r_specifiers=r_specifiers, key="language_model")
+            temperature = float(generation_parameters.get('temperature'))
+            max_tokens = int(generation_parameters.get('max_tokens'))
+            system_prompt = generation_parameters.get('system_prompt')
+            user_prompt = generation_parameters.get('user_prompt')
+
         except Exception as e:
-            print(f"ERROR: Failed to load items from Redis cache: {e}")
+            raise Exception (f"ERROR: Failed to load items from Redis cache: [{e}]")
 
-        #Generate response
-        result = language_model(
-            f"<|system|>{system_prompt}<|end|>\n<|user|>\n{user_prompt}<|end|>\n<|assistant|> ",
-            max_tokens=max_tokens,
-            stop=["<|end|>"], 
-            echo=False, 
-            temperature=temperature,
-        ) 
+        try:
+            result = language_model_object_llama(
+                f"<|system|>{system_prompt}<|end|>\n<|user|>\n{user_prompt}<|end|>\n<|assistant|> ",
+                max_tokens=max_tokens,
+                stop=["<|end|>"], 
+                echo=False, 
+                temperature=temperature,
+            )
 
+        except Exception as e:
+            raise Exception (f"ERROR: Failed to generate results: [{e}]")
+        
         response = result["choices"][0]["text"]
 
         stop_time = time.time()
         duration = round(stop_time - start_time, 2)
 
         return response, duration
-
-
-
-    def generate_hint(r_specifiers: dict, generation_specifiers: dict) -> list[str, dict, int]:
+    
+    def generate_hint(language_model_object_llama, generation_parameters, logs_dict):
 
         start_time = time.time()
-       
-        #Hint generation specifiers.
-        scenario_name = generation_specifiers['scenario_name']
-        disable_scenario_context = generation_specifiers['disable_scenario_context']
-        temperature = float(generation_specifiers['temperature'])
 
         try:
-            language_model = handleRedisIO(operation="load", r_specifiers=r_specifiers, key="language_model")
-            logs_dict = handleRedisIO(operation="load", r_specifiers=r_specifiers, key="logs_dict")
-                
+            temperature = float(generation_parameters.get('temperature'))
+            scenario_name = generation_parameters.get('scenario_name')
+            disable_scenario_context = generation_parameters.get('disable_scenario_context')
+
         except Exception as e:
-            print(f"ERROR: Failed to load items from Redis cache: {e}")
-            
-        bash_history = logs_dict['bash']
-        chat_history = logs_dict['chat']
-        answer_history = logs_dict['responses']
+            raise Exception (f"ERROR: Failed to load items from Redis cache: [{e}]")
 
         if disable_scenario_context:
-                  
-            finalized_system_prompt = "##A student is completing a cyber-security scenario, look at their bash, chat and question/answer history and provide them a single concise hint on what to do next. The hint must not exceed two sentences in length."
-            finalized_user_prompt = f"  The student's Recent bash commands: {bash_history}. The student's recent chat messages: {chat_history}. The student's recent answers: {answer_history}. "
 
-            result = language_model(
-                f"<|system|>{finalized_system_prompt}<|end|>\n<|user|>\n{finalized_user_prompt}<|end|>\n<|assistant|> ",
-                max_tokens=-1,
-                stop=["<|end|>"], 
-                echo=False, 
-                temperature=temperature,
-            ) 
-
-            generated_hint = result["choices"][0]["text"]
-            stop_time = time.time()
-            duration = round(stop_time - start_time, 2)
-            export_hint_to_csv(scenario_name, generated_hint, duration)
-
-            return generated_hint, logs_dict, duration
-
-        else: 
-                        
-            scenario_summary = load_context_file_contents('scenario_summaries', scenario_name)
-            finalized_system_prompt = "##A student is completing a cyber-security scenario, review the scenario guide along with their bash, chat and question/answer history and provide them a single concise hint on what to do next. The hint must not exceed two sentences in length."
-            finalized_user_prompt = f" The scenario summary: {scenario_summary}. The student's recent bash commands: {bash_history}. The student's recent chat messages: {chat_history}. The student's recent answers: {answer_history}. "
-
-            result = language_model(
-                f"<|system|>{finalized_system_prompt}<|end|>\n<|user|>\n{finalized_user_prompt}<|end|>\n<|assistant|> ",
-                max_tokens=-1,
-                stop=["<|end|>"], 
-                echo=False, 
-                temperature=temperature,
-            ) 
-
-            generated_hint = result["choices"][0]["text"]
-
-            stop_time = time.time()
-            duration = round(stop_time - start_time, 2)
-            export_hint_to_csv(scenario_name, generated_hint, duration)
+            try:
+                finalized_system_prompt = "##A student is completing a cyber-security scenario, look at their bash, chat and question/answer history and provide them a single concise hint on what to do next. The hint must not exceed two sentences in length."
+                finalized_user_prompt = f"  The student's Recent bash commands: {logs_dict['bash']}. The student's recent chat messages: {logs_dict['chat']}. The student's recent answers: {logs_dict['responses']}. "
             
-            return generated_hint, logs_dict, duration
+            except Exception as e:
+                raise Exception (f"ERROR: Failed to initialize prompts: [{e}]")
+        else:
 
+            try:
+                scenario_summary = load_context_file_contents('scenario_summaries', scenario_name)
+
+            except Exception as e:
+                raise Exception (f"ERROR: 'load_context_file_contents()' failed: [{e}]")
+
+            try:
+                finalized_system_prompt = "##A student is completing a cyber-security scenario, review the scenario guide along with their bash, chat and question/answer history and provide them a single concise hint on what to do next. The hint must not exceed two sentences in length."
+                finalized_user_prompt = f" The scenario summary: {scenario_summary}. The student's recent bash commands: {logs_dict['bash']}. The student's recent chat messages: {logs_dict['chat']}. The student's recent answers: {logs_dict['responses']}. "
+            
+            except Exception as e:
+                raise Exception (f"ERROR: Failed to initialize prompts: [{e}]")
+
+
+        try:
+            result = language_model_object_llama(
+                f"<|system|>{finalized_system_prompt}<|end|>\n<|user|>\n{finalized_user_prompt}<|end|>\n<|assistant|> ",
+                max_tokens=-1,
+                stop=["<|end|>"], 
+                echo=False, 
+                temperature=temperature,
+            )
+
+        except Exception as e:
+            raise Exception (f"ERROR: Failed to generate results: [{e}]")
+            
+        generated_hint = result["choices"][0]["text"]
+
+        stop_time = time.time()
+        duration = round(stop_time - start_time, 2)
+
+        export_hint_to_csv(scenario_name, generated_hint, duration)
+
+        return generated_hint, logs_dict, duration
+        
+    sys_db_redis_client = redis.Redis(host='localhost', port=6379, db=1)
+    user_db_redis_client = redis.Redis(host='localhost', port=6379, db=2)
+
+    system_resources = get_resource_settings_from_redis(sys_db_redis_client)
+    cpu_resources = int(system_resources['cpu_resources'])
+    gpu_resources = int(system_resources['gpu_resources'])
+
+    language_model_object_llama = create_language_model_object_llama(cpu_resources, gpu_resources)
+    
+    if task == "custom_query":
+        response, duration = custom_query(language_model_object_llama, generation_parameters)
+        set_query_small_language_model_task_id()
+
+        return {'response': response, 'duration': duration}
+    
     if task == "generate_hint":
-        generated_hint, logs_dict, duration = generate_hint(r_specifiers, generation_specifiers)
+        logs_dict = get_logs_dict_from_redis(user_db_redis_client)
+        generated_hint, logs_dict, duration = generate_hint(language_model_object_llama, generation_parameters, logs_dict)
+        set_query_small_language_model_task_id()
+
         return {'generated_hint': generated_hint, 'logs_dict': logs_dict, 'duration': duration}
-    else:
-        return { }
+
+    else: 
+        raise ValueError(f"ERROR: Invalid option for task, you provided: [{task}]")
+

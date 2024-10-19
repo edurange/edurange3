@@ -119,9 +119,9 @@ function Instr_Hints() {
     }
   };
 
-  useEffect(() => {
-    getResources();
-  }, []);
+  // useEffect(() => {
+  //   getResources();
+  // }, []);
 
   const [cpu_resources_selected, set_cpu_resources_selected] = useState(Number(cpu_resources_detected));
   const [gpu_resources_selected, set_gpu_resources_selected] = useState(Number(gpu_resources_detected));
@@ -172,6 +172,7 @@ function Instr_Hints() {
   };
 
   const toggleExpandAdvancedSettings = () => {
+    getResources();
     set_isExpandedAdvancedSettings(!isExpandedAdvancedSettings);
     set_isClickedAdvancedSettings(!isClickedAdvancedSettings);
 };
@@ -192,6 +193,7 @@ function Instr_Hints() {
   // Logic for generation presets
 
   const handleChangeToggleForSpeedSetting = () => {
+    getResources();
     set_isClickedQualitySetting(false);
     set_isClickedSpeedSetting(!isClickedSpeedSetting);
     set_checked_for_disable_scenario_context(true);
@@ -200,6 +202,7 @@ function Instr_Hints() {
   };
 
   const handleChangeToggleForQualitySetting = () => {
+    getResources();
     set_isClickedSpeedSetting(false);
     set_isClickedQualitySetting(!isClickedQualitySetting);
     set_checked_for_disable_scenario_context(false);

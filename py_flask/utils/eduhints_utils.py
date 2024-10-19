@@ -15,7 +15,7 @@ from llama_cpp import Llama
 from llama_index.core import Settings
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from memory_profiler import profile, memory_usage
-from py_flask.utils.common_utils import handleRedisIO, get_system_resources
+from py_flask.utils.common_utils import get_system_resources
 
 
 """
@@ -46,8 +46,7 @@ SOFTWARE.
 
 """
 
-
-def create_model_object(cpu_resources: int, gpu_resources: int) -> None:  
+def create_language_model_object_llama(cpu_resources: int, gpu_resources: int) -> None:  
 
       try:
             language_model_object = Llama.from_pretrained(
@@ -63,7 +62,8 @@ def create_model_object(cpu_resources: int, gpu_resources: int) -> None:
             return language_model_object
 
       except Exception as e:
-            raise Exception(f"Failed to initialize model object: {e}")
+            raise Exception(f"ERROR: Failed to initialize model object: {e}")
+
 
 def load_context_file_contents(context_file_type: str, scenario_name: str) -> str:
 
@@ -75,7 +75,7 @@ def load_context_file_contents(context_file_type: str, scenario_name: str) -> st
             return context_file_content
 
       except Exception as e:
-            print(f"Failed to load context file contents: {e}")
+            raise Exception (f"ERROR: Failed to load context file contents: {e}")
 
 
 def export_hint_to_csv(scenario_name: str, generated_hint: str, duration: int):
