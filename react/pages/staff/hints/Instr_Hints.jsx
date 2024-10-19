@@ -90,7 +90,6 @@ function Instr_Hints() {
 
   const handleOkExperimentalFeature = () => {
     set_experimentalConfirmLock(false);
-    set_experimentalConfirmLockInLocalStorage();
   };
 
   // Logic for resource allocation
@@ -119,9 +118,6 @@ function Instr_Hints() {
     }
   };
 
-  // useEffect(() => {
-  //   getResources();
-  // }, []);
 
   const [cpu_resources_selected, set_cpu_resources_selected] = useState(Number(cpu_resources_detected));
   const [gpu_resources_selected, set_gpu_resources_selected] = useState(Number(gpu_resources_detected));
@@ -353,7 +349,9 @@ function Instr_Hints() {
 
   // Logic for sending hint through chat
 
-  const filteredUser = users_state.filter((user) => user.id === 3)[0];
+  console.log('selectedUserState', selectedUser_state)
+
+  const filteredUser = users_state.filter((user) => user.id === selectedUser_state.id )[0];
   const filteredUserHomeChan = filteredUser?.channel_data?.home_channel;
 
   const handleHintSend = () => {
@@ -370,10 +368,12 @@ function Instr_Hints() {
       "EDUHint", // user alias
       selectedScenario_state.scenario_type, // scenario type
       eduhint_content, // 'content'
-      selectedScenario_state.id // 'scenario_id' 
+      selectedScenario_state.id, // 'scenario_id' 
+      selectedScenario_state?.name,
     );
 
     if (chatMsg.content) {
+
       const newChat = {
         message_type: 'chat_message',
         timestamp: Date.now(),
@@ -381,7 +381,6 @@ function Instr_Hints() {
       };
 
       if (socket_ref.current && socket_ref.current.readyState === 1) {
-        console.log('trying to send socket msg');
         socket_ref.current.send(JSON.stringify(newChat));
       }
     }
@@ -605,7 +604,7 @@ function Instr_Hints() {
                   className="logs-textarea"
                   placeholder={cpu_resources_detected}
                 />
-              <div class="slider-container">
+              <div className="slider-container">
                 <input 
                   type="range" 
                   id="cpuSliderRange" 
@@ -620,7 +619,7 @@ function Instr_Hints() {
 
               <label htmlFor="GPU_resource_settings" className="settings-textarea-label">GPU resources: </label>
 
-              <div class="gpu_resources_display">
+              <div className="gpu_resources_display">
                 <textarea
                   value={gpu_resources_selected}
                   rows={1}
@@ -639,7 +638,7 @@ function Instr_Hints() {
                   className="logs-textarea"
                   placeholder={"1"}
                 />
-              <div class="slider-container">
+              <div className="slider-container">
                 <input 
                   type="range" 
                   id="tempSliderRange" 

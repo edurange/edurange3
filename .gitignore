@@ -96,3 +96,4 @@ assets/css/.Rhistory
 
 #user logs
 machine_learning/logs/*
+machine_learning/eduhints/generated_hints/*
