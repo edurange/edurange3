@@ -148,12 +148,14 @@ const staff_hints = {
     path: `/staff/hints`,
     navStub: 'dash'
 };
-const student_hint = {
-    title: "Hints",
+
+const hint_settings = {
+    title: "Hint_Config",
     icon: edurange_icons.light_bulb,
-    path: `/hints`,
-    extension: true,
+    path: `/staff/hints/config`,
+    navStub: 'dash'
 };
+
 
 const issues = {
     title: "Issues",

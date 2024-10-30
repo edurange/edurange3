@@ -62,6 +62,7 @@
     background-color: rgba(0, 0, 0, 0.6);
     padding: 10px;
     box-sizing: border-box;
+    justify-content: space-between;
 }
 .bubble-msg-text-frame{
     display: flex;
@@ -135,4 +136,30 @@
     display: flex;
     width: 100%;
     cursor: default;
+}
+
+.hintbtn-frame{
+    display: flex;
+    width: 60px;
+    height: 100%;
+    background-color: green;
+    color: rgb(255, 218, 246);
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+    box-sizing: border-box;
+    border-radius: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    cursor: pointer;
+    border: 1px solid rgb(255, 218, 246);
+}
+.hintbtn-frame:hover{
+    border: 1px solid green;
+    color: green;
+    background-color: rgb(255, 218, 246);
+}
+
+.hint-btn-set{
+    display: flex;
 }

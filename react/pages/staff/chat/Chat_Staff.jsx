@@ -6,6 +6,7 @@ import { useSortedData } from '../../../modules/utils/sorting_modules';
 import ListController from '../../../components/ListController';
 import Msg_Bubble from '../../student/chat/Msg_Bubble';
 import { ChatMessage } from '@modules/utils/chat_modules.jsx';
+import Chat_HintTab from '../../student/chat/Chat_HintTab';
 
 
 function Chat_Staff({is_allSeeing, selectedUser_obj}) {
@@ -157,6 +158,7 @@ function Chat_Staff({is_allSeeing, selectedUser_obj}) {
                                 message_obj={chat}
                                 is_outgoing={chat?.user_id === userData_state?.id}
                             />
+
                         </div>
                     ))}
                 </div>

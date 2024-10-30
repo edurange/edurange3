@@ -1,14 +1,16 @@
-
 import axios from 'axios';
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import { Route, Routes } from 'react-router-dom';
+
 import Scenarios_home from './scenarios/Scenarios_home';
 import Chat_Student from '@student/chat/Chat_Student';
 import Frame_side from '@frame/sidenav/Frame_side';
-export const StudentRouter_context = React.createContext();
-import '@assets/css/dashboard.css';
-import { HomeRouter_context } from '../pub/Home_router';
 import Scenario_controller from './scenarios/Scenario_controller';
+import { HomeRouter_context } from '../pub/Home_router';
+
+import '@assets/css/dashboard.css';
+
+export const StudentRouter_context = React.createContext();
 
 function Student_router() {
 
@@ -19,7 +21,6 @@ function Student_router() {
     }]
     const { login_state, userData_state, set_chatData_state, chatData_state, } = useContext(HomeRouter_context);
     const [chatObjs_UL_state, set_chatObjs_UL_state] = useState([]); // unordered array of all chats
-    const [aliasDict_state, set_aliasDict_state] = useState({});
 
     const [notifsArray_state, set_notifsArray_state] = useState(fakeNotifs);
     const [guideBook_state, set_guideBook_state] = useState({});
@@ -33,6 +34,10 @@ function Student_router() {
 
     const proto = (window.location.protocol === "https:") ? "wss" : "ws";
     const socketURL = `${proto}://${window.location.host}/chat`;
+
+    const {
+        aliasDict_state, set_aliasDict_state
+    } = useContext(HomeRouter_context);
   
     const updateChatHistory = (message) => {
         set_chatData_state(prevHistory => [...prevHistory, message]);
@@ -115,8 +120,11 @@ function Student_router() {
             lastChat_ref.current.scrollIntoView({ behavior: 'smooth' });
         }
     }, [chatData_state]);
-    if (!scenarioList_state) { return <></> }
-    if (!login_state) { return <></> }
+
+    if (
+        !scenarioList_state 
+        || !login_state
+    ) { return null; }
 
     return (
 

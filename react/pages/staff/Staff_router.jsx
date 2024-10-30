@@ -10,9 +10,11 @@ import Staff_Users from './users/Staff_Users';
 import Staff_UserDetail from './users/Staff_UserDetail';
 import { HomeRouter_context } from '../pub/Home_router';
 import Staff_LogsViewer from './logs_dir/Staff_LogsViewer';
-import Instr_Hints from './hints/Instr_Hints';
+import Hints_Main from './hints/Hints_Main';
 import Chat_Staff from './chat/Chat_Staff';
 import Scenario_controller from '../student/scenarios/Scenario_controller';
+import Hints_Controller from './hints/Hints_Controller';
+import Hint_Settings from './hints/sub/Hint_Settings';
 
 export const StaffRouter_context = React.createContext();
 
@@ -20,7 +22,6 @@ function Staff_router() {
 
     const { login_state } = useContext(HomeRouter_context);
     const [chatObjs_UL_state, set_chatObjs_UL_state] = useState([]); // unordered array of all chats
-    const [aliasDict_state, set_aliasDict_state] = useState({});
     const [channelAccess_state, set_channelAccess_state] = useState({});
     const [users_state, set_users_state] = useState([])
     const [taAssignments_state, set_taAssignments_state] = useState([]);
@@ -40,20 +41,24 @@ function Staff_router() {
     const socket_ref = useRef(null);
     const socket_protocol = (window.location.protocol === "https:") ? "wss" : "ws";
     const socketURL = `${socket_protocol}://${window.location.host}/chat`;
+        
+    const {
+        aliasDict_state, set_aliasDict_state
+    } = useContext(HomeRouter_context);
 
     function compile_taDict(ta_assignments) {
         const ta_dict = {};
-    
+
         (ta_assignments ?? []).forEach(assignment => {
             const { student_id, ta_id } = assignment;
-    
+
             if (!ta_dict[student_id]) {
                 ta_dict[student_id] = [];
             }
-    
+
             ta_dict[student_id].push(ta_id);
         });
-    
+
         return ta_dict;
     }
 
@@ -61,13 +66,11 @@ function Staff_router() {
         try {
             const response = await axios.get("/get_staff_data");
             const responseData = response.data;
-            // DEV_FIX (update for new list strategy (not dict))
-
             // recent_reply is compared to chat_message timestamp to determine
             // whether message is considered new (Instr_UserTable.jsx).
             // the prop is also updated when staff sends reply (ea staff mbr has their own record)
             // this record is only persistent in memory; full refresh effectively sets all to 'old'
-            
+
             responseData?.users?.forEach(user => {
                 if (!user.recent_reply) {
                     user.recent_reply = Date.now()
@@ -78,7 +81,7 @@ function Staff_router() {
                 if (!user.response_resetTime) {
                     user.response_resetTime = Date.now()
                 }
-                
+
             });
 
             const compiled_taDict = compile_taDict(responseData?.ta_assignments)
@@ -104,7 +107,7 @@ function Staff_router() {
                     message_type: 'keepalive',
                     message: 'ping'
                 })
-            );
+                );
             }
         }, pingInterval);
         // cleanup
@@ -116,11 +119,9 @@ function Staff_router() {
     }, []);
 
     useEffect(() => {
-        async function get_lib(){
+        async function get_lib() {
             const chatlib_resp = await axios.get('/get_chat_library');
-            // const unordered_chatObjs_array = chatlib_resp?.data?.unordered_messages_list;
             const userChannels_data = chatlib_resp?.data?.user_channels_dict;
-            // set_chatObjs_UL_state(unordered_chatObjs_array);
             set_channelAccess_state(userChannels_data);
         }
         get_lib()
@@ -137,7 +138,7 @@ function Staff_router() {
                 console.error('Chat error:', message.data);
             } else if (message.message_type === 'handshake') {
                 if (message.chat_logs)
-                set_chatObjs_UL_state(message.chat_logs);
+                    set_chatObjs_UL_state(message.chat_logs);
                 set_aliasDict_state(message.aliasDict ?? {});
             }
         };
@@ -165,13 +166,11 @@ function Staff_router() {
         || !scenarios_state
         || !logs_state
         || !login_state
-    ) { return <></> }
+    ) { return null }
 
     return (
         <div className='newdash-frame'>
             <div className='newdash-frame-carpet'>
-
-                <Frame_side />
 
                 <StaffRouter_context.Provider value={{
 
@@ -191,21 +190,26 @@ function Staff_router() {
                     taDict_state, set_taDict_state,
                     aliasDict_state,
                 }}>
+                    <Hints_Controller>
 
-                    <Routes>
-                        <Route path="/*" element={<Staff_Dash />} />
-                        <Route path="/scenarios/*" element={<Staff_Scenarios />} />
-                        <Route path="/scenarios/:scenarioID" element={<Scenario_controller />} />
-                        {/* <Route path="/scenarios/:scenarioID" element={<Staff_ScenDetail />} /> */}
-                        <Route path="/groups/*" element={<Staff_Groups />} />
-                        <Route path="/groups/:groupID/*" element={<Staff_GroupDetail />} />
-                        <Route path="/students/*" element={<Staff_Users />} />
-                        <Route path="/students/:userID/*" element={<Staff_UserDetail />} />
-                        <Route path="/panopticon/" element={<Chat_Staff is_allSeeing={true} />} />
-                        <Route path="/ta_chat/" element={<Chat_Staff is_allSeeing={false} />} />
-                        <Route path="/logs/" element={<Staff_LogsViewer />} />
-                        <Route path="/hints/" element={<Instr_Hints />} />
-                    </Routes>
+                        <Frame_side />
+
+                        <Routes>
+                            <Route path="/*" element={<Staff_Dash />} />
+                            <Route path="/scenarios/*" element={<Staff_Scenarios />} />
+                            <Route path="/scenarios/:scenarioID" element={<Scenario_controller />} />
+                            <Route path="/groups/*" element={<Staff_Groups />} />
+                            <Route path="/groups/:groupID/*" element={<Staff_GroupDetail />} />
+                            <Route path="/students/*" element={<Staff_Users />} />
+                            <Route path="/students/:userID/*" element={<Staff_UserDetail />} />
+                            <Route path="/panopticon/" element={<Chat_Staff is_allSeeing={true} />} />
+                            <Route path="/ta_chat/" element={<Chat_Staff is_allSeeing={false} />} />
+                            <Route path="/logs/" element={<Staff_LogsViewer />} />
+                            <Route path="/hints/" element={<Hints_Main />} />
+                            <Route path="/hints/config" element={<Hint_Settings />} />
+
+                        </Routes>
+                    </Hints_Controller>
                 </StaffRouter_context.Provider>
 
             </div>

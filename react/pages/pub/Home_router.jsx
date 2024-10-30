@@ -16,8 +16,9 @@ import Frame_head from '../../frame/head/Frame_head';
 import Frame_foot from '../../frame/foot/Frame_foot';
 import Account from '../student/account/Account';
 import './Home.css';
-import { AppContext } from '../../config/AxiosConfig';
+import AxiosConfig, { AppContext } from '../../config/AxiosConfig';
 import Feedback from '../feedback/Feedback';
+import Hints_Controller, { HintConfig_Context } from '../staff/hints/Hints_Controller';
 
 export const HomeRouter_context = React.createContext();
 
@@ -35,6 +36,7 @@ function Home_router() {
   const [login_state, set_login_state] = useState(false);
   const [responseData_state, set_responseData_state] = useState({});
   const [chatSocket_state, set_chatSocket_state] = useState();
+  const [aliasDict_state, set_aliasDict_state] = useState({});
   const {
     desiredNavMetas_state, set_desiredNavMetas_state,
     clipboard_state, set_clipboard_state
@@ -88,10 +90,13 @@ function Home_router() {
         desiredNavMetas_state, set_desiredNavMetas_state,
         chatSocket_state, set_chatSocket_state,
         chatData_state, set_chatData_state,
-        responseData_state, set_responseData_state
+        responseData_state, set_responseData_state,
+        aliasDict_state, set_aliasDict_state
       }}>
         <SessionKeeper/>
         <Frame_head />
+
+
 
         <div id='edurange-content'>
           <div className='universal-outer'>
