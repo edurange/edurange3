@@ -61,19 +61,19 @@ def general_error_handler(error):
     error_handler = custom_abort(error)
     return error_handler.get_response()
 
-@blueprint_student.route("/logout", methods=["POST"])
-@jwt_and_csrf_required
-async def logout():
-    # current_username = g.current_username
+# @blueprint_student.route("/logout", methods=["POST"])
+# @jwt_and_csrf_required
+# async def logout():
+#     # current_username = g.current_username
 
-    response_data = {"message": f"User testerino has been successfully logged out."}
-    # response_data = {"message": f"User {current_username} has been successfully logged out."}
-    response = make_response(jsonify(response_data))
+#     response_data = {"message": f"User testerino has been successfully logged out."}
+#     # response_data = {"message": f"User {current_username} has been successfully logged out."}
+#     response = make_response(jsonify(response_data))
 
-    response.set_cookie('edurange3_jwt', '', expires=0, samesite='Lax', httponly=True, path='/')
-    response.set_cookie('X-XSRF-TOKEN', '', expires=0, samesite='Lax', path='/')
+#     response.set_cookie('edurange3_jwt', '', expires=0, samesite='Lax', httponly=True, path='/')
+#     response.set_cookie('X-XSRF-TOKEN', '', expires=0, samesite='Lax', path='/')
     
-    return response
+#     return response
 
 
 @blueprint_student.route('/get_identity', methods=['GET']) # DEV_ONLY

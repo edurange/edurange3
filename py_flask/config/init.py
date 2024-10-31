@@ -8,6 +8,7 @@ import os
 from quart import Quart
 from quart.sessions import SecureCookieSessionInterface
 from quart_session import Session
+import redis
 
 from py_flask.routes.public_routes import blueprint_public
 from py_flask.routes.student_routes import blueprint_student
@@ -39,6 +40,12 @@ def create_app(config_object="py_flask.config.settings"):
     app.config["JWT_SECRET_KEY"] = os.environ.get("JWT_SECRET_KEY", "your_secret_key")
     app.config["JWT_ALGORITHM"] = "HS256"
     app.config["JWT_EXPIRATION_DELTA"] = timedelta(hours=12)
+
+    app.config["SESSION_TYPE"] = "redis"  # or "filesystem" if Redis is not available
+    app.config["SESSION_PERMANENT"] = True
+    app.config["SESSION_USE_SIGNER"] = True
+    app.config["SESSION_REDIS"] = redis.from_url("redis://localhost:6379")  # Redis configuration
+
 
     Session(app)
 

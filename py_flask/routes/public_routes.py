@@ -22,6 +22,7 @@ from quart import (
     session,
     jsonify,
     current_app,
+    make_response
 )
 # db_ses = db.session
 edurange3_csrf = secrets.token_hex(32)
@@ -32,10 +33,7 @@ blueprint_public = Blueprint(
     __name__, 
     url_prefix='/api')
 
-
-if "X-XSRF-TOKEN" not in session:
-    session["X-XSRF-TOKEN"] = secrets.token_hex(32)
-    
+ 
 @blueprint_public.errorhandler(SQLAlchemyError)
 def handle_sqlalchemy_error(error):
 
@@ -75,8 +73,8 @@ async def login_edurange3():
     if not user or not bcrypt.check_password_hash(user.password, password):
         return custom_abort("Invalid credentials.", 403)
 
-    # if "X-XSRF-TOKEN" not in session:
-    #     session["X-XSRF-TOKEN"] = secrets.token_hex(32)
+    if "X-XSRF-TOKEN" not in session:
+        session["X-XSRF-TOKEN"] = secrets.token_hex(32)
 
     validated_user_data = {
         "id": user.id,
@@ -118,92 +116,16 @@ async def login_edurange3():
 
     return response
 
-# @blueprint_public.route("/login", methods=["POST"])
-# async def login_edurange3():
-#     reqJSON = await request.get_json()
-#     username = reqJSON.get("username")
-#     password = reqJSON.get("password")
+@blueprint_public.route("/logout", methods=["POST"])
+async def logout():
 
-#     async with AsyncSessionLocal() as db_ses:
-#         result = await db_ses.execute(select(Users).where(Users.username == username))
-#         user = result.scalar_one_or_none()
+    response_data = {"message": f"User has been successfully logged out."}
+    response = await make_response(jsonify(response_data))
 
-#     if not user or not bcrypt.check_password_hash(user.password, password):
-#         return custom_abort("Invalid credentials.", 403)
-
-#     if 'X-XSRF-TOKEN' not in session:
-#         session['X-XSRF-TOKEN'] = secrets.token_hex(32)
-
-#     validated_user_data = {
-#         "id": user.id,
-#         "username": user.username,
-#         "is_admin": user.is_admin,
-#         "is_staff": user.is_staff,
-#         "channel_data": await getChannelDictList_byUser(user.id, user.username),
-#         "role": "admin" if user.is_admin else "staff" if user.is_staff else "student"
-#     }
-
-#     access_token = await create_access_token(identity={
-#         "username": validated_user_data["username"],
-#         "user_role": validated_user_data["role"],
-#         "user_id": validated_user_data["id"]
-#     }, expires_delta=timedelta(hours=12))
-
-#     # Prepare response with JWT
-#     response = jsonify(validated_user_data)
-#     response.set_cookie(
-#         'edurange3_jwt', 
-#         access_token, 
-#         samesite='Lax', 
-#         httponly=True, 
-#         secure=True, 
-#         path='/'
-#     )
-#     response.set_cookie(
-#         'X-XSRF-TOKEN', 
-#         session['X-XSRF-TOKEN'], 
-#         samesite='Lax', 
-#         secure=True, 
-#         path='/'
-#     )
+    response.set_cookie('edurange3_jwt', '', expires=0, samesite='Lax', httponly=True, path='/')
+    response.set_cookie('X-XSRF-TOKEN', '', expires=0, samesite='Lax', path='/')
     
-#     return response
-
-
-
-# @blueprint_public.route("/login", methods=["POST"])
-# def login_edurange3():
-    
-#     validation_schema = LoginSchema()  # instantiate validation schema
-
-#     print('request.json: ', request.json)
-#     validated_data = validation_schema.load(request.json)  # validate login. reject if bad.
-    
-#     validated_user_obj = Users.query.filter_by(username=validated_data["username"]).first()
-
-#     if 'X-XSRF-TOKEN' not in session:
-#         session['X-XSRF-TOKEN'] = secrets.token_hex(32)
-
-#     validated_user_dump = validation_schema.dump(vars(validated_user_obj))
-
-#     if not validated_user_dump:
-#         return (custom_abort("User not found", 404))
-
-#     chan_data = getChannelDictList_byUser(validated_user_dump['id'], validated_user_dump['username'])
-
-#     validated_user_dump['channel_data'] = chan_data
-    
-#     del validated_user_dump['password']
-
-#     temp_role = "student"
-#     if validated_user_dump.get("is_admin"): temp_role = "admin"
-#     elif validated_user_dump.get("is_staff"): temp_role = "staff"
-#     validated_user_dump['role'] = temp_role
-
-#     logged_in_return = login_er3(validated_user_dump)
-
-#     return logged_in_return
-
+    return response
 
 @blueprint_public.route("/register", methods=["POST"])
 def registration():

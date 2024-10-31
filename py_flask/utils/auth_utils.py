@@ -37,7 +37,7 @@ def jwt_and_csrf_required(fn):
             return jsonify({"error": "no client csrf request denied"}), 403
         
         # Ensure session access is awaited if needed
-        server_CSRF = await session.get('X-XSRF-TOKEN')
+        server_CSRF = session.get('X-XSRF-TOKEN')
 
         if not server_CSRF:
             return jsonify({"error": "no server csrf request denied"}), 403
