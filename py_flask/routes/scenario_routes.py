@@ -19,7 +19,7 @@ from py_flask.utils.scenario_utils import (
 )
 import traceback
 
-from flask import (
+from quart import (
     Blueprint,
     request,
     jsonify,

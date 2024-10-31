@@ -1,6 +1,6 @@
 from py_flask.config.extensions import db
 
-from flask import (
+from quart import (
     request,
     session,
     jsonify,
@@ -11,7 +11,8 @@ from datetime import timedelta
 
 from functools import wraps
 from py_flask.database.models import GroupUsers, StudentGroups, Users, Channels, ChannelUsers
-from flask_jwt_extended import create_access_token, decode_token
+# from flask_jwt_extended import create_access_token, decode_token
+import jwt
 
 from py_flask.utils.error_utils import (
     custom_abort,
@@ -20,38 +21,79 @@ from py_flask.utils.error_utils import (
 #  This `@jwt_and_csrf_required()` decorator function should be used on ALL 
 #  non-legacy routes except those not requiring login.
 ###########
+
+
+async def decode_token(token):
+    # Placeholder async decode method (replace with actual implementation)
+    return jwt.decode(token, "your_secret_key", algorithms=["HS256"])
+
 def jwt_and_csrf_required(fn):
     @wraps(fn)
-    def wrapper(*args, **kwargs):
+    async def wrapper(*args, **kwargs):
         
-        # CSRF check (dev)
+        # CSRF check
         client_CSRF = request.cookies.get('X-XSRF-TOKEN')
-        if not client_CSRF: return jsonify({"error": "no client csrf request denied"}), 403
+        if not client_CSRF:
+            return jsonify({"error": "no client csrf request denied"}), 403
         server_CSRF = session.get('X-XSRF-TOKEN')
-        if not server_CSRF: return jsonify({"error": "no server csrf request denied"}), 403
-        if client_CSRF != server_CSRF:  return jsonify({"error": "csrf bad match"}), 403
+        if not server_CSRF:
+            return jsonify({"error": "no server csrf request denied"}), 403
+        if client_CSRF != server_CSRF:
+            return jsonify({"error": "csrf bad match"}), 403
         
         # JWT check
         token = request.cookies.get('edurange3_jwt')
-        if not token: return jsonify({"error": "jwt request denied"}), 403
+        if not token:
+            return jsonify({"error": "jwt request denied"}), 403
         try:
-
-            validated_jwt_token = decode_token(token)  # check if signature still valid
+            # Decode token and extract payload
+            validated_jwt_token = await decode_token(token)
             decoded_payload = validated_jwt_token["sub"]
 
-            g.current_username = decoded_payload["username"]  
-            g.current_user_id = decoded_payload["user_id"] 
-            g.current_user_role = decoded_payload["user_role"] 
-            # Places values in special Flask `g` object which ONLY lasts for life of request
-            # The `g` object can be accessed by any routes decorated with jwt_and_csrf_required()
-            # To avoid auth 'misses', use the `g` object any time the values are needed
+            # Set global `g` attributes for the request
+            g.current_username = decoded_payload["username"]
+            g.current_user_id = decoded_payload["user_id"]
+            g.current_user_role = decoded_payload["user_role"]
 
         except Exception as err:
-            custom_abort('Invalid Credentials', 403)
+            return await custom_abort('Invalid Credentials', 403)
 
-        return fn(*args, **kwargs)
+        return await fn(*args, **kwargs)
     
     return wrapper
+
+# def jwt_and_csrf_required(fn):
+#     @wraps(fn)
+#     def wrapper(*args, **kwargs):
+        
+#         # CSRF check (dev)
+#         client_CSRF = request.cookies.get('X-XSRF-TOKEN')
+#         if not client_CSRF: return jsonify({"error": "no client csrf request denied"}), 403
+#         server_CSRF = session.get('X-XSRF-TOKEN')
+#         if not server_CSRF: return jsonify({"error": "no server csrf request denied"}), 403
+#         if client_CSRF != server_CSRF:  return jsonify({"error": "csrf bad match"}), 403
+        
+#         # JWT check
+#         token = request.cookies.get('edurange3_jwt')
+#         if not token: return jsonify({"error": "jwt request denied"}), 403
+#         try:
+
+#             validated_jwt_token = decode_token(token)  # check if signature still valid
+#             decoded_payload = validated_jwt_token["sub"]
+
+#             g.current_username = decoded_payload["username"]  
+#             g.current_user_id = decoded_payload["user_id"] 
+#             g.current_user_role = decoded_payload["user_role"] 
+#             # Places values in special Flask `g` object which ONLY lasts for life of request
+#             # The `g` object can be accessed by any routes decorated with jwt_and_csrf_required()
+#             # To avoid auth 'misses', use the `g` object any time the values are needed
+
+#         except Exception as err:
+#             custom_abort('Invalid Credentials', 403)
+
+#         return fn(*args, **kwargs)
+    
+#     return wrapper
 
 def staff_only():
     if g.current_user_role not in ('staff', 'admin'):
@@ -61,32 +103,19 @@ def admin_only():
     if g.current_user_role != 'admin':
         custom_abort("Insufficient role privileges.", 403)
 
-def login_er3(userObj):
+async def login_er3(userObj, access_token):
+    # Await make_response and jsonify
+    login_return = await make_response(jsonify(userObj))
 
-    login_return = make_response(jsonify(userObj))
-    # generate JWT and encode these values. (NOT hidden from user)
-    # note: 'identity' is a payload keyword for Flask-JWT-Extended. best to leave it
-    token_return = create_access_token(identity=(
-        {  
-        "username": userObj["username"],
-        "user_role": userObj["role"],
-        "user_id": userObj["id"]
-        }
-        
-        ), expires_delta=timedelta(hours=12))
-    
-    # httponly=True - mitigates XSS attacks by 'blinding' client to the JWT
     login_return.set_cookie(
         'edurange3_jwt',
-        token_return, 
+        access_token, 
         samesite='Lax', 
         httponly=True,
         secure=True,
         path='/'
     )
 
-    # CSRF token: mitigate JWT/session related CSRF attacks
-    # no httponly=True ; JS needs access to value
     login_return.set_cookie(
         'X-XSRF-TOKEN', 
         session['X-XSRF-TOKEN'], 
@@ -95,6 +124,41 @@ def login_er3(userObj):
         path='/'
     )
     return login_return
+
+# def login_er3(userObj):
+
+#     login_return = make_response(jsonify(userObj))
+#     # generate JWT and encode these values. (NOT hidden from user)
+#     # note: 'identity' is a payload keyword for Flask-JWT-Extended. best to leave it
+#     token_return = create_access_token(identity=(
+#         {  
+#         "username": userObj["username"],
+#         "user_role": userObj["role"],
+#         "user_id": userObj["id"]
+#         }
+        
+#         ), expires_delta=timedelta(hours=12))
+    
+#     # httponly=True - mitigates XSS attacks by 'blinding' client to the JWT
+#     login_return.set_cookie(
+#         'edurange3_jwt',
+#         token_return, 
+#         samesite='Lax', 
+#         httponly=True,
+#         secure=True,
+#         path='/'
+#     )
+
+#     # CSRF token: mitigate JWT/session related CSRF attacks
+#     # no httponly=True ; JS needs access to value
+#     login_return.set_cookie(
+#         'X-XSRF-TOKEN', 
+#         session['X-XSRF-TOKEN'], 
+#         samesite='Lax',
+#         secure=True,
+#         path='/'
+#     )
+#     return login_return
 
 
 ####

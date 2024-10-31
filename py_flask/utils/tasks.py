@@ -23,7 +23,7 @@ from datetime import datetime
 from celery import Celery
 from celery import shared_task
 from celery.utils.log import get_task_logger
-from flask import current_app, flash, jsonify
+from quart import current_app, flash, jsonify
 from py_flask.utils.terraform_utils import adjust_network, find_and_copy_template, write_resource
 from py_flask.config.settings import CELERY_BROKER_URL, CELERY_RESULT_BACKEND
 from py_flask.utils.scenario_utils import claimOctet

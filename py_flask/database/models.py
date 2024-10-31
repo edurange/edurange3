@@ -4,6 +4,8 @@ from datetime import datetime, timezone
 import random
 import string
 
+from py_flask.config.extensions import Base
+
 from py_flask.database.db_classes import (
     Column,
     Model,
@@ -20,7 +22,7 @@ def generate_registration_code(size=8, chars=string.ascii_lowercase + string.dig
     return "".join(random.choice(chars) for _ in range(size))
 
 
-class StudentGroups(Edu3Mixin, SurrogatePK, Model):
+class StudentGroups(Edu3Mixin, SurrogatePK, Base):
     """"Groups of Users"""
     __tablename__ = "groups"
     name = Column(db.String(40), unique=True, nullable=False)
@@ -33,9 +35,9 @@ class StudentGroups(Edu3Mixin, SurrogatePK, Model):
     users = relationship("GroupUsers", backref="groups", cascade="all, delete-orphan")
 
 
-class GroupUsers(Edu3Mixin, SurrogatePK, Model):
+class GroupUsers(Edu3Mixin, SurrogatePK, Base):
     """Users belong to groups"""
-    ___tablename___ = "group_users"
+    __tablename__ = "group_users"
     user_id = reference_col("users", nullable=False)
     user = relationship("Users", backref="group_users")
     group_id = reference_col("groups", nullable=False)
@@ -43,7 +45,7 @@ class GroupUsers(Edu3Mixin, SurrogatePK, Model):
 
 
 
-class Channels(Edu3Mixin, SurrogatePK, Model):
+class Channels(Edu3Mixin, SurrogatePK, Base):
     """"Chat Channels"""
     __tablename__ = "channels"
     name = Column(db.String(40), unique=True, nullable=False) # DEV_FIX make owner username by default
@@ -51,14 +53,14 @@ class Channels(Edu3Mixin, SurrogatePK, Model):
     owner = relationship("Users", backref="channels")
     users = relationship("ChannelUsers", backref="channels", cascade="all, delete-orphan")
 
-class ChannelUsers(Edu3Mixin, SurrogatePK, Model):
+class ChannelUsers(Edu3Mixin, SurrogatePK, Base):
     """Users belong to channels"""
-    ___tablename___ = "channel_users"
+    __tablename__ = "channel_users"
     user_id = reference_col("users", nullable=False)
     channel_id = reference_col("channels", nullable=False)
     user = relationship("Users", backref="channel_users")
 
-class Users(Edu3Mixin, SurrogatePK, Model):
+class Users(Edu3Mixin, SurrogatePK, Base):
     """A user of the app."""
     __tablename__ = "users"
     username = Column(db.String(80), unique=True, nullable=False)
@@ -86,7 +88,7 @@ class Users(Edu3Mixin, SurrogatePK, Model):
         return f"<Users({self.username!r})>"
 
 
-class Scenarios(Edu3Mixin, SurrogatePK, Model):
+class Scenarios(Edu3Mixin, SurrogatePK, Base):
     """A scenario."""
     __tablename__ = "scenarios"
     name = Column(db.String(40), unique=False, nullable=False)
@@ -103,11 +105,13 @@ class Scenarios(Edu3Mixin, SurrogatePK, Model):
         return f"<Scenario({self.name!r})>"
 
 
-class Notification(Edu3Mixin, SurrogatePK, Model):
+class Notification(Edu3Mixin, SurrogatePK, Base):
+    """notifications table"""
+    __tablename__ = "notification"
     detail = Column(db.String(60), unique=False, nullable=False)
     date = Column(db.DateTime, nullable=False, default=datetime.now(timezone.utc))
 
-class ScenarioGroups(Edu3Mixin, SurrogatePK, Model):
+class ScenarioGroups(Edu3Mixin, SurrogatePK, Base):
     """Groups associated with scenarios"""
     __tablename__ = "scenario_groups"
     group_id = reference_col("groups", nullable=False)
@@ -115,7 +119,7 @@ class ScenarioGroups(Edu3Mixin, SurrogatePK, Model):
     scenario_id = reference_col("scenarios", nullable=False)
     scenario = relationship("Scenarios", backref="scenario_groups")
 
-class TA_Assignments (Edu3Mixin, SurrogatePK, Model):
+class TA_Assignments (Edu3Mixin, SurrogatePK, Base):
     """Teaching Assistants' assigned students"""
     __tablename__ = "ta_assignments"
 
@@ -130,9 +134,9 @@ class TA_Assignments (Edu3Mixin, SurrogatePK, Model):
 ## exported 'as is' for use in hint reccom algorithms, and use user_id as the main cross_ref
 ####
 
-class ChatMessages(Edu3Mixin, SurrogatePK, Model):
+class ChatMessages(Edu3Mixin, SurrogatePK, Base):
     """Individual chat message"""
-    ___tablename___ = "chat_messages"
+    __tablename__ = "chat_messages"
 
     user_id = reference_col("users",nullable=False) 
     user = relationship("Users", backref="chat_messsages")
@@ -149,7 +153,7 @@ class ChatMessages(Edu3Mixin, SurrogatePK, Model):
     archive_id = Column(db.String(8), nullable=False, unique=False)
 
 
-class Responses(Edu3Mixin, SurrogatePK, Model):
+class Responses(Edu3Mixin, SurrogatePK, Base):
     """Student responses to scenario questions"""
     __tablename__ = "responses"
 
@@ -169,7 +173,7 @@ class Responses(Edu3Mixin, SurrogatePK, Model):
 
     archive_id = Column(db.String(8), nullable=False, unique=False)
 
-class BashHistory(Edu3Mixin, SurrogatePK, Model):
+class BashHistory(Edu3Mixin, SurrogatePK, Base):
     """Bash Histories, associated with users and scenarios"""
     __tablename__ = "bash_history"
 
@@ -188,7 +192,7 @@ class BashHistory(Edu3Mixin, SurrogatePK, Model):
     output = Column(db.String(10000), nullable=False, unique=False)
     archive_id = Column(db.String(8), nullable=False, unique=False)
 
-class FeedbackMessage(Edu3Mixin, SurrogatePK, Model):
+class FeedbackMessage(Edu3Mixin, SurrogatePK, Base):
     """Feedback provided by users"""
     __tablename__ = "feedback_message"
 

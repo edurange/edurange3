@@ -5,21 +5,25 @@ from py_flask.utils.auth_utils import register_user, login_er3
 from py_flask.database.user_schemas import LoginSchema, RegistrationSchema
 import secrets
 import traceback
+from sqlalchemy.future import select
+from datetime import timedelta
 
 from sqlalchemy.exc import SQLAlchemyError
 
 from py_flask.utils.error_utils import (
     custom_abort
 )
-
-from flask import (
+import jwt
+from datetime import datetime, timedelta
+from quart import Blueprint, request, session, jsonify, current_app
+from quart import (
     Blueprint,
     request,
     session,
     jsonify,
     current_app,
 )
-db_ses = db.session
+# db_ses = db.session
 edurange3_csrf = secrets.token_hex(32)
 
 
@@ -44,36 +48,158 @@ def general_error_handler(error):
     error_handler = custom_abort(error)
     return error_handler.get_response()
 
+from py_flask.config.extensions import AsyncSessionLocal
+
+from quart import Blueprint, request, session, jsonify
+from py_flask.config.extensions import bcrypt, AsyncSessionLocal
+from py_flask.database.models import Users
+from py_flask.utils.error_utils import custom_abort
+import secrets
+
+blueprint_public = Blueprint('edurange3_public', __name__, url_prefix='/api')
+
+
 @blueprint_public.route("/login", methods=["POST"])
-def login_edurange3():
+async def login_edurange3():
+    reqJSON = await request.get_json()
+    username = reqJSON.get("username")
+    password = reqJSON.get("password")
+
+    async with AsyncSessionLocal() as db_ses:
+        result = await db_ses.execute(select(Users).where(Users.username == username))
+        user = result.scalar_one_or_none()
+
+    if not user or not bcrypt.check_password_hash(user.password, password):
+        return custom_abort("Invalid credentials.", 403)
+
+    if "X-XSRF-TOKEN" not in session:
+        session["X-XSRF-TOKEN"] = secrets.token_hex(32)
+
+    validated_user_data = {
+        "id": user.id,
+        "username": user.username,
+        "is_admin": user.is_admin,
+        "is_staff": user.is_staff,
+        "channel_data": await getChannelDictList_byUser(user.id, user.username),
+        "role": "admin" if user.is_admin else "staff" if user.is_staff else "student",
+    }
+
+    # Create the JWT token
+    payload = {
+        "identity": {
+            "username": validated_user_data["username"],
+            "user_role": validated_user_data["role"],
+            "user_id": validated_user_data["id"]
+        },
+        "exp": datetime.utcnow() + current_app.config["JWT_EXPIRATION_DELTA"]
+    }
+    access_token = jwt.encode(payload, current_app.config["JWT_SECRET_KEY"], algorithm=current_app.config["JWT_ALGORITHM"])
+
+    # Prepare response with JWT
+    response = jsonify(validated_user_data)
+    response.set_cookie(
+        "edurange3_jwt",
+        access_token,
+        samesite="Lax",
+        httponly=True,
+        secure=True,
+        path="/"
+    )
+    response.set_cookie(
+        "X-XSRF-TOKEN",
+        session["X-XSRF-TOKEN"],
+        samesite="Lax",
+        secure=True,
+        path="/"
+    )
+
+    return response
+
+# @blueprint_public.route("/login", methods=["POST"])
+# async def login_edurange3():
+#     reqJSON = await request.get_json()
+#     username = reqJSON.get("username")
+#     password = reqJSON.get("password")
+
+#     async with AsyncSessionLocal() as db_ses:
+#         result = await db_ses.execute(select(Users).where(Users.username == username))
+#         user = result.scalar_one_or_none()
+
+#     if not user or not bcrypt.check_password_hash(user.password, password):
+#         return custom_abort("Invalid credentials.", 403)
+
+#     if 'X-XSRF-TOKEN' not in session:
+#         session['X-XSRF-TOKEN'] = secrets.token_hex(32)
+
+#     validated_user_data = {
+#         "id": user.id,
+#         "username": user.username,
+#         "is_admin": user.is_admin,
+#         "is_staff": user.is_staff,
+#         "channel_data": await getChannelDictList_byUser(user.id, user.username),
+#         "role": "admin" if user.is_admin else "staff" if user.is_staff else "student"
+#     }
+
+#     access_token = await create_access_token(identity={
+#         "username": validated_user_data["username"],
+#         "user_role": validated_user_data["role"],
+#         "user_id": validated_user_data["id"]
+#     }, expires_delta=timedelta(hours=12))
+
+#     # Prepare response with JWT
+#     response = jsonify(validated_user_data)
+#     response.set_cookie(
+#         'edurange3_jwt', 
+#         access_token, 
+#         samesite='Lax', 
+#         httponly=True, 
+#         secure=True, 
+#         path='/'
+#     )
+#     response.set_cookie(
+#         'X-XSRF-TOKEN', 
+#         session['X-XSRF-TOKEN'], 
+#         samesite='Lax', 
+#         secure=True, 
+#         path='/'
+#     )
     
-    validation_schema = LoginSchema()  # instantiate validation schema
-    validated_data = validation_schema.load(request.json)  # validate login. reject if bad.
+#     return response
+
+
+
+# @blueprint_public.route("/login", methods=["POST"])
+# def login_edurange3():
     
-    validated_user_obj = Users.query.filter_by(username=validated_data["username"]).first()
+#     validation_schema = LoginSchema()  # instantiate validation schema
 
-    if 'X-XSRF-TOKEN' not in session:
-        session['X-XSRF-TOKEN'] = secrets.token_hex(32)
-
-    validated_user_dump = validation_schema.dump(vars(validated_user_obj))
-
-    if not validated_user_dump:
-        return (custom_abort("User not found", 404))
-
-    chan_data = getChannelDictList_byUser(validated_user_dump['id'], validated_user_dump['username'])
-
-    validated_user_dump['channel_data'] = chan_data
+#     print('request.json: ', request.json)
+#     validated_data = validation_schema.load(request.json)  # validate login. reject if bad.
     
-    del validated_user_dump['password']
+#     validated_user_obj = Users.query.filter_by(username=validated_data["username"]).first()
 
-    temp_role = "student"
-    if validated_user_dump.get("is_admin"): temp_role = "admin"
-    elif validated_user_dump.get("is_staff"): temp_role = "staff"
-    validated_user_dump['role'] = temp_role
+#     if 'X-XSRF-TOKEN' not in session:
+#         session['X-XSRF-TOKEN'] = secrets.token_hex(32)
 
-    logged_in_return = login_er3(validated_user_dump)
+#     validated_user_dump = validation_schema.dump(vars(validated_user_obj))
 
-    return logged_in_return
+#     if not validated_user_dump:
+#         return (custom_abort("User not found", 404))
+
+#     chan_data = getChannelDictList_byUser(validated_user_dump['id'], validated_user_dump['username'])
+
+#     validated_user_dump['channel_data'] = chan_data
+    
+#     del validated_user_dump['password']
+
+#     temp_role = "student"
+#     if validated_user_dump.get("is_admin"): temp_role = "admin"
+#     elif validated_user_dump.get("is_staff"): temp_role = "staff"
+#     validated_user_dump['role'] = temp_role
+
+#     logged_in_return = login_er3(validated_user_dump)
+
+#     return logged_in_return
 
 
 @blueprint_public.route("/register", methods=["POST"])

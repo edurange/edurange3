@@ -2,7 +2,7 @@ from sqlalchemy.exc import SQLAlchemyError
 import traceback
 from py_flask.database.models import Users, TA_Assignments, ScenarioGroups, GroupUsers, Scenarios
 from py_flask.config.extensions import db
-from flask import (
+from quart import (
     Blueprint,
     request,
     jsonify,

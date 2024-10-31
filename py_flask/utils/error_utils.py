@@ -1,5 +1,5 @@
 
-from flask import jsonify, make_response
+from quart import jsonify, make_response
 from werkzeug.exceptions import HTTPException
 
 class CustomHTTPException(HTTPException):

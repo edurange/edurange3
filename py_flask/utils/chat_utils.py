@@ -2,7 +2,8 @@
 import json
 import os
 from py_flask.database.models import GroupUsers, StudentGroups, Users, Channels, ChannelUsers, ChatMessages
-
+from sqlalchemy.future import select
+from py_flask.config.extensions import AsyncSessionLocal
 
 from random import seed, getrandbits
 
@@ -72,38 +73,54 @@ def gen_chat_names(student_ids, sid):
     # Note the size of the word arrays are specified here
     return {id: adjectives[getrandbits(32)%70] + nouns[getrandbits(32)%70] for id in student_ids}
 
-def getChannelDictList_byUser(userID, username):
 
-    avail_channel_objs = Channels.query.join(ChannelUsers, Channels.id == ChannelUsers.channel_id) \
-                                  .filter(ChannelUsers.user_id == userID).all()
+async def getChannelDictList_byUser(userID, username):
+    async with AsyncSessionLocal() as session:
+        # Join Channels with ChannelUsers based on the user ID
+        result = await session.execute(
+            select(Channels)
+            .join(ChannelUsers, Channels.id == ChannelUsers.channel_id)
+            .filter(ChannelUsers.user_id == userID)
+        )
+        avail_channel_objs = result.scalars().all()
 
-    channelDict_list = [channel.to_dict(include_relationships=True) for channel in avail_channel_objs]
-   
-    home_channel = next((chanDict['id'] for chanDict in channelDict_list if chanDict['name'] == username), None)
+        # Convert channels to dictionaries
+        channelDict_list = [
+            channel.to_dict(include_relationships=True) for channel in avail_channel_objs
+        ]
 
-    channels_info = {
-        "available_channels": channelDict_list,
-        "home_channel": home_channel
-    }
+        # Determine the home channel
+        home_channel = next(
+            (chanDict['id'] for chanDict in channelDict_list if chanDict['name'] == username), None
+        )
+
+        channels_info = {
+            "available_channels": channelDict_list,
+            "home_channel": home_channel
+        }
 
     return channels_info
 
-def getChatHistory_byUser(userID, username):
 
-    channelData = getChannelDictList_byUser(userID, username)
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
+
+async def getChatHistory_byUser(userID, username):
+    channelData = await getChannelDictList_byUser(userID, username)
     available_channel_ids = [channel['id'] for channel in channelData['available_channels']]
-
-    chatHistory_forUser = ChatMessages.query.filter(ChatMessages.channel_id.in_(available_channel_ids)).all()
+    
+    async with AsyncSession(db.engine) as db_ses:
+        result = await db_ses.execute(select(ChatMessages).filter(ChatMessages.channel_id.in_(available_channel_ids)))
+        chatHistory_forUser = result.scalars().all()
+    
     chatHistory_dictList = [message.to_dict() for message in chatHistory_forUser]
-
     return chatHistory_dictList
 
-def groupAllMessages_byUser(chatLibrary_dbObj):
-
+async def groupAllMessages_byUser(chatLibrary_dbObj):
     chatLibrary_dict = {}
     for message in chatLibrary_dbObj:
         message_dict = message.to_dict()
-        sender = message_dict['sender'] 
+        sender = message_dict['sender']
         
         if sender in chatLibrary_dict:
             chatLibrary_dict[sender].append(message_dict)
@@ -112,21 +129,19 @@ def groupAllMessages_byUser(chatLibrary_dbObj):
 
     return chatLibrary_dict
 
-def createListOfChats(chatLibrary_dbObj):
-    """
-    Returns a list of dictionaries where each dictionary represents a message with all its data.
-    """
+async def createListOfChats(chatLibrary_dbObj):
     messages_list = [message.to_dict() for message in chatLibrary_dbObj]
     return messages_list
 
-def getChatLibrary():
-    """
-    Fetches all chat messages and channel user entries from the database, and returns them as a list of dictionaries for messages and a dictionary for user-channel mappings.
-    """
-    all_db_chatMessages_rawObj = ChatMessages.query.all()
-    unordered_messages_list = createListOfChats(all_db_chatMessages_rawObj)
+async def getChatLibrary():
+    async with AsyncSession(db.engine) as db_ses:
+        result_messages = await db_ses.execute(select(ChatMessages))
+        all_db_chatMessages_rawObj = result_messages.scalars().all()
+        unordered_messages_list = await createListOfChats(all_db_chatMessages_rawObj)
 
-    channel_user_entries = ChannelUsers.query.all()
+        result_channels = await db_ses.execute(select(ChannelUsers))
+        channel_user_entries = result_channels.scalars().all()
+
     user_channels_dict = {}
     for entry in channel_user_entries:
         if entry.user_id in user_channels_dict:
@@ -139,13 +154,11 @@ def getChatLibrary():
         "user_channels_dict": user_channels_dict
     }
 
-
-def groupAllMessages_byChannel(chatLibrary_dbObj):
-
+async def groupAllMessages_byChannel(chatLibrary_dbObj):
     chatLibrary_dict = {}
     for message in chatLibrary_dbObj:
         message_dict = message.to_dict()
-        channel = message_dict['channel'] 
+        channel = message_dict['channel']
         
         if channel in chatLibrary_dict:
             chatLibrary_dict[channel].append(message_dict)
@@ -153,20 +166,123 @@ def groupAllMessages_byChannel(chatLibrary_dbObj):
             chatLibrary_dict[channel] = [message_dict]
 
     return chatLibrary_dict
-def getChatLibrary_sortByChannel():
 
-    chatLibrary = ChatMessages.query.all()
-    chatLibrary_dict = groupAllMessages_byChannel(chatLibrary)
-    channel_user_entries = ChannelUsers.query.all()
+async def getChatLibrary_sortByChannel():
+    async with AsyncSession(db.engine) as db_ses:
+        result_chatLibrary = await db_ses.execute(select(ChatMessages))
+        chatLibrary = result_chatLibrary.scalars().all()
+        chatLibrary_dict = await groupAllMessages_byChannel(chatLibrary)
+
+        result_channel_users = await db_ses.execute(select(ChannelUsers))
+        channel_user_entries = result_channel_users.scalars().all()
 
     user_channels_dict = {}
-    
     for entry in channel_user_entries:
         if entry.user_id in user_channels_dict:
             user_channels_dict[entry.user_id].append(entry.channel_id)
         else:
             user_channels_dict[entry.user_id] = [entry.channel_id]
+
     return {
-        "chatLibrary_dict" : chatLibrary_dict,
+        "chatLibrary_dict": chatLibrary_dict,
         "user_channels_dict": user_channels_dict
     }
+
+# def getChannelDictList_byUser(userID, username):
+
+#     avail_channel_objs = Channels.query.join(ChannelUsers, Channels.id == ChannelUsers.channel_id) \
+#                                   .filter(ChannelUsers.user_id == userID).all()
+
+#     channelDict_list = [channel.to_dict(include_relationships=True) for channel in avail_channel_objs]
+   
+#     home_channel = next((chanDict['id'] for chanDict in channelDict_list if chanDict['name'] == username), None)
+
+#     channels_info = {
+#         "available_channels": channelDict_list,
+#         "home_channel": home_channel
+#     }
+
+#     return channels_info
+
+# def getChatHistory_byUser(userID, username):
+
+#     channelData = getChannelDictList_byUser(userID, username)
+#     available_channel_ids = [channel['id'] for channel in channelData['available_channels']]
+
+#     chatHistory_forUser = ChatMessages.query.filter(ChatMessages.channel_id.in_(available_channel_ids)).all()
+#     chatHistory_dictList = [message.to_dict() for message in chatHistory_forUser]
+
+#     return chatHistory_dictList
+
+# def groupAllMessages_byUser(chatLibrary_dbObj):
+
+#     chatLibrary_dict = {}
+#     for message in chatLibrary_dbObj:
+#         message_dict = message.to_dict()
+#         sender = message_dict['sender'] 
+        
+#         if sender in chatLibrary_dict:
+#             chatLibrary_dict[sender].append(message_dict)
+#         else:
+#             chatLibrary_dict[sender] = [message_dict]
+
+#     return chatLibrary_dict
+
+# def createListOfChats(chatLibrary_dbObj):
+#     """
+#     Returns a list of dictionaries where each dictionary represents a message with all its data.
+#     """
+#     messages_list = [message.to_dict() for message in chatLibrary_dbObj]
+#     return messages_list
+
+# def getChatLibrary():
+#     """
+#     Fetches all chat messages and channel user entries from the database, and returns them as a list of dictionaries for messages and a dictionary for user-channel mappings.
+#     """
+#     all_db_chatMessages_rawObj = ChatMessages.query.all()
+#     unordered_messages_list = createListOfChats(all_db_chatMessages_rawObj)
+
+#     channel_user_entries = ChannelUsers.query.all()
+#     user_channels_dict = {}
+#     for entry in channel_user_entries:
+#         if entry.user_id in user_channels_dict:
+#             user_channels_dict[entry.user_id].append(entry.channel_id)
+#         else:
+#             user_channels_dict[entry.user_id] = [entry.channel_id]
+
+#     return {
+#         "unordered_messages_list": unordered_messages_list,
+#         "user_channels_dict": user_channels_dict
+#     }
+
+
+# def groupAllMessages_byChannel(chatLibrary_dbObj):
+
+#     chatLibrary_dict = {}
+#     for message in chatLibrary_dbObj:
+#         message_dict = message.to_dict()
+#         channel = message_dict['channel'] 
+        
+#         if channel in chatLibrary_dict:
+#             chatLibrary_dict[channel].append(message_dict)
+#         else:
+#             chatLibrary_dict[channel] = [message_dict]
+
+#     return chatLibrary_dict
+# def getChatLibrary_sortByChannel():
+
+#     chatLibrary = ChatMessages.query.all()
+#     chatLibrary_dict = groupAllMessages_byChannel(chatLibrary)
+#     channel_user_entries = ChannelUsers.query.all()
+
+#     user_channels_dict = {}
+    
+#     for entry in channel_user_entries:
+#         if entry.user_id in user_channels_dict:
+#             user_channels_dict[entry.user_id].append(entry.channel_id)
+#         else:
+#             user_channels_dict[entry.user_id] = [entry.channel_id]
+#     return {
+#         "chatLibrary_dict" : chatLibrary_dict,
+#         "user_channels_dict": user_channels_dict
+#     }

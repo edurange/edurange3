@@ -1,6 +1,6 @@
 from sqlalchemy.exc import SQLAlchemyError
 import traceback
-from py_flask.database.user_schemas import CreateGroupSchema, TestUserListSchema
+from py_flask.database.user_schemas import CreateGroupSchema
 from py_flask.database.models import Users, StudentGroups, ScenarioGroups, GroupUsers, Scenarios, TA_Assignments
 from py_flask.utils.dataBuilder import get_group_data, get_user_data, get_scenario_data, get_taAssignment_data
 from py_flask.config.extensions import db
@@ -9,7 +9,7 @@ from py_flask.utils.common_utils import get_system_resources
 import redis
 import json
 
-from flask import (
+from quart import (
     Blueprint,
     request,
     jsonify,
@@ -150,23 +150,26 @@ def get_logs():
 
 @blueprint_staff.route("/get_staff_data", methods=['GET'])
 @jwt_and_csrf_required
-def get_staff_data():
-    staff_only()
+async def get_staff_data():
+    # staff_only()
 
-    gd = get_group_data()
-    ud = get_user_data()
-    sd = get_scenario_data()
-    td = get_taAssignment_data()
-    logData = getLogs()
+    # Await each data-fetching function
+    gd = await get_group_data()
+    ud = await get_user_data()
+    sd = await get_scenario_data()
+    td = await get_taAssignment_data()
+    logData = await getLogs()
 
     return_obj = {
         'groups': gd,
         'users': ud,
         'scenarios': sd,
-        'logs' : logData,
+        'logs': logData,
         'ta_assignments': td
     }
+
     return jsonify(return_obj)
+
 
 @blueprint_staff.route('/get_instr_content/<int:i>', methods=['GET']) # WIP
 @jwt_and_csrf_required
@@ -440,11 +443,11 @@ def clear_groups():
 
 @blueprint_staff.route("/get_chat_library", methods=['GET'])
 @jwt_and_csrf_required
-def get_chat_library():
+async def get_chat_library():
     staff_only()
 
     # chatHistoryData_dict contains: "unordered_messages_list", "user_channels_dict"
-    chatHistoryData_dict = getChatLibrary()
+    chatHistoryData_dict = await getChatLibrary()
     return jsonify(chatHistoryData_dict)
 
 
@@ -546,12 +549,12 @@ def update_model_route():
     except Exception as e:
         return jsonify({f'Error': 'Model failed to initialize '})
 
-@blueprint_staff.route("/cancel_hint", methods=['POST'])
-@jwt_and_csrf_required
-def cancel_generate_hint_route(): 
-    cancel_hint_response = cancel_generate_hint_celery.delay().get(timeout=None)
+# @blueprint_staff.route("/cancel_hint", methods=['POST'])
+# @jwt_and_csrf_required
+# def cancel_generate_hint_route(): 
+#     cancel_hint_response = cancel_generate_hint_celery.delay().get(timeout=None)
     
-    return jsonify({'cancel_hint_req_status': response})
+#     return jsonify({'cancel_hint_req_status': response})
 
 @blueprint_staff.route("/get_resources", methods=['POST'])
 @jwt_and_csrf_required

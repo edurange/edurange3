@@ -1,7 +1,7 @@
 
 from py_flask.config.extensions import db
 from py_flask.database.models import Users
-from flask import (
+from quart import (
     Blueprint,
     request,
     jsonify,

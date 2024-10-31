@@ -49,5 +49,8 @@ marshmallow==3.20.2
 marshmallow-sqlalchemy==1.0.0
 flask-marshmallow==1.2.0
 
-
-
+# async (quart)
+Quart==0.19.8
+Hypercorn==0.17.3
+asyncio==3.4.3
+asyncpg==0.30.0
