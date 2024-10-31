@@ -14,7 +14,6 @@ import llama_cpp
 from llama_cpp import Llama
 from llama_index.core import Settings
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
-from memory_profiler import profile, memory_usage
 from py_flask.utils.common_utils import get_system_resources
 
 

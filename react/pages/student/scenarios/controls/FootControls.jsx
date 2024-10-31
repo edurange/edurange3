@@ -53,10 +53,6 @@ function FootControls({
                     onClick={() => updatePane("chat")}>
                     Chat
                 </div>
-                <div className='footcontrol-item footcontrol-hint-button'
-                    onClick={() => updatePane("hint")}>
-                    Hint
-                </div>
 
                 <section className='footcontrol-item footcontrol-sshinfo-frame'>
 
