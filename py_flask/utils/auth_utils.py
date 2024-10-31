@@ -35,7 +35,10 @@ def jwt_and_csrf_required(fn):
         client_CSRF = request.cookies.get('X-XSRF-TOKEN')
         if not client_CSRF:
             return jsonify({"error": "no client csrf request denied"}), 403
-        server_CSRF = session.get('X-XSRF-TOKEN')
+        
+        # Ensure session access is awaited if needed
+        server_CSRF = await session.get('X-XSRF-TOKEN')
+
         if not server_CSRF:
             return jsonify({"error": "no server csrf request denied"}), 403
         if client_CSRF != server_CSRF:
@@ -46,7 +49,7 @@ def jwt_and_csrf_required(fn):
         if not token:
             return jsonify({"error": "jwt request denied"}), 403
         try:
-            # Decode token and extract payload
+            # Decode token asynchronously and extract payload
             validated_jwt_token = await decode_token(token)
             decoded_payload = validated_jwt_token["sub"]
 
@@ -55,12 +58,49 @@ def jwt_and_csrf_required(fn):
             g.current_user_id = decoded_payload["user_id"]
             g.current_user_role = decoded_payload["user_role"]
 
-        except Exception as err:
-            return await custom_abort('Invalid Credentials', 403)
+        except Exception:
+            print('whatever')
+            # return custom_abort('Invalid Credentials', 403)
 
         return await fn(*args, **kwargs)
     
     return wrapper
+
+
+# def jwt_and_csrf_required(fn):
+#     @wraps(fn)
+#     async def wrapper(*args, **kwargs):
+        
+#         # CSRF check
+#         client_CSRF = request.cookies.get('X-XSRF-TOKEN')
+#         if not client_CSRF:
+#             return jsonify({"error": "no client csrf request denied"}), 403
+#         server_CSRF = session.get('X-XSRF-TOKEN')
+#         if not server_CSRF:
+#             return jsonify({"error": "no server csrf request denied"}), 403
+#         if client_CSRF != server_CSRF:
+#             return jsonify({"error": "csrf bad match"}), 403
+        
+#         # JWT check
+#         token = request.cookies.get('edurange3_jwt')
+#         if not token:
+#             return jsonify({"error": "jwt request denied"}), 403
+#         try:
+#             # Decode token and extract payload
+#             validated_jwt_token = await decode_token(token)
+#             decoded_payload = validated_jwt_token["sub"]
+
+#             # Set global `g` attributes for the request
+#             g.current_username = decoded_payload["username"]
+#             g.current_user_id = decoded_payload["user_id"]
+#             g.current_user_role = decoded_payload["user_role"]
+
+#         except Exception as err:
+#             return await custom_abort('Invalid Credentials', 403)
+
+#         return await fn(*args, **kwargs)
+    
+#     return wrapper
 
 # def jwt_and_csrf_required(fn):
 #     @wraps(fn)

@@ -9,8 +9,9 @@ from flask_caching import Cache
 from flask_debugtoolbar import DebugToolbarExtension
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
-# from flask_jwt_extended import JWTManager
+
 from py_flask.config.settings import SQLALCHEMY_DATABASE_URI
+
 # new
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
@@ -21,7 +22,7 @@ db = SQLAlchemy()
 migrate = Migrate()
 cache = Cache()
 debug_toolbar = DebugToolbarExtension()
-# jwtman = JWTManager()
+
 from sqlalchemy.ext.declarative import declarative_base
 
 
@@ -30,10 +31,7 @@ from sqlalchemy.ext.declarative import declarative_base
 #
 
 async_engine = create_async_engine(SQLALCHEMY_DATABASE_URI)
-
 Base = declarative_base()
-
-# async_engine = create_async_engine("postgresql+asyncpg://user:password@localhost/dbname", echo=True)
 
 # Define async session factory
 AsyncSessionLocal = sessionmaker(

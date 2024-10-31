@@ -33,6 +33,9 @@ blueprint_public = Blueprint(
     url_prefix='/api')
 
 
+if "X-XSRF-TOKEN" not in session:
+    session["X-XSRF-TOKEN"] = secrets.token_hex(32)
+    
 @blueprint_public.errorhandler(SQLAlchemyError)
 def handle_sqlalchemy_error(error):
 
@@ -72,8 +75,8 @@ async def login_edurange3():
     if not user or not bcrypt.check_password_hash(user.password, password):
         return custom_abort("Invalid credentials.", 403)
 
-    if "X-XSRF-TOKEN" not in session:
-        session["X-XSRF-TOKEN"] = secrets.token_hex(32)
+    # if "X-XSRF-TOKEN" not in session:
+    #     session["X-XSRF-TOKEN"] = secrets.token_hex(32)
 
     validated_user_data = {
         "id": user.id,
