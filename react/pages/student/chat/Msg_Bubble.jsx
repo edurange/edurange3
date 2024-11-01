@@ -108,7 +108,7 @@ function Msg_Bubble({ is_staff, message_obj, user_id, is_outgoing }) {
 
                                 <div className="hint-btn-set">
 
-                                    {message_obj?.user_id !== userData_state?.id ?
+                                    {(userData_state.is_staff && message_obj?.user_id !== userData_state?.id) ?
                                         <div
                                             onClick={(event) => handleHintTabClick(event, message_obj)}
                                             className='hintbtn-frame' >
