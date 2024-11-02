@@ -35,6 +35,7 @@ function Home_router() {
   const [chatData_state, set_chatData_state] = useState([]);
   const [login_state, set_login_state] = useState(false);
   const [responseData_state, set_responseData_state] = useState({});
+  const [scorebook_state, set_scorebook_state] = useState({});
   const [chatSocket_state, set_chatSocket_state] = useState();
   const [aliasDict_state, set_aliasDict_state] = useState({});
   const {
@@ -91,7 +92,8 @@ function Home_router() {
         chatSocket_state, set_chatSocket_state,
         chatData_state, set_chatData_state,
         responseData_state, set_responseData_state,
-        aliasDict_state, set_aliasDict_state
+        aliasDict_state, set_aliasDict_state,
+        scorebook_state, set_scorebook_state
       }}>
         <SessionKeeper/>
         <Frame_head />

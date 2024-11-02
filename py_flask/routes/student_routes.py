@@ -62,11 +62,10 @@ def general_error_handler(error):
     return error_handler.get_response()
 
 @blueprint_student.route("/logout", methods=["POST"])
-@jwt_and_csrf_required
+# @jwt_and_csrf_required
 def logout():
-    current_username = g.current_username
 
-    response_data = {"message": f"User {current_username} has been successfully logged out."}
+    response_data = {"message": f"User has been successfully logged out."}
     response = make_response(jsonify(response_data))
 
     response.set_cookie('edurange3_jwt', '', expires=0, samesite='Lax', httponly=True, path='/')

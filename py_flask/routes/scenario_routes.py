@@ -129,7 +129,7 @@ def get_yaml_content(i):
         ):
             return jsonify({'error': 'invalid scenario ID'}) # DEV_ONLY (replace with standard denial msg)
 
-    contentYAML, credentialsJSON, unique_name = getYamlContent(g.current_user_role, current_scenario_id, g.current_username)
+    contentYAML, briefingYAML, debriefYAML, credentialsJSON, unique_name = getYamlContent(g.current_user_role, current_scenario_id, g.current_username)
 
     meta = getScenarioMeta(current_scenario_id)
 
@@ -148,7 +148,9 @@ def get_yaml_content(i):
 
     return jsonify({
         "scenario_meta": meta,
-        "contentYAML":contentYAML, 
+        "contentYAML":contentYAML,
+        "briefingYAML":briefingYAML,
+        "debriefYAML": debriefYAML,
         "credentialsJSON":credentialsJSON,
         "unique_scenario_name":unique_name,
         "SSH_IP": SSH_IP

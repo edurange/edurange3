@@ -118,7 +118,7 @@ function FootControls({
                 <div
                     className='footcontrol-item footcontrol-web-ssh-button'
                     onClick={() => updatePane("ssh")}>
-                    WebSSH
+                    web-SSH
                 </div>
 
                 <div className='footcontrol-item footcontrol-chat-button'
