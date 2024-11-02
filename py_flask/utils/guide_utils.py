@@ -88,6 +88,12 @@ def getYamlContent(user_role, scenario_id, username):
     # with open(f'scenarios/tmp/{unique_name}/guide_content.yml', 'r') as fp:
         contentYAML = yaml.safe_load(fp)
 
+    with open(f'scenarios/prod/common/briefing.yml', 'r') as fp:
+        briefingYAML = yaml.safe_load(fp)
+
+    with open(f'scenarios/prod/common/debrief.yml', 'r') as fp:
+        debriefYAML = yaml.safe_load(fp)
+
     with open(f'scenarios/tmp/{unique_name}/students.json', 'r') as fp:
         credentialsJSON = json.load(fp)
     
@@ -99,7 +105,7 @@ def getYamlContent(user_role, scenario_id, username):
     else: 
         user_creds = credentialsJSON
 
-    return contentYAML, credentialsJSON, unique_name
+    return contentYAML, briefingYAML, debriefYAML, credentialsJSON, unique_name
 
 
 def getScenarioMeta(scenario_id):

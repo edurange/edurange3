@@ -53,10 +53,6 @@ function FootControls({
                     onClick={() => updatePane("chat")}>
                     Chat
                 </div>
-                <div className='footcontrol-item footcontrol-hint-button'
-                    onClick={() => updatePane("hint")}>
-                    Hint
-                </div>
 
                 <section className='footcontrol-item footcontrol-sshinfo-frame'>
 
@@ -122,7 +118,7 @@ function FootControls({
                 <div
                     className='footcontrol-item footcontrol-web-ssh-button'
                     onClick={() => updatePane("ssh")}>
-                    WebSSH
+                    web-SSH
                 </div>
 
                 <div className='footcontrol-item footcontrol-chat-button'

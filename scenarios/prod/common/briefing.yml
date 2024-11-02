@@ -1,3 +1,4 @@
+ScenarioTitle: eduRange Scenarios intro
 
 # Define content sections with aliases
 contentDefinitions:
@@ -14,6 +15,9 @@ contentDefinitions:
       * If you're having trouble, check out some of the challenge-specific resources or our FAQ(link). Both can be found in the Info pane on the left. 👈 If you're still having trouble, you can ask for help in the chat!
   
 
-# order of content using aliases
-briefing:
-  - *reading1
+studentGuide:
+  chapters:
+    - chapter_num: 0
+      title: Briefing
+      content_array:
+        - *reading1

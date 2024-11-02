@@ -15,8 +15,6 @@ contentDefinitions:
       If you need a backup, you can use the WebSSH button also in the bottom 
       left, but it is missing many convenience features provided by more 
       standard terminals.
-
-      #### If you'd like to read a more detailed and segmented version of this exercise, head back to your scenarios and click on "Getting Started"
   
   Reading2: &reading2
     type: reading

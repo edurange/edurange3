@@ -5,6 +5,8 @@ import HomeChapter from './Q_and_A/HomeChapter';
 import GuideReading from './Q_and_A/GuideReading';
 import GuideQuestion from './Q_and_A/GuideQuestion';
 import GuideTabs from './GuideTabs';
+import GuideDropdown from './GuideDropdown';
+import { HomeRouter_context } from '../../../../pub/Home_router';
 
 function generate_thisChapter_reactArray(scenarioID, meta, thisChapter_contentArray) {
 
@@ -39,8 +41,9 @@ function generate_thisChapter_reactArray(scenarioID, meta, thisChapter_contentAr
 
 function GuidePane({chapter_num, meta, guideContent, scenarioID, pageID}) {
 
-    const allChapterDatas_array = guideContent?.studentGuide?.chapters
-    const thisChapter_data = allChapterDatas_array[chapter_num]
+    const { scorebook_state, set_scorebook_state } = useContext(HomeRouter_context);
+
+    const thisChapter_data = guideContent[chapter_num]
     const thisChapter_contentArray = thisChapter_data?.content_array;
 
     const pageID_int = Number(pageID)
@@ -55,7 +58,7 @@ function GuidePane({chapter_num, meta, guideContent, scenarioID, pageID}) {
     if (Number(chapter_num) === 0 || Number(chapter_num) === 1337) { final_array = [(<div key={'abc123'}><HomeChapter /></div>)]; }
 
     if ((pageID_int > 0) && (pageID_int !== 1337)) {
-        final_array = generate_thisChapter_reactArray(scenarioID, meta, allChapterDatas_array[pageID-1]?.content_array)
+        final_array = generate_thisChapter_reactArray(scenarioID, meta, guideContent[pageID]?.content_array)
     }
 
     return (
@@ -63,7 +66,7 @@ function GuidePane({chapter_num, meta, guideContent, scenarioID, pageID}) {
 
             <div className='guidepane-guide-main'>
             
-                <GuideTabs allChapters_array={allChapterDatas_array}/>
+                <GuideDropdown allChapters_array={guideContent}/>
 
                 <article className='guidepane-guide-text'>
                     <div key={nanoid(5)}>
