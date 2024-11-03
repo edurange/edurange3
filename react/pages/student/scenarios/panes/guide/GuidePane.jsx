@@ -57,8 +57,11 @@ function GuidePane({chapter_num, meta, guideContent, scenarioID, pageID}) {
 ]
     if (Number(chapter_num) === 0 || Number(chapter_num) === 1337) { final_array = [(<div key={'abc123'}><HomeChapter /></div>)]; }
 
-    if ((pageID_int > 0) && (pageID_int !== 1337)) {
+    if (pageID_int !== 1337) {
         final_array = generate_thisChapter_reactArray(scenarioID, meta, guideContent[pageID]?.content_array)
+    } 
+    else if (pageID_int === 1337) {
+        final_array = generate_thisChapter_reactArray(scenarioID, meta, guideContent[guideContent.length-1]?.content_array)
     }
 
     return (

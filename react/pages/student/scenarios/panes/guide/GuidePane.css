@@ -203,11 +203,11 @@
 }
 .guidepane-dropdown-scorebox{
     display: flex;
-    background-color: rgba(0, 250, 154, 0.362);
+    background-color: rgba(0, 250, 154, 0.165);
     min-width: 60px;
     align-items: center;
-    border-top: 1px solid white;
-    border-bottom: 1px solid white;
+    border-top: 1px solid rgba(244, 228, 146, 0.446);
+    border-bottom: 1px solid rgba(244, 228, 146, 0.446);
 }
 
 .possible-box{
@@ -226,7 +226,7 @@
     align-items: center;
     justify-content: center;
     color: springgreen;
-    border-right: 1px solid white;
+    border-right: 1px solid rgba(244, 228, 146, 0.446);
 }
 
 .dropdown-selected-label{

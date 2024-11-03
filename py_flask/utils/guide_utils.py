@@ -85,7 +85,6 @@ def getYamlContent(user_role, scenario_id, username):
         return custom_abort("Scenario not in started state.  Arborting.", 400)
 
     with open(f'scenarios/prod/{scenario_type}/guide_content.yml', 'r') as fp:
-    # with open(f'scenarios/tmp/{unique_name}/guide_content.yml', 'r') as fp:
         contentYAML = yaml.safe_load(fp)
 
     with open(f'scenarios/prod/common/briefing.yml', 'r') as fp:
