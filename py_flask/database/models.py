@@ -42,7 +42,6 @@ class GroupUsers(Edu3Mixin, SurrogatePK, Model):
     group = relationship("StudentGroups", backref="group_users", viewonly=True)
 
 
-
 class Channels(Edu3Mixin, SurrogatePK, Model):
     """"Chat Channels"""
     __tablename__ = "channels"

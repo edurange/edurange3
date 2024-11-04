@@ -8,10 +8,10 @@ import { HomeRouter_context } from '@pub/Home_router';
 
 const zws = `\u200B`;
 
-
 function FootControls({
-    guideContent,
+    page_number,
     updatePane,
+    fullBook,
     paneSide,
     scenario_points_possible,
     scenario_points_awarded,
@@ -22,9 +22,12 @@ function FootControls({
 }) {
 
     const { userData_state } = useContext(HomeRouter_context);
+    const currentChapterYaml = fullBook[page_number]
 
     if (!userData_state?.role) { return <>You must log in to continue.</> }
-    if (!guideContent?.studentGuide) { return (<>Scenario not found</>); }
+    if (!currentChapterYaml?.content_array) { return (<>Scenario not found</>); }
+
+
 
     const tempName = userData_state.username.replace(/-/g, '')
     const creds = credentialsJSON[tempName]
