@@ -90,9 +90,9 @@ function Scenario_controller() {
                 const contentReturn = await axios.post(`get_responses_byStudent`, {
                     scenario_id: scenarioID
                 });
-
+                
                 const responseData = contentReturn?.data;
-                const compiledScorebook = compileScorebook(responseData[scenarioID]);
+                const compiledScorebook = compileScorebook(responseData);
 
                 set_responseData_state(responseData)
                 set_scorebook_state(compiledScorebook);
