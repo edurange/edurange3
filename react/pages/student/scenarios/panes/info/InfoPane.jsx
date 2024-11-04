@@ -1,12 +1,15 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import Resources_card from './Resources_card';
 import SSH_card from './SSH_card';
 import './InfoPane.css';
 import { scenarioShells } from '@modules/shells/scenarioType_shells';
+import { HomeRouter_context } from '../../../../pub/Home_router';
 
-function InfoPane({ guideContent }) {
+function InfoPane() {
 
-    const meta = guideContent.scenario_meta;
+    const { guideContent_state } = useContext(HomeRouter_context);
+
+    const meta = guideContent_state.scenario_meta;
 
     if ((!meta)) { return (<>Scenario not found</>); } // GUARD
 
@@ -43,8 +46,8 @@ function InfoPane({ guideContent }) {
             </section>
 
             <section className='er3-infopane-lower-section'>
-                <Resources_card guideContent={guideContent} />
-                <SSH_card guideContent={guideContent} />
+                <Resources_card guideContent={guideContent_state} />
+                <SSH_card guideContent={guideContent_state} />
             </section>
 
         </section>

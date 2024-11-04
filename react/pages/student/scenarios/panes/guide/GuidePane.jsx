@@ -6,7 +6,6 @@ import GuideReading from './Q_and_A/GuideReading';
 import GuideQuestion from './Q_and_A/GuideQuestion';
 import GuideTabs from './GuideTabs';
 import GuideDropdown from './GuideDropdown';
-import { HomeRouter_context } from '../../../../pub/Home_router';
 
 function generate_thisChapter_reactArray(scenarioID, meta, thisChapter_contentArray) {
 
@@ -38,16 +37,13 @@ function generate_thisChapter_reactArray(scenarioID, meta, thisChapter_contentAr
     });
     return react_arr;
 }
-
-function GuidePane({chapter_num, meta, guideContent, scenarioID, pageID}) {
-
-    const { scorebook_state, set_scorebook_state } = useContext(HomeRouter_context);
-
-    const thisChapter_data = guideContent[chapter_num]
-    const thisChapter_contentArray = thisChapter_data?.content_array;
+function GuidePane({fullBook, chapter_num, meta, scenarioID, pageID}) {
 
     const pageID_int = Number(pageID)
-    
+
+    const thisChapter_data = fullBook[pageID_int]
+    const thisChapter_contentArray = thisChapter_data?.content_array;
+
     if ((thisChapter_contentArray?.length < 1)) { return (<>Scenario content length less than 1</>); }
 
     let final_array = [
@@ -58,25 +54,21 @@ function GuidePane({chapter_num, meta, guideContent, scenarioID, pageID}) {
     if (Number(chapter_num) === 0 || Number(chapter_num) === 1337) { final_array = [(<div key={'abc123'}><HomeChapter /></div>)]; }
 
     if (pageID_int !== 1337) {
-        final_array = generate_thisChapter_reactArray(scenarioID, meta, guideContent[pageID]?.content_array)
+        final_array = generate_thisChapter_reactArray(scenarioID, meta, thisChapter_contentArray)
     } 
     else if (pageID_int === 1337) {
-        final_array = generate_thisChapter_reactArray(scenarioID, meta, guideContent[guideContent.length-1]?.content_array)
-    }
+        final_array = generate_thisChapter_reactArray(scenarioID, meta, fullBook[fullBook.length-1]?.content_array)
+    } 
 
     return (
         <div className='guidepane-guide-frame'>
-
             <div className='guidepane-guide-main'>
-            
-                <GuideDropdown allChapters_array={guideContent}/>
-
+                <GuideDropdown fullBook={fullBook}/>
                 <article className='guidepane-guide-text'>
                     <div key={nanoid(5)}>
                         {final_array}
                     </div>
                 </article>
-
             </div>
         </div>
     );
