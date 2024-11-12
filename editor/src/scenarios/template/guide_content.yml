@@ -1,0 +1,27 @@
+ScenarioTitle: Template
+
+contentDefinitions:
+  Reading1: &reading1
+    type: reading
+    content: |
+      This is a template for edurange3 scenarios.
+ 
+  Question1: &question1
+    question_num: 1
+    type: question
+    content: This is the sample question, answer is 42.
+    options: []
+    answers:
+      - value: 42
+        answer_type: Number
+        points_possible: 15
+    points_possible: 15
+
+
+studentGuide:
+  chapters:
+    - chapter_num: 1
+      title: Welcome to Cybersec
+      content_array:
+        - *reading1
+        - *question1
