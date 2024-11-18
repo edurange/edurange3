@@ -45,11 +45,11 @@ logging.basicConfig(level=logging.INFO)
 
 # Create a file handler
 file_handler = logging.FileHandler('logs/celery_tasks.log')
-file_handler.setLevel(logging.INFO)
+file_handler.setLevel(logging.DEBUG)
 
 # Create a console handler
 console_handler = logging.StreamHandler()
-console_handler.setLevel(logging.INFO)
+console_handler.setLevel(logging.INFO) # Change this to DEBUG to see all console output
 
 # Create a formatter
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -231,23 +231,55 @@ def start_scenario_task(self, scenario_id):
                     }
             
             scenario_path = os.path.join("./scenarios/tmp/", name)
+
             if os.path.isdir(scenario_path):
                 scenario.update(status=3)
                 db.session.commit()
                 logger.debug("Folder Found")
                 
-                os.chdir(scenario_path)
+                # No need to change directory when using cwd in Popen
+                apply_command = ["terraform", "apply", "--auto-approve"]
+                important_phrases = ["Apply complete", "Saved the plan to: ", "will be created", "Plan:", "Terraform will perform the following actions:"]
                 
-                os.chdir("network")
-                os.system("terraform apply --auto-approve")
-                
-                os.chdir("../container")
-                os.system("terraform apply --auto-approve")
+                # Begin refactor
+                def apply_terraform(command, path, component_name):
+                    with subprocess.Popen(command, cwd=path, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE) as proc:
+                        logger.info(f"**** Starting {component_name} terraform ****")
+                        
+                        stdout_output, stderr_output = proc.communicate()
 
-                os.chdir("..")
+                        for line in stdout_output.splitlines():
+                            logger.debug(line.strip())
+                            
+                            if any(phrase in line for phrase in important_phrases):
+                                logger.info(f"Important: {line.strip()}")
+
+                            is_debug = logger.getEffectiveLevel() == logging.DEBUG
+
+                            if is_debug:
+                                line = line.strip()
+                                logger.debug(line)
+                        
+                        if stderr_output:
+                            logger.error(f"Error occurred: {stderr_output.strip()}")
+                        
+                        if proc.returncode != 0:
+                            logger.error(f"Starting {component_name} terraform failed")
+                    return proc.returncode == 0
+
+                # Apply network terraform
+                network_path = os.path.join(scenario_path, "network")
+                apply_terraform(apply_command, network_path, "network")
+
+                # Apply container terraform
+                container_path = os.path.join(scenario_path, "container")
+                apply_terraform(apply_command, container_path, "container")
+                # End Refactor
                 
-                os.system("../../../shell_scripts/scenario_movekeys.sh {} {} {}".format(gateway, start, start_ip))
-                os.chdir("../../..")
+                # Modified to be less relative 
+                os.system(os.path.join("./shell_scripts", "scenario_movekeys.sh") + " {} {} {}".format(gateway, start, start_ip))
+                
+                os.chdir("../../..") # might not be necessary
                 
                 scenario.update(status=1)
                 db.session.commit()
