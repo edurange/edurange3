@@ -197,88 +197,115 @@ def create_scenario_task(self, scen_name, scen_type, students_list, grp_id, scen
         logger.error(f"An error occurred in the create_scenario: {str(e)}")
         return {"result": "error", "message": str(e)}
 
+def run_command(command, cwd=None):
+    process = subprocess.Popen(
+        command,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        cwd=cwd
+    )
+    
+    while True:
+        output = process.stdout.readline()
+        if output == '' and process.poll() is not None:
+            break
+        if output:
+            logger.info(output.strip())
+    
+    rc = process.poll()
+    return rc
+
+def apply_terraform(command, path, component_name, important_phrases):
+    logger.info(f"**** Starting {component_name} terraform ****")
+    with subprocess.Popen(command, cwd=path, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE) as proc:
+        stdout_output, stderr_output = proc.communicate()
+
+        for line in stdout_output.splitlines():
+            logger.debug(line.strip())
+            
+            if any(phrase in line for phrase in important_phrases):
+                logger.info(f"Important: {line.strip()}")
+
+        if stderr_output:
+            logger.error(f"Error occurred: {stderr_output.strip()}")
+        
+        if proc.returncode != 0:
+            logger.error(f"Starting {component_name} terraform failed")
+    return proc.returncode == 0
+
 @celery.task(bind=True)
 def start_scenario_task(self, scenario_id):
-    logger.info("starting scenario")
+    logger.info("Starting scenario")
+    original_dir = os.getcwd()
     try:
         app = current_app
-        logger.debug(
-            "Executing task id {0.id}, args: {0.args!r} kwargs: {0.kwargs!r}".format(
-                self.request
-            )
-        )
         with app.test_request_context():
             scenario = Scenarios.query.filter_by(id=scenario_id).first()
             if not scenario:
                 logger.error(f"Scenario with id {scenario_id} not found")
                 return {"result": "failure", "new_status": 5, "scenario_id": scenario_id, "message": "Scenario not found"}
             
-            logger.debug("Found Scenario: {}".format(scenario))
-            name = str(scenario.name)
-            name = "".join(e for e in name if e.isalnum())
-            gateway = name + "_gateway"
-            start = name + "_StartingLine"
-            start_ip = "10." + str(scenario.octet) + ".0.2"
+            logger.debug(f"Found Scenario: {scenario}")
+            name = "".join(e for e in str(scenario.name) if e.isalnum())
+            gateway = f"{name}_gateway"
+            start = f"{name}_StartingLine"
+            start_ip = f"10.{scenario.octet}.0.2"
 
             if int(scenario.status) != 0:
                 logger.error("Invalid Status")
-                NotifyCapture("Failed to start scenario " + name + ": Invalid Status")
-                return {
-                    "result": "failure",
-                    "new_status": 5,
-                    "scenario_id": scenario_id,
-                    "message": "Scenario must be stopped before starting"
-                    }
+                NotifyCapture(f"Failed to start scenario {name}: Invalid Status")
+                return {"result": "failure", "new_status": 5, "scenario_id": scenario_id, "message": "Scenario must be stopped before starting"}
             
             scenario_path = os.path.join("./scenarios/tmp/", name)
-            if os.path.isdir(scenario_path):
-                scenario.update(status=3)
-                db.session.commit()
-                logger.debug("Folder Found")
-                
-                os.chdir(scenario_path)
-                
-                os.chdir("network")
-                os.system("terraform apply --auto-approve")
-                
-                os.chdir("../container")
-                os.system("terraform apply --auto-approve")
+            if not os.path.isdir(scenario_path):
+                logger.debug(f"Scenario folder could not be found -- {scenario_path}")
+                NotifyCapture(f"Failed to start scenario {name}: Scenario folder could not be found. -- {scenario_path}")
+                return {"result": "failure", "new_status": 5, "scenario_id": scenario_id}
+            
+            scenario.update(status=3)
+            db.session.commit()
+            logger.debug("Folder Found")
 
-                os.chdir("..")
-                
-                os.system("../../../shell_scripts/scenario_movekeys.sh {} {} {}".format(gateway, start, start_ip))
-                os.chdir("../../..")
-                
-                scenario.update(status=1)
-                db.session.commit()
-                NotifyCapture("Scenario " + name + " has started successfully.")
-                db.session.close()
-                
-                return {
-                    "result": "success", 
-                    "new_status": 1,
-                    "scenario_id": scenario_id
-                    }
-            else:
-                logger.debug("Scenario folder could not be found -- " + os.path.join("./scenarios/tmp/", name))
-                NotifyCapture("Failed to start scenario " + name + ": Scenario folder could not be found. -- " + os.path.join("./scenarios/tmp/", name))
-                return {
-                    "result": "failure",
-                    "new_status": 5,
-                    "scenario_id": scenario_id
-                    }
+            apply_command = ["terraform", "apply", "--auto-approve"]
+            important_phrases = ["Apply complete", "Saved the plan to: ", "will be created", "Plan:", "Terraform will perform the following actions:"]
+
+            # Apply network terraform
+            network_path = os.path.join(scenario_path, "network")
+            if not apply_terraform(apply_command, network_path, "network", important_phrases):
+                raise Exception("Network terraform apply failed")
+
+            # Apply container terraform
+            container_path = os.path.join(scenario_path, "container")
+            if not apply_terraform(apply_command, container_path, "container", important_phrases):
+                raise Exception("Container terraform apply failed")
+
+            # Run scenario_movekeys.sh
+            script_path = os.path.join("./shell_scripts", "scenario_movekeys.sh")
+            result = subprocess.run([script_path, gateway, start, start_ip], cwd=original_dir, capture_output=True, text=True)
+            if result.returncode != 0:
+                logger.error(f"scenario_movekeys.sh failed: {result.stderr}")
+                raise Exception("scenario_movekeys.sh failed")
+
+            scenario.update(status=1)
+            db.session.commit()
+            NotifyCapture(f"Scenario {name} has started successfully.")
+            db.session.close()
+            
+            return {"result": "success", "new_status": 1, "scenario_id": scenario_id}
+
     except Exception as e:
-        self.retry(exc=e, countdown=60)  # Retry after 60 seconds
-        
-        logger.error('Error encoutnered in start scenario function in tasks.py')
+        logger.error('Error encountered in start scenario function in tasks.py')
         logger.exception(e)
-        return {
-                "result": "failure",
-                "new_status": 5,
-                "scenario_id": scenario_id
-                }
-
-
+        scenario.update(status=5)
+        db.session.commit()
+        db.session.close()
+        self.retry(exc=e, countdown=60)  # Retry after 60 seconds
+        return {"result": "failure", "new_status": 5, "scenario_id": scenario_id}
+    
+    finally:
+        os.chdir(original_dir)  # Always return to the original directory
+        
 @celery.task(bind=True)
 def stop_scenario_task(self, scenario_id):
     app = current_app
