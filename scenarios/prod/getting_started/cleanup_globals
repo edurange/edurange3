@@ -1,7 +1,7 @@
 rm /analyze.py
 rm /intervention.py
 rm /makeTsv.py
-rm /milestone-lbl.pl
+rm /milestone.py
 rm /milestones.txt
 rm /setup_home
 rm /start_ttylog.sh

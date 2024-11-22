@@ -17,7 +17,7 @@
                         "student_home",
                         "python",
                         "final-task",
-                        "milestones.txt"
+                        "milestones.yml"
                     ]
                 }
             ]
@@ -31,7 +31,7 @@
                     "system_files": [
                     ],
                     "user_files": [
-                        "milestones.txt"
+                        "milestones.yml"
                     ]
                 }
             ]

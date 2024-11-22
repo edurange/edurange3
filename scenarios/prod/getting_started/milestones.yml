@@ -1,0 +1,54 @@
+- label: M1
+  objective: be a milestone
+  comment: is present but inconsequential
+  input: foo
+  output: foo
+  
+- label: M2
+  objective: demonstrate that the comment parameter is not required
+  input: foo
+  not:
+    output: bar
+    
+- label: M3
+  objective: previously found milestones can be checked
+  matched: M2
+  
+- label: M4
+  objective: demonstrate that search strings can be regexes/patterns
+  comment: this currently works but maybe we won't always support it
+  output: ba*
+  
+- label: M5
+  comment: the objective parameter is also not required
+  matched: M1
+  output: a
+  
+- comment: labels will be automatically created if not provided
+  input: bar
+  
+- objective: see if yaml can have multiple properties of the same name
+  and:
+    comment: don't do this! you'll overwrite the first key-value pair
+    input: foo
+    input: bar
+  or:
+    - comment: do it like this - use lists when you might shadow a key
+    - input: baz
+    - input: bleep
+
+- objective: test weights option for and tokens
+  weights:
+    - 9
+    - 1
+  input: foo
+  output: foo
+
+- objective: demonstrate flow style YAML lists
+  weights: [3, 7]
+  not:
+    input: foo
+  output: bleep
+
+- objective: search the working directory
+  dir: ^*foo$

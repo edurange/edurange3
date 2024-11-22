@@ -177,7 +177,7 @@ def write_resource(address, name, s_type,
     users = build_users(usernames, passwords)
 
     log_files = ["tty_setup", "analyze.py", "makeTsv.py",
-                 "milestone-lbl.pl", "intervention.py", "start_ttylog.sh",
+                 "milestone.py", "milestone_label.py", "intervention.py", "start_ttylog.sh",
                  "ttylog", "clearlogs", "iamfrustrated",
                  "place_milestone_file", "change_root_pass", "cgconfig.conf",
                  "limit_resources", "gateway_setup"]
@@ -190,7 +190,7 @@ def write_resource(address, name, s_type,
         s_files = ["tty_setup", "place_milestone_file", "change_root_pass", "limit_resources", "gateway_setup"] + s_files
         g_files = ["iamfrustrated", "clearlogs"] + g_files
         u_files = ["ttylog", "start_ttylog.sh", "makeTsv.py", "analyze.py",
-                   "milestone-lbl.pl", "intervention.py"] + u_files
+                   "milestone.py", "milestone_label.py", "intervention.py"] + u_files
     else:
         uploads = build_uploads(s_files, g_files, u_files, global_scripts, s_type)
         s_files = ["change_root_pass", "limit_resources"] + s_files

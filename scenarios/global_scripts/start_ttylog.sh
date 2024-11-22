@@ -137,9 +137,9 @@ if [ -z "$SSH_ORIGINAL_COMMAND" ]; then
     	if ! [ -f ${ANNOTATORPATH} ]; then
         	sudo touch ${ANNOTATORPATH}
     	fi
-        sudo perl /usr/local/src/ttylog/milestone-lbl.pl ${MILESTONEFILE} ${CONTCSVPATH} ${ANNOTATORPATH} 2>/dev/null &
+        sudo /usr/bin/python3 /usr/local/src/ttylog/milestone_label.py --inputf ${CONTCSVPATH} --outputf ${ANNOTATORPATH} ${MILESTONEFILE} 2>/dev/null &
         PID_ANNOTATOR=$!
-        sudo python3 /usr/local/src/ttylog/intervention.py ${ANNOTATORPATH} ${MILESTONEFILE} ${MILESTONEMESS} 2>/dev/null &
+        sudo /usr/bin/python3 /usr/local/src/ttylog/intervention.py ${ANNOTATORPATH} ${MILESTONEFILE} ${MILESTONEMESS} 2>/dev/null &
         PID_INTERVENTION=$!
     fi
     source /etc/environment

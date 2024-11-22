@@ -27,7 +27,7 @@
                                 }
                             ],
                             "hostname": "gateway",
-                            "image": "edurange2/ubuntu-sshd:16.04",
+                            "image": "edurange2/ubuntu-sshd:16.04-py12",
                             "name": "SNAME_gateway",
                             "networks_advanced": [
                                 {

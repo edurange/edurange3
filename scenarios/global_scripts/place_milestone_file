@@ -1,4 +1,4 @@
 #!/bin/bash
 
 sudo mkdir -p /var/log/milestones
-sudo cp /home/ubuntu/milestones.txt /var/log/milestones/milestone_file
+sudo cp /home/ubuntu/milestones.yml /var/log/milestones/milestone_file
