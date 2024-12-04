@@ -1,4 +1,4 @@
-ScenarioTitle: Hello Edurange
+ScenarioTitle: Getting Started
 
 # Define content sections with aliases
 contentDefinitions:
@@ -15,6 +15,18 @@ contentDefinitions:
       If you need a backup, you can use the WebSSH button also in the bottom 
       left, but it is missing many convenience features provided by more 
       standard terminals.
+  Question1: &question1
+    question_num: 1
+    type: question
+    comment: learning about login with ssh
+    content: What is the full "FLAG{...}" string that is provided after ssh-ing in?
+    options: []
+    answers:
+      - value: "FLAG{WELCOME}"
+        answer_type: String
+        points_possible: 15
+    points_possible: 15
+    
   Reading2: &reading2
     type: reading
     content: |
@@ -885,16 +897,6 @@ contentDefinitions:
     content: |
       TODO: Instructions for the final mission
 
-  Question1: &question1
-    question_num: 1
-    type: question
-    content: What is the full "FLAG{...}" string that is provided after ssh-ing in?
-    options: []
-    answers:
-      - value: "FLAG{WELCOME}"
-        answer_type: String
-        points_possible: 15
-    points_possible: 15
   Question2: &question2
     question_num: 2
     type: question
