@@ -705,8 +705,8 @@ def query_small_language_model_task(self, task, generation_parameters):
                 raise Exception (f"ERROR: 'load_context_file_contents()' failed: [{e}]")
 
             try:
-                finalized_system_prompt = "##A student is completing a cyber-security scenario, review the scenario guide along with their bash, chat and question/answer history and provide them a single concise hint on what to do next. The hint must not exceed two sentences in length."
-                finalized_user_prompt = f" The scenario summary: {scenario_summary}. The student's recent bash commands: {logs_dict['bash']}. The student's recent chat messages: {logs_dict['chat']}. The student's recent answers: {logs_dict['responses']}. "
+                finalized_system_prompt = "##A student is completing a cyber-security scenario, review the scenario's summary along with their bash, chat and question/answer history and provide them a single concise hint on what to do next. The hint must not exceed two sentences in length."
+                finalized_user_prompt = f" The scenario's summary: {scenario_summary}. The student's recent bash commands: {logs_dict['bash']}. The student's recent chat messages: {logs_dict['chat']}. The student's recent answers: {logs_dict['responses']}. "
             
             except Exception as e:
                 raise Exception (f"ERROR: Failed to initialize prompts: [{e}]")
