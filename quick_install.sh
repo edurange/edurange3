@@ -88,39 +88,15 @@ promptnumber=0
 
 external_ip=$(dig @resolver4.opendns.com myip.opendns.com +short)
 
-echo "$hostAddress"
-
 while [ -z "$hostAddress" ]
 do 
   #echo "READING PROMPT NUM"
-  read promptnumber
+  promptnumber=1
 
   if [ $promptnumber -eq 1 ]; then
-    #echo -e "Your ip is one of these \n$all"
-    option1=$(echo "$all" | sed "1p;d")
-    option2=$(echo "$all" | sed "2p;d")
-    echo "  Please select one of the following Local IP Addresses we detected:"
-    echo "  (1) $option1"
-    echo "  (2) $option2"
-
-    while [ -z "$hostAddress" ]
-    do
-      read optnumber
-      if [ $optnumber -eq 1 ]; then
-        hostAddress="$option1"
-      elif [ $optnumber -eq 2 ]; then
-        hostAddress="$option2"
-      fi
-    done
     
-    localDomain=''
-    while [ -z "$localDomain" ]
-    do
-      echo " Please enter the domain you would like to use for your local installation (Ex: edurange.local)"
-    	read domainSelection
-     	localDomain="$domainSelection"
-    done
-
+    localDomain='edurange.local'
+    hostAddress='127.0.0.1'
     sudo echo "$hostAddress $localDomain" | sudo cat - /etc/hosts > tmp && sudo mv tmp /etc/hosts
     
     wget https://github.com/FiloSottile/mkcert/releases/download/v1.4.3/mkcert-v1.4.3-linux-amd64
@@ -148,24 +124,6 @@ do
     
     
     sudo service nginx reload
-    
-    
-
-  elif [ $promptnumber -eq 2 ]; then
-    #echo $external_ip
-    hostAddress="$external_ip"
-    #echo "$hostAddress CHANGED"
-  
-  elif [ $promptnumber -eq 3 ]; then
-    # TODO certbot cannot be used for generation here, because the site must be running
-    # If certs are pre-existing, we can do the nginx config replacement for the user, but that's about it
-    #
-    echo "Once installation is complete, you will need to adjust your own nginx configs, see docs for help"
-    sudo cp ./docs/nginx.site.prod.example /etc/nginx/sites-available/default
-    echo "Enter domain name: "
-    read hostAddress
-  fi
-done
 
 
 if [ $# -eq 0 ];
