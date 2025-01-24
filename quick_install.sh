@@ -125,6 +125,8 @@ do
     
     sudo service nginx reload
 
+  fi
+done
 
 if [ $# -eq 0 ];
 then
@@ -147,7 +149,7 @@ then
 	sed -i "s/YOURSECRETKEY/${secretKey}/" .env
 	sed -i "s/YOUR_URL_HERE/${hostAddress}/" .env
 	sed -i "s/someRootPass/${rootPass}/" .env
-
+ 
 # NOTE: This was for vagrant installations, investigate removing  
 elif [ $1 = "auto" ];
 then
