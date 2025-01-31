@@ -35,7 +35,9 @@ cd $curDir
 
 
 if [[ "$enable_ml_features" == "y" ]]; then
+  pip3 install ninja
   pip3 install -r requirements/ml_requirements.txt
+  pip3 install -r requirements/prod_requirements.txt
 else
   pip3 install -r requirements/prod_requirements.txt
 fi
