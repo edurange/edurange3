@@ -71,7 +71,7 @@
     ],
     "locals": [
         {
-            "SNAME_StartingLine_extern": "${tostring(docker_container.SNAME_StartingLine.ports[0].external)}"
+            "SNAME_StartingLine_extern": "HIDDEN"
         }
     ],
     "output": [
