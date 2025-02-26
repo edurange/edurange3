@@ -11,7 +11,7 @@ flaskUser="Administrator"
 flaskPass="flaskpass"
 secretKey="not-so-secret"
 hostAddress="localhost"
-rootPass="change-me"
+rootPass="sup3rs3cr3t"
 curDir=$(pwd)
 
 # Add pip-executables to the path if they aren't already
@@ -22,7 +22,7 @@ echo -e "${GRN}Installing python3-pip, npm, redis-server,  unzip, postgresql, li
 
 sudo apt update
 # VOLATILE: CHECK NGINX INSTALL - CHECK CERTBOT TOO
-sudo apt install -y python3-pip redis-server unzip wget postgresql libpq-dev nginx wget libnss3-tools certbot python3-certbot-nginx
+sudo apt install -y curl python3-pip redis-server unzip wget postgresql libpq-dev nginx wget libnss3-tools certbot python3-certbot-nginx
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
 source ~/.nvm/nvm.sh
 cd $curDir
@@ -85,10 +85,7 @@ sudo certutil -d sql:$HOME/snap/firefox/common/.mozilla/firefox/${firefoxProfile
 sudo service nginx reload
 
 dbpass=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w ${1:-20} | head -n 1)
-dbname="edurange_db"
-flaskUser="edurange_team"
-flaskPass="flask_pass_123!"
-rootPass="sup3rs3cr3t"
+
 # Generate secret string for cookie encryption
 # TODO: Replace JWT_SECRET_KEY as well
 secretKey=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w ${1:-20} | head -n 1)
