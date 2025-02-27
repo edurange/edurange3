@@ -267,9 +267,15 @@ declare -a container_names
 # Loop for each container
 for (( i=1; i<=$container_count; i++ )); do
     echo -e "\n${CYAN}Container $i of $container_count:${RESET}"
-    print_prompt "Enter a name for this container:"
-    read container_name
     
+    if [ "$i" -eq "1" ]; then
+      print_prompt "By convention, the first container of a scenario will be named StartingLine"
+      container_name="StartingLine"
+    else
+      print_prompt "Enter a name for this container:"
+      read container_name
+    fi
+
     # Validate container name
     if [[ ! "$container_name" =~ ^[a-zA-Z0-9_-]+$ ]]; then
         print_error "Container name can only contain letters, numbers, underscores, and hyphens."
