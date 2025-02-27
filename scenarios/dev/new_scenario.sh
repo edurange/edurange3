@@ -138,7 +138,7 @@ if ! [[ "$network_count" =~ ^[0-9]+$ ]]; then
 fi
 
 # Initialize network configuration file
-network_file="$scenario_name/network/networks.tf.json"
+network_file="$scenario_name/network/network_template.json"
 echo '{' > "$network_file"
 echo '  "resource": [' >> "$network_file"
 
@@ -149,86 +149,86 @@ declare -a network_third_octets
 
 # Loop for each network
 for (( i=1; i<=$network_count; i++ )); do
-    echo -e "\n${CYAN}Network $i of $network_count:${RESET}"
-    
-    # Get network name
-    print_prompt "Enter a name for this network:"
-    read network_name
-    
-    # Validate network name
-    if [[ ! "$network_name" =~ ^[a-zA-Z0-9_-]+$ ]]; then
-        print_error "Network name can only contain letters, numbers, underscores, and hyphens."
-        print_info "Using default name: network$i"
-        network_name="network$i"
-    fi
-    
-    # Get CIDR notation
-    print_prompt "Enter CIDR notation for this network (e.g., 10.0.0.0/24) NOTE 10.*.1.0/27 is reserved:"
-    read network_cidr
-    
-    # Validate CIDR notation (basic validation)
-    if ! [[ "$network_cidr" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/[0-9]+$ ]]; then
-        print_error "Invalid CIDR notation. Using default: 10.0.0.0/24"
-        network_cidr="10.0.0.0/24"
-    fi
-    
-    # Extract third octet
-    third_octet=$(extract_third_octet "$network_cidr")
-    fourth_octet=$(extract_fourth_octet "$network_cidr")
-    cidr_size=$(extract_cidr_size "$network_cidr")
+  echo -e "\n${CYAN}Network $i of $network_count:${RESET}"
 
-    # Store network information
-    network_names[$i]="$network_name"
-    network_cidrs[$i]="$network_cidr"
-    network_third_octets[$i]="$third_octet"
-    
-    # Add network configuration to file
-    if [ $i -gt 1 ]; then
-        echo '  },' >> "$network_file"
-        echo '  ]' >> "$network_file"
-        echo '  },' >> "$network_file"
-    fi
-    
-    echo '    {' >> "$network_file"
-    echo '      "docker_network": [' >> "$network_file"
-    echo '        {' >> "$network_file"
-    echo '          "'SNAME_${network_name}'": [' >> "$network_file"
-    echo '            {' >> "$network_file"
-    echo '              "driver": "bridge",' >> "$network_file"
-    echo '              "internal": "true",' >> "$network_file"
-    echo '              "ipam_config": [' >> "$network_file"
-    echo '              {' >> "$network_file"
-    echo '                "subnet": "'10.OCTET.$third_octet.$fourth_octet/$cidr_size'"' >> "$network_file"
-    echo '              }' >> "$network_file"
-    echo '              ],' >> "$network_file"
-    echo '              "name": "'SNAME_${network_name}'"' >> "$network_file"
-    echo '            }' >> "$network_file"
-    echo '          ]' >> "$network_file"
-    echo '        }'  >> "$network_file"
-    echo '      ]' >> "$network_file"
-    echo '    },' >> "$network_file"
-    
-    print_success "Network $network_name created with CIDR $network_cidr (Third octet: $third_octet)"
+  # Get network name
+  print_prompt "Enter a name for this network:"
+  read network_name
+
+  # Validate network name
+  if [[ ! "$network_name" =~ ^[a-zA-Z0-9_-]+$ ]]; then
+    print_error "Network name can only contain letters, numbers, underscores, and hyphens."
+    print_info "Using default name: network$i"
+    network_name="network$i"
+  fi
+
+  # Get CIDR notation
+  print_prompt "Enter CIDR notation for this network (e.g., 10.0.0.0/24) NOTE 10.*.1.0/27 is reserved:"
+  read network_cidr
+
+  # Validate CIDR notation (basic validation)
+  if ! [[ "$network_cidr" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/[0-9]+$ ]]; then
+    print_error "Invalid CIDR notation. Using default: 10.0.0.0/24"
+    network_cidr="10.0.0.0/24"
+  fi
+
+  # Extract third octet
+  third_octet=$(extract_third_octet "$network_cidr")
+  fourth_octet=$(extract_fourth_octet "$network_cidr")
+  cidr_size=$(extract_cidr_size "$network_cidr")
+
+  # Store network information
+  network_names[$i]="$network_name"
+  network_cidrs[$i]="$network_cidr"
+  network_third_octets[$i]="$third_octet"
+
+  # Add network configuration to file
+  if [ $i -gt 1 ]; then
+    echo '  },' >> "$network_file"
+    echo '  ]' >> "$network_file"
+    echo '  },' >> "$network_file"
+  fi
+
+  echo '    {' >> "$network_file"
+  echo '      "docker_network": [' >> "$network_file"
+  echo '        {' >> "$network_file"
+  echo '          "'SNAME_${network_name}'": [' >> "$network_file"
+  echo '            {' >> "$network_file"
+  echo '              "driver": "bridge",' >> "$network_file"
+  echo '              "internal": "true",' >> "$network_file"
+  echo '              "ipam_config": [' >> "$network_file"
+  echo '              {' >> "$network_file"
+  echo '                "subnet": "'10.OCTET.$third_octet.$fourth_octet/$cidr_size'"' >> "$network_file"
+  echo '              }' >> "$network_file"
+  echo '              ],' >> "$network_file"
+  echo '              "name": "'SNAME_${network_name}'"' >> "$network_file"
+  echo '            }' >> "$network_file"
+  echo '          ]' >> "$network_file"
+  echo '        }'  >> "$network_file"
+  echo '      ]' >> "$network_file"
+  echo '    },' >> "$network_file"
+
+  print_success "Network $network_name created with CIDR $network_cidr (Third octet: $third_octet)"
 done
 
-    echo '    {' >> "$network_file"
-    echo '      "docker_network": [' >> "$network_file"
-    echo '        {' >> "$network_file"
-    echo '          "'SNAME_NAT'": [' >> "$network_file"
-    echo '            {' >> "$network_file"
-    echo '              "driver": "bridge",' >> "$network_file"
-    echo '              "internal": "true",' >> "$network_file"
-    echo '              "ipam_config": [' >> "$network_file"
-    echo '              {' >> "$network_file"
-    echo '                "subnet": "'10.OCTET.1.0/27'"' >> "$network_file"
-    echo '              }' >> "$network_file"
-    echo '              ],' >> "$network_file"
-    echo '              "name": "'SNAME_NAT'"' >> "$network_file"
-    echo '            }' >> "$network_file"
-    echo '          ]' >> "$network_file"
-    echo '        }'  >> "$network_file"
-    echo '      ]' >> "$network_file"
-    echo '    }' >> "$network_file"
+  echo '    {' >> "$network_file"
+  echo '      "docker_network": [' >> "$network_file"
+  echo '        {' >> "$network_file"
+  echo '          "'SNAME_NAT'": [' >> "$network_file"
+  echo '            {' >> "$network_file"
+  echo '              "driver": "bridge",' >> "$network_file"
+  echo '              "internal": "false",' >> "$network_file"
+  echo '              "ipam_config": [' >> "$network_file"
+  echo '              {' >> "$network_file"
+  echo '                "subnet": "'10.OCTET.1.0/27'"' >> "$network_file"
+  echo '              }' >> "$network_file"
+  echo '              ],' >> "$network_file"
+  echo '              "name": "'SNAME_NAT'"' >> "$network_file"
+  echo '            }' >> "$network_file"
+  echo '          ]' >> "$network_file"
+  echo '        }'  >> "$network_file"
+  echo '      ]' >> "$network_file"
+  echo '    }' >> "$network_file"
 
 # Close the network configuration file
 echo '  ]' >> "$network_file"
@@ -344,6 +344,9 @@ for (( i=1; i<=$container_count; i++ )); do
     echo '            "milestones.txt"' >> "$scenario_json"
     echo '          ]' >> "$scenario_json"
     echo '        }' >> "$scenario_json"
+    echo '      ]' >> "$scenario_json"
+    echo '    },' >> "$scenario_json"
+    
     
     print_success "Container $container_name created successfully on network $selected_network with IP ending in .$fourth_octet"
 done
@@ -361,10 +364,10 @@ echo '          "user_files": [' >> "$scenario_json"
 echo '            "milestones.txt"' >> "$scenario_json"
 echo '          ]' >> "$scenario_json"
 echo '        }' >> "$scenario_json"
-
-# Close the scenario JSON file - fixed to properly close all containers in one array
 echo '      ]' >> "$scenario_json"
 echo '    }' >> "$scenario_json"
+
+# Close the scenario JSON file - fixed to properly close all containers in one array
 echo '  ]' >> "$scenario_json"
 echo '}' >> "$scenario_json"
 
@@ -433,6 +436,11 @@ if [ -f "$template_dir/container/gateway.tf.json" ]; then
 else
     print_error "Template gateway.tf.json not found"
 fi
+
+# Copy remaining files TODO safety check like the others, they're blank right now though
+cp "$template_dir/milestones.txt" "$scenario_name/milestones.txt"
+cp "$template_dir/install" "$scenario_name/install"
+
 
 # Copy over provider files
 cp "$template_dir/container/main.tf.json" "$scenario_name/container/main.tf.json"

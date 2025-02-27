@@ -65,12 +65,12 @@
     ],
     "locals": [
         {
-            "SNAME_StartingLine_extern": "HIDDEN"
+            "SNAME_|cName|_extern": "HIDDEN"
         }
     ],
     "output": [
         {
-            "SNAME_StartingLine": [
+            "SNAME_|cName|": [
                 {
                     "value": [
                         {
