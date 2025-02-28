@@ -105,6 +105,9 @@ print_header "Scenario Creation Tool"
 print_prompt "Enter the name for your new scenario:"
 read scenario_name
 
+scenario_name=$(echo $scenario_name | tr '[:upper:]' '[:lower:]')
+
+
 # Validate scenario name (no spaces, special characters limited)
 if [[ ! "$scenario_name" =~ ^[a-zA-Z0-9_-]+$ ]]; then
     print_error "Scenario name can only contain letters, numbers, underscores, and hyphens."

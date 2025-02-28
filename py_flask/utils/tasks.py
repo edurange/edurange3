@@ -290,26 +290,20 @@ def start_scenario_task(self, scenario_id):
             start_line_tf_file = (
                 f"./scenarios/tmp/{name}/container/StartingLine.tf.json"
             )
-            start_line_end_half = ""
+            third_oct, fourth_oct = "", ""
             with open(start_line_tf_file, "r") as tf_file:
                 keys = []
-                ip_end = []
                 for line in tf_file:
                     if "ipv4_address" in line:
                         keys.append(line.replace(" ", ""))
                 for k in keys:
                     raw_ip = k.split(":")[1].split(",")[0].replace('"', "")
-                    last_octets = raw_ip.replace("10.OCTET.", "")
-                    if last_octets != "1.2":
-                        ip_end.append(last_octets)
-                start_line_end_half = ip_end[0]
-
-            octs = start_line_end_half.split(".")
-
-            third = octs[0]
-            fourth = octs[1]
-            start_ip = f"10.{scenario.octet}.{third}.{fourth}"
-
+                    octs = raw_ip.split('.')
+                    if octs[2] != "1" and octs[3] != 4:
+                        third_oct = octs[2]
+                        fourth_oct = octs[3]
+                        break
+            start_ip = f"10.{scenario.octet}.{third_oct}.{fourth_oct}"
             if int(scenario.status) != 0:
                 logger.error("Invalid Status")
                 NotifyCapture(f"Failed to start scenario {name}: Invalid Status")
