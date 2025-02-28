@@ -1,0 +1,66 @@
+ScenarioTitle: Your Scenario Title
+contentDefinitions:
+  Reading1: &Reading1
+    type: reading
+    content: |-
+      This is the content of your first reading.
+      It can span multiple lines.
+      ### Use any markdown formatting you like here
+  Question1:
+    type: question
+    question_num: 1
+    comment: This question is too open ended, because we do exact matching for the
+      answer Value. Also, questions do not support markdown formatting, they're just a string literal.
+    content: What is the purpose of this tool?
+    options: []
+    answers:
+    - answer_type: String
+      value: Convert markdown to YAML
+      points_possible: 15
+    points_possible: 15
+  Reading2:
+    type: reading
+    content: |-
+      This is a reading in chapter 2.
+  Question2:
+    type: question
+    question_num: 2
+    comment: Questions can have multi-part answers, scored sequentially. These are
+      not "alternative" answers, they are all required for full points
+    content: What are the colors of the rainbow?
+    options: []
+    answers:
+    - answer_type: String
+      value: Red
+      points_possible: 5
+    - answer_type: String
+      value: Orange
+      points_possible: 5
+    - answer_type: String
+      value: Yellow
+      points_possible: 5
+    - answer_type: String
+      value: Green
+      points_possible: 5
+    - answer_type: String
+      value: Blue
+      points_possible: 5
+    - answer_type: String
+      value: Indigo
+      points_possible: 5
+    - answer_type: String
+      value: Violet
+      points_possible: 5
+    points_possible: 35
+studentGuide:
+  chapters:
+  - chapter_num: 1
+    title: Chapter Title
+    content_array:
+    - *Reading1
+    - *Question1
+  - chapter_num: 2
+    title: Another Chapter
+    content_array:
+    - *Reading2
+    - *Question2
