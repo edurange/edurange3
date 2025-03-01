@@ -16,7 +16,6 @@ To do so, enter the following in your bash cli:
 sudo apt update
 sudo apt upgrade
 sudo apt install git
-sudo apt install curl
 ```
 It is also recommended that you use 'minimal installation' option for the Ubuntu install,
 as well as skip updates.  You can update from the command line with the above sequence.
@@ -29,11 +28,11 @@ First, clone this repository (choose ONE of these commands, not both!)
 
 If you're using standard git auth (no key), then use the HTTPS clone:
 ```bash
-git clone https://github.com/edurange/edurange3.git --recurse-submodules
+git clone -b sigcse25 https://github.com/edurange/edurange3.git
 ```
 If you're using an ssh key to auth, then use the SSH clone:
 ```bash
-git clone git@github.com:edurange/edurange3.git --recurse-submodules
+git clone -b sigcse25 git@github.com:edurange/edurange3.git
 ```
 
 ## Step 2: Install edurange3 and dependencies
@@ -42,7 +41,7 @@ Next, run the installation script from the project root (./install.sh), and inpu
 Please use unique responses for each prompt.
 ```bash
 cd edurange3
-./install.sh
+./quick_install.sh
 ```
 To verify that you're ready to launch the app, check that "flask" and "celery" are recognized bash commands, and whether "docker run hello-world" works.
 If any of these fail, simply log out and back in, and they should work then. 
