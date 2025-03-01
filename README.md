@@ -10,7 +10,7 @@ Additional documentation can be found in the wiki
 **Support for other Operating Systems and Python versions is not currently offered.**
 
 **NOTE:  If you are installing on a new Virtual Machine or Ubuntu 22.04 installation,
-it is likely you will need to install 'git' and 'curl' packages via apt.**
+it is likely you will need to install 'git' via apt.**
 To do so, enter the following in your bash cli:
 ```
 sudo apt update
