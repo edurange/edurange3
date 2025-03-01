@@ -106,7 +106,7 @@ print_prompt "Enter the name for your new scenario:"
 read scenario_name
 
 scenario_name=$(echo $scenario_name | tr '[:upper:]' '[:lower:]')
-
+working_folder="./construction/$scenario_name"
 
 # Validate scenario name (no spaces, special characters limited)
 if [[ ! "$scenario_name" =~ ^[a-zA-Z0-9_-]+$ ]]; then
@@ -116,17 +116,18 @@ fi
 
 # Create main directory
 print_info "Creating scenario directory: $scenario_name"
-mkdir -p "$scenario_name"
+mkdir -p "$working_folder"
 
-if [ ! -d "$scenario_name" ]; then
+if [ ! -d "$working_folder" ]; then
     print_error "Failed to create scenario directory."
     exit 1
 fi
 
 # Create subdirectories
 print_info "Creating subdirectories..."
-mkdir -p "$scenario_name/network"
-mkdir -p "$scenario_name/container"
+mkdir -p "$working_folder/network"
+
+mkdir -p "$working_folder/container"
 
 # Network configuration
 print_header "Network Configuration"
@@ -141,7 +142,7 @@ if ! [[ "$network_count" =~ ^[0-9]+$ ]]; then
 fi
 
 # Initialize network configuration file
-network_file="$scenario_name/network/network_template.json"
+network_file="$working_folder/network/network_template.json"
 echo '{' > "$network_file"
 echo '  "resource": [' >> "$network_file"
 
@@ -250,7 +251,7 @@ if ! [[ "$container_count" =~ ^[0-9]+$ ]]; then
 fi
 
 # Template file path
-template_file="./scenario_template_files/container/container_template.tf.json"
+template_file="./template_files/container/container_template.tf.json"
 
 # Check if template exists
 if [ ! -f "$template_file" ]; then
@@ -260,7 +261,7 @@ if [ ! -f "$template_file" ]; then
 fi
 
 # Initialize scenario JSON file
-scenario_json="$scenario_name/$scenario_name.json"
+scenario_json="$working_folder/$scenario_name.json"
 echo '{' > "$scenario_json"
 echo '  "containers": [' >> "$scenario_json"
 
@@ -320,7 +321,7 @@ for (( i=1; i<=$container_count; i++ )); do
     fi
     
     # Copy template to destination
-    container_file="$scenario_name/container/$container_name.tf.json"
+    container_file="$working_folder/container/$container_name.tf.json"
     cp "$template_file" "$container_file"
     
     if [ ! -f "$container_file" ]; then
@@ -384,7 +385,7 @@ echo '}' >> "$scenario_json"
 print_header "Copying Additional Template Files"
 
 # Template directory
-template_dir="./scenario_template_files"
+template_dir="./template_files"
 
 # Check if template directory exists
 if [ ! -d "$template_dir" ]; then
@@ -395,68 +396,68 @@ fi
 
 # Copy guide.md
 if [ -f "$template_dir/guide.md" ]; then
-    cp "$template_dir/guide.md" "$scenario_name/"
+    cp "$template_dir/guide.md" "$working_folder/"
     print_info "Copied guide.md"
-    replace_string "$scenario_name/guide.md" "SCENARIO_NAME" "$scenario_name"
+    replace_string "$working_folder/guide.md" "SCENARIO_NAME" "$scenario_name"
 else
     print_error "Template guide.md not found"
 fi
 
 # Copy guide_content.yml
 if [ -f "$template_dir/guide_content.yml" ]; then
-    cp "$template_dir/guide_content.yml" "$scenario_name/"
+    cp "$template_dir/guide_content.yml" "$working_folder/"
     print_info "Copied guide_content.yml"
-    replace_string "$scenario_name/guide_content.yml" "SCENARIO_NAME" "$scenario_name"
+    replace_string "$working_folder/guide_content.yml" "SCENARIO_NAME" "$scenario_name"
 else
     print_error "Template guide_content.yml not found"
 fi
 
 # Copy questions.yml
 if [ -f "$template_dir/questions.yml" ]; then
-    cp "$template_dir/questions.yml" "$scenario_name/"
+    cp "$template_dir/questions.yml" "$working_folder/"
     print_info "Copied questions.yml"
-    replace_string "$scenario_name/questions.yml" "SCENARIO_NAME" "$scenario_name"
+    replace_string "$working_folder/questions.yml" "SCENARIO_NAME" "$scenario_name"
 else
     print_error "Template questions.yml not found"
 fi
 
 # Copy README
 if [ -f "$template_dir/README" ]; then
-    cp "$template_dir/README" "$scenario_name/"
+    cp "$template_dir/README" "$working_folder/"
     print_info "Copied README"
-    replace_string "$scenario_name/README" "SCENARIO_NAME" "$scenario_name"
+    replace_string "$working_folder/README" "SCENARIO_NAME" "$scenario_name"
 else
     print_error "Template README not found"
 fi
 
 # Copy and rename scenario.yml
 if [ -f "$template_dir/scenario_name.yml" ]; then
-    cp "$template_dir/scenario_name.yml" "$scenario_name/$scenario_name.yml"
-    print_info "Copied scenario_name.yml to $scenario_name.yml"
-    replace_string "$scenario_name/$scenario_name.yml" "SCENARIO_NAME" "$scenario_name"
+    cp "$template_dir/scenario_name.yml" "$working_folder/$scenario_name.yml"
+    print_info "Copied scenario_name.yml to $working_folder.yml"
+    replace_string "$working_folder/$scenario_name.yml" "SCENARIO_NAME" "$scenario_name"
 else
     print_error "Template scenario.yml not found"
 fi
 
 # Copy gateway container file
 if [ -f "$template_dir/container/gateway.tf.json" ]; then
-    cp "$template_dir/container/gateway.tf.json" "$scenario_name/container/gateway.tf.json"
+    cp "$template_dir/container/gateway.tf.json" "$working_folder/container/gateway.tf.json"
     print_info "Copied gateway terraform template"
 else
     print_error "Template gateway.tf.json not found"
 fi
 
 # Copy remaining files TODO safety check like the others, they're blank right now though
-cp "$template_dir/milestones.txt" "$scenario_name/milestones.txt"
-cp "$template_dir/install" "$scenario_name/install"
+cp "$template_dir/milestones.txt" "$working_folder/milestones.txt"
+cp "$template_dir/install" "$working_folder/install"
 
 
 # Copy over provider files
-cp "$template_dir/container/main.tf.json" "$scenario_name/container/main.tf.json"
-cp "$template_dir/container/main.tf.json" "$scenario_name/network/main.tf.json"
+cp "$template_dir/container/main.tf.json" "$working_folder/container/main.tf.json"
+cp "$template_dir/container/main.tf.json" "$working_folder/network/main.tf.json"
 
 # Final gateway cleanup TODO put this closer to other container code
-gateway_file="$scenario_name/container/gateway.tf.json"
+gateway_file="$working_folder/container/gateway.tf.json"
 replace_string "$gateway_file" "THIRD_OCT" "$selected_third_octet"
 replace_string "$gateway_file" "SNAME_PLAYER" "SNAME_${network_names[1]}"
 
@@ -473,13 +474,13 @@ echo -e "${YELLOW}- Scenario JSON:${RESET} $scenario_json"
 echo -e "${YELLOW}- Container configurations:${RESET}"
 for (( i=1; i<=$container_count; i++ )); do
     if [ -n "${container_names[$i]}" ]; then
-        echo -e "  - $scenario_name/container/${container_names[$i]}.tf.json"
+        echo -e "  - $working_folder/container/${container_names[$i]}.tf.json"
     fi
 done
 echo
 
 echo -e "${BOLD}${BLUE}Directory structure:${RESET}"
-find "$scenario_name" -type f | sort | while read file; do
+find "$working_folder" -type f | sort | while read file; do
     echo -e "${CYAN}$file${RESET}"
 done
 

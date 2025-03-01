@@ -5,30 +5,31 @@ contentDefinitions:
     content: |-
       This is the content of your first reading.
       It can span multiple lines.
-      ### Use any markdown formatting you like here
-  Question1:
+      ### Use any markdown syntax you like!
+      - even
+      - bullet
+      - points
+  Question1: &Question1
     type: question
-    question_num: 1
-    comment: This question is too open ended, because we do exact matching for the
-      answer Value. Also, questions do not support markdown formatting, they're just a string literal.
     content: What is the purpose of this tool?
-    options: []
+    comment: This question is too open ended, because we do exact matching for the
+      answer Value. No markdown syntax here, it's just a string literal.
     answers:
     - answer_type: String
       value: Convert markdown to YAML
       points_possible: 15
     points_possible: 15
-  Reading2:
+    options: []
+    question_num: 1
+  Reading2: &Reading2
     type: reading
     content: |-
       This is a reading in chapter 2.
-  Question2:
+  Question2: &Question2
     type: question
-    question_num: 2
+    content: What are the colors of the rainbow?
     comment: Questions can have multi-part answers, scored sequentially. These are
       not "alternative" answers, they are all required for full points
-    content: What are the colors of the rainbow?
-    options: []
     answers:
     - answer_type: String
       value: Red
@@ -52,6 +53,14 @@ contentDefinitions:
       value: Violet
       points_possible: 5
     points_possible: 35
+    options: []
+    question_num: 2
+  Reading3: &Reading3
+    type: reading
+    content: |-
+      You can interlace reading and question blocks however you like within a chapter
+      You may find it easier to edit the YML directly if you're just shuffling blocks around to test,
+      but copy/pasting blocks in this markdown file is more permanent.
 studentGuide:
   chapters:
   - chapter_num: 1
@@ -64,3 +73,4 @@ studentGuide:
     content_array:
     - *Reading2
     - *Question2
+    - *Reading3

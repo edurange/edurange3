@@ -114,7 +114,7 @@ cp "$target_file" "${target_file}.bak"
 # Replace the original file with our modified version
 mv "$temp_file" "$target_file"
 
-cp -r "./$class_name" "../prod/$class_name"
+cp -r "./construction/$class_name" "../prod/$class_name"
 sed -i 's/\(SCENARIO_LIST_ENV=.*\)"Web_Fu"\(.*\)$/\1"Web_Fu","'"$class_name"'"\2/' "$env_file"
 npm run build
 

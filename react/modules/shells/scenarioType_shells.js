@@ -124,7 +124,19 @@ class Ransomware_shell {
     };
 };
 
+class twist_shell {
+    constructor(input = {}) {
+        this.keywords = ["foo"];
+        this.icon = maze;
+        this.scenario_type = "twist";
+        this.description_short = "bar",
+        this.description_long = "baz";
+        this.resources = [ resData.ssh ];
+    };
+};
+
 export const scenarioShells = {
+    twist:             new twist_shell,
     Elf_Infection:      new ELF_Infection_shell,
     File_Wrangler:      new File_Wrangler_shell,
     Getting_Started:    new Getting_Started_shell,
