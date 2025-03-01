@@ -25,7 +25,8 @@ Once you have your Ubuntu 22 set up, proceed to these steps...
 ## Step 1: Clone the edurange3 github repo
 
 First, clone this repository (choose ONE of these commands, not both!)
-** Be sure you're cloning this branch (sigcse25) **
+
+**Be sure you're cloning this branch (sigcse25)**
 
 If you're using standard git auth (no key), then use the HTTPS clone:
 ```bash
