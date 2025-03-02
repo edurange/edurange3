@@ -1,3 +1,4 @@
+
 import axios from 'axios';
 import React, { useState, useEffect, useContext } from 'react';
 import FootControls from './controls/FootControls';
@@ -11,7 +12,6 @@ import './Scenario_controller.css';
 import "@frame/frame.css";
 
 function Scenario_controller() {
-
     const { 
         userData_state, 
         scorebook_state, set_scorebook_state, 
@@ -39,7 +39,11 @@ function Scenario_controller() {
     function compileScorebook(responseData) {
         const scenarioChapters = guideContent_state?.contentYAML?.studentGuide?.chapters ?? [];
         const scorebook = {};
-
+        
+        // Track unique questions to avoid counting duplicates in the total
+        const uniqueQuestions = new Map();
+        
+        // First, calculate points for each chapter
         scenarioChapters.forEach((chapter) => {
             let chapterPointsPossible = 0;
             let chapterPointsAwarded = 0;
@@ -47,11 +51,20 @@ function Scenario_controller() {
             chapter.content_array
                 .filter((item) => item.type === "question")
                 .forEach((question) => {
+                    // Add to chapter total
                     chapterPointsPossible += Number(question.points_possible ?? 0);
 
                     const response = responseData[question.question_num];
                     if (response) {
                         chapterPointsAwarded += Number(response.points_awarded ?? 0);
+                    }
+                    
+                    // Track unique questions for global total
+                    if (!uniqueQuestions.has(question.question_num)) {
+                        uniqueQuestions.set(question.question_num, {
+                            points_possible: Number(question.points_possible ?? 0),
+                            response: response
+                        });
                     }
                 });
 
@@ -60,14 +73,25 @@ function Scenario_controller() {
                 points_awarded: chapterPointsAwarded
             };
         });
-
+        
+        // Calculate the total using only unique questions
+        let totalPointsPossible = 0;
+        let totalPointsAwarded = 0;
+        
+        uniqueQuestions.forEach(question => {
+            totalPointsPossible += question.points_possible;
+            totalPointsAwarded += question.response ? Number(question.response.points_awarded ?? 0) : 0;
+        });
+        
+        // Add the total to the scorebook
         scorebook.total = {
-            points_possible: Object.values(scorebook).reduce((acc, curr) => acc + curr.points_possible, 0),
-            points_awarded: Object.values(scorebook).reduce((acc, curr) => acc + curr.points_awarded, 0)
+            points_possible: totalPointsPossible,
+            points_awarded: totalPointsAwarded
         };
 
         return scorebook;
     }
+
     const scenario_type = guideContent_state?.scenario_meta?.scenario_type;
     const scenario_name = guideContent_state?.scenario_meta?.scenario_name;
 
@@ -92,16 +116,21 @@ function Scenario_controller() {
                 });
                 
                 const responseData = contentReturn?.data;
-                const compiledScorebook = compileScorebook(responseData);
-
-                set_responseData_state(responseData)
-                set_scorebook_state(compiledScorebook);
+                set_responseData_state(responseData);
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
         }
         getResponses();
     }, [guideContent_state]);
+
+    // Recalculate scorebook whenever responses change
+    useEffect(() => {
+        if (guideContent_state && responseData_state) {
+            const compiledScorebook = compileScorebook(responseData_state);
+            set_scorebook_state(compiledScorebook);
+        }
+    }, [responseData_state, guideContent_state]);
 
     if (!guideContent_state?.scenario_meta) return (<>Scenario not found</>);
     if (!guideContent_state) return null;
@@ -119,26 +148,14 @@ function Scenario_controller() {
     const fullBook = [...thisBriefing, ...theseChapters, ...thisDebrief];
     if (!fullBook) return null;
 
-    const scenario_questions = theseChapters.flatMap(chapter =>
-        chapter.content_array?.filter(item => item.type === 'question')
-    ) || [];
-
-    let scenario_points_possible = 0;
-    scenario_questions.forEach((question) => {
-        scenario_points_possible += question.points_possible;
-    });
-
-    let scenario_response_total_points = 0;
-    for (let key in scorebook_state) {
-        if (scorebook_state.hasOwnProperty(key)) {
-            scenario_response_total_points += scorebook_state[key]?.points_awarded ?? 0;
-        }
-    }
+    // Use the scorebook for points display instead of recalculating
+    const scenario_points_possible = scorebook_state.total?.points_possible ?? 0;
+    const scenario_points_awarded = scorebook_state.total?.points_awarded ?? 0;
+    const chapter_points_possible = scorebook_state[pageID]?.points_possible ?? 0;
+    const chapter_points_awarded = scorebook_state[pageID]?.points_awarded ?? 0;
 
     const panes = {
-
         info: (<InfoPane/>),
-
         guide: (<GuidePane
             fullBook={fullBook}
             chapter_num={pageID}
@@ -146,9 +163,7 @@ function Scenario_controller() {
             scenarioID={scenarioID}
             pageID={pageID}
         />),
-
         chat: (<Chat_Student scenario_id={scenarioID} scenario_type={scenario_type} scenario_name={scenario_name} />),
-        
         ssh: (
             <SSH_web
                 scenario_id={scenarioID}
@@ -176,10 +191,10 @@ function Scenario_controller() {
                             updatePane={set_leftPaneName_state}
                             fullBook={fullBook}
                             paneSide={"left"}
-                            scenario_points_possible={scenario_points_possible ?? ''}
-                            scenario_points_awarded={scenario_response_total_points ?? ''}
-                            chapter_points_possible={scorebook_state[pageID]?.points_possible ?? ''}
-                            chapter_points_awarded={scorebook_state[pageID]?.points_awarded ?? ''}
+                            scenario_points_possible={scenario_points_possible}
+                            scenario_points_awarded={scenario_points_awarded}
+                            chapter_points_possible={chapter_points_possible}
+                            chapter_points_awarded={chapter_points_awarded}
                             credentialsJSON={guideContent_state.credentialsJSON}
                             SSH_IP={guideContent_state.SSH_IP}
                         />
@@ -191,10 +206,10 @@ function Scenario_controller() {
                             updatePane={set_rightPaneName_state}
                             fullBook={fullBook}
                             paneSide={"right"}
-                            scenario_points_possible={scenario_points_possible ?? 0}
-                            scenario_points_awarded={scenario_response_total_points ?? 0}
-                            chapter_points_possible={scorebook_state[pageID]?.points_possible ?? 0}
-                            chapter_points_awarded={scorebook_state[pageID]?.points_awarded ?? 0}
+                            scenario_points_possible={scenario_points_possible}
+                            scenario_points_awarded={scenario_points_awarded}
+                            chapter_points_possible={chapter_points_possible}
+                            chapter_points_awarded={chapter_points_awarded}
                             credentialsJSON={guideContent_state.credentialsJSON}
                             SSH_IP={guideContent_state.SSH_IP}
                         />

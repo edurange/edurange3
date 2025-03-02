@@ -121,9 +121,52 @@
 .edu3-qSubmit-text:focus{
     outline:none;
 }
-.response-status{
+
+.response-status {
     display: flex;
-    flex-direction: row;
-    gap: 20px;
-    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-top: 5px;
+}
+
+.points-display {
+    font-weight: bold;
+    font-size: 1.1em;
+    color: #45c1cf;
+}
+
+.points-value {
+    color: #3498db;
+    font-weight: 700;
+}
+
+.status-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+.status-icon.correct {
+    background-color: #2ecc71;
+    color: white;
+}
+
+.status-icon.incorrect {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.status-icon.partial {
+    background-color: #f39c12;
+    color: white;
+}
+
+.response-feedback {
+  font-style: italic;
+  margin-left: 10px;
+  color: #7f8c8d;
 }
