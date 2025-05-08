@@ -75,7 +75,11 @@ def get_path(file_name):
     )
     return mail_path
 
+# Create Celery instance
 celery = Celery(__name__, broker=CELERY_BROKER_URL, backend=CELERY_RESULT_BACKEND)
+
+# Set configs from celeryconfig file
+celery.config_from_object('celeryconfig')
 
 class ContextTask(celery.Task):
     ''' This allows tasks to assume the create_app() context, and access the database '''
@@ -545,8 +549,7 @@ def setup_periodic_tasks(sender, **kwargs):
 
 # Machine learning tasks 
 
-#REWROTE
-@celery.task(bind=True, worker_prefetch_multiplier=1, priority=1)
+@celery.task(bind=True, queue='eduhint', routing_key='eduhint')
 def initialize_system_resources_task(self):
 
     sys_db_redis_client = redis.Redis(host='localhost', port=6379, db=1)
@@ -573,9 +576,7 @@ def initialize_system_resources_task(self):
         raise Exception (f"ERROR: Failed to cache system resources in redis db2 [{e}]: ")
 
   
-
-#REWROTE
-@celery.task(bind=True, worker_prefetch_multiplier=1, priority=1)
+@celery.task(bind=True, queue='eduhint', routing_key='eduhint')
 def update_system_resources_task(self, cpu_resources, gpu_resources):
 
     if cpu_resources is None:
@@ -593,8 +594,7 @@ def update_system_resources_task(self, cpu_resources, gpu_resources):
     except Exception as e:
             raise Exception (f"ERROR: Failed to cache model and system resources in redis db2 [{e}]: ")
     
-#REWROTE
-@celery.task(bind=True, worker_prefetch_multiplier=1, priority=1)
+@celery.task(bind=True, queue='eduhint', routing_key='eduhint')
 def get_recent_student_logs_task(self, student_id, number_of_logs):
 
     user_db_redis_client = redis.Redis(host='localhost', port=6379, db=2)
@@ -619,8 +619,7 @@ def get_recent_student_logs_task(self, student_id, number_of_logs):
 
     return logs_dict
 
-#REWROTE
-@celery.task(bind=True, worker_prefetch_multiplier=1, priority=1)
+@celery.task(bind=True, queue='eduhint', routing_key='eduhint')
 def cancel_generate_hint_task(self):
     user_db_redis_client = redis.Redis(host='localhost', port=6379, db=2)
 
@@ -630,8 +629,7 @@ def cancel_generate_hint_task(self):
     
     return {'status': query_small_language_model_task_id}
 
-#REWROTE
-@celery.task(bind=True, worker_prefetch_multiplier=1, priority=1)
+@celery.task(bind=True, queue='eduhint', routing_key='eduhint')
 def query_small_language_model_task(self, task, generation_parameters):
 
     def get_resource_settings_from_redis(sys_db_redis_client):
