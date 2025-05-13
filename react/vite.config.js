@@ -1,4 +1,3 @@
-// vite.config.js
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
@@ -12,7 +11,7 @@ export default defineConfig({
             '@assets': path.resolve(__dirname, './assets'),
             '@modules': path.resolve(__dirname, './modules'),
             '@pub': path.resolve(__dirname, './pages/pub'),
-            '@instructor': path.resolve(__dirname, './pages/instructor'),
+            '@staff': path.resolve(__dirname, './pages/staff'),
             '@student': path.resolve(__dirname, './pages/student'),
             '@frame': path.resolve(__dirname, './frame'),
             '@config': path.resolve(__dirname, './config'),
@@ -22,5 +21,13 @@ export default defineConfig({
     server: {
         port: 3663
     },
-    // ... other options ...
+    build: {
+        terserOptions: {
+            compress: {
+                drop_console: true,
+            },
+            parallel: true,
+        }
+    },
+    // ... other option objects here ...
 });

@@ -4,7 +4,7 @@ import yaml
 import ast
 import docker
 from py_flask.utils.error_utils import (
-    Err_Custom_FullInfo
+    custom_abort
 )
 from py_flask.config.extensions import db
 from py_flask.database.models import Scenarios, Users, Responses
@@ -34,7 +34,7 @@ def getContent(user_role, scenario_id, username):
     if (not unique_name
         
     or status != "Started"):     
-        return Err_Custom_FullInfo("Scenario not in started state.  Arborting.", 400)
+        custom_abort("Scenario not in started state.  Arborting.", 400)
 
     unique_name = "".join(e for e in unique_name if e.isalnum())
     
@@ -47,7 +47,7 @@ def getContent(user_role, scenario_id, username):
         saniName = username.replace('-','')
         user_creds = credentialsJSON[saniName][0]
         if not user_creds:
-            return Err_Custom_FullInfo("Error retrieving user credentials.  Arborting.", 500)
+            return custom_abort("Error retrieving user credentials.  Arborting.", 500)
     else: 
         user_creds = credentialsJSON
 
@@ -73,7 +73,7 @@ def getYamlContent(user_role, scenario_id, username):
     if (not unique_name
         
     or status != "Started"):     
-        return Err_Custom_FullInfo("Scenario not in started state.  Arborting.", 400)
+        return custom_abort("Scenario not in started state.  Arborting.", 400)
 
     unique_name = "".join(e for e in unique_name if e.isalnum())
 
@@ -82,11 +82,16 @@ def getYamlContent(user_role, scenario_id, username):
     if scenario_type: scenario_type = scenario_type[0].lower()
  
     if (not scenario_type or status != "Started"):     
-        return Err_Custom_FullInfo("Scenario not in started state.  Arborting.", 400)
+        return custom_abort("Scenario not in started state.  Arborting.", 400)
 
     with open(f'scenarios/prod/{scenario_type}/guide_content.yml', 'r') as fp:
-    # with open(f'scenarios/tmp/{unique_name}/guide_content.yml', 'r') as fp:
         contentYAML = yaml.safe_load(fp)
+
+    with open(f'scenarios/prod/common/briefing.yml', 'r') as fp:
+        briefingYAML = yaml.safe_load(fp)
+
+    with open(f'scenarios/prod/common/debrief.yml', 'r') as fp:
+        debriefYAML = yaml.safe_load(fp)
 
     with open(f'scenarios/tmp/{unique_name}/students.json', 'r') as fp:
         credentialsJSON = json.load(fp)
@@ -95,11 +100,11 @@ def getYamlContent(user_role, scenario_id, username):
         saniName = username.replace('-','')
         user_creds = credentialsJSON[saniName][0]
         if not user_creds:
-            return Err_Custom_FullInfo("Error retrieving user credentials.  Arborting.", 500)
+            return custom_abort("Error retrieving user credentials.  Arborting.", 500)
     else: 
         user_creds = credentialsJSON
 
-    return contentYAML, credentialsJSON, unique_name
+    return contentYAML, briefingYAML, debriefYAML, credentialsJSON, unique_name
 
 
 def getScenarioMeta(scenario_id):

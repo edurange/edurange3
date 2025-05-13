@@ -27,11 +27,12 @@ export function genAlias() {
 }
 
 export class ChatMessage {
-    constructor(channel_id, user_alias, scenario_type, content, scenario_id) {
+    constructor(channel_id, user_alias, scenario_type, content, scenario_id, scenario_name) {
         this.scenario_id = Number(scenario_id);
         this.scenario_type = scenario_type;
+        this.scenario_name = scenario_name ?? "undefined";
         this.content = content || "I love edurange";
         this.user_alias = user_alias;
-        this.channel = Number(channel_id);
+        this.channel_id = Number(channel_id);
     }
 }

@@ -93,3 +93,7 @@ assets/css/.Rhistory
 
 # certificates
 *.pem
+
+#user logs
+machine_learning/logs/*
+machine_learning/eduhints/generated_hints/*

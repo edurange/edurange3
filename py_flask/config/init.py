@@ -6,8 +6,9 @@ import os
 from flask import Flask
 from py_flask.routes.public_routes import blueprint_public
 from py_flask.routes.student_routes import blueprint_student
-from py_flask.routes.instructor_routes import blueprint_instructor
+from py_flask.routes.staff_routes import blueprint_staff
 from py_flask.routes.scenario_routes import blueprint_scenarios
+from py_flask.routes.admin_routes import blueprint_admin
 from py_flask.utils import commands
 from py_flask import database
 from py_flask.config.extensions import (
@@ -54,8 +55,9 @@ def register_blueprints(app):
     """Register Flask blueprints."""
     app.register_blueprint(blueprint_public)
     app.register_blueprint(blueprint_student)
-    app.register_blueprint(blueprint_instructor)
+    app.register_blueprint(blueprint_staff)
     app.register_blueprint(blueprint_scenarios)
+    app.register_blueprint(blueprint_admin)
     return None
 
 def register_shellcontext(app):

@@ -1,0 +1,6 @@
+Ship: Void Strider
+Current Clearance: Level 4
+Affiliation: Mercenary Collective
+Requested Level: Level 5
+Reason: Classified military contract requiring high-level clearance
+Contact: Commander Vex Torin

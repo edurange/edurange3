@@ -1,0 +1,6 @@
+Ship: Starfire Sentinel
+Current Clearance: Level 3
+Affiliation: United Galactic Federation
+Requested Level: Level 5
+Reason: Emergency response team deployment to disaster zones
+Contact: Captain Aric Solas

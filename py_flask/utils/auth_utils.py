@@ -12,12 +12,9 @@ from datetime import timedelta
 from functools import wraps
 from py_flask.database.models import GroupUsers, StudentGroups, Users, Channels, ChannelUsers
 from flask_jwt_extended import create_access_token, decode_token
+
 from py_flask.utils.error_utils import (
-    Err_InvalidCreds,
-)
-from py_flask.utils.error_utils import (
-    Err_InvalidCreds,
-    Err_Custom_FullInfo,
+    custom_abort,
 )
 ###########
 #  This `@jwt_and_csrf_required()` decorator function should be used on ALL 
@@ -50,17 +47,19 @@ def jwt_and_csrf_required(fn):
             # To avoid auth 'misses', use the `g` object any time the values are needed
 
         except Exception as err:
-            return Err_InvalidCreds()
+            custom_abort('Invalid Credentials', 403)
 
         return fn(*args, **kwargs)
     
     return wrapper
 
-# returns true if argument is an element of this tuple, false otherwise.
-def instructor_only():
-    if g.current_user_role not in ('instructor', 'admin'):
-        return Err_Custom_FullInfo("Insufficient role privileges.", 403)
+def staff_only():
+    if g.current_user_role not in ('staff', 'admin'):
+        custom_abort("Insufficient role privileges.", 403)
 
+def admin_only():
+    if g.current_user_role != 'admin':
+        custom_abort("Insufficient role privileges.", 403)
 
 def login_er3(userObj):
 
@@ -99,7 +98,7 @@ def login_er3(userObj):
 
 
 ####
-# account utils available to student (e.g. non-instructor) routes
+# account utils available to student (e.g. non-staff) routes
 ####
 
 
@@ -150,6 +149,6 @@ def register_user(validated_registration_data):
 
     retObj = {
         "user_id": this_user.id,
-        "channel": new_channel.id
+        "channel_id": new_channel.id
     }
     return retObj

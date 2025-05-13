@@ -1,0 +1,6 @@
+Ship: Nebula Runner
+Current Clearance: Level 1
+Affiliation: Free Trade Coalition
+Requested Level: Level 3
+Reason: Expedited trade route access for perishable goods
+Contact: Logistics Officer Jax Andros

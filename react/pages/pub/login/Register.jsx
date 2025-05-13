@@ -4,10 +4,13 @@ import axios from 'axios';
 import edurange_icons from '@modules/ui/edurangeIcons';
 import './Login.css';
 import { HomeRouter_context } from '../Home_router';
+import { AppContext } from '../../../config/AxiosConfig';
 
 function Register() {
 
-    const { set_desiredNavMetas_state } = useContext(HomeRouter_context);
+    const {
+        desiredNavMetas_state, set_desiredNavMetas_state,
+    } = useContext(AppContext);
 
     async function sendRegistrationRequest(username_input, password_input, confirm_password_input, code_input) {
         try {

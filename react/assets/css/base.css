@@ -3,17 +3,12 @@
     
 @import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:regular,bold,italic&subset=latin,latin-ext');
 
-/* reset all predefined styles to start with blank slate */
+/* reset specific predefined styles to start with blank slate */
 
 html, body, div, span, applet, object, iframe,
-/* h1, h2, h3, h4, h5, h6, p,  */
-/* blockquote, pre, */
 a, abbr, acronym, address, big, cite, 
-/* code, */
 del, dfn, em, img, ins, kbd, q, s, samp,
-/* small, strike, strong, sub, sup, tt, var, */
 b, u, i, center,
-/* dl, dt, dd, ol, ul, li, */
 fieldset, form, label, legend,
 table, caption, tbody, tfoot, thead, tr, th, td,
 article, aside, canvas, details, embed, 
@@ -34,9 +29,6 @@ footer, header, hgroup, menu, nav, section {
 }
 body {
 	line-height: 1;
-}
-ol, ul {
-	list-style: none;
 }
 blockquote, q {
 	quotes: none;
@@ -116,8 +108,8 @@ body, html {
   }
 
   a, a:link, a:visited, a:hover, a:active {
-    color: inherit; /* This will make the link take the color of its parent element */
-    text-decoration: none; /* To remove the underline typically associated with links */
+    color: inherit;
+    text-decoration: none;
 }
 
 
@@ -152,14 +144,10 @@ body, html {
 .pucs-trim-warning{border: solid 3px black;}
 
 .my-table{
-    background-color: var(--blue-normal);
     border-left: 2px solid var(--blue-deep);
     border-right: 1px solid var(--blue-deep);
     border-top: 2px solid var(--blue-deep);
     border-bottom: 1px solid var(--blue-deep);
-}
-
-.pucs-table-top {
 }
 
 .pucs-table-base{
@@ -168,8 +156,7 @@ body, html {
     border-top: 2px solid var(--blue-deep);
     border-bottom: 1px solid var(--blue-deep);
 }
-.pucs-table-head{
-}
+
 .pucs-table-row{border-bottom: 1px solid var(--blue-deep);}
 .pucs-table-col{border-right: 1px solid var(--blue-deep);}
 .pucs-table-cell{
@@ -244,54 +231,53 @@ body, html {
     bottom: 3.5dvh;
 }
 
-.col-xxsmall{
-    display: flex;
-    height: 100%;
-    max-width: 40px;
-    min-width: 50px;
-    width: 100%;
+.col-xxsmall {
+    flex: 0 0 auto;
+    min-width: 40px;
+    max-width: 50px;
 }
-.col-xsmall{
-    display: flex;
-    height: 100%;
+
+.col-xsmall {
+    flex: 0 0 auto;
     min-width: 50px;
     max-width: 70px;
-    width: 100%;
 }
-.col-small{
-    height: 100%;
-    display: flex;
+
+.col-small {
+    flex: 0 0 auto;
     min-width: 70px;
     max-width: 100px;
-    width: 100%;
 }
-.col-medium{
-    display: flex;
+
+.col-medium {
+    flex: 0 0 auto;
     min-width: 100px;
     max-width: 150px;
-    width: 100%;
-    height: 100%;
 }
-.col-large{
-    display: flex;
+
+.col-large {
+    flex: 0 0 auto;
     min-width: 150px;
     max-width: 220px;
-    width: 100%;
-    height: 100%;
 }
+
 .col-xlarge {
-    display: flex;
-    height: 100%;
+    flex: 0 0 auto;
     min-width: 220px;
     max-width: 280px;
-    width: 100%;
 }
+
 .col-xxlarge {
-    display: flex;
-    height: 100%;
+    flex: 0 0 auto;
     min-width: 280px;
     max-width: 340px;
-    width: 100%;;
+}
+
+.col-content {
+    flex: 1;
+    overflow-wrap: break-word;
+    height: auto;
+    width: auto;
 }
 .status-standby{
     color: orange;

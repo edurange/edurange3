@@ -1,0 +1,49 @@
+Navigation Officer
+Communications Specialist
+Weapons Officer
+Chief Engineer
+Medical Officer
+Security Officer
+Pilot
+Science Officer
+Cargo Specialist
+Environmental Systems Technician
+Cook
+Assistant Engineer
+Medical Assistant
+Security Officer
+Weapons Officer
+Pilot
+Communications Specialist
+Environmental Systems Technician
+Science Officer
+Cook
+Cargo Specialist
+Navigation Officer
+Weapons Officer
+Medical Officer
+Assistant Engineer
+Security Officer
+Pilot
+Science Officer
+Chief Engineer
+Environmental Systems Technician
+Cook
+Medical Assistant
+Communications Specialist
+Security Officer
+Pilot
+Cargo Specialist
+Science Officer
+Weapons Officer
+Assistant Engineer
+Cook
+Navigation Officer
+Environmental Systems Technician
+Chief Engineer
+Medical Officer
+Security Officer
+Communications Specialist
+Pilot
+Cargo Specialist
+Weapons Officer

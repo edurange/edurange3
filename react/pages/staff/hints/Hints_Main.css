@@ -1,0 +1,412 @@
+
+
+.hints-dashboard-ui {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; 
+    width: 100%;
+    position: relative;
+    overflow-y: auto;
+    box-sizing: border-box;
+    contain: content;
+    padding: 0 15px;
+  }
+
+  .pageTitle {
+    display: flex;
+    font-size: 48px;
+  }
+  
+  .pageSubtitle {
+    display: flex;
+    font-size: 16px;
+    margin-top: -15px;
+  }
+  
+  .dropdowns-container {
+    display: flex;
+    gap: 10px; 
+  }
+  
+  .actions-container {
+    display: flex;
+    gap: 10px; 
+  }
+
+  .expandable-settings-container .expandable-settings-content .slider-container {
+    width: 100%;
+    display: flex;;
+  }
+
+  input[type="range"] {
+    width: 100%; 
+    margin: 0;
+}
+  
+  .hint-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; 
+  }
+  
+  .hint-section-buttons {
+    display: flex;
+    gap: 10px; 
+  }
+  
+  .hint-textarea {
+    display: flex;
+    font-family: monospace;
+    font-size: 16px;
+    background-color: #000000;
+    color: #FFFFFF;
+    padding: 10px;
+    border: 2px solid #deb14f;
+    border-radius: 5px;
+    width: 95%;
+    overflow-y: auto;
+    resize: none;
+  }
+
+  .logs-textarea {
+    display: flex;
+    font-family: monospace;
+    font-size: 12px;
+    background-color: #000000;
+    color: #FFFFFF;
+    padding: 10px;
+    border: 1px solid #deb14f;
+    border-radius: 5px;
+    width: 95%;
+    overflow-y: auto;
+    overflow-x: auto;
+    resize: none;
+    margin: 5px;
+    gap: 5px;
+  }
+  
+
+  .dropdowns-container {
+    display: flex;
+    flex-direction: row;
+    cursor: pointer;
+  }
+
+  .scenario-select{
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .user-select {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .scenarioSelectLabel{
+    display: flex;
+    margin-bottom: 50px;
+  }
+
+  .userSelectLabel {
+    display: flex;
+    margin-bottom: 50px
+  }
+  
+  .select-input {
+    padding: 5px;
+    cursor: pointer;
+  }
+  
+  .request-hint-button {
+    font-size: 16px;
+    width: 100%;
+    box-sizing: flex;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+  }
+
+  .request-hint-button:hover {
+    
+    background-color: #deb14f; 
+    color: #000000;
+    transform: translate(3px, -3px);
+  }
+
+  .cancel-hint-button {
+    font-size: 13px;
+    margin-top: 15px;
+    background-color: #c14c3e;
+    color: #FFFFFF;
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+  }
+
+  .cancel-hint-button:hover {
+    background-color: red;
+    cursor: pointer;
+    transform: translate(3px, -3px);
+  }
+
+
+  .below-textbox-save-button {
+    font-size: 13px;
+    width: 50%; 
+    border-radius: 10px;
+    box-sizing: flex; 
+    cursor: pointer;
+    transition: transform 0.3s ease;
+  }
+
+  .below-textbox-cancel-button {
+    font-size: 13px;
+    width: 50%; 
+    border-radius: 10px;
+    box-sizing: flex; 
+    cursor: pointer;
+    transition: transform 0.3s ease;
+  }
+
+  .below-textbox-edit-button {
+    font-size: 13px;
+    width: 50%; 
+    border-radius: 10px;
+    box-sizing: flex; 
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    margin-bottom: 10px;
+  }
+
+  .below-textbox-send-button {
+    font-size: 13px;
+    width: 50%; 
+    border-radius: 10px;
+    box-sizing: flex; 
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    margin-bottom: 10px;
+  }
+
+  .expandable-logs-container {
+    margin-bottom: 10px;
+  }
+
+  .expandable-settings-container {
+    margin-bottom: 10px;
+  }
+
+  .student-logs-expand-button {
+    font-size: 13px;
+    width: 100%; 
+    border-radius: 10px;
+    box-sizing: flex; 
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    align-items: center; 
+    justify-content: center; 
+    margin-top: 10px;
+  }
+
+  .student-logs-expand-button.clicked {
+    background-color: #deb14f;
+  }
+
+  .settings-expand-button {
+    font-size: 13px;
+    width: 100%; 
+    border-radius: 10px;
+    box-sizing: flex; 
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    align-items: center; 
+    justify-content: center; 
+  }
+
+  .settings-expand-button.clicked {
+    background-color: #deb14f;
+  }
+
+  
+  .advanced-settings-expand-button {
+    margin-top: 5px;
+    font-size: 10px;
+    width: 100%; 
+    border-radius: 10px;
+    box-sizing: flex; 
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    align-items: center; 
+    justify-content: center; 
+  }
+
+  .advanced-settings-expand-button.clicked {
+    background-color: #deb14f;
+  }
+
+  .below-textbox-save-button {
+    font-size: 13px;
+    width: 50%; 
+    border-radius: 10px;
+    box-sizing: flex; 
+    cursor: pointer;
+    transition: transform 0.3s ease;
+  }
+
+  .resource-preset-buttons {
+    display: flex; 
+    gap: 5px; 
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+  
+  .select-speed-setting-button,
+  .select-balanced-setting-button,
+  .select-quality-setting-button {
+    height: 130px;
+    background-color: #211f1f;
+    color: white;
+    font-size: 10px;
+    border-radius: 5px;
+    width: 50%; 
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    white-space: normal; 
+    word-wrap: break-word;
+    box-sizing: border-box;
+  }
+  
+  .select-speed-setting-button.clicked,
+  .select-balanced-setting-button.clicked,
+  .select-quality-setting-button.clicked {
+    border: 3px solid #deb14f;
+    border-radius: 5px;
+  }
+  
+
+  .below-textbox-button:hover {
+    background-color: #deb14f; 
+    color: #000000;
+    transform: translate(3px, -3px);
+  }
+  
+  .loading-overlay div {
+    display: flex;
+    align-items: center;
+  }
+  
+  .loading-overlay span {
+    margin-right: 8px;
+  }
+
+  .experimental-feature-confirm-lock-overlay div {
+    display: flex;
+    align-items: center;
+  }
+
+  .experimental-feature-confirm-lock-overlay span {
+    margin-right: 8px;
+  }
+  
+  .error-message {
+    color: red;
+    font-weight: bold;
+  }
+
+  .checkbox label {
+    margin-top: 10px;
+    font-size: 12px;
+    display: flex;
+    max-width: 60%;
+  }
+
+  .loading-overlay {
+    position: fixed; 
+    top: 0;
+    left: 0;
+    width: 100vw; 
+    height: 100vh; 
+    background-color: rgba(0, 0, 0, 0.8); 
+    color: #fff; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    border-radius: 5px; 
+    z-index: 1000;
+    font-size: 18px; 
+    font-weight: bold; 
+    text-align: center; 
+    flex-direction: column;
+}
+
+.disable-scenario-context-checkbox {
+  font-size: 10px;
+}
+
+.disable-gpu-checkbox {
+  font-size: 10px;
+}
+
+.experimental-feature-confirm-lock-overlay {
+  position: fixed; 
+  top: 0;
+  left: 0;
+  width: 100vw; 
+  height: 100vh; 
+  background-color: rgba(0, 0, 0, 0.8); 
+  color: #fff; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  border-radius: 5px; 
+  z-index: 1000;
+  font-size: 18px; 
+  font-weight: bold; 
+  text-align: center; 
+  flex-direction: column;
+}
+
+  .save-settings {
+    font-size: 10px;
+    width: 100%; 
+    border-radius: 10px;
+    box-sizing: flex; 
+    cursor: pointer;
+    transition: transform 0.3s ease;
+  }
+
+
+  .logs-textarea-label {
+    display: flex;    
+    margin-top: 5px;     
+    margin-bottom: 5px;  
+    font-size: 12px;   
+  }
+
+  .settings-textarea-label {
+    display: flex;    
+    margin-top: 5px;     
+    margin-bottom: 5px;  
+    font-size: 12px;   
+  }
+
+
+  .expandable-logs-container {
+    margin-top: 5px;
+  }
+  
+
+  @keyframes rotate {
+    0% { transform: rotate(0deg); }
+    25% { transform: rotate(90deg); }
+    50% { transform: rotate(180deg); }
+    75% { transform: rotate(270deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.hourglass{
+  animation: rotate 3s infinite steps(1);
+  margin: 5px;
+  font-size: 24px;
+}

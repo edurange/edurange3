@@ -1,6 +1,3 @@
-/* MarkdownStyles.css - Basic styles for Markdown content */
-
-/* Header styles */
 h1 {
     font-size: 2em;
     margin-bottom: 0.5em;
@@ -26,12 +23,12 @@ h4, h5, h6 {
 }
 
 /* Paragraph style */
-p {
+.markdownReading p {
+    font-family: Arial, sans-serif;
     line-height: 1.6;
     margin-bottom: 1em;
 }
 
-/* Link style */
 a {
     color: #0074d9;
     text-decoration: none;
@@ -49,7 +46,6 @@ img {
     margin: 0 auto;
 }
 
-/* Blockquote style */
 blockquote {
     border-left: 4px solid #ddd;
     padding-left: 20px;
@@ -58,38 +54,19 @@ blockquote {
     font-style: italic;
 }
 
-/* Code styles */
-code {
-    font-family: 'Courier New', Courier, monospace;
-    background-color: #f4f4f4;
-    padding: 1px 5px;
-    border-radius: 4px;
-    color: #b8ff5c;
-    background-color: #0074d94d;
-    /* display:contents; */
-    display: inline-block;
-    cursor: default;
-}
-
-pre {
-    background-color: #f4f4f4;
-    border: 1px solid #ddd;
-    padding: 10px;
-    overflow-x: auto;
-    border-radius: 4px;
-}
-
-/* List styles */
-ul, ol {
-    margin-left: 20px;
+.markdownReading ul, ol {
+    margin-left: 10px;
     padding-left: 0;
+    list-style-type: disc;
+    box-sizing: border-box;
 }
 
-li {
+.markdownReading li {
+    font-family: Arial, sans-serif;
+    margin-left: 2em;	
     margin-bottom: 0.5em;
 }
 
-/* Horizontal Rule style */
 hr {
     border: 0;
     height: 1px;
@@ -98,27 +75,54 @@ hr {
 
 }
 
-/* Table styles */
 table {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 1em;
 }
 
-th, td {
+.markdownReading th, td {
     border: 1px solid #ddd;
     padding: 8px;
     text-align: left;
 }
 
-th {
+.markdownReading th {
     background-color: #f4f4f4;
 }
 
-/* General Markdown Container */
 .markdown-content {
     font-family: Arial, sans-serif;
-    color: #333;
-    max-width: 800px;
-    margin: auto;
+    color: #97f1ff;
+    background-color: rgba(0, 0, 0, 0.523);
+}
+
+pre {
+    background-color: #0000009e; 
+    color: rgb(149, 255, 255);
+    border: rgba(218, 165, 32, 0.609) 1px solid;
+    border-radius: 3px;
+    padding: 10px;
+    background-color: #0000009e;
+
+}
+
+code {
+    border: rgba(218, 165, 32, 0.424) 1px solid;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: inherit; 
+    color: rgb(149, 255, 255);
+    background-color: #0000009e;
+    padding: 1.5px 3px;
+    border-radius: 3px;
+}
+
+pre code {
+    border: 0;
+    background-color: transparent;
+    padding: 0;
+  }
+
+.markdownReading em {
+    font-style: italic;
 }

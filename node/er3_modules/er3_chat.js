@@ -11,12 +11,21 @@ const pg = require('pg');
 const Joi = require('joi');
 const { Pool } = pg;
 const fs = require('fs').promises;
+const { genAlias } = require('./aliasModules');
 
 
 // root project env
 dotenv.config({ path: path.join(__dirname, '..', '..', '.env') });
 
 let archive_id;
+
+const pool = new Pool({
+    user: process.env.CHATDB_USERNAME,
+    host: process.env.CHATDB_LOCALHOST,
+    database: process.env.CHATDB_DATABASENAME,
+    password: process.env.CHATDB_PASSWORD,
+    port: process.env.CHATDB_PORT
+});
 
 async function updateLogsID() {
     try {
@@ -27,26 +36,41 @@ async function updateLogsID() {
     }
 }
 
-
+const aliasDict = {};
 const userDict = {}
 
+async function populate_aliasDict() {
+    try {
+        const users = await pool.query('SELECT id FROM users');
+        users.rows.forEach(user => {
+            aliasDict[user.id] = genAlias();
+        });
+    } catch (err) {
+        console.error('Error fetching users from database:', err);
+    }
 
-// register a user and add them to groups
+    return aliasDict;
+}
+
+(async () => {
+    await populate_aliasDict();
+    console.log(aliasDict);
+})();
+
 function updateUserDict(user_id, username, user_role, socketConnection) {
 
     if (!userDict.hasOwnProperty(Number(user_id))) {
         userDict[Number(user_id)] = {
             userID: Number(user_id),
             username: username,
-            is_instructor: (user_role === 'admin' || user_role === 'instructor') ? true : false,
+            is_staff: (user_role === 'admin' || user_role === 'staff') ? true : false,
             connection: socketConnection,
-            chatChannel_id: Number(user_id)
+            channel_id: Number(user_id),
+            user_alias: genAlias()
         };
-        console.log(`Added user ${username} with role of ${(user_role === 'admin' || user_role === 'instructor') ? "instructor" : "student"} to chat userDict.`);
     }
     else {
         userDict[Number(user_id)].connection = socketConnection;
-        console.log(`User ${username} already exists in dict. Refreshing connection info and continuing...`);
     };
 }
 
@@ -61,11 +85,10 @@ async function getUsers_byChannel(channelID) {
 
 // INCOMING (from front)
 const ChatMessage_schema = Joi.object({
-
     message_type: Joi.string(),
-
-    channel: Joi.number().integer().required(),
+    channel_id: Joi.number().integer().required(),
     scenario_type: Joi.string().trim().required(),
+    scenario_name: Joi.string().trim().required(),
     content: Joi.string().trim().required(),
     user_alias: Joi.string().trim().required(),
     scenario_id: Joi.number().integer().required()
@@ -80,20 +103,27 @@ class Chat_Receipt {
             user_id: sender_user_id,
             scenario_type: original_message?.data?.scenario_type,
             content: original_message?.data?.content || "missing",
-            user_alias: original_message?.data?.user_alias,
-            channel: original_message?.data?.channel,
+            user_alias: userDict[sender_user_id]?.user_alias,
+            channel_id: original_message?.data?.channel_id,
             scenario_id: Number(original_message?.data?.scenario_id),
+            scenario_name: original_message?.data?.scenario_name,
             archive_id: String(archive_id)
         }
     }
 }
 
 // create channel if it doesn't exist in db
+// DEV_FIX: this needs to either return the new id or abort the req
 async function checkForChannel(channelId, ownerId, ownerName) {
     const { rows } = await pool.query('SELECT id FROM channels WHERE id = $1', [channelId]);
     if (rows.length === 0) {
-        await pool.query('INSERT INTO channels (id, owner_id, name) VALUES ($1, $2, $3)', [channelId, ownerId, ownerName]);
+        await pool.query('INSERT INTO channels (owner_id, name) VALUES ($1, $2)', [ownerId, ownerName])
     }
+}
+
+async function getChatLogs(){
+    const chatLogs = (await pool.query('SELECT * FROM chat_messages'))?.rows;
+    return chatLogs;
 }
 
 async function echoMessage_toChannelUsers(messageReceipt, channelId) {
@@ -118,20 +148,18 @@ async function echoMessage_toChannelUsers(messageReceipt, channelId) {
 
 async function echoMessage_toInstructors(messageReceipt) {
 
-    const instructors = Object.values(userDict).filter(user => user.is_instructor);
+    const staffArray = Object.values(userDict).filter(user => user.is_staff);
 
-    instructors.forEach(instructor => {
-        if (instructor.connection.readyState === 1) {
-            instructor.connection.send(JSON.stringify(messageReceipt));
-            console.log(`Message sent to instructor ${instructor.username}.`);
-        } else if (instructor.connection.readyState === 0) {
+    staffArray.forEach(staff_mbr => {
+        if (staff_mbr.connection.readyState === 1) {
+            staff_mbr.connection.send(JSON.stringify(messageReceipt));
+        } else if (staff_mbr.connection.readyState === 0) {
             // listen for channel to open if not open
-            instructor.connection.addEventListener('open', () => {
-                instructor.connection.send(JSON.stringify(messageReceipt));
-                console.log(`Message sent to instructor ${instructor.username} after connection opened.`);
+            staff_mbr.connection.addEventListener('open', () => {
+                staff_mbr.connection.send(JSON.stringify(messageReceipt));
             }, { once: true });
         } else {
-            console.log(`Could not send message to instructor ${instructor.username}: Connection not ready (state: ${instructor.connection.readyState}).`);
+            console.log(`Could not send message to staff_mbr ${staff_mbr.username}: Connection not ready (state: ${staff_mbr.connection.readyState}).`);
         }
     });
 }
@@ -142,12 +170,10 @@ async function echoMessage_all(messageReceipt) {
     all_users.forEach(user => {
         if (user.connection.readyState === 1) {
             user.connection.send(JSON.stringify(messageReceipt));
-            console.log(`Message sent to user ${user.username}.`);
         } else if (user.connection.readyState === 0) {
             // listen for channel to open if not open
             user.connection.addEventListener('open', () => {
                 user.connection.send(JSON.stringify(messageReceipt));
-                console.log(`Message sent to user ${user.username} after connection opened.`);
             }, { once: true });
         } else {
             console.log(`Could not send message to user ${user.username}: Connection not ready (state: ${user.connection.readyState}).`);
@@ -156,11 +182,12 @@ async function echoMessage_all(messageReceipt) {
 }
 
 async function insertMessageIntoDB(senderId, messageData, timestamp, archive_id) {
-    await pool.query('INSERT INTO chat_messages (user_id, channel, content, scenario_type, timestamp, scenario_id, archive_id) VALUES ($1, $2, $3, $4, $5, $6, $7)', [
+    await pool.query('INSERT INTO chat_messages (user_id, channel_id, content, scenario_type, scenario_name, timestamp, scenario_id, archive_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)', [
         senderId,
-        messageData.channel,
+        messageData.channel_id,
         messageData.content,
         messageData.scenario_type,
+        messageData.scenario_name,
         timestamp,
         messageData.scenario_id,
         archive_id
@@ -168,8 +195,6 @@ async function insertMessageIntoDB(senderId, messageData, timestamp, archive_id)
 }
 
 async function handleChatMessage(message, socketConnection, user_id, timestamp, archive_id) {
-
-    console.log('handling chat message: ', message)
 
     const { error, value } = ChatMessage_schema.validate(message.data);
     if (error) {
@@ -181,8 +206,8 @@ async function handleChatMessage(message, socketConnection, user_id, timestamp, 
     const chat_message_receipt = new Chat_Receipt(user_id, message, timestamp);
 
     try {
-        await checkForChannel(value.channel, user_id, value.username);
-        await echoMessage_toChannelUsers(chat_message_receipt, value.channel);
+        await checkForChannel(value.channel_id, user_id, value.username);
+        await echoMessage_toChannelUsers(chat_message_receipt, value.channel_id);
         await echoMessage_toInstructors(chat_message_receipt);
         await insertMessageIntoDB(user_id, value, timestamp, archive_id);
     } catch (err) {
@@ -192,7 +217,6 @@ async function handleChatMessage(message, socketConnection, user_id, timestamp, 
 }
 async function handleAnnouncement(message, socketConnection, user_id, timestamp, archive_id) {
 
-    console.log('Handling announcement from instructor with ID: ', user_id)
     const { error, value } = ChatMessage_schema.validate(message.data);
     if (error) {
         socketConnection.send(JSON.stringify({ error: error.details[0].message }));
@@ -203,7 +227,7 @@ async function handleAnnouncement(message, socketConnection, user_id, timestamp,
     const chat_message_receipt = new Chat_Receipt(user_id, message, timestamp);
 
     try {
-        await checkForChannel(value.channel, user_id, value.username);
+        await checkForChannel(value.channel_id, user_id, value.username);
         await echoMessage_all(chat_message_receipt);
         await insertMessageIntoDB(user_id, value, timestamp, archive_id);
     } catch (err) {
@@ -212,18 +236,8 @@ async function handleAnnouncement(message, socketConnection, user_id, timestamp,
     }
 }
 
-
-
 ///////
 // server 
-
-const pool = new Pool({
-    user: process.env.CHATDB_USERNAME,
-    host: process.env.CHATDB_LOCALHOST,
-    database: process.env.CHATDB_DATABASENAME,
-    password: process.env.CHATDB_PASSWORD,
-    port: process.env.CHATDB_PORT
-});
 
 const chatHttpServer = http.createServer((req, res) => {
     res.writeHead(200, { 'Content-Type': 'text/plain' });
@@ -262,12 +276,6 @@ async function handleConnection(socketConnection, request) {
         return;
     }
 
-    console.log(
-        `User connected to chat server w/ jwt id: ${user_id}`,
-        `username: ${username}`,
-        `user_role: ${user_role}`
-    );
-
     try {
 
         await updateLogsID(); // Wait for updateLogsID to complete
@@ -279,16 +287,27 @@ async function handleConnection(socketConnection, request) {
     }
 }
 
-
 ///////
 // main 
-
-
 chatSocketServer.on('connection', async (socketConnection, request) => {
 
     await handleConnection(socketConnection, request);
-
     const { username, user_role, user_id } = request.get_id();
+    const chatLogs = await getChatLogs();
+
+    try {
+        socketConnection.send(JSON.stringify(
+            { 
+                message_type: 'handshake', 
+                ok: true, 
+                chat_logs: chatLogs,
+                aliasDict: aliasDict
+
+            }));
+    } catch (error) {
+        console.error('Error fetching chat logs:', error);
+        socketConnection.send(JSON.stringify({ error: 'Failed to fetch chat logs' }));
+    }
 
     socketConnection.on('message', async (message) => {
         const this_message = JSON.parse(message);
@@ -296,11 +315,11 @@ chatSocketServer.on('connection', async (socketConnection, request) => {
         const this_timestamp = new Date().toISOString();
         const this_scenario_id = Number(this_message.scenario_id)
 
-        console.log(`got msg with message_type ${this_message_type}: `, this_message);
-
         // handle messages by message_type
         const handlers = {
-            'handshake': () => socketConnection.send(JSON.stringify({ message_type: 'handshake', ok: true })),
+            'handshake': async () => {
+                console.log('handshake req received');
+            },
             'keepalive': () => socketConnection.send(JSON.stringify({ message_type: 'keepalive', message: 'pong', ok: true })),
             'chat_message': async () => await handleChatMessage(this_message, socketConnection, user_id, this_timestamp, archive_id),
             'announcement': async () => await handleAnnouncement(this_message, socketConnection, user_id, this_timestamp, archive_id)

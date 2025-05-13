@@ -1,23 +1,26 @@
 {
-    "containers": 
-    [ 
+    "containers":  
+    [
         {
-            "name" : "nat",
-            "files": [{
-                "global_files": [
-                ],
-                "system_files": [
-                    "install",
-                    "motd_nat"
-                ],
-                "user_files": [
-                    "setup_player",
-                    "codes",
-                    "files",
-                    "python",
-                    "milestones.txt"
-                ]
-            }]
+            "name" : "StartingLine",
+            "files":[
+                {
+                    "global_files": [
+                    ],
+                    "system_files": [
+                        "install",
+                        "motd_nat",
+                        "cleanup_globals"
+                    ],
+                    "user_files": [
+                        "setup_home",
+                        "student_home",
+                        "python",
+                        "final-task",
+                        "milestones.txt"
+                    ]
+                }
+            ]
         },
         {
             "name" : "gateway",
@@ -35,4 +38,3 @@
         }
     ]
 }
-

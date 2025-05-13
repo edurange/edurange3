@@ -240,7 +240,7 @@ contentDefinitions:
     content: What is the secret Flag obtained by tracing script.sh? (The inner contents of FLAG{...})
     answers:
       - answer_type: String
-        value: $RANDOM_ONE
+        value: $RANDOM
         points_possible: 10
     points_possible: 10
 

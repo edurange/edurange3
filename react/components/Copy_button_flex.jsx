@@ -2,10 +2,10 @@ import React, { useContext } from 'react';
 import copyToClipboard from '@modules/utils/util_modules';
 import edurange_icons from '@modules/ui/edurangeIcons';
 import { HomeRouter_context } from '@pub/Home_router';
-import '../pages/instructor/notifications/items/TempUsers_table.css';
+import '../pages/staff/notifications/items/TempUsers_table.css';
 import './Copy_button_flex.css';
 
-function Copy_button_flex({ thingToCopy, textLabel, checkedLabel }) {
+function Copy_button_flex({ thingToCopy, textLabel, checkedLabel, bg_is_light }) {
 
     const { clipboard_state, set_clipboard_state } = useContext(HomeRouter_context);
 
@@ -19,7 +19,7 @@ function Copy_button_flex({ thingToCopy, textLabel, checkedLabel }) {
     function clipboardOrCheckmark(thingToCopy) {
         if (clipboard_state === JSON.stringify(thingToCopy)) {
             return (
-                <div className='copyflex-fix highlighter-green'>{edurange_icons.checkmark}Copied!</div>
+                <div className={`copyflex-fix ${bg_is_light ? "--var(green-dark)" : "highlighter-green"} `}>{edurange_icons.checkmark}Copied!</div>
             );
         }
         else {

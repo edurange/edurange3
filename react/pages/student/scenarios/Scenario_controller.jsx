@@ -9,26 +9,24 @@ import { useParams } from 'react-router-dom';
 import { HomeRouter_context } from '@pub/Home_router';
 import './Scenario_controller.css';
 import "@frame/frame.css";
-import { StudentRouter_context } from '../Student_router';
-import buildGuide from '@modules/utils/guide_modules';
 
 function Scenario_controller() {
 
-    const { scenarioID, pageID } = useParams();
-    const { responseData_state, set_responseData_state } = useContext(StudentRouter_context);
-    const { userData_state } = useContext(HomeRouter_context);
-    const [guideContent_state, set_guideContent_state] = useState({});
-    const [guideBook_state, set_guideBook_state] = useState([])
+    const { 
+        userData_state, 
+        scorebook_state, set_scorebook_state, 
+        responseData_state, set_responseData_state, 
+        guideContent_state, set_guideContent_state 
+    } = useContext(HomeRouter_context);
 
     const [leftPaneName_state, set_leftPaneName_state] = useState("info");
     const [rightPaneName_state, set_rightPaneName_state] = useState("guide");
-    const meta = guideContent_state.scenario_meta;
-
-    const [sliderNum_state, set_SliderNum_state] = useState(45); // pane size ratio, bigger num = bigger left side
+    const [sliderNum_state, set_SliderNum_state] = useState(45);
     const leftWidth = `${sliderNum_state}%`;
     const rightWidth = `${100 - sliderNum_state}%`;
     const rightOffset = `${sliderNum_state}%`;
-
+    const { scenarioID, pageID } = useParams();
+    
     if (!userData_state?.role) return (<>Log in to continue.</>)
 
     function handleSliderChange(event) {
@@ -36,56 +34,121 @@ function Scenario_controller() {
     };
 
     if (!scenarioID) return (<>Missing Scenario ID</>)
-    
+    if (!guideContent_state) return (<>Missing Content</>)
+
+    function compileScorebook(responseData) {
+        const scenarioChapters = guideContent_state?.contentYAML?.studentGuide?.chapters ?? [];
+        const scorebook = {};
+
+        scenarioChapters.forEach((chapter) => {
+            let chapterPointsPossible = 0;
+            let chapterPointsAwarded = 0;
+
+            chapter.content_array
+                .filter((item) => item.type === "question")
+                .forEach((question) => {
+                    chapterPointsPossible += Number(question.points_possible ?? 0);
+
+                    const response = responseData[question.question_num];
+                    if (response) {
+                        chapterPointsAwarded += Number(response.points_awarded ?? 0);
+                    }
+                });
+
+            scorebook[chapter.chapter_num] = {
+                points_possible: chapterPointsPossible,
+                points_awarded: chapterPointsAwarded
+            };
+        });
+
+        scorebook.total = {
+            points_possible: Object.values(scorebook).reduce((acc, curr) => acc + curr.points_possible, 0),
+            points_awarded: Object.values(scorebook).reduce((acc, curr) => acc + curr.points_awarded, 0)
+        };
+
+        return scorebook;
+    }
     const scenario_type = guideContent_state?.scenario_meta?.scenario_type;
+    const scenario_name = guideContent_state?.scenario_meta?.scenario_name;
 
     useEffect(() => {
-        async function getContent() {
+        async function getYaml() {
             try {
-                const contentReturn = await axios.get(`get_content/${scenarioID}`);
+                const contentReturn = await axios.get(`get_yaml_content/${scenarioID}`);
                 const contentData = contentReturn.data;
-                const contentJSON = contentReturn?.data?.contentJSON
-                const guideReturn = buildGuide(scenarioID, contentJSON);
-                
                 set_guideContent_state(contentData);
-                set_guideBook_state(guideReturn);
-
             } catch (error) {
                 console.error('Error fetching data:', error);
-            };
-        };
-        getContent();
+            }
+        }
+        getYaml();
     }, [scenarioID]);
-    
-    
+
     useEffect(() => {
         async function getResponses() {
             try {
                 const contentReturn = await axios.post(`get_responses_byStudent`, {
                     scenario_id: scenarioID
                 });
-                const contentData = contentReturn?.data;
-                set_responseData_state(contentData);
+                
+                const responseData = contentReturn?.data;
+                const compiledScorebook = compileScorebook(responseData);
+
+                set_responseData_state(responseData)
+                set_scorebook_state(compiledScorebook);
             } catch (error) {
                 console.error('Error fetching data:', error);
-            };
-        };
+            }
+        }
         getResponses();
-    }, []);
-    
+    }, [guideContent_state]);
 
-    if ((!meta)) { return (<>Scenario not found</>); }; // GUARD
-    if (!guideBook_state || !guideContent_state) {return}
+    if (!guideContent_state?.scenario_meta) return (<>Scenario not found</>);
+    if (!guideContent_state) return null;
 
     const saniname = userData_state?.username.replace(/-/g, '');
     const SSH_username = guideContent_state.credentialsJSON?.[saniname]?.[0]?.username;
     const SSH_password = guideContent_state.credentialsJSON?.[saniname]?.[0]?.password;
     const SSH_IP = guideContent_state.SSH_IP;
 
+    const theseChapters = guideContent_state?.contentYAML?.studentGuide?.chapters;
+    const thisBriefing = guideContent_state?.briefingYAML?.studentGuide?.chapters;
+    const thisDebrief = guideContent_state.debriefYAML?.studentGuide?.chapters;
+
+    if (!theseChapters) return null;
+    const fullBook = [...thisBriefing, ...theseChapters, ...thisDebrief];
+    if (!fullBook) return null;
+
+    const scenario_questions = theseChapters.flatMap(chapter =>
+        chapter.content_array?.filter(item => item.type === 'question')
+    ) || [];
+
+    let scenario_points_possible = 0;
+    scenario_questions.forEach((question) => {
+        scenario_points_possible += question.points_possible;
+    });
+
+    let scenario_response_total_points = 0;
+    for (let key in scorebook_state) {
+        if (scorebook_state.hasOwnProperty(key)) {
+            scenario_response_total_points += scorebook_state[key]?.points_awarded ?? 0;
+        }
+    }
+
     const panes = {
-        info: (<InfoPane guideContent={guideContent_state}/>),
-        guide: (<GuidePane guideBook={guideBook_state} guideContent={guideContent_state} />),
-        chat: (<Chat_Student scenario_id={scenarioID} scenario_type={scenario_type} />),
+
+        info: (<InfoPane/>),
+
+        guide: (<GuidePane
+            fullBook={fullBook}
+            chapter_num={pageID}
+            meta={guideContent_state.scenario_meta}
+            scenarioID={scenarioID}
+            pageID={pageID}
+        />),
+
+        chat: (<Chat_Student scenario_id={scenarioID} scenario_type={scenario_type} scenario_name={scenario_name} />),
+        
         ssh: (
             <SSH_web
                 scenario_id={scenarioID}
@@ -93,36 +156,11 @@ function Scenario_controller() {
                 SSH_username={SSH_username}
                 SSH_password={SSH_password}
             />
-        )
+        ),
     };
 
     const leftPaneToShow = panes[leftPaneName_state];
     const rightPaneToShow = panes[rightPaneName_state];
-
-    const scenario_questions = guideBook_state?.flatMap(chapter => 
-        chapter.filter(item => item.itemContentType === 'question')
-      );
-    let scenario_points = 0;
-    scenario_questions.map(question => scenario_points += question.itemContent?.Points)
-    
-    const chapter_questions = scenario_questions.filter(question => question.chapterNumber === Number(pageID))
-    let chapter_points = 0;
-    chapter_questions.map(question => chapter_points += question.itemContent?.Points)
-
-    const chapter_pointers = chapter_questions.map (chap => Number(chap.itemContentPointer))
-
-    let chapter_response_total_points = 0;
-    let scenario_response_total_points = 0;
-    
-    for (let key in responseData_state) {
-        if (responseData_state.hasOwnProperty(key)) {
-            scenario_response_total_points += responseData_state[key].points_awarded
-        }
-      }
-    for (let i = 0; i < chapter_pointers.length; i++) {
-        const this_response = responseData_state[chapter_pointers[i]]
-        chapter_response_total_points += this_response?.points_awarded ?? 0
-    }
 
     return (
         <>
@@ -135,34 +173,36 @@ function Scenario_controller() {
                         {leftPaneToShow}
                         <FootControls
                             page_number={pageID}
-                            guideContent={guideContent_state}
-                            guideBook={guideBook_state}
                             updatePane={set_leftPaneName_state}
+                            fullBook={fullBook}
                             paneSide={"left"}
-                            scenario_points_possible={scenario_points}
-                            scenario_points_awarded={scenario_response_total_points}
-                            chapter_points_possible={chapter_points}
-                            chapter_points_awarded={chapter_response_total_points}
+                            scenario_points_possible={scenario_points_possible ?? ''}
+                            scenario_points_awarded={scenario_response_total_points ?? ''}
+                            chapter_points_possible={scorebook_state[pageID]?.points_possible ?? ''}
+                            chapter_points_awarded={scorebook_state[pageID]?.points_awarded ?? ''}
+                            credentialsJSON={guideContent_state.credentialsJSON}
+                            SSH_IP={guideContent_state.SSH_IP}
                         />
                     </div>
-
                     <div className='scenario-rightpane-frame' style={{ minWidth: rightWidth, maxWidth: rightWidth, left: rightOffset }}>
                         {rightPaneToShow}
-                        { <FootControls
+                        <FootControls
                             page_number={pageID}
-                            guideContent={guideContent_state}
-                            guideBook={guideBook_state}
                             updatePane={set_rightPaneName_state}
+                            fullBook={fullBook}
                             paneSide={"right"}
-                            scenario_points_possible={scenario_points}
-                            scenario_points_awarded={scenario_response_total_points}
-                            chapter_points_possible={chapter_points}
-                            chapter_points_awarded={chapter_response_total_points}
-                        /> }
+                            scenario_points_possible={scenario_points_possible ?? 0}
+                            scenario_points_awarded={scenario_response_total_points ?? 0}
+                            chapter_points_possible={scorebook_state[pageID]?.points_possible ?? 0}
+                            chapter_points_awarded={scorebook_state[pageID]?.points_awarded ?? 0}
+                            credentialsJSON={guideContent_state.credentialsJSON}
+                            SSH_IP={guideContent_state.SSH_IP}
+                        />
                     </div>
                 </div>
             </div>
         </>
     );
-};
+}
+
 export default Scenario_controller;

@@ -14,9 +14,8 @@ import traceback
 from py_flask.utils.auth_utils import jwt_and_csrf_required
 from py_flask.utils.chat_utils import getChannelDictList_byUser, getChatHistory_byUser
 from sqlalchemy.exc import SQLAlchemyError
-
 from py_flask.utils.error_utils import (
-    Err_Custom_FullInfo,
+    custom_abort,
 )
 
 
@@ -49,35 +48,24 @@ blueprint_student = Blueprint(
     __name__, 
     url_prefix='/api')
 
-
 @blueprint_student.errorhandler(SQLAlchemyError)
 def handle_sqlalchemy_error(error):
-
-    # log full error, including traceback
     current_app.logger.error(f"SQLAlchemy Error: {error}\n{traceback.format_exc()}")
-
-    # return detail in debug mode or generic error message in prod
     if current_app.config['DEBUG']:
-        response_error = Err_Custom_FullInfo(f"Database error occurred: {str(error)}", 500)
-    
-    else: response_error = Err_Custom_FullInfo(f"Database error occurred.", 500)
-
-    return response_error
+        custom_abort(f"Database error occurred: {str(error)}", 500)
+    else: custom_abort(f"Database error occurred.", 500)
 
 # catch-all handler
 @blueprint_student.errorhandler(Exception)
 def general_error_handler(error):
-    status_code = getattr(error, 'status_code', 500)
-    error_handler = Err_Custom_FullInfo(error.message, status_code)
+    error_handler = custom_abort(error)
     return error_handler.get_response()
 
-
 @blueprint_student.route("/logout", methods=["POST"])
-@jwt_and_csrf_required
+# @jwt_and_csrf_required
 def logout():
-    current_username = g.current_username
 
-    response_data = {"message": f"User {current_username} has been successfully logged out."}
+    response_data = {"message": f"User has been successfully logged out."}
     response = make_response(jsonify(response_data))
 
     response.set_cookie('edurange3_jwt', '', expires=0, samesite='Lax', httponly=True, path='/')

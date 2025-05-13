@@ -4,49 +4,54 @@ import { HomeRouter_context } from '@pub/Home_router';
 import edurange_icons from '@modules/ui/edurangeIcons';
 import './Login.css'
 import { genAlias } from '@modules/utils/chat_modules';
+import ErrorModal from '../../../components/ErrorModal';
+import { AppContext } from '../../../config/AxiosConfig';
 
 function Login() {
 
     const {
         set_userData_state, set_login_state, set_chatData_state, chatData_state,
-        loginExpiry, set_desiredNavMetas_state,
+        loginExpiry
     } = useContext(HomeRouter_context);
+    const {
+        errorModal_state, set_errorModal_state,
+        desiredNavMetas_state, set_desiredNavMetas_state,
+        clipboard_state, set_clipboard_state
+    } = useContext(AppContext);
 
     async function sendLoginRequest(username_input, password_input) {
         try {
-            const response = await axios.post('login',
-                {
-                    username: username_input,
-                    password: password_input
-                }
-            );
+            const response = await axios.post('login', {
+                username: username_input,
+                password: password_input
+            });
             const userData = response.data;
-
+    
             if (userData) {
                 const newAlias = genAlias();
                 userData.user_alias = newAlias;
                 set_userData_state(userData);
                 set_login_state(true);
-
+    
                 const newExpiry = Date.now() + loginExpiry;
                 sessionStorage.setItem('userData', JSON.stringify(userData));
                 sessionStorage.setItem('login', true);
                 sessionStorage.setItem('loginExpiry', newExpiry);
-                // set_chatData_state(chat_history);
-                if ((userData?.role === 'instructor') || (userData?.role === 'admin')) {
-                    set_desiredNavMetas_state(['/instructor', 'dash']);
-                }
-                else {
+                if ((userData?.role === 'staff') || (userData?.role === 'admin')) {
+                    set_desiredNavMetas_state(['/staff', 'dash']);
+                } else {
                     set_desiredNavMetas_state(['/scenarios', 'dash']);
                 }
             } else {
                 const errData = response.data.error;
-                
-            };
+                set_errorModal_state(errData);
+            }
         } catch (error) {
+            set_errorModal_state(error.response || error);
             console.log('Login failure.');
-        };
+        }
     };
+    
 
     const handleSubmit = event => {
         event.preventDefault();

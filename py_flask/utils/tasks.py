@@ -5,16 +5,69 @@ import shutil
 import string
 import subprocess
 import yaml
+import redis
+import pickle
+import time
+import datetime
+import math
+import pyopencl as cl
+import asyncio
+import csv
+import llama_cpp
+from llama_cpp import Llama
+from llama_index.core import Settings
+from llama_index.embeddings.huggingface import HuggingFaceEmbedding
+import logging
+
 from datetime import datetime
 from celery import Celery
+from celery import shared_task
 from celery.utils.log import get_task_logger
 from flask import current_app, flash, jsonify
 from py_flask.utils.terraform_utils import adjust_network, find_and_copy_template, write_resource
 from py_flask.config.settings import CELERY_BROKER_URL, CELERY_RESULT_BACKEND
 from py_flask.utils.scenario_utils import claimOctet
+from py_flask.utils.staff_utils import getLogs, getRecentLogs
+from py_flask.utils.scenario_utils import gather_files
+from py_flask.utils.staff_utils import NotifyCapture
+from py_flask.database.models import Scenarios, ScenarioGroups, Responses, BashHistory, Users
+from py_flask.utils.csv_utils import readCSV
+from py_flask.config.extensions import db
+from flask_sqlalchemy import SQLAlchemy
+from py_flask.utils.eduhints_utils import create_language_model_object_llama, load_context_file_contents, export_hint_to_csv
+from py_flask.utils.common_utils import get_system_resources
 
+# Create a custom logger
 logger = get_task_logger(__name__)
+
+# Configure the root logger
+logging.basicConfig(level=logging.INFO)
+
+# Create a file handler
+file_handler = logging.FileHandler('logs/celery_tasks.log')
+file_handler.setLevel(logging.INFO)
+
+# Create a console handler
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.INFO)
+
+# Create a formatter
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+# Set the formatter for both handlers
+file_handler.setFormatter(formatter)
+console_handler.setFormatter(formatter)
+
+# Add the handlers to the logger
+logger.addHandler(file_handler)
+logger.addHandler(console_handler)
+
+# Ensure propagation is set to True
+logger.propagate = False
+
+
 path_to_directory = os.path.dirname(os.path.abspath(__file__))
+
 
 def get_path(file_name):
     mail_path = os.path.normpath(
@@ -39,180 +92,253 @@ celery.Task = ContextTask
 
 @celery.task(bind=True)
 def create_scenario_task(self, scen_name, scen_type, students_list, grp_id, scen_id):
-    ''' self is the task instance, other arguments are the results of database queries '''
-    from py_flask.database.models import ScenarioGroups, Scenarios
-    from py_flask.utils.scenario_utils import gather_files
+    try:
+        ''' self is the task instance, other arguments are the results of database queries '''
 
-    app = current_app
-    scen_type = scen_type.lower()
-    grp_id = grp_id["id"]
-
-    c_names, g_files, s_files, u_files, packages, ip_addrs = gather_files(scen_type, logger)
-
-    logger.info ('values returned from gatherFiles:', c_names, g_files, s_files, u_files, packages, ip_addrs)
-
-    logger.info(
-        "Executing task id {0.id}, args: {0.args!r} kwargs: {0.kwargs!r}".format(
-            self.request
-        )
-    )
-    students = {}
-    usernames, passwords = [], []
-
-    for i in range(len(students_list)):
-        username = "".join(e for e in students_list[i]["username"] if e.isalnum())
-        password = "".join(
-            random.choice(string.ascii_letters + string.digits) for _ in range(6)
-        )
-
-        usernames.append(username)
-        passwords.append(password)
-
-        logger.info(f'User: {students_list[i]["username"]}')
-        students[username] = []
-        students[username].append({"username": username, "password": password})
-
-
-    with app.test_request_context():
-        scenario = Scenarios.query.filter_by(id=scen_id).first()
-        scen_name = "".join(e for e in scen_name if e.isalnum())
-
-        os.makedirs("./scenarios/tmp/" + scen_name)
-        os.chdir("./scenarios/tmp/" + scen_name)
-
-        os.makedirs("./student_view")
-
-        with open("students.json", "w") as outfile:
-            json.dump(students, outfile)
-
-        with open(f"../../../scenarios/prod/{scen_type}/guide_content.yml", "r+")as f:
-            content = yaml.safe_load(f)
-            content_items = content['contentDefinitions']
-            logger.info(f"Content Type: {type(content)}")
-
-        flags = []
-        for content_num, item_name in enumerate(content_items):
-            if content_items[item_name]["type"] == "question":
-                q_num = content_items[item_name]["question_num"]
-                if content_items[item_name]["answers"][0]["value"] == '$RANDOM':
-                    rnd_ans = "".join(random.choice(string.ascii_letters + string.digits) for _ in range(8))
-                    content["contentDefinitions"]["Question" + str(q_num)]["answers"][0]["value"] = rnd_ans
-                    flags.append(rnd_ans)
-
-        with open("guide_content.yml", "w") as outfile:
-            yaml.dump(content, outfile, indent=4)   
+        app = current_app
+        scen_type = scen_type.lower()
+        grp_id = grp_id["id"]
         
-        lowest_avail_octet = claimOctet()
+        try:
+            c_names, g_files, s_files, u_files, packages, ip_addrs = gather_files(scen_type)
+            logger.info(f'Values returned from gatherFiles: c_names={c_names}, g_files={g_files}, s_files={s_files}, u_files={u_files}, packages={packages}, ip_addrs={ip_addrs}')
+        except Exception as e:
+            logger.error(f'Error in gather_files: {str(e)}')
 
-        # Write provider and networks
-        find_and_copy_template(scen_type, "network")
-        adjust_network(str(lowest_avail_octet), scen_name)
-        os.system("terraform init")
-        os.system("terraform plan -out network")
+        logger.info("Executing task id {0.id}, args: {0.args!r} kwargs: {0.kwargs!r}".format(self.request))
 
-        logger.info("All flags: {}".format(flags))
+        students = {}
+        usernames, passwords = [], []
 
-        # Each container and their names are pulled from the 'scen_type'.json file
-        for i, c in enumerate(c_names):
-            find_and_copy_template(scen_type, c)
-            write_resource(
-                str(lowest_avail_octet), scen_name, scen_type, i, usernames, passwords,
-                s_files[i], g_files[i], u_files[i], flags, c_names
+        for student in students_list:
+            username = "".join(e for e in student["username"] if e.isalnum())
+            password = "".join(random.choice(string.ascii_letters + string.digits) for _ in range(6))
+
+            usernames.append(username)
+            passwords.append(password)
+
+            logger.info(f'User: {student["username"]}')
+            students[username] = [{"username": username, "password": password}]
+
+        with app.test_request_context():
+            scenario = Scenarios.query.filter_by(id=scen_id).first()
+            scen_name = "".join(e for e in scen_name if e.isalnum())
+
+            os.makedirs("./scenarios/tmp/" + scen_name)
+            os.chdir("./scenarios/tmp/" + scen_name)
+
+            os.makedirs("student_view", exist_ok=True)
+
+            with open("students.json", "w") as outfile:
+                json.dump(students, outfile)
+
+            with open(f"../../../scenarios/prod/{scen_type}/guide_content.yml", "r") as f:
+                content = yaml.safe_load(f)
+                content_items = content['contentDefinitions']
+                logger.debug(f"Content Type: {type(content)}")
+
+            flags = []
+            for item_name, item in content_items.items():
+                if item["type"] == "question":
+                    q_num = item["question_num"]
+                    if item["answers"][0]["value"] == '$RANDOM':
+                        rnd_ans = "".join(random.choice(string.ascii_letters + string.digits) for _ in range(8))
+                        content["contentDefinitions"]["Question" + str(q_num)]["answers"][0]["value"] = rnd_ans
+                        flags.append(rnd_ans)
+
+            with open("guide_content.yml", "w") as outfile:
+                yaml.dump(content, outfile, indent=4)
+
+            lowest_avail_octet = claimOctet()
+
+            try:
+                find_and_copy_template(scen_type, "main")
+                logger.debug("find_and_copy complete")
+                
+                adjust_network(str(lowest_avail_octet), scen_name, logger)
+                
+                os.chdir("network")
+                os.system('mv ../network.tf.json .') # this is the best workaround so far. 
+                os.system("terraform init")
+                os.system("terraform plan -out network.plan")
+
+            except Exception as e:
+                logger.error(f"An error occurred while adjusting network or running Terraform: {str(e)}")
+                return {"result": "error", "message": str(e)}
+
+            logger.debug("All flags: {}".format(flags))
+
+            for i, c in enumerate(c_names):
+                write_resource(
+                    str(lowest_avail_octet), scen_name, scen_type, i, usernames, passwords,
+                    s_files[i], g_files[i], u_files[i], flags, c_names, logger
+                )
+
+            scenario.update(
+                status=0,
+                octet=lowest_avail_octet
             )
 
-        scenario.update(
-            status=0,
-            octet=lowest_avail_octet
-        )
-        os.chdir("../../..")
+            os.chdir("../container")
+            os.system("terraform init")
+            os.system("terraform plan -out container.plan")
+            
+            os.chdir("../../../..")
+            
+            ScenarioGroups.create(group_id=grp_id, scenario_id=scen_id)
 
-        ScenarioGroups.create(group_id=grp_id, scenario_id=scen_id)
+            return {
+                "result": "success", 
+                "new_status": 0,
+                "scenario_id": scen_id
+            }
+        
+    except Exception as e:
+        logger.error(f"An error occurred in the create_scenario: {str(e)}")
+        return {"result": "error", "message": str(e)}
 
-        return {
-            "result": "success", 
-            "new_status": 0,
-            "scenario_id": scen_id
-        }
+def run_command(command, cwd=None):
+    process = subprocess.Popen(
+        command,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        cwd=cwd
+    )
+    
+    while True:
+        output = process.stdout.readline()
+        if output == '' and process.poll() is not None:
+            break
+        if output:
+            logger.info(output.strip())
+    
+    rc = process.poll()
+    return rc
 
+def apply_terraform(command, path, component_name, important_phrases):
+    logger.info(f"**** Starting {component_name} terraform ****")
+    with subprocess.Popen(command, cwd=path, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE) as proc:
+        stdout_output, stderr_output = proc.communicate()
+
+        for line in stdout_output.splitlines():
+            logger.debug(line.strip())
+            
+            if any(phrase in line for phrase in important_phrases):
+                logger.info(f"Important: {line.strip()}")
+
+        if stderr_output:
+            logger.error(f"Error occurred: {stderr_output.strip()}")
+        
+        if proc.returncode != 0:
+            logger.error(f"Starting {component_name} terraform failed")
+    return proc.returncode == 0
 
 @celery.task(bind=True)
 def start_scenario_task(self, scenario_id):
-    from py_flask.database.models import Scenarios
-    from py_flask.utils.instructor_utils import NotifyCapture
+    logger.info("Starting scenario")
+    original_dir = os.getcwd()
+    try:
+        app = current_app
+        with app.test_request_context():
+            scenario = Scenarios.query.filter_by(id=scenario_id).first()
+            if not scenario:
+                logger.error(f"Scenario with id {scenario_id} not found")
+                return {"result": "failure", "new_status": 5, "scenario_id": scenario_id, "message": "Scenario not found"}
+            
+            logger.debug(f"Found Scenario: {scenario}")
+            name = "".join(e for e in str(scenario.name) if e.isalnum())
+            gateway = f"{name}_gateway"
+            start = f"{name}_StartingLine"
+            start_ip = f"10.{scenario.octet}.0.2"
 
-    app = current_app
-    logger.info(
-        "Executing task id {0.id}, args: {0.args!r} kwargs: {0.kwargs!r}".format(
-            self.request
-        )
-    )
-    with app.test_request_context():
-        scenario = Scenarios.query.filter_by(id=scenario_id).first()
-        logger.info("Found Scenario: {}".format(scenario))
-        name = str(scenario.name)
-        name = "".join(e for e in name if e.isalnum())
-        gateway = name + "_gateway"
-        start = name + "_nat"
-        start_ip = "10." + str(scenario.octet) + ".0.2"
-        if int(scenario.status) != 0:
-            logger.info("Invalid Status")
-            NotifyCapture("Failed to start scenario " + name + ": Invalid Status")
-            return {
-                "result": "failure",
-                "new_status": 5,
-                "scenario_id": scenario_id,
-                "message": "Scenario must be stopped before starting"
-                }
-        elif os.path.isdir(os.path.join("./scenarios/tmp/", name)):
+            if int(scenario.status) != 0:
+                logger.error("Invalid Status")
+                NotifyCapture(f"Failed to start scenario {name}: Invalid Status")
+                return {"result": "failure", "new_status": 5, "scenario_id": scenario_id, "message": "Scenario must be stopped before starting"}
+            
+            scenario_path = os.path.join("./scenarios/tmp/", name)
+            if not os.path.isdir(scenario_path):
+                logger.debug(f"Scenario folder could not be found -- {scenario_path}")
+                NotifyCapture(f"Failed to start scenario {name}: Scenario folder could not be found. -- {scenario_path}")
+                return {"result": "failure", "new_status": 5, "scenario_id": scenario_id}
+            
             scenario.update(status=3)
-            logger.info("Folder Found")
-            os.chdir("./scenarios/tmp/" + name)
-            os.system("terraform apply network")
-            os.system("terraform apply --auto-approve")
-            os.system("../../../shell_scripts/scenario_movekeys.sh {} {} {}".format(gateway, start, start_ip))
-            os.chdir("../../..")
-            scenario.update(status=1)
-            NotifyCapture("Scenario " + name + " has started successfully.")
-            return {
-                "result": "success", 
-                "new_status": 1,
-                "scenario_id": scenario_id
-                }
-        else:
-            logger.info("Scenario folder could not be found -- " + os.path.join("./scenarios/tmp/", name))
-            NotifyCapture("Failed to start scenario " + name + ": Scenario folder could not be found. -- " + os.path.join("./scenarios/tmp/", name))
-            return {
-                "result": "failure",
-                "new_status": 5,
-                "scenario_id": scenario_id
-                }
+            db.session.commit()
+            logger.debug("Folder Found")
 
+            apply_command = ["terraform", "apply", "--auto-approve"]
+            important_phrases = ["Apply complete", "Saved the plan to: ", "will be created", "Plan:", "Terraform will perform the following actions:"]
+
+            # Apply network terraform
+            network_path = os.path.join(scenario_path, "network")
+            if not apply_terraform(apply_command, network_path, "network", important_phrases):
+                raise Exception("Network terraform apply failed")
+
+            # Apply container terraform
+            container_path = os.path.join(scenario_path, "container")
+            if not apply_terraform(apply_command, container_path, "container", important_phrases):
+                raise Exception("Container terraform apply failed")
+
+            # Run scenario_movekeys.sh
+            script_path = os.path.join("./shell_scripts", "scenario_movekeys.sh")
+            result = subprocess.run([script_path, gateway, start, start_ip], cwd=original_dir, capture_output=True, text=True)
+            if result.returncode != 0:
+                logger.error(f"scenario_movekeys.sh failed: {result.stderr}")
+                raise Exception("scenario_movekeys.sh failed")
+
+            scenario.update(status=1)
+            db.session.commit()
+            NotifyCapture(f"Scenario {name} has started successfully.")
+            db.session.close()
+            
+            return {"result": "success", "new_status": 1, "scenario_id": scenario_id}
+
+    except Exception as e:
+        logger.error('Error encountered in start scenario function in tasks.py')
+        logger.exception(e)
+        scenario.update(status=5)
+        db.session.commit()
+        db.session.close()
+        self.retry(exc=e, countdown=60)  # Retry after 60 seconds
+        return {"result": "failure", "new_status": 5, "scenario_id": scenario_id}
+    
+    finally:
+        os.chdir(original_dir)  # Always return to the original directory
+        
 @celery.task(bind=True)
 def stop_scenario_task(self, scenario_id):
-    from py_flask.database.models import Scenarios
-    from py_flask.utils.instructor_utils import NotifyCapture
-
     app = current_app
-    logger.info(
+    logger.debug(
         "Executing task id {0.id}, args: {0.args!r} kwargs: {0.kwargs!r}".format(
             self.request
         )
     )
     with app.test_request_context():
         scenario = Scenarios.query.filter_by(id=scenario_id).first()
-        logger.info("Found Scenario: {}".format(scenario))
+        logger.debug("Found Scenario: {}".format(scenario))
         name = str(scenario.name)
         name = "".join(e for e in name if e.isalnum())
         if int(scenario.status) != 1:
-            logger.info("Invalid Status")
+            logger.error("Invalid Status")
             NotifyCapture("Failed to stop scenario " + name + ": Invalid Status")
             flash("Scenario is not ready to start", "warning")
-        elif os.path.isdir(os.path.join("./scenarios/tmp/", name)):
-            logger.info("Folder Found")
+        if os.path.isdir(os.path.join("./scenarios/tmp/", name)):
+            logger.debug("Folder Found")
             scenario.update(status=4)
             os.chdir("./scenarios/tmp/" + name)
+            
+            # Destroy the resources            
+            
+            os.chdir("container")
+            # os.system("terraform plan -out container.plan")
             os.system("terraform destroy --auto-approve")
-            os.chdir("../../..")
+
+            os.chdir("../network")
+            # os.system("terraform plan -out network.plan")
+            os.system("terraform destroy --auto-approve")
+            
+            os.chdir("../../../..")
             scenario.update(status=0)
             NotifyCapture("Scenario " + name + " has successfully stopped.")
             return {
@@ -221,7 +347,7 @@ def stop_scenario_task(self, scenario_id):
                 "scenario_id": scenario_id
                 }
         else:
-            logger.info("Something went wrong")
+            logger.error("Something went wrong")
             NotifyCapture("Failed to stop scenario " + name + ": Invalid Status")
             return {
                 "result": "failure",
@@ -231,11 +357,8 @@ def stop_scenario_task(self, scenario_id):
 
 @celery.task(bind=True)
 def update_scenario_task(self, scenario_id):
-    from py_flask.database.models import Scenarios
-    from py_flask.utils.instructor_utils import NotifyCapture
-
     app = current_app
-    logger.info(
+    logger.debug(
         "Executing task id {0.id}, args: {0.args!r} kwargs: {0.kwargs!r}".format(
             self.request
         )
@@ -246,11 +369,11 @@ def update_scenario_task(self, scenario_id):
         name = str(scenario.name)
         name = "".join(e for e in name if e.isalnum())
         if int(scenario.status) != 1:
-            logger.info("Invalid Status")
+            logger.error("Invalid Status")
             NotifyCapture("Failed to stop scenario " + name + ": Invalid Status")
             flash("Scenario is not ready to start", "warning")
         elif os.path.isdir(os.path.join("./scenarios/tmp/", name)):
-            logger.info("Folder Found")
+            logger.debug("Folder Found")
             scenario.update(status=4)
             os.chdir("./scenarios/tmp/" + name)
             os.system("terraform destroy --auto-approve")
@@ -258,17 +381,14 @@ def update_scenario_task(self, scenario_id):
             scenario.update(status=0)
             NotifyCapture("Scenario " + name + " has successfully stopped.")
         else:
-            logger.info("Something went wrong")
+            logger.error("Something went wrong")
             NotifyCapture("Failed to stop scenario " + name + ": Invalid Status")
             flash("Something went wrong", "warning")
 
 @celery.task(bind=True)
 def destroy_scenario_task(self, scenario_id):
-    from py_flask.database.models import Scenarios, ScenarioGroups, Responses
-    from py_flask.utils.instructor_utils import NotifyCapture
-
     app = current_app
-    logger.info(
+    logger.debug(
         "Executing task id {0.id}, args: {0.args!r} kwargs: {0.kwargs!r}".format(
             self.request
         )
@@ -279,13 +399,13 @@ def destroy_scenario_task(self, scenario_id):
     with app.test_request_context():
         scenario = Scenarios.query.filter_by(id=scenario_id).first()
         if scenario is not None:
-            logger.info("Found Scenario: {}".format(scenario))
+            logger.debug("Found Scenario: {}".format(scenario))
             name = str(scenario.name)
             name = "".join(e for e in name if e.isalnum())
             s_id = str(scenario.id)
             s_group = ScenarioGroups.query.filter_by(scenario_id=s_id).first()
             if int(scenario.status) != 0:
-                logger.info("Invalid Status")
+                logger.error("Invalid Status")
                 NotifyCapture("Failed to delete scenario" + name + ": Invalid Status")
                 raise Exception(f"Scenario in an Invalid state for Destruction")
             s_responses = Responses.query.filter_by(scenario_id=s_id).all()
@@ -293,6 +413,8 @@ def destroy_scenario_task(self, scenario_id):
                 r.delete()
             if os.path.isdir(os.path.join("./scenarios/tmp/", name)):
                 logger.info("Folder Found, current directory: {}".format(os.getcwd()))
+                
+                # Lock network-related operations
                 os.chdir("./scenarios/tmp/")
                 shutil.rmtree(name)
                 os.chdir("../..")
@@ -307,7 +429,7 @@ def destroy_scenario_task(self, scenario_id):
                     "scenario_id": scenario_id,
                     }
             else:
-                logger.info("Scenario files not found, assuming broken scenario and deleting")
+                logger.error("Scenario files not found, assuming broken scenario and deleting")
                 NotifyCapture("Failed to delete scenario " + name + ": Scenario files could not be found.")
                 scenario.delete()
                 return {
@@ -325,11 +447,6 @@ def destroy_scenario_task(self, scenario_id):
 
 @celery.task(bind=True)
 def scenarioCollectLogs(self, arg):
-    from py_flask.utils.csv_utils import readCSV
-    from py_flask.config.extensions import db
-    from py_flask.database.models import Scenarios, BashHistory, Users
-    from py_flask.utils.instructor_utils import NotifyCapture
-    
     with open('./logs/archive_id.txt', 'r') as log_id_file:
         this_archive_id = log_id_file.read().rstrip()
 
@@ -425,3 +542,246 @@ def scenarioCollectLogs(self, arg):
 @celery.on_after_configure.connect
 def setup_periodic_tasks(sender, **kwargs):
     sender.add_periodic_task(60.0, scenarioCollectLogs.s(''))
+
+# Machine learning tasks 
+
+#REWROTE
+@celery.task(bind=True, worker_prefetch_multiplier=1, priority=1)
+def initialize_system_resources_task(self):
+
+    sys_db_redis_client = redis.Redis(host='localhost', port=6379, db=1)
+
+    try: 
+        system_resources = get_system_resources()
+        cpu_resources = system_resources['cpu_resources']
+        gpu_resources = system_resources['gpu_resources']
+
+        if cpu_resources is None:
+            raise Exception (f"ERROR: Failed to initialize model, cpu_resources cannot be type None: [{e}]")
+
+        if gpu_resources is None:
+            raise Exception (f"ERROR: Failed to initialize model, gpu_resources cannot be type None: [{e}]")
+
+    except Exception as e:
+        raise Exception (f"ERROR: get_system_resources() or resource allocation failure: [{e}]")
+  
+    try:
+        sys_db_redis_client.set("cpu_resources", cpu_resources)
+        sys_db_redis_client.set("gpu_resources", gpu_resources)
+
+    except Exception as e:
+        raise Exception (f"ERROR: Failed to cache system resources in redis db2 [{e}]: ")
+
+  
+
+#REWROTE
+@celery.task(bind=True, worker_prefetch_multiplier=1, priority=1)
+def update_system_resources_task(self, cpu_resources, gpu_resources):
+
+    if cpu_resources is None:
+        raise Exception (f"ERROR: Failed to update model, cpu_resources cannot be type None: [{e}]")
+    
+    if gpu_resources is None:
+        raise Exception (f"ERROR: Failed to update model, gpu_resources cannot be type None: [{e}]")
+
+    sys_db_redis_client = redis.Redis(host='localhost', port=6379, db=1)
+
+    try:
+        sys_db_redis_client.set("cpu_resources", cpu_resources)
+        sys_db_redis_client.set("gpu_resources", gpu_resources)
+
+    except Exception as e:
+            raise Exception (f"ERROR: Failed to cache model and system resources in redis db2 [{e}]: ")
+    
+#REWROTE
+@celery.task(bind=True, worker_prefetch_multiplier=1, priority=1)
+def get_recent_student_logs_task(self, student_id, number_of_logs):
+
+    user_db_redis_client = redis.Redis(host='localhost', port=6379, db=2)
+
+    try:
+        logs_dict = getRecentLogs(student_id, number_of_logs)
+
+    except Exception as e:
+            raise Exception(f"ERROR: Failed to retrieve logs with 'getRecentLogs()': {e}")
+         
+    try: 
+        logs_dict_pickle = pickle.dumps(logs_dict)
+
+    except Exception as e:
+        raise Exception (f"ERROR: Failed to convert logs to pickle: [{e}]")
+
+    try:
+        user_db_redis_client.set("logs_dict", logs_dict_pickle)
+    
+    except Exception as e:
+            raise Exception(f"ERROR: Failed to set 'logs_dict' to redis db1: {e}")
+
+    return logs_dict
+
+#REWROTE
+@celery.task(bind=True, worker_prefetch_multiplier=1, priority=1)
+def cancel_generate_hint_task(self):
+    user_db_redis_client = redis.Redis(host='localhost', port=6379, db=2)
+
+    query_small_language_model_task_id = user_db_redis_client.get("query_small_language_model_task_id")
+    
+    self.app.control.revoke(query_small_language_model_task_id, terminate=True)
+    
+    return {'status': query_small_language_model_task_id}
+
+#REWROTE
+@celery.task(bind=True, worker_prefetch_multiplier=1, priority=1)
+def query_small_language_model_task(self, task, generation_parameters):
+
+    def get_resource_settings_from_redis(sys_db_redis_client):
+
+        try:
+            cpu_resources = sys_db_redis_client.get("cpu_resources")
+            gpu_resources = sys_db_redis_client.get("gpu_resources")
+
+        except Exception as e:
+            raise Exception (f"ERROR: Failed to retrieve cpu/gpu resources from redis db1. Additioanl information: [{e}]")
+        
+        return {'cpu_resources': cpu_resources, 'gpu_resources': gpu_resources}
+    
+    def get_logs_dict_from_redis(user_db_redis_client):
+
+        try:
+            logs_dict_pickle = user_db_redis_client.get("logs_dict")
+
+        except Exception as e:
+            raise Exception (f"ERROR: Failed to retrieve 'logs_dict' from redis db2: [{e}]")
+
+        try:
+            logs_dict = pickle.loads(logs_dict_pickle)
+        
+        except Exception as e:
+            raise Exception (f"ERROR: Failed to load logs_dict pickle: [{e}]")
+        
+        return logs_dict
+    
+    def set_query_small_language_model_task_id():
+
+        try:
+            query_small_language_model_task_id = self.request.id
+            user_db_redis_client.set("query_small_language_model_task_id", query_small_language_model_task_id)
+        
+        except Exception as e:
+            raise Exception (f"ERROR: Failed to retrieve or set query_small_language_model_task_id to redis db2: [{e}]")
+
+
+    def custom_query(language_model_object_llama):
+
+        start_time = time.time()
+
+        try:
+            temperature = float(generation_parameters.get('temperature'))
+            max_tokens = int(generation_parameters.get('max_tokens'))
+            system_prompt = generation_parameters.get('system_prompt')
+            user_prompt = generation_parameters.get('user_prompt')
+
+        except Exception as e:
+            raise Exception (f"ERROR: Failed to load items from Redis cache: [{e}]")
+
+        try:
+            result = language_model_object_llama(
+                f"<|system|>{system_prompt}<|end|>\n<|user|>\n{user_prompt}<|end|>\n<|assistant|> ",
+                max_tokens=max_tokens,
+                stop=["<|end|>"], 
+                echo=False, 
+                temperature=temperature,
+            )
+
+        except Exception as e:
+            raise Exception (f"ERROR: Failed to generate results: [{e}]")
+        
+        response = result["choices"][0]["text"]
+
+        stop_time = time.time()
+        duration = round(stop_time - start_time, 2)
+
+        return response, duration
+    
+    def generate_hint(language_model_object_llama, generation_parameters, logs_dict):
+
+        start_time = time.time()
+
+        try:
+            temperature = float(generation_parameters.get('temperature'))
+            scenario_name = generation_parameters.get('scenario_name')
+            disable_scenario_context = generation_parameters.get('disable_scenario_context')
+
+        except Exception as e:
+            raise Exception (f"ERROR: Failed to load items from Redis cache: [{e}]")
+
+        if disable_scenario_context:
+
+            try:
+                finalized_system_prompt = "##A student is completing a cyber-security scenario, look at their bash, chat and question/answer history and provide them a single concise hint on what to do next. The hint must not exceed two sentences in length."
+                finalized_user_prompt = f"  The student's Recent bash commands: {logs_dict['bash']}. The student's recent chat messages: {logs_dict['chat']}. The student's recent answers: {logs_dict['responses']}. "
+            
+            except Exception as e:
+                raise Exception (f"ERROR: Failed to initialize prompts: [{e}]")
+        else:
+
+            try:
+                scenario_summary = load_context_file_contents('scenario_summaries', scenario_name)
+
+            except Exception as e:
+                raise Exception (f"ERROR: 'load_context_file_contents()' failed: [{e}]")
+
+            try:
+                finalized_system_prompt = "##A student is completing a cyber-security scenario, review the scenario's summary along with their bash, chat and question/answer history and provide them a single concise hint on what to do next. The hint must not exceed two sentences in length."
+                finalized_user_prompt = f" The scenario's summary: {scenario_summary}. The student's recent bash commands: {logs_dict['bash']}. The student's recent chat messages: {logs_dict['chat']}. The student's recent answers: {logs_dict['responses']}. "
+            
+            except Exception as e:
+                raise Exception (f"ERROR: Failed to initialize prompts: [{e}]")
+
+
+        try:
+            result = language_model_object_llama(
+                f"<|system|>{finalized_system_prompt}<|end|>\n<|user|>\n{finalized_user_prompt}<|end|>\n<|assistant|> ",
+                max_tokens=-1,
+                stop=["<|end|>"], 
+                echo=False, 
+                temperature=temperature,
+            )
+
+        except Exception as e:
+            raise Exception (f"ERROR: Failed to generate results: [{e}]")
+            
+        generated_hint = result["choices"][0]["text"]
+
+        stop_time = time.time()
+        duration = round(stop_time - start_time, 2)
+
+        export_hint_to_csv(scenario_name, generated_hint, duration)
+
+        return generated_hint, logs_dict, duration
+        
+    sys_db_redis_client = redis.Redis(host='localhost', port=6379, db=1)
+    user_db_redis_client = redis.Redis(host='localhost', port=6379, db=2)
+
+    system_resources = get_resource_settings_from_redis(sys_db_redis_client)
+    cpu_resources = int(system_resources['cpu_resources'])
+    gpu_resources = int(system_resources['gpu_resources'])
+
+    language_model_object_llama = create_language_model_object_llama(cpu_resources, gpu_resources)
+    
+    if task == "custom_query":
+        response, duration = custom_query(language_model_object_llama, generation_parameters)
+        set_query_small_language_model_task_id()
+
+        return {'response': response, 'duration': duration}
+    
+    if task == "generate_hint":
+        logs_dict = get_logs_dict_from_redis(user_db_redis_client)
+        generated_hint, logs_dict, duration = generate_hint(language_model_object_llama, generation_parameters, logs_dict)
+        set_query_small_language_model_task_id()
+
+        return {'generated_hint': generated_hint, 'logs_dict': logs_dict, 'duration': duration}
+
+    else: 
+        raise ValueError(f"ERROR: Invalid option for task, you provided: [{task}]")
+

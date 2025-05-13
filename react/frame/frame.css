@@ -129,8 +129,9 @@ body, html{
 }
 .topnav-button-panes{
     display:flex;
-    padding: 0 15px;
+    margin: 0 15px;
     color: inherit;
+    box-sizing: border-box;
 }
 .edu3-nav-tabs {
     width: 100%;
@@ -149,6 +150,7 @@ body, html{
     box-sizing: border-box;
     height: 70%;
     align-items: center;
+    justify-content: center;
     display: flex;
     border-radius: 15px;
     color: rgb(225, 181, 68);

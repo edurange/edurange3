@@ -14,6 +14,10 @@ hostAddress="localhost"
 rootPass="change-me"
 curDir=$(pwd)
 
+# Prompt user if they want to use ml features.
+echo -e "${GRN}Do you want to enable machine learning features? (y/n): ${NC}"
+read -r enable_ml_features
+enable_ml_features=${enable_ml_features,,}
 
 # Prompts the user for Y/n input. Returns 0 if yes 1 if no
 yesNo(){
@@ -71,6 +75,11 @@ python3 -m venv .venv
 source .venv/bin/activate
 
 pip3 install -r py_flask/config/requirements_prod.txt
+
+if [[ "$enable_ml_features" == "y" ]]; then
+  pip3 install -r machine_learning/config/ml_requirements_prod.txt
+fi
+
 pip3 uninstall --yes pyjwt
 pip3 install pyjwt==2.8.0
 
@@ -154,7 +163,7 @@ do
     localDomain=''
     while [ -z "$localDomain" ]
     do
-      echo " Please enter the domain you would like to use for your local installation (Ex: edurange.dev)"
+      echo " Please enter the domain you would like to use for your local installation (Ex: edurange.local)"
     	read domainSelection
      	localDomain="$domainSelection"
     done
