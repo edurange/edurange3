@@ -32,13 +32,12 @@ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
 source ~/.nvm/nvm.sh
 cd $curDir
 
+pip3 install -r requirements/prod_requirements.txt
 
 # Switch to a different "no-ml-features" branch instead of this
 if [[ "$enable_ml_features" == "y" ]]; then
   pip3 install -r requirements/ml_requirements.txt
 fi
-
-pip3 install -r requirements/prod_requirements.txt
 
 pip3 uninstall --yes pyjwt
 pip3 install pyjwt==2.8.0
