@@ -5,7 +5,7 @@
 
 
 
-**NOTE:  If you are installing on a new Virtual Machine or Ubuntu 22.04 installation,
+**NOTE:  If you are installing on a new Virtual Machine or Ubuntu  *24.04* installation,
 it is likely you will need to install 'git' via apt.**
 To do so, enter the following in your bash cli:
 ```
@@ -16,7 +16,7 @@ sudo apt install git
 It is also recommended that you use 'minimal installation' option for the Ubuntu install,
 as well as skip updates.  You can update from the command line with the above sequence.
 
-Once you have your Ubuntu 22 set up, proceed to these steps...
+Once you have your Ubuntu 24 set up, proceed to these steps...
 
 ## Step 1: Clone the edurange3 github repo
 
