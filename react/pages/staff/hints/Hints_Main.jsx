@@ -43,7 +43,6 @@ function Hints_Main() {
             <div className="pageHeader">
 
                 <h1 className="pageTitle">EDUHints💡</h1>
-                <h4 className="pageSubtitle">A Machine Learning Powered Dashboard for Instructors</h4>
 
                 <Hint_Dropdowns/>
 
