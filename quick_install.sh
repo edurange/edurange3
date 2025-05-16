@@ -27,16 +27,6 @@ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
 source ~/.nvm/nvm.sh
 cd $curDir
 
-
-
-if [[ "$enable_ml_features" == "y" ]]; then
-  pip3 install ninja
-  pip3 install -r requirements/ml_requirements.txt
-  pip3 install -r requirements/prod_requirements.txt
-else
-  pip3 install -r requirements/prod_requirements.txt
-fi
-
 pip3 uninstall --yes pyjwt
 pip3 install pyjwt==2.8.0
 
