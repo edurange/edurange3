@@ -27,7 +27,7 @@ echo -e "${GRN}Installing python3-pip, npm, redis-server,  unzip, postgresql, li
 
 sudo apt update
 # VOLATILE: CHECK NGINX INSTALL - CHECK CERTBOT TOO
-sudo apt install -y python3-pip redis-server unzip wget postgresql libpq-dev nginx wget libnss3-tools certbot python3-certbot-nginx
+sudo apt install -y python3-pip redis-server unzip wget postgresql libpq-dev nginx wget libnss3-tools certbot python3-certbot-nginx build-essential --upgrade
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
 source ~/.nvm/nvm.sh
 cd $curDir
