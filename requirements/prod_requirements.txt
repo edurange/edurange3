@@ -1,6 +1,4 @@
 # pip packages needed in production
-wheel==0.45.1
-setuptools==80.7.1
 
 # Deployment
 gevent==24.2.1
