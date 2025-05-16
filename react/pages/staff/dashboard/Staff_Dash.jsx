@@ -60,7 +60,6 @@ function Staff_Dash() {
 
             <div className='staff-dash-column-alt'>
                 <TempUsers_table userList={tempUsers_state} />
-                <Creation_Instructions />
             </div>
 
         </div>

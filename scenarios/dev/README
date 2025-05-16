@@ -1,0 +1,13 @@
+Markdown Format Guidelines
+
+    Use # Title for the scenario title (first H1 header)
+    Use <!-- CHAPTER_START n: Title --> and <!-- CHAPTER_END --> to define chapters
+    Use <!-- READING_START --> and <!-- READING_END --> for reading sections
+    Use <!-- QUESTION_START --> and <!-- QUESTION_END --> for questions
+    For questions, include:
+        Question: [question text]
+        Comment: [comment text] (optional)
+        Answers: section with multiple answer blocks, each containing:
+            Value: [answer value]
+            Points: [points for this answer] (optional, defaults to 1)
+

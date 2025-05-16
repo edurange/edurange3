@@ -124,6 +124,7 @@ class Ransomware_shell {
     };
 };
 
+
 export const scenarioShells = {
     Elf_Infection:      new ELF_Infection_shell,
     File_Wrangler:      new File_Wrangler_shell,

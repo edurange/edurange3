@@ -1,0 +1,22 @@
+#!/bin/bash
+
+set -eoux pipefail
+
+cat << \EOF >/etc/motd
+
+  ____ ___ ____  ____ ____  _____ 
+ / ___|_ _/ ___|/ ___/ ___|| ____|
+ \___ \| | |  _| |   \___ \|  _|  
+  ___) | | |_| | |___ ___) | |___ 
+ |____|___\____|\____|____/|_____|
+                                  
+
+Welcome to the first EDURange scenario!
+You can use this bash environment to try out the commands shown in the guide.
+Follow the student guide and answer the questions on EDURange in browser.
+
+
+EOF
+
+echo 'export TERM=xterm-256color' >> /etc/bash.bashrc
+echo 'cat /etc/motd' >> /etc/bash.bashrc

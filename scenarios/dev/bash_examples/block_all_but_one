@@ -1,0 +1,9 @@
+#!/bin/bash
+# Blocks all hosts except one wherever this is run
+# Change the last two octets to match the network for your scenario
+# Keep the 10.*, 2nd octet is based on how many running scenarios you have
+
+
+iptables -I INPUT -s *.0.204.64 -j ACCEPT
+iptables -A INPUT -j DROP
+iptables -P INPUT DROP

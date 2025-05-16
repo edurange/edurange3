@@ -9,7 +9,7 @@ from py_flask.config.init import create_app
 from py_flask.config.extensions import db
 from py_flask.database.models import StudentGroups, Users
 from py_flask.utils.common_utils import generate_alphanum
-from py_flask.utils.tasks import initialize_system_resources_task
+
 
 
 
@@ -46,7 +46,7 @@ if admin: a_id = admin.id
 
 if not group: create_all_group(a_id)
 
-initialize_system_resources_task.delay()
+
 
 
 

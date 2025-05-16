@@ -1,0 +1,20 @@
+{
+  "containers":  
+  [ 
+    {
+      "name" : "gateway",
+      "files":[
+        {
+          "global_files": [
+          ],
+          "system_files": [
+            "install"
+          ],
+          "user_files": [
+            "milestones.txt"
+          ]
+        }
+      ]
+    },
+  ]
+}
