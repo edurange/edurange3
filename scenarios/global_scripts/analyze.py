@@ -22,6 +22,7 @@ import shutil
 import queue
 import subprocess
 import threading
+import io
 
 def starting_index_timestamp(line):
     """Return the index where the timestamp starts, in a line. If timestamp does not exist, return None"""
@@ -592,12 +593,9 @@ def process_files_from_queue():
         files_list_queue.task_done()
 
 
-def write_to_csv(line):
-
-    csvfile = open(csv_output_file,'a', newline='')
-    csvwriter = csv.writer(csvfile, delimiter=',', quotechar='%', quoting=csv.QUOTE_MINIMAL)
+def write_to_csv(csvwriter, outfile, line):
     csvwriter.writerow([line['id'],line['node_name'],line['timestamp'],line['cwd'], line['cmd'], line['output'], line['prompt']])
-    csvfile.close()
+    outfile.flush()
 
 def get_unique_id_dict():
     """Return a dictonary containing information about the unique ID that will be inserted in every row in output CSV"""
@@ -675,6 +673,11 @@ if __name__ == "__main__":
 
     ttylog_lines_from_file, ttylog_bytes_read = get_ttylog_lines_from_file(ttylog, ttylog_seek_pointer)
     ttylog_seek_pointer += ttylog_bytes_read
+
+
+    outfile = open(csv_output_file, "ab") # Open output in bytes mode so that writes are unbuffered and happen immediately
+    text_mode_outfile = io.TextIOWrapper(outfile, encoding="utf-8", newline="\n")
+    csvwriter = csv.writer(text_mode_outfile)
 
 
     for count, line in enumerate(ttylog_lines_from_file):
@@ -836,7 +839,7 @@ if __name__ == "__main__":
                     if cline >=0:
                         #print("Cline ", cline, " output ", output_txt, " prompt ", ttylog_sessions[current_session_id]['lines'][cline]['prompt'])
                         ttylog_sessions[current_session_id]['lines'][cline]['output'] = output_txt
-                        write_to_csv(ttylog_sessions[current_session_id]['lines'][cline])
+                        write_to_csv(csvwriter, outfile, ttylog_sessions[current_session_id]['lines'][cline])
                         #logfile = open(r"/tmp/acont.log", "a")
                         #logfile.write("Logged input "+ttylog_sessions[current_session_id]['lines'][cline]['cmd']+"\n")
                         #logfile.write("Logged output "+ttylog_sessions[current_session_id]['lines'][cline]['output']+"\n")
@@ -867,7 +870,7 @@ if __name__ == "__main__":
                 cline = len(ttylog_sessions[current_session_id]['lines']) - 1
                 if cline >=0:
                     ttylog_sessions[current_session_id]['lines'][cline]['output'] = output_txt
-                    write_to_csv(ttylog_sessions[current_session_id]['lines'][cline])
+                    write_to_csv(csvwriter, outfile, ttylog_sessions[current_session_id]['lines'][cline])
                     #logfile = open(r"/tmp/acont.log", "a")
                     #logfile.write("Logged input "+ttylog_sessions[current_session_id]['lines'][cline]['cmd']+"\n")
                     #logfile.write("Logged output "+ttylog_sessions[current_session_id]['lines'][cline]['output']+"\n")
