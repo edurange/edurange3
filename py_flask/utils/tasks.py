@@ -850,7 +850,7 @@ def query_small_language_model_task(self, task, generation_parameters):
         stop_time = time.time()
         duration = round(stop_time - start_time, 2)
 
-        export_hint_to_csv(scenario_name, generated_hint, duration)
+        export_hint_to_csv(scenario_name, disable_scenario_context, finalized_system_prompt, finalized_user_prompt, generated_hint, duration)
 
         return generated_hint, logs_dict, duration
         
