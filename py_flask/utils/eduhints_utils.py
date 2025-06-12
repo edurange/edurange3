@@ -77,13 +77,19 @@ def load_context_file_contents(context_file_type: str, scenario_name: str) -> st
             raise Exception (f"ERROR: Failed to load context file contents: {e}")
 
 
-def export_hint_to_csv(scenario_name: str, generated_hint: str, duration: int):
+def export_hint_to_csv(scenario_name: str, scenario_context_file_bool: bool, finalized_system_prompt: str, finalized_user_prompt: str, generated_hint: str, duration: int):
 
       file_path = f"machine_learning/eduhints/generated_hints/{scenario_name}.csv"
 
       with open(file_path, 'a', newline='') as file:
         writer = csv.writer(file)
-        writer.writerow([scenario_name, generated_hint, duration])
+        writer.writerow([
+            f"*SCENARIO NAME*: {scenario_name}", 
+            f"*BOOL DISABLE SCENARIO CONTEXT FILE*: {scenario_context_file_bool}",
+            f"*SYSTEM PROMPT*: {finalized_system_prompt}",
+            f"*USER PROMPT*: {finalized_user_prompt}",
+            f"*HINT GENERATION DURATION*: {duration}"
+            ])
 
 
 
