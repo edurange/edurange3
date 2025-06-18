@@ -12,7 +12,7 @@ function Hints_Main() {
 
     const {
         experimentalConfirmLock,
-        loading,
+        isLoading_state,
         isClickedLogs,
         isClickedSettings,
         isExpandedLogs,
@@ -38,7 +38,7 @@ function Hints_Main() {
 
         <div className="hints-dashboard-ui">
             {experimentalConfirmLock && <Hint_ExperimentalOverlay />}
-            {loading && <Hint_LoadingOverlay />}
+            {isLoading_state && <Hint_LoadingOverlay />}
 
             <div className="pageHeader">
 
