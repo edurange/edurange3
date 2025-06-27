@@ -88,6 +88,7 @@ def export_hint_to_csv(scenario_name: str, scenario_context_file_bool: bool, fin
             f"*BOOL DISABLE SCENARIO CONTEXT FILE*: {scenario_context_file_bool}",
             f"*SYSTEM PROMPT*: {finalized_system_prompt}",
             f"*USER PROMPT*: {finalized_user_prompt}",
+            f"*GENERATED HINT*: {generated_hint}",
             f"*HINT GENERATION DURATION*: {duration}"
             ])
 
