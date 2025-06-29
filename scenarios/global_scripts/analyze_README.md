@@ -4,7 +4,7 @@ The original version of analyzer.py was 880 lines long and one long serially lin
 ## Version 2 
 ### What was the problem?
 
-There are serveral problems with analyze.py. 
+There were serveral problems with analyze.py v1. 
 1. It was very difficult to read. 
 2. it was difficult to maintain.
 3. had multiple bugs
@@ -12,30 +12,30 @@ There are serveral problems with analyze.py.
 5. had python loading all the functions even if unused causing namsespace bloat
 
 ### What was done to address the problem?
-1. previous main() is now new_analyzer.py (may change eventually). It is the "main" section of the original script. 
-2. analyzer_methods.py are all the helper functions from above the old main section of the script. Some of these functions are not used currently but to preserve development they are left in. They are currenlty not loaded when the program runs where previously they were loaded.
-
+1. Previous functions under if __name__  are now LogAnalyzerMain(). It is the "main" section of the original script. 
+2. Analyzer_methods() are all the helper functions from above the old main section of the script. Some of the original functions are not in use like github actions. 
 
 ### What has changed?
-Current verison (1.2) is using new_analzer.py as the entry point.py 
+Current verison (2.0) is using replaced analyze.py (v1) 
    
-Removed are the global variables, adding them to a config.py file
+Removed are the global variables, adding them the __init__ to load them properly
 Added some initial logging, enabled some of the commented out logging 
 Moved the logic out of the if name == main section
 Added a class object to give more control over chaining flow in the future.
 Added a main driver script
-Refactored loop function and enumerate_ttylog in new_analyzer.py to reduce time complexity.
-Moved decode into it's own method and added comments to explain it's functionality.
-new_alayzer.py is complete until additional functionality is needed.
+Refactored loop function and enumerate_ttylog to reduce time complexity.
 
 ### What is left to do?
-    1. check for more areas for retry logic
-    2. Add some testing
-    3. Add more logging support
-    4. test it live.
+    1. check for more areas for retry logic (done)
+    2. Add some testing (done)
+    3. Add more logging support (done)
+    4. test it live. (done)
+    5. Verify analyze works as intended with GettingStarted
+    6. Check the tests, some have commented out assertions that need script changes to pass that may effect the entire operation.
+    7. Decode is a mile long and is still hard to digest, may need to cut it into pieces for easier reading. Reading the tests helps understand what is going on.
 
 ### What does each method do?
-    New Analyzer:
+    Analyze V2:
     > def __init__(self) -> None:
         Sets up the important class-wide variables.
     > def get_ttylog_init(self):
