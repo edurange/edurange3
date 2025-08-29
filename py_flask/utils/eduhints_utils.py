@@ -73,7 +73,7 @@ def create_language_model_object() -> tuple:
 
 def load_context_file_contents(context_file_type: str, scenario_name: str) -> str:
 
-      file_path = f"machine_learning/eduhints/context_files/{context_file_type}/{scenario_name}.txt"
+      file_path = f"machine_learning/context_files/{context_file_type}/{scenario_name}.txt"
 
       try: 
             with open(file_path, 'r', encoding='utf-8') as file:
@@ -86,7 +86,7 @@ def load_context_file_contents(context_file_type: str, scenario_name: str) -> st
 
 def export_hint_to_csv(scenario_name: str, scenario_context_file_bool: bool, finalized_system_prompt: str, finalized_user_prompt: str, generated_hint: str, duration: int):
 
-      file_path = f"machine_learning/eduhints/generated_hints/{scenario_name}.csv"
+      file_path = f"machine_learning/generated_hints/{scenario_name}.csv"
 
       with open(file_path, 'a', newline='') as file:
         writer = csv.writer(file)
