@@ -777,29 +777,28 @@ def query_small_language_model_task(self, task, generation_parameters):
         try:
             import torch
             
-            # FLAN-T5 instruction format  
-            prompt = f"{system_prompt}\n\nContext: {user_prompt}\n\nResponse:"
+            # TinyLlama chat format for custom queries
+            prompt = f"<|system|>\n{system_prompt}</s>\n<|user|>\n{user_prompt}</s>\n<|assistant|>\n"
             
-            # Tokenize input for T5 (encoder-decoder model)
-            inputs = tokenizer(prompt, return_tensors="pt", max_length=512, truncation=True).to(model.device)
+            # Tokenize input for TinyLlama (decoder-only model)
+            inputs = tokenizer(prompt, return_tensors="pt", truncation=True, max_length=1024).to(model.device)
             
-            # Generate response optimized for FLAN-T5
+            # Generate response optimized for TinyLlama
             with torch.no_grad():
                 outputs = model.generate(
-                    input_ids=inputs['input_ids'],
-                    attention_mask=inputs['attention_mask'],
-                    max_length=min(max_tokens, 200),
+                    **inputs,
+                    max_new_tokens=min(max_tokens, 150),
                     temperature=temperature,
                     do_sample=True,
-                    num_beams=2,
-                    early_stopping=True,
                     repetition_penalty=1.1,
-                    pad_token_id=tokenizer.pad_token_id,
+                    top_p=0.9,
+                    top_k=40,
+                    pad_token_id=tokenizer.eos_token_id,
                     eos_token_id=tokenizer.eos_token_id
                 )
             
-            # Decode response (T5 outputs full response, no need to skip input tokens)
-            response = tokenizer.decode(outputs[0], skip_special_tokens=True)
+            # Decode response (skip the input tokens for decoder-only models)
+            response = tokenizer.decode(outputs[0][inputs['input_ids'].shape[1]:], skip_special_tokens=True)
             
             # Clean up the response
             response = response.strip()
@@ -856,8 +855,8 @@ def query_small_language_model_task(self, task, generation_parameters):
         try:
             import torch
             
-            # FLAN-T5 instruction format - much better for following constraints
-            prompt = f"You are helping a cybersecurity student. {finalized_system_prompt}\n\nStudent data: {finalized_user_prompt}\n\nProvide a helpful 1-2 sentence hint:"
+            # TinyLlama chat format - uses ChatML-style formatting
+            prompt = f"<|system|>\n{finalized_system_prompt}</s>\n<|user|>\n{finalized_user_prompt}</s>\n<|assistant|>\n"
             
             # Debug logging for prompt and context
             logger.info(f"=== HINT GENERATION DEBUG ===")
@@ -871,31 +870,30 @@ def query_small_language_model_task(self, task, generation_parameters):
             logger.info(f"Final prompt length: {len(prompt)}")
             logger.info(f"Final prompt preview: {prompt[:500]}...")
             
-            # Tokenize input for T5 (encoder-decoder model)
-            inputs = tokenizer(prompt, return_tensors="pt", max_length=512, truncation=True).to(model.device)
+            # Tokenize input for TinyLlama (decoder-only model)
+            inputs = tokenizer(prompt, return_tensors="pt", truncation=True, max_length=1024).to(model.device)
             logger.info(f"Input token count: {inputs['input_ids'].shape[1]}")
             
-            # Generate response optimized for FLAN-T5
+            # Generate response optimized for TinyLlama
             with torch.no_grad():
                 outputs = model.generate(
-                    input_ids=inputs['input_ids'],
-                    attention_mask=inputs['attention_mask'],
-                    max_length=100,      # Total output length for T5
-                    min_length=10,       # Minimum output length  
+                    **inputs,
+                    max_new_tokens=60,   # Short hints
                     temperature=temperature,
                     do_sample=True,
-                    num_beams=2,         # Light beam search for better quality
+                    pad_token_id=tokenizer.eos_token_id,
+                    eos_token_id=tokenizer.eos_token_id,
                     repetition_penalty=1.1,
-                    length_penalty=1.0,
-                    early_stopping=True,
-                    pad_token_id=tokenizer.pad_token_id,
-                    eos_token_id=tokenizer.eos_token_id
+                    top_p=0.9,           # Nucleus sampling for better quality
+                    top_k=40,            # Limit vocabulary for focused responses
+                    no_repeat_ngram_size=3
                 )
             
             logger.info(f"Generated token count: {outputs[0].shape[0]}")
+            logger.info(f"New tokens generated: {outputs[0].shape[0] - inputs['input_ids'].shape[1]}")
             
-            # Decode response (T5 outputs full response, no need to skip input tokens)
-            generated_hint = tokenizer.decode(outputs[0], skip_special_tokens=True)
+            # Decode response (skip the input tokens for decoder-only models)
+            generated_hint = tokenizer.decode(outputs[0][inputs['input_ids'].shape[1]:], skip_special_tokens=True)
             
             # Clean up the response - remove extra whitespace and common artifacts
             generated_hint = generated_hint.strip()
