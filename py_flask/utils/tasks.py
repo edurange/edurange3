@@ -848,6 +848,13 @@ def query_small_language_model_task(self, task, generation_parameters):
     user_db_redis_client = redis.Redis(host='localhost', port=6379, db=2)
 
     system_resources = get_resource_settings_from_redis(sys_db_redis_client)
+    
+    # Auto-initialize system resources if they haven't been set
+    if system_resources['cpu_resources'] is None or system_resources['gpu_resources'] is None:
+        logger.info("System resources not initialized. Initializing automatically...")
+        initialize_system_resources_task()
+        system_resources = get_resource_settings_from_redis(sys_db_redis_client)
+    
     cpu_resources = int(system_resources['cpu_resources'])
     gpu_resources = int(system_resources['gpu_resources'])
 
