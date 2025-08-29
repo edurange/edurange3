@@ -4,4 +4,4 @@ pyopencl==2024.2.7
 torch>=2.0.0
 transformers>=4.35.0
 huggingface-hub==0.23.4
-
+accelerate>=0.26.0
