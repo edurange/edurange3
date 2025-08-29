@@ -1,8 +1,6 @@
 
 # EDUHints
 pyopencl==2024.2.7
-llama_cpp_python==0.2.81
+ctransformers==0.2.27
 huggingface-hub==0.23.4
-llama-index==0.10.55
-llama-index-embeddings-huggingface==0.2.2
 

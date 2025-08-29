@@ -17,10 +17,7 @@ import math
 import pyopencl as cl
 import asyncio
 import csv
-import llama_cpp
-from llama_cpp import Llama
-from llama_index.core import Settings
-from llama_index.embeddings.huggingface import HuggingFaceEmbedding
+from ctransformers import AutoModelForCausalLM
 
 def generate_alphanum(length):
     alphanums = '1234567890abcdefghijklmnopqrstuvwxyz'

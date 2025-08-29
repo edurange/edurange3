@@ -13,10 +13,7 @@ import math
 import pyopencl as cl
 import asyncio
 import csv
-import llama_cpp
-from llama_cpp import Llama
-from llama_index.core import Settings
-from llama_index.embeddings.huggingface import HuggingFaceEmbedding
+from ctransformers import AutoModelForCausalLM
 import logging
 
 from datetime import datetime
@@ -779,19 +776,16 @@ def query_small_language_model_task(self, task, generation_parameters):
             raise Exception (f"ERROR: Failed to load items from Redis cache: [{e}]")
 
         try:
-            result = language_model_object_llama(
-                f"<|system|>{system_prompt}<|end|>\n<|user|>\n{user_prompt}<|end|>\n<|assistant|> ",
-                max_tokens=max_tokens,
-                stop=["<|end|>"], 
-                echo=False, 
+            prompt = f"<|system|>{system_prompt}<|end|>\n<|user|>\n{user_prompt}<|end|>\n<|assistant|> "
+            response = language_model_object_llama(
+                prompt,
+                max_new_tokens=max_tokens,
                 temperature=temperature,
             )
 
         except Exception as e:
             raise Exception (f"ERROR: Failed to generate results: [{e}]")
         
-        response = result["choices"][0]["text"]
-
         stop_time = time.time()
         duration = round(stop_time - start_time, 2)
 
@@ -834,18 +828,14 @@ def query_small_language_model_task(self, task, generation_parameters):
 
 
         try:
-            result = language_model_object_llama(
-                f"<|system|>{finalized_system_prompt}<|end|>\n<|user|>\n{finalized_user_prompt}<|end|>\n<|assistant|> ",
-                max_tokens=-1,
-                stop=["<|end|>"], 
-                echo=False, 
+            prompt = f"<|system|>{finalized_system_prompt}<|end|>\n<|user|>\n{finalized_user_prompt}<|end|>\n<|assistant|> "
+            generated_hint = language_model_object_llama(
+                prompt,
                 temperature=temperature,
             )
 
         except Exception as e:
             raise Exception (f"ERROR: Failed to generate results: [{e}]")
-            
-        generated_hint = result["choices"][0]["text"]
 
         stop_time = time.time()
         duration = round(stop_time - start_time, 2)

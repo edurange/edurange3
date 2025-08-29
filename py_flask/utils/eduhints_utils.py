@@ -10,10 +10,7 @@ import csv
 import pickle
 import redis
 
-import llama_cpp
-from llama_cpp import Llama
-from llama_index.core import Settings
-from llama_index.embeddings.huggingface import HuggingFaceEmbedding
+from ctransformers import AutoModelForCausalLM
 from py_flask.utils.common_utils import get_system_resources
 
 
@@ -48,15 +45,13 @@ SOFTWARE.
 def create_language_model_object_llama(cpu_resources: int, gpu_resources: int) -> None:  
 
       try:
-            language_model_object = Llama.from_pretrained(
-                  repo_id="microsoft/Phi-3-mini-4k-instruct-gguf",
-                  filename="Phi-3-mini-4k-instruct-q4.gguf",
-                  verbose=False,
-                  n_ctx=4086, 
-                  n_threads=cpu_resources, 
-                  n_gpu_layers=gpu_resources,
-                  flash_attn=True,
-                  use_mlock=True,
+            language_model_object = AutoModelForCausalLM.from_pretrained(
+                  "microsoft/Phi-3-mini-4k-instruct-gguf",
+                  model_file="Phi-3-mini-4k-instruct-q4.gguf",
+                  model_type="llama",
+                  gpu_layers=gpu_resources,
+                  threads=cpu_resources,
+                  context_length=4086
             )
             return language_model_object
 
