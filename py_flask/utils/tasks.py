@@ -13,7 +13,6 @@ import math
 import pyopencl as cl
 import asyncio
 import csv
-import torch
 import logging
 
 from datetime import datetime
@@ -776,6 +775,8 @@ def query_small_language_model_task(self, task, generation_parameters):
             raise Exception (f"ERROR: Failed to load items from Redis cache: [{e}]")
 
         try:
+            import torch
+            
             prompt = f"<s>[INST] <<SYS>>\n{system_prompt}\n<</SYS>>\n\n{user_prompt} [/INST]"
             # Tokenize input
             inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
@@ -838,6 +839,8 @@ def query_small_language_model_task(self, task, generation_parameters):
 
 
         try:
+            import torch
+            
             prompt = f"<s>[INST] <<SYS>>\n{finalized_system_prompt}\n<</SYS>>\n\n{finalized_user_prompt} [/INST]"
             # Tokenize input
             inputs = tokenizer(prompt, return_tensors="pt").to(model.device)

@@ -10,8 +10,12 @@ import csv
 import pickle
 import redis
 
-import torch
-from transformers import AutoModelForCausalLM, AutoTokenizer
+try:
+    import torch
+    from transformers import AutoModelForCausalLM, AutoTokenizer
+    ML_AVAILABLE = True
+except ImportError:
+    ML_AVAILABLE = False
 from py_flask.utils.common_utils import get_system_resources
 
 
@@ -44,6 +48,9 @@ SOFTWARE.
 """
 
 def create_language_model_object() -> tuple:  
+
+      if not ML_AVAILABLE:
+          raise Exception("ERROR: ML libraries (torch, transformers) are not installed. Install ml_requirements.txt to use hint generation.")
 
       try:
             # Load model 
