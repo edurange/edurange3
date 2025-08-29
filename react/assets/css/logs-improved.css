@@ -16,15 +16,17 @@
     height: 100% !important;
     display: flex !important;
     flex-direction: column !important;
-    gap: 20px !important;
+    gap: 12px !important;
 }
 
-/* Filters section */
+/* Filters section - more compact */
 .dropdown-frame {
     background: rgba(192, 221, 255, 0.05);
     border: 1px solid rgba(192, 221, 255, 0.2);
-    border-radius: 8px;
-    padding: 16px;
+    border-radius: 6px;
+    padding: 8px 12px;
+    margin-bottom: 12px;
+    flex-shrink: 0;
 }
 
 .dropdown-carpet {
@@ -35,22 +37,24 @@
     display: flex !important;
     flex-direction: row !important;
     width: 100% !important;
-    gap: 16px !important;
+    gap: 12px !important;
     align-items: end !important;
     flex-wrap: wrap;
-    margin-top: 12px;
+    margin-top: 8px;
 }
 
 .update-button {
     background: var(--blue-normal);
     color: white;
     border: none;
-    border-radius: 6px;
-    padding: 8px 16px;
-    font-size: 14px;
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-size: 12px;
     font-weight: 500;
     cursor: pointer;
     transition: background-color 0.2s ease;
+    height: 32px;
+    min-width: 70px;
 }
 
 .update-button:hover:not(:disabled) {
@@ -67,13 +71,14 @@
 .logsViewer-body {
     display: flex !important;
     width: 100% !important;
-    height: auto !important;
+    flex: 1 !important;
     flex-direction: column !important;
-    gap: 20px !important;
+    gap: 16px !important;
     position: relative;
     top: 0;
     left: 0;
     overflow-y: auto;
+    min-height: 0;
 }
 
 .logsViewer-item {
@@ -87,9 +92,11 @@
     background: rgba(255, 255, 255, 0.02);
     border: 1px solid rgba(192, 221, 255, 0.15);
     border-radius: 8px;
-    padding: 16px;
+    padding: 12px;
     box-sizing: border-box;
     backdrop-filter: blur(5px);
+    flex-shrink: 0;
+    overflow: hidden;
 }
 
 /* Improved grid container */
@@ -98,6 +105,8 @@
     padding: 0;
     position: relative;
     left: 0;
+    margin-top: 8px;
+    overflow: hidden;
 }
 
 .grid-container {
@@ -141,7 +150,7 @@
     background: rgba(255, 255, 255, 0.95);
     color: #2c2c2c;
     border: 1px solid rgba(192, 221, 255, 0.2);
-    padding: 8px;
+    padding: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -149,9 +158,11 @@
     font-size: 12px;
     line-height: 1.4;
     min-height: 45px;
+    max-height: 120px;
     box-sizing: border-box;
     word-wrap: break-word;
     overflow-wrap: break-word;
+    overflow: hidden;
 }
 
 .grid-item:nth-child(8n+1) { /* Timestamp column */
@@ -178,36 +189,59 @@
     color: var(--orange-deep);
 }
 
-/* Enhanced content box */
+.grid-item:nth-child(8n+7) { /* Content column */
+    padding: 2px;
+    align-items: stretch;
+    justify-content: stretch;
+}
+
+.grid-item:nth-child(8n+7) .content-box {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+}
+
+/* Enhanced content box with better scrolling */
 .content-box {
     background: rgba(239, 240, 228, 0.98);
     border: 1px solid rgba(192, 221, 255, 0.3);
     border-radius: 4px;
-    padding: 8px;
-    margin: 2px;
-    max-height: 80px;
-    overflow-y: auto;
+    padding: 6px;
+    margin: 1px;
+    max-height: 100px;
+    min-height: 40px;
+    overflow-y: auto !important;
+    overflow-x: hidden;
     text-align: left;
     font-size: 11px;
     line-height: 1.3;
     color: #333;
     word-break: break-word;
+    word-wrap: break-word;
+    white-space: pre-wrap;
     box-sizing: border-box;
     scrollbar-width: thin;
     scrollbar-color: rgba(192, 221, 255, 0.5) transparent;
+    position: relative;
 }
 
 .content-box::-webkit-scrollbar {
-    width: 6px;
+    width: 8px;
 }
 
 .content-box::-webkit-scrollbar-track {
-    background: transparent;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
 }
 
 .content-box::-webkit-scrollbar-thumb {
-    background: rgba(192, 221, 255, 0.5);
-    border-radius: 3px;
+    background: rgba(192, 221, 255, 0.6);
+    border-radius: 4px;
+    border: 1px solid rgba(192, 221, 255, 0.2);
+}
+
+.content-box::-webkit-scrollbar-thumb:hover {
+    background: rgba(192, 221, 255, 0.8);
 }
 
 /* Hover effects for better interactivity */
