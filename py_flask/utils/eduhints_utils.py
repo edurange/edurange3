@@ -23,17 +23,17 @@ def create_language_model_object() -> tuple:
           raise Exception("ERROR: ML libraries (torch, transformers) are not installed. Install ml_requirements.txt to use hint generation.")
 
       try:
-            # Load model optimized for CPU inference - using GPT-2 base for better text completion
-            model = AutoModelForCausalLM.from_pretrained(
-                "gpt2",                      # GPT-2 base model (124M parameters) - better for completion tasks
-                torch_dtype=torch.float32,   # float32 for CPU, float16 not supported on CPU
+            # Load model optimized for CPU inference - using FLAN-T5 for instruction following
+            from transformers import T5ForConditionalGeneration
+            model = T5ForConditionalGeneration.from_pretrained(
+                "google/flan-t5-small",      # FLAN-T5 small (80M parameters) - excellent instruction following
+                torch_dtype=torch.float32,   # float32 for CPU
                 device_map="cpu",            # Force CPU to avoid GPU detection overhead
-                low_cpu_mem_usage=True,      # Optimize CPU memory usage
-                use_cache=True               # Enable KV-cache for faster inference
+                low_cpu_mem_usage=True       # Optimize CPU memory usage
             )
             
             # Load tokenizer
-            tokenizer = AutoTokenizer.from_pretrained("gpt2")
+            tokenizer = AutoTokenizer.from_pretrained("google/flan-t5-small")
             tokenizer.pad_token = tokenizer.eos_token
             
             return model, tokenizer

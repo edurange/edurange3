@@ -777,26 +777,29 @@ def query_small_language_model_task(self, task, generation_parameters):
         try:
             import torch
             
-            # GPT-2 prompt format for better response generation  
+            # FLAN-T5 instruction format  
             prompt = f"{system_prompt}\n\nContext: {user_prompt}\n\nResponse:"
-            # Tokenize input
-            inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
             
-            # Generate response optimized for CPU
+            # Tokenize input for T5 (encoder-decoder model)
+            inputs = tokenizer(prompt, return_tensors="pt", max_length=512, truncation=True).to(model.device)
+            
+            # Generate response optimized for FLAN-T5
             with torch.no_grad():
                 outputs = model.generate(
-                    **inputs,
-                    max_new_tokens=min(max_tokens, 200),  # Cap max tokens for faster generation
+                    input_ids=inputs['input_ids'],
+                    attention_mask=inputs['attention_mask'],
+                    max_length=min(max_tokens, 200),
                     temperature=temperature,
                     do_sample=True,
-                    pad_token_id=tokenizer.eos_token_id,
-                    num_beams=1,         # No beam search for faster generation
+                    num_beams=2,
                     early_stopping=True,
-                    repetition_penalty=1.1
+                    repetition_penalty=1.1,
+                    pad_token_id=tokenizer.pad_token_id,
+                    eos_token_id=tokenizer.eos_token_id
                 )
             
-            # Decode response (skip the input tokens)
-            response = tokenizer.decode(outputs[0][inputs['input_ids'].shape[1]:], skip_special_tokens=True)
+            # Decode response (T5 outputs full response, no need to skip input tokens)
+            response = tokenizer.decode(outputs[0], skip_special_tokens=True)
             
             # Clean up the response
             response = response.strip()
@@ -853,8 +856,8 @@ def query_small_language_model_task(self, task, generation_parameters):
         try:
             import torch
             
-            # GPT-2 prompt format for better response generation
-            prompt = f"{finalized_system_prompt}\n\nContext: {finalized_user_prompt}\n\nHint:"
+            # FLAN-T5 instruction format - much better for following constraints
+            prompt = f"You are helping a cybersecurity student. {finalized_system_prompt}\n\nStudent data: {finalized_user_prompt}\n\nProvide a helpful 1-2 sentence hint:"
             
             # Debug logging for prompt and context
             logger.info(f"=== HINT GENERATION DEBUG ===")
@@ -868,31 +871,31 @@ def query_small_language_model_task(self, task, generation_parameters):
             logger.info(f"Final prompt length: {len(prompt)}")
             logger.info(f"Final prompt preview: {prompt[:500]}...")
             
-            # Tokenize input
-            inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
+            # Tokenize input for T5 (encoder-decoder model)
+            inputs = tokenizer(prompt, return_tensors="pt", max_length=512, truncation=True).to(model.device)
             logger.info(f"Input token count: {inputs['input_ids'].shape[1]}")
             
-            # Generate response optimized for CPU and DialoGPT
+            # Generate response optimized for FLAN-T5
             with torch.no_grad():
                 outputs = model.generate(
-                    **inputs,
-                    max_new_tokens=50,   # Shorter for hints
-                    min_length=inputs['input_ids'].shape[1] + 5,  # Ensure some output
+                    input_ids=inputs['input_ids'],
+                    attention_mask=inputs['attention_mask'],
+                    max_length=100,      # Total output length for T5
+                    min_length=10,       # Minimum output length  
                     temperature=temperature,
                     do_sample=True,
-                    pad_token_id=tokenizer.eos_token_id,
-                    eos_token_id=tokenizer.eos_token_id,
-                    num_beams=1,         # No beam search for faster generation
-                    repetition_penalty=1.2,  # Higher to avoid repetition
+                    num_beams=2,         # Light beam search for better quality
+                    repetition_penalty=1.1,
                     length_penalty=1.0,
-                    no_repeat_ngram_size=3  # Prevent repetitive phrases
+                    early_stopping=True,
+                    pad_token_id=tokenizer.pad_token_id,
+                    eos_token_id=tokenizer.eos_token_id
                 )
             
             logger.info(f"Generated token count: {outputs[0].shape[0]}")
-            logger.info(f"New tokens generated: {outputs[0].shape[0] - inputs['input_ids'].shape[1]}")
             
-            # Decode response (skip the input tokens)
-            generated_hint = tokenizer.decode(outputs[0][inputs['input_ids'].shape[1]:], skip_special_tokens=True)
+            # Decode response (T5 outputs full response, no need to skip input tokens)
+            generated_hint = tokenizer.decode(outputs[0], skip_special_tokens=True)
             
             # Clean up the response - remove extra whitespace and common artifacts
             generated_hint = generated_hint.strip()
