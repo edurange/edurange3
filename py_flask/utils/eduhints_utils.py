@@ -16,7 +16,6 @@ try:
     ML_AVAILABLE = True
 except ImportError:
     ML_AVAILABLE = False
-from py_flask.utils.common_utils import get_system_resource
 
 def create_language_model_object() -> tuple:  
 
