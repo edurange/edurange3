@@ -17,7 +17,17 @@ class Edu3Mixin:
     # that also have to_dict, if they are 'related' by way of db
     def to_dict(self, include_relationships=False):
         """Convert model instance to a dictionary, optionally including relationships."""
-        result = {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
+        from datetime import datetime
+        
+        result = {}
+        for c in inspect(self).mapper.column_attrs:
+            value = getattr(self, c.key)
+            # Handle datetime serialization
+            if isinstance(value, datetime):
+                result[c.key] = value.isoformat()
+            else:
+                result[c.key] = value
+                
         if include_relationships:
             for key, value in result.items():
                 if hasattr(value, 'to_dict'):

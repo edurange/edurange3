@@ -1,6 +1,7 @@
 
 # EDUHints
 pyopencl==2024.2.7
-ctransformers==0.2.27
+torch>=2.0.0
+transformers>=4.35.0
 huggingface-hub==0.23.4
 

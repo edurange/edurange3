@@ -46,8 +46,10 @@ from py_flask.utils.tasks import (
     cancel_generate_hint_task
 )
 from py_flask.utils.error_utils import (
-    custom_abort
+    custom_abort,
+    safe_jsonify
 )
+from py_flask.utils.api_response import ApiResponse
 
 from py_flask.utils.staffData_utils import get_staffData
 import subprocess
@@ -504,9 +506,14 @@ def query_small_language_model():
         'user_prompt': this_user_prompt
     }
      
-    response = query_small_language_model_task.delay(task=this_task, generation_parameters=generation_parameters).get(timeout=None)
-    
-    return jsonify(response)
+    try:
+        response = query_small_language_model_task.delay(task=this_task, generation_parameters=generation_parameters).get(timeout=None)
+        return ApiResponse.success(data=response, message="Hint generated successfully")
+    except Exception as e:
+        return ApiResponse.server_error(
+            message="Failed to generate response",
+            details={"error": str(e), "task": this_task}
+        )
 
 @blueprint_staff.route("/get_student_logs", methods=['POST'])
 @jwt_and_csrf_required
@@ -516,9 +523,14 @@ def get_recent_student_logs_route():
     this_student_id = requestJSON["student_id"]
     this_number_of_logs = 3
 
-    logs_dict = get_recent_student_logs_task.delay(this_student_id, this_number_of_logs).get(timeout=None)
-    
-    return jsonify(logs_dict)
+    try:
+        logs_dict = get_recent_student_logs_task.delay(this_student_id, this_number_of_logs).get(timeout=None)
+        return ApiResponse.success(data=logs_dict, message="Student logs retrieved successfully")
+    except Exception as e:
+        return ApiResponse.server_error(
+            message="Failed to retrieve student logs",
+            details={"error": str(e), "student_id": this_student_id}
+        )
 
 @blueprint_staff.route("/update_model", methods=['POST'])
 @jwt_and_csrf_required

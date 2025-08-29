@@ -13,7 +13,7 @@ import math
 import pyopencl as cl
 import asyncio
 import csv
-from ctransformers import AutoModelForCausalLM
+import torch
 import logging
 
 from datetime import datetime
@@ -762,7 +762,7 @@ def query_small_language_model_task(self, task, generation_parameters):
             raise Exception (f"ERROR: Failed to retrieve or set query_small_language_model_task_id to redis db2: [{e}]")
 
 
-    def custom_query(language_model_object, generation_parameters):
+    def custom_query(model, tokenizer, generation_parameters):
 
         start_time = time.time()
 
@@ -777,11 +777,21 @@ def query_small_language_model_task(self, task, generation_parameters):
 
         try:
             prompt = f"<s>[INST] <<SYS>>\n{system_prompt}\n<</SYS>>\n\n{user_prompt} [/INST]"
-            response = language_model_object(
-                prompt,
-                max_new_tokens=max_tokens,
-                temperature=temperature,
-            )
+            # Tokenize input
+            inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
+            
+            # Generate response
+            with torch.no_grad():
+                outputs = model.generate(
+                    **inputs,
+                    max_new_tokens=max_tokens,
+                    temperature=temperature,
+                    do_sample=True,
+                    pad_token_id=tokenizer.eos_token_id
+                )
+            
+            # Decode response (skip the input tokens)
+            response = tokenizer.decode(outputs[0][inputs['input_ids'].shape[1]:], skip_special_tokens=True)
 
         except Exception as e:
             raise Exception (f"ERROR: Failed to generate results: [{e}]")
@@ -791,7 +801,7 @@ def query_small_language_model_task(self, task, generation_parameters):
 
         return response, duration
     
-    def generate_hint(language_model_object, generation_parameters, logs_dict):
+    def generate_hint(model, tokenizer, generation_parameters, logs_dict):
 
         start_time = time.time()
 
@@ -829,10 +839,21 @@ def query_small_language_model_task(self, task, generation_parameters):
 
         try:
             prompt = f"<s>[INST] <<SYS>>\n{finalized_system_prompt}\n<</SYS>>\n\n{finalized_user_prompt} [/INST]"
-            generated_hint = language_model_object(
-                prompt,
-                temperature=temperature,
-            )
+            # Tokenize input
+            inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
+            
+            # Generate response
+            with torch.no_grad():
+                outputs = model.generate(
+                    **inputs,
+                    max_new_tokens=256,  # Default max tokens for hints
+                    temperature=temperature,
+                    do_sample=True,
+                    pad_token_id=tokenizer.eos_token_id
+                )
+            
+            # Decode response (skip the input tokens)
+            generated_hint = tokenizer.decode(outputs[0][inputs['input_ids'].shape[1]:], skip_special_tokens=True)
 
         except Exception as e:
             raise Exception (f"ERROR: Failed to generate results: [{e}]")
@@ -844,31 +865,18 @@ def query_small_language_model_task(self, task, generation_parameters):
 
         return generated_hint, logs_dict, duration
         
-    sys_db_redis_client = redis.Redis(host='localhost', port=6379, db=1)
     user_db_redis_client = redis.Redis(host='localhost', port=6379, db=2)
-
-    system_resources = get_resource_settings_from_redis(sys_db_redis_client)
-    
-    # Auto-initialize system resources if they haven't been set
-    if system_resources['cpu_resources'] is None or system_resources['gpu_resources'] is None:
-        logger.info("System resources not initialized. Initializing automatically...")
-        initialize_system_resources_task()
-        system_resources = get_resource_settings_from_redis(sys_db_redis_client)
-    
-    cpu_resources = int(system_resources['cpu_resources'])
-    gpu_resources = int(system_resources['gpu_resources'])
-
-    language_model_object = create_language_model_object(cpu_resources, gpu_resources)
+    model, tokenizer = create_language_model_object()
     
     if task == "custom_query":
-        response, duration = custom_query(language_model_object, generation_parameters)
+        response, duration = custom_query(model, tokenizer, generation_parameters)
         set_query_small_language_model_task_id()
 
         return {'response': response, 'duration': duration}
     
     if task == "generate_hint":
         logs_dict = get_logs_dict_from_redis(user_db_redis_client)
-        generated_hint, logs_dict, duration = generate_hint(language_model_object, generation_parameters, logs_dict)
+        generated_hint, logs_dict, duration = generate_hint(model, tokenizer, generation_parameters, logs_dict)
         set_query_small_language_model_task_id()
 
         return {'generated_hint': generated_hint, 'logs_dict': logs_dict, 'duration': duration}

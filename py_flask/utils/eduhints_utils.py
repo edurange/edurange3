@@ -10,7 +10,8 @@ import csv
 import pickle
 import redis
 
-from ctransformers import AutoModelForCausalLM
+import torch
+from transformers import AutoModelForCausalLM, AutoTokenizer
 from py_flask.utils.common_utils import get_system_resources
 
 
@@ -42,18 +43,21 @@ SOFTWARE.
 
 """
 
-def create_language_model_object(cpu_resources: int, gpu_resources: int) -> None:  
+def create_language_model_object() -> tuple:  
 
       try:
-            language_model_object = AutoModelForCausalLM.from_pretrained(
-                  "TheBloke/Llama-2-7B-Chat-GGML",
-                  model_file="llama-2-7b-chat.ggmlv3.q4_0.bin",
-                  model_type="llama",
-                  gpu_layers=gpu_resources,
-                  threads=cpu_resources,
-                  context_length=4096
+            # Load model 
+            model = AutoModelForCausalLM.from_pretrained(
+                "meta-llama/Llama-2-7b-chat-hf",
+                torch_dtype=torch.float16,
+                device_map="auto"
             )
-            return language_model_object
+            
+            # Load tokenizer
+            tokenizer = AutoTokenizer.from_pretrained("meta-llama/Llama-2-7b-chat-hf")
+            tokenizer.pad_token = tokenizer.eos_token
+            
+            return model, tokenizer
 
       except Exception as e:
             raise Exception(f"ERROR: Failed to initialize model object: {e}")
