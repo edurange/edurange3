@@ -6,6 +6,7 @@ import Staff_Groups from './groups/Staff_Groups';
 import Staff_GroupDetail from './groups/Staff_GroupDetail';
 import Frame_side from '../../frame/sidenav/Frame_side';
 import Staff_Scenarios from './scenarios/Staff_Scenarios';
+import Staff_ScenDetail from './scenarios/Staff_ScenDetail';
 import Staff_Users from './users/Staff_Users';
 import Staff_UserDetail from './users/Staff_UserDetail';
 import { HomeRouter_context } from '../pub/Home_router';
@@ -197,7 +198,7 @@ function Staff_router() {
                         <Routes>
                             <Route path="/*" element={<Staff_Dash />} />
                             <Route path="/scenarios/*" element={<Staff_Scenarios />} />
-                            <Route path="/scenarios/:scenarioID" element={<Scenario_controller />} />
+                            <Route path="/scenarios/:scenarioID" element={<Staff_ScenDetail />} />
                             <Route path="/groups/*" element={<Staff_Groups />} />
                             <Route path="/groups/:groupID/*" element={<Staff_GroupDetail />} />
                             <Route path="/students/*" element={<Staff_Users />} />
