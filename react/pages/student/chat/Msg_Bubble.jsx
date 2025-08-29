@@ -6,7 +6,7 @@ import { HintConfig_Context } from "../../staff/hints/Hints_Controller";
 import Hint_Textbox from "../../staff/hints/sub/Hint_Textbox";
 import './Msg_Bubble.css';
 
-function Msg_Bubble({ is_staff, message_obj, user_id, is_outgoing }) {
+function Msg_Bubble({ is_staff, message_obj, user_id, is_outgoing, user_role }) {
 
     const [hintTabEnabled_state, set_hintTabEnabled_state] = useState(false)
     const {
@@ -108,7 +108,7 @@ function Msg_Bubble({ is_staff, message_obj, user_id, is_outgoing }) {
 
                                 <div className="hint-btn-set">
 
-                                    {message_obj?.user_id !== userData_state?.id ?
+                                    {message_obj?.user_id !== userData_state?.id && (user_role === 'instructor' || user_role === 'staff' || is_staff) ?
                                         <div
                                             onClick={(event) => handleHintTabClick(event, message_obj)}
                                             className='hintbtn-frame' >

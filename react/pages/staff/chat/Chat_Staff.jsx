@@ -157,6 +157,7 @@ function Chat_Staff({is_allSeeing, selectedUser_obj}) {
                                 user_id={userData_state?.id}
                                 message_obj={chat}
                                 is_outgoing={chat?.user_id === userData_state?.id}
+                                user_role={userData_state?.role}
                             />
 
                         </div>
