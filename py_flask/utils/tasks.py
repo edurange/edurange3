@@ -777,8 +777,8 @@ def query_small_language_model_task(self, task, generation_parameters):
         try:
             import torch
             
-            # DialoGPT simple format - just concatenate the prompts  
-            prompt = f"System: {system_prompt}\nUser: {user_prompt}\nAssistant:"
+            # DialoGPT improved prompt format for better response generation
+            prompt = f"{system_prompt}\n\nUser: {user_prompt}\n\nHelpful Response:"
             # Tokenize input
             inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
             
@@ -797,6 +797,14 @@ def query_small_language_model_task(self, task, generation_parameters):
             
             # Decode response (skip the input tokens)
             response = tokenizer.decode(outputs[0][inputs['input_ids'].shape[1]:], skip_special_tokens=True)
+            
+            # Clean up the response
+            response = response.strip()
+            logger.info(f"Generated response (raw): '{response}'")
+            
+            # If response is empty, provide a fallback
+            if not response or len(response.strip()) < 5:
+                response = "I understand your question, but I need more context to provide a helpful response."
 
         except Exception as e:
             raise Exception (f"ERROR: Failed to generate results: [{e}]")
@@ -845,8 +853,8 @@ def query_small_language_model_task(self, task, generation_parameters):
         try:
             import torch
             
-            # DialoGPT simple format - just concatenate the prompts
-            prompt = f"System: {finalized_system_prompt}\nUser: {finalized_user_prompt}\nAssistant:"
+            # DialoGPT improved prompt format for better response generation
+            prompt = f"{finalized_system_prompt}\n\nStudent Question: {finalized_user_prompt}\n\nHelpful Response:"
             # Tokenize input
             inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
             
@@ -866,6 +874,17 @@ def query_small_language_model_task(self, task, generation_parameters):
             
             # Decode response (skip the input tokens)
             generated_hint = tokenizer.decode(outputs[0][inputs['input_ids'].shape[1]:], skip_special_tokens=True)
+            
+            # Clean up the response - remove extra whitespace and common artifacts
+            generated_hint = generated_hint.strip()
+            
+            # Add logging to debug the response
+            logger.info(f"Generated hint (raw): '{generated_hint}'")
+            logger.info(f"Generated hint length: {len(generated_hint)}")
+            
+            # If response is empty or too short, provide a fallback
+            if not generated_hint or len(generated_hint.strip()) < 10:
+                generated_hint = "Try reviewing the previous steps and check if you're following the correct procedure. Look for clues in the scenario description."
 
         except Exception as e:
             raise Exception (f"ERROR: Failed to generate results: [{e}]")
