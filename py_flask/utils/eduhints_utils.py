@@ -20,7 +20,7 @@ from py_flask.utils.common_utils import get_system_resources
 
 
 """
-For local generation we use the Phi-3 small language model, provided is it's license:
+For local generation we use the Phi-3.5-mini-instruct small language model, provided is its license:
 
 Microsoft.
 Copyright (c) Microsoft Corporation.
@@ -55,13 +55,14 @@ def create_language_model_object() -> tuple:
       try:
             # Load model 
             model = AutoModelForCausalLM.from_pretrained(
-                "meta-llama/Llama-2-7b-chat-hf",
+                "microsoft/Phi-3.5-mini-instruct",
                 torch_dtype=torch.float16,
-                device_map="auto"
+                device_map="auto",
+                trust_remote_code=True
             )
             
             # Load tokenizer
-            tokenizer = AutoTokenizer.from_pretrained("meta-llama/Llama-2-7b-chat-hf")
+            tokenizer = AutoTokenizer.from_pretrained("microsoft/Phi-3.5-mini-instruct")
             tokenizer.pad_token = tokenizer.eos_token
             
             return model, tokenizer

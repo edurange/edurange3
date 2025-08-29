@@ -777,7 +777,8 @@ def query_small_language_model_task(self, task, generation_parameters):
         try:
             import torch
             
-            prompt = f"<s>[INST] <<SYS>>\n{system_prompt}\n<</SYS>>\n\n{user_prompt} [/INST]"
+            # Phi-3.5 format: <|system|>system_message<|end|><|user|>user_message<|end|><|assistant|>
+            prompt = f"<|system|>\n{system_prompt}<|end|>\n<|user|>\n{user_prompt}<|end|>\n<|assistant|>\n"
             # Tokenize input
             inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
             
@@ -841,7 +842,8 @@ def query_small_language_model_task(self, task, generation_parameters):
         try:
             import torch
             
-            prompt = f"<s>[INST] <<SYS>>\n{finalized_system_prompt}\n<</SYS>>\n\n{finalized_user_prompt} [/INST]"
+            # Phi-3.5 format: <|system|>system_message<|end|><|user|>user_message<|end|><|assistant|>
+            prompt = f"<|system|>\n{finalized_system_prompt}<|end|>\n<|user|>\n{finalized_user_prompt}<|end|>\n<|assistant|>\n"
             # Tokenize input
             inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
             
