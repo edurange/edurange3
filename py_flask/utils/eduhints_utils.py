@@ -47,7 +47,7 @@ def create_language_model_object(cpu_resources: int, gpu_resources: int) -> None
       try:
             language_model_object = AutoModelForCausalLM.from_pretrained(
                   "TheBloke/Llama-2-7B-Chat-GGML",
-                  model_file="llama-2-7b-chat.q4_0.bin",
+                  model_file="llama-2-7b-chat.ggmlv3.q4_0.bin",
                   model_type="llama",
                   gpu_layers=gpu_resources,
                   threads=cpu_resources,
