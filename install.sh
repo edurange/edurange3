@@ -14,6 +14,10 @@ hostAddress="localhost"
 rootPass="change-me"
 curDir=$(pwd)
 
+# Prompt user if they want to use ml features.
+echo -e "${GRN}Do you want to enable machine learning features? (y/n): ${NC}"
+read -r enable_ml_features
+enable_ml_features=${enable_ml_features,,}
 
 # Add pip-executables to the path if they aren't already
 grep -qxF 'export PATH=$PATH:/home/$(whoami)/.local/bin' ~/.bashrc || echo 'export PATH=$PATH:/home/$(whoami)/.local/bin' >> ~/.bashrc

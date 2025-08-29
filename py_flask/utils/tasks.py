@@ -10,8 +10,13 @@ import pickle
 import time
 import datetime
 import math
+import pyopencl as cl
 import asyncio
 import csv
+import llama_cpp
+from llama_cpp import Llama
+from llama_index.core import Settings
+from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 import logging
 
 from datetime import datetime
@@ -19,26 +24,18 @@ from celery import Celery
 from celery import shared_task
 from celery.utils.log import get_task_logger
 from flask import current_app, flash, jsonify
-from py_flask.utils.terraform_utils import (
-    adjust_network,
-    find_and_copy_template,
-    write_resource,
-)
+from py_flask.utils.terraform_utils import adjust_network, find_and_copy_template, write_resource
 from py_flask.config.settings import CELERY_BROKER_URL, CELERY_RESULT_BACKEND
 from py_flask.utils.scenario_utils import claimOctet
 from py_flask.utils.staff_utils import getLogs, getRecentLogs
 from py_flask.utils.scenario_utils import gather_files
 from py_flask.utils.staff_utils import NotifyCapture
-from py_flask.database.models import (
-    Scenarios,
-    ScenarioGroups,
-    Responses,
-    BashHistory,
-    Users,
-)
+from py_flask.database.models import Scenarios, ScenarioGroups, Responses, BashHistory, Users
 from py_flask.utils.csv_utils import readCSV
 from py_flask.config.extensions import db
 from flask_sqlalchemy import SQLAlchemy
+from py_flask.utils.eduhints_utils import create_language_model_object_llama, load_context_file_contents, export_hint_to_csv
+from py_flask.utils.common_utils import get_system_resources
 
 # Create a custom logger
 logger = get_task_logger(__name__)
@@ -630,21 +627,21 @@ def scenarioCollectLogs(self, arg):
                     model=BashHistory,
                     scenario_type=scenario_rawObj.scenario_type,
                     scenario_id=scenario_rawObj.id,
-                    container_name=line[6].split(":")[0],
+                    container_name=line[6].split(':')[0],
                     timestamp=clean_datetime,
                     current_directory=line[5],
-                    input=line[6].split(":")[-1],
+                    input=line[6].split(':')[-1],
                     output=line[7],
                     archive_id=this_archive_id,
-                    user_id=user_rawObj.id,
+                    user_id=user_rawObj.id
+                    
                 )
         except FileNotFoundError as e:
             print(f"Container not found: {e} - Skipping")
 
-
 @celery.on_after_configure.connect
 def setup_periodic_tasks(sender, **kwargs):
-    sender.add_periodic_task(60.0, scenarioCollectLogs.s(""))
+    sender.add_periodic_task(60.0, scenarioCollectLogs.s(''))
 
 # Machine learning tasks 
 
