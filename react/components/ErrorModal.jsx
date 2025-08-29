@@ -40,7 +40,7 @@ function ErrorModal({ message, status_code }) {
                 </div>
                 <div className='modal-carpet'>
                     <div className='modal-longMessage'>
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Nostrum obcaecati laboriosam ipsa cumque consectetur, iste unde fugiat dolor velit sunt iure ipsam, asperiores molestias repellat rerum dolore voluptatum, numquam eligendi. Provident repellat dicta optio esse placeat, ipsum modi sint voluptatem nostrum veniam nobis dolor qui, officia perferendis repellendus aliquam sapiente repudiandae, culpa deserunt sunt aperiam. Neque, deleniti provident? Vitae ullam quas veritatis esse rem veniam hic odit fugit labore expedita, repudiandae sit iure minima voluptas, ad inventore a in fugiat odio iusto. Delectus ratione aspernatur dicta amet fuga, explicabo incidunt perferendis aut soluta veniam repudiandae itaque, neque similique, cum quae.
+                        <p>Try refreshing the page. If the error continues, contact your instructor.</p>
                     </div>
                 </div>
             </div>

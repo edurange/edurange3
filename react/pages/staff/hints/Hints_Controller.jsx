@@ -217,7 +217,7 @@ function Hints_Controller({ children }) {
                 port: '6379',
                 db: '1',
                 task: "generate_hint",
-                scenario_name: selectedScenario_state.scenario_type.toLowerCase(),
+                scenario_name: selectedScenario_state.scenario_type?.toLowerCase() || 'n/a',
                 disable_scenario_context: checkForDisableScenarioContext,
                 temperature: temp_selected
             };
