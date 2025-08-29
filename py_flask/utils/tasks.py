@@ -831,7 +831,7 @@ def query_small_language_model_task(self, task, generation_parameters):
         if disable_scenario_context:
 
             try:
-                finalized_system_prompt = "You are helping a student in a cybersecurity lab. Analyze their RECENT ACTIVITY (most important) and provide ONE specific actionable hint. Focus on their latest commands and messages - what should they try next? Keep response under 2 sentences."
+                finalized_system_prompt = "You are helping a student in a cybersecurity lab. Analyze their RECENT ACTIVITY (most important) and provide ONE specific actionable hint. Focus on their latest commands and messages - what should they try next? Be concise but detailed enough to be helpful. Respond with ONLY the hint, no preamble or explanation."
                 
                 # Structure the context to prioritize recent activity
                 recent_context = ""
@@ -855,7 +855,7 @@ def query_small_language_model_task(self, task, generation_parameters):
                 raise Exception (f"ERROR: 'load_context_file_contents()' failed: [{e}]")
 
             try:
-                finalized_system_prompt = "You are helping a student in a cybersecurity lab. First analyze their RECENT ACTIVITY (most important), then consider the scenario context. Provide ONE specific actionable hint based on what they just tried. Keep response under 2 sentences."
+                finalized_system_prompt = "You are helping a student in a cybersecurity lab. First analyze their RECENT ACTIVITY (most important), then consider the scenario context. Provide ONE specific actionable hint based on what they just tried. Be concise but detailed enough to be helpful. Respond with ONLY the hint, no preamble or explanation."
                 
                 # Structure the context to prioritize recent activity over scenario summary
                 recent_context = ""
@@ -900,7 +900,7 @@ def query_small_language_model_task(self, task, generation_parameters):
             with torch.no_grad():
                 outputs = model.generate(
                     **inputs,
-                    max_new_tokens=60,   # Short hints
+                    max_new_tokens=120,   # Longer but concise hints
                     temperature=temperature,
                     do_sample=True,
                     pad_token_id=tokenizer.eos_token_id,
