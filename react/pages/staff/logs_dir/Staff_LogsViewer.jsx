@@ -1,9 +1,10 @@
 import React, { useContext, useState, useEffect, useMemo } from 'react';
 import Dropdown from '@components/Dropdown.jsx';
-import '@components/Dropdown.css'
 import { StaffRouter_context } from '../Staff_router.jsx';
 import LogTable from './LogTable.jsx';
 import Placard from '@components/Placard.jsx';
+import '@components/Dropdown.css';
+import '@assets/css/logs-improved.css';
 
 function Staff_LogsViewer() {
 
