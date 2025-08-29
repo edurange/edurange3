@@ -777,8 +777,8 @@ def query_small_language_model_task(self, task, generation_parameters):
         try:
             import torch
             
-            # DialoGPT improved prompt format for better response generation
-            prompt = f"{system_prompt}\n\nUser: {user_prompt}\n\nHelpful Response:"
+            # GPT-2 prompt format for better response generation  
+            prompt = f"{system_prompt}\n\nContext: {user_prompt}\n\nResponse:"
             # Tokenize input
             inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
             
@@ -853,24 +853,43 @@ def query_small_language_model_task(self, task, generation_parameters):
         try:
             import torch
             
-            # DialoGPT improved prompt format for better response generation
-            prompt = f"{finalized_system_prompt}\n\nStudent Question: {finalized_user_prompt}\n\nHelpful Response:"
+            # GPT-2 prompt format for better response generation
+            prompt = f"{finalized_system_prompt}\n\nContext: {finalized_user_prompt}\n\nHint:"
+            
+            # Debug logging for prompt and context
+            logger.info(f"=== HINT GENERATION DEBUG ===")
+            logger.info(f"Scenario name: {scenario_name}")
+            logger.info(f"Disable scenario context: {disable_scenario_context}")
+            logger.info(f"Temperature: {temperature}")
+            logger.info(f"Logs dict keys: {list(logs_dict.keys()) if logs_dict else 'None'}")
+            logger.info(f"Bash logs sample: {str(logs_dict.get('bash', 'None'))[:200]}...")
+            logger.info(f"Chat logs sample: {str(logs_dict.get('chat', 'None'))[:200]}...")
+            logger.info(f"Response logs sample: {str(logs_dict.get('responses', 'None'))[:200]}...")
+            logger.info(f"Final prompt length: {len(prompt)}")
+            logger.info(f"Final prompt preview: {prompt[:500]}...")
+            
             # Tokenize input
             inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
+            logger.info(f"Input token count: {inputs['input_ids'].shape[1]}")
             
-            # Generate response optimized for CPU
+            # Generate response optimized for CPU and DialoGPT
             with torch.no_grad():
                 outputs = model.generate(
                     **inputs,
-                    max_new_tokens=100,  # Reduced for faster generation - hints should be short
-                    temperature=0.7,     # Lower temperature for more focused responses
+                    max_new_tokens=50,   # Shorter for hints
+                    min_length=inputs['input_ids'].shape[1] + 5,  # Ensure some output
+                    temperature=temperature,
                     do_sample=True,
                     pad_token_id=tokenizer.eos_token_id,
+                    eos_token_id=tokenizer.eos_token_id,
                     num_beams=1,         # No beam search for faster generation
-                    early_stopping=True,
-                    repetition_penalty=1.1,
-                    length_penalty=0.8   # Encourage shorter responses
+                    repetition_penalty=1.2,  # Higher to avoid repetition
+                    length_penalty=1.0,
+                    no_repeat_ngram_size=3  # Prevent repetitive phrases
                 )
+            
+            logger.info(f"Generated token count: {outputs[0].shape[0]}")
+            logger.info(f"New tokens generated: {outputs[0].shape[0] - inputs['input_ids'].shape[1]}")
             
             # Decode response (skip the input tokens)
             generated_hint = tokenizer.decode(outputs[0][inputs['input_ids'].shape[1]:], skip_special_tokens=True)
@@ -881,10 +900,21 @@ def query_small_language_model_task(self, task, generation_parameters):
             # Add logging to debug the response
             logger.info(f"Generated hint (raw): '{generated_hint}'")
             logger.info(f"Generated hint length: {len(generated_hint)}")
+            logger.info(f"Generated hint (cleaned): '{generated_hint.strip()}'")
             
-            # If response is empty or too short, provide a fallback
+            # If response is empty or too short, try to understand why
             if not generated_hint or len(generated_hint.strip()) < 10:
-                generated_hint = "Try reviewing the previous steps and check if you're following the correct procedure. Look for clues in the scenario description."
+                logger.warning(f"Generated hint is too short or empty!")
+                logger.warning(f"Raw output length: {len(generated_hint)}")
+                logger.warning(f"Input prompt was: {prompt[-200:]}")  # Last 200 chars
+                
+                # Check if we have any context to work with
+                if logs_dict.get('bash') or logs_dict.get('chat') or logs_dict.get('responses'):
+                    generated_hint = "Based on your recent activity, consider checking your previous commands and reviewing the scenario instructions for the next step."
+                else:
+                    generated_hint = "No recent activity found. Start by reading the scenario instructions and try running some basic commands to explore the environment."
+            
+            logger.info(f"Final hint to return: '{generated_hint}'")
 
         except Exception as e:
             raise Exception (f"ERROR: Failed to generate results: [{e}]")

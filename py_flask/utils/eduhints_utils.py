@@ -23,9 +23,9 @@ def create_language_model_object() -> tuple:
           raise Exception("ERROR: ML libraries (torch, transformers) are not installed. Install ml_requirements.txt to use hint generation.")
 
       try:
-            # Load model optimized for CPU inference
+            # Load model optimized for CPU inference - using GPT-2 base for better text completion
             model = AutoModelForCausalLM.from_pretrained(
-                "microsoft/DialoGPT-small",  
+                "gpt2",                      # GPT-2 base model (124M parameters) - better for completion tasks
                 torch_dtype=torch.float32,   # float32 for CPU, float16 not supported on CPU
                 device_map="cpu",            # Force CPU to avoid GPU detection overhead
                 low_cpu_mem_usage=True,      # Optimize CPU memory usage
@@ -33,7 +33,7 @@ def create_language_model_object() -> tuple:
             )
             
             # Load tokenizer
-            tokenizer = AutoTokenizer.from_pretrained("microsoft/DialoGPT-small")
+            tokenizer = AutoTokenizer.from_pretrained("gpt2")
             tokenizer.pad_token = tokenizer.eos_token
             
             return model, tokenizer
