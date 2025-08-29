@@ -42,7 +42,7 @@ SOFTWARE.
 
 """
 
-def create_language_model_object_llama(cpu_resources: int, gpu_resources: int) -> None:  
+def create_language_model_object(cpu_resources: int, gpu_resources: int) -> None:  
 
       try:
             language_model_object = AutoModelForCausalLM.from_pretrained(

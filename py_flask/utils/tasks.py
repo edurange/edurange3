@@ -31,7 +31,7 @@ from py_flask.database.models import Scenarios, ScenarioGroups, Responses, BashH
 from py_flask.utils.csv_utils import readCSV
 from py_flask.config.extensions import db
 from flask_sqlalchemy import SQLAlchemy
-from py_flask.utils.eduhints_utils import create_language_model_object_llama, load_context_file_contents, export_hint_to_csv
+from py_flask.utils.eduhints_utils import create_language_model_object, load_context_file_contents, export_hint_to_csv
 from py_flask.utils.common_utils import get_system_resources
 
 # Create a custom logger
@@ -762,7 +762,7 @@ def query_small_language_model_task(self, task, generation_parameters):
             raise Exception (f"ERROR: Failed to retrieve or set query_small_language_model_task_id to redis db2: [{e}]")
 
 
-    def custom_query(language_model_object_llama):
+    def custom_query(language_model_object, generation_parameters):
 
         start_time = time.time()
 
@@ -777,7 +777,7 @@ def query_small_language_model_task(self, task, generation_parameters):
 
         try:
             prompt = f"<|system|>{system_prompt}<|end|>\n<|user|>\n{user_prompt}<|end|>\n<|assistant|> "
-            response = language_model_object_llama(
+            response = language_model_object(
                 prompt,
                 max_new_tokens=max_tokens,
                 temperature=temperature,
@@ -791,7 +791,7 @@ def query_small_language_model_task(self, task, generation_parameters):
 
         return response, duration
     
-    def generate_hint(language_model_object_llama, generation_parameters, logs_dict):
+    def generate_hint(language_model_object, generation_parameters, logs_dict):
 
         start_time = time.time()
 
@@ -829,7 +829,7 @@ def query_small_language_model_task(self, task, generation_parameters):
 
         try:
             prompt = f"<|system|>{finalized_system_prompt}<|end|>\n<|user|>\n{finalized_user_prompt}<|end|>\n<|assistant|> "
-            generated_hint = language_model_object_llama(
+            generated_hint = language_model_object(
                 prompt,
                 temperature=temperature,
             )
@@ -851,17 +851,17 @@ def query_small_language_model_task(self, task, generation_parameters):
     cpu_resources = int(system_resources['cpu_resources'])
     gpu_resources = int(system_resources['gpu_resources'])
 
-    language_model_object_llama = create_language_model_object_llama(cpu_resources, gpu_resources)
+    language_model_object = create_language_model_object(cpu_resources, gpu_resources)
     
     if task == "custom_query":
-        response, duration = custom_query(language_model_object_llama, generation_parameters)
+        response, duration = custom_query(language_model_object, generation_parameters)
         set_query_small_language_model_task_id()
 
         return {'response': response, 'duration': duration}
     
     if task == "generate_hint":
         logs_dict = get_logs_dict_from_redis(user_db_redis_client)
-        generated_hint, logs_dict, duration = generate_hint(language_model_object_llama, generation_parameters, logs_dict)
+        generated_hint, logs_dict, duration = generate_hint(language_model_object, generation_parameters, logs_dict)
         set_query_small_language_model_task_id()
 
         return {'generated_hint': generated_hint, 'logs_dict': logs_dict, 'duration': duration}
