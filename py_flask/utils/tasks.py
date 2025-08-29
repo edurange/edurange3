@@ -777,19 +777,22 @@ def query_small_language_model_task(self, task, generation_parameters):
         try:
             import torch
             
-            # Phi-3.5 format: <|system|>system_message<|end|><|user|>user_message<|end|><|assistant|>
-            prompt = f"<|system|>\n{system_prompt}<|end|>\n<|user|>\n{user_prompt}<|end|>\n<|assistant|>\n"
+            # DialoGPT simple format - just concatenate the prompts  
+            prompt = f"System: {system_prompt}\nUser: {user_prompt}\nAssistant:"
             # Tokenize input
             inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
             
-            # Generate response
+            # Generate response optimized for CPU
             with torch.no_grad():
                 outputs = model.generate(
                     **inputs,
-                    max_new_tokens=max_tokens,
+                    max_new_tokens=min(max_tokens, 200),  # Cap max tokens for faster generation
                     temperature=temperature,
                     do_sample=True,
-                    pad_token_id=tokenizer.eos_token_id
+                    pad_token_id=tokenizer.eos_token_id,
+                    num_beams=1,         # No beam search for faster generation
+                    early_stopping=True,
+                    repetition_penalty=1.1
                 )
             
             # Decode response (skip the input tokens)
@@ -842,19 +845,23 @@ def query_small_language_model_task(self, task, generation_parameters):
         try:
             import torch
             
-            # Phi-3.5 format: <|system|>system_message<|end|><|user|>user_message<|end|><|assistant|>
-            prompt = f"<|system|>\n{finalized_system_prompt}<|end|>\n<|user|>\n{finalized_user_prompt}<|end|>\n<|assistant|>\n"
+            # DialoGPT simple format - just concatenate the prompts
+            prompt = f"System: {finalized_system_prompt}\nUser: {finalized_user_prompt}\nAssistant:"
             # Tokenize input
             inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
             
-            # Generate response
+            # Generate response optimized for CPU
             with torch.no_grad():
                 outputs = model.generate(
                     **inputs,
-                    max_new_tokens=256,  # Default max tokens for hints
-                    temperature=temperature,
+                    max_new_tokens=100,  # Reduced for faster generation - hints should be short
+                    temperature=0.7,     # Lower temperature for more focused responses
                     do_sample=True,
-                    pad_token_id=tokenizer.eos_token_id
+                    pad_token_id=tokenizer.eos_token_id,
+                    num_beams=1,         # No beam search for faster generation
+                    early_stopping=True,
+                    repetition_penalty=1.1,
+                    length_penalty=0.8   # Encourage shorter responses
                 )
             
             # Decode response (skip the input tokens)

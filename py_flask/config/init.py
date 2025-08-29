@@ -31,6 +31,10 @@ def create_app(config_object="py_flask.config.settings"):
     # set security attrs for 'session' cookie
     app.config['SESSION_COOKIE_SECURE'] = True
     app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+    
+    # Extended timeout settings for AI hint generation
+    app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
+    app.config['PERMANENT_SESSION_LIFETIME'] = 3600  # 1 hour session timeout
 
     # store archive_id in config so other flask scripts have access
 
