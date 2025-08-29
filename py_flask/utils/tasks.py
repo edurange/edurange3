@@ -831,8 +831,18 @@ def query_small_language_model_task(self, task, generation_parameters):
         if disable_scenario_context:
 
             try:
-                finalized_system_prompt = "##A student is completing a cyber-security scenario, look at their bash, chat and question/answer history and provide them a single concise hint on what to do next. The hint must not exceed two sentences in length."
-                finalized_user_prompt = f"  The student's Recent bash commands: {logs_dict['bash']}. The student's recent chat messages: {logs_dict['chat']}. The student's recent answers: {logs_dict['responses']}. "
+                finalized_system_prompt = "You are helping a student in a cybersecurity lab. Analyze their RECENT ACTIVITY (most important) and provide ONE specific actionable hint. Focus on their latest commands and messages - what should they try next? Keep response under 2 sentences."
+                
+                # Structure the context to prioritize recent activity
+                recent_context = ""
+                if logs_dict.get('bash'):
+                    recent_context += f"MOST RECENT COMMANDS (analyze these first): {logs_dict['bash'][-500:]}\n\n"
+                if logs_dict.get('chat'):
+                    recent_context += f"RECENT QUESTIONS/DISCUSSION: {logs_dict['chat'][-300:]}\n\n"
+                if logs_dict.get('responses'):
+                    recent_context += f"Previous attempts: {logs_dict['responses'][-200:]}"
+                
+                finalized_user_prompt = recent_context.strip()
             
             except Exception as e:
                 raise Exception (f"ERROR: Failed to initialize prompts: [{e}]")
@@ -845,8 +855,20 @@ def query_small_language_model_task(self, task, generation_parameters):
                 raise Exception (f"ERROR: 'load_context_file_contents()' failed: [{e}]")
 
             try:
-                finalized_system_prompt = "##A student is completing a cyber-security scenario, review the scenario's summary along with their bash, chat and question/answer history and provide them a single concise hint on what to do next. The hint must not exceed two sentences in length."
-                finalized_user_prompt = f" The scenario's summary: {scenario_summary}. The student's recent bash commands: {logs_dict['bash']}. The student's recent chat messages: {logs_dict['chat']}. The student's recent answers: {logs_dict['responses']}. "
+                finalized_system_prompt = "You are helping a student in a cybersecurity lab. First analyze their RECENT ACTIVITY (most important), then consider the scenario context. Provide ONE specific actionable hint based on what they just tried. Keep response under 2 sentences."
+                
+                # Structure the context to prioritize recent activity over scenario summary
+                recent_context = ""
+                if logs_dict.get('bash'):
+                    recent_context += f"MOST RECENT COMMANDS (analyze these first): {logs_dict['bash'][-500:]}\n\n"
+                if logs_dict.get('chat'):
+                    recent_context += f"RECENT QUESTIONS/DISCUSSION: {logs_dict['chat'][-300:]}\n\n"
+                if logs_dict.get('responses'):
+                    recent_context += f"Previous attempts: {logs_dict['responses'][-200:]}\n\n"
+                
+                recent_context += f"Background scenario context: {scenario_summary[-400:]}"
+                
+                finalized_user_prompt = recent_context.strip()
             
             except Exception as e:
                 raise Exception (f"ERROR: Failed to initialize prompts: [{e}]")
