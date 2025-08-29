@@ -9,6 +9,8 @@
     border-radius: 8px;
     padding: 16px;
     box-sizing: border-box;
+    position: relative !important;
+    overflow: hidden;
 }
 
 .logsViewer-carpet {
@@ -17,20 +19,32 @@
     display: flex !important;
     flex-direction: column !important;
     gap: 12px !important;
+    position: relative !important;
+    overflow: hidden;
 }
 
-/* Filters section - more compact */
+/* Filters section - more compact and properly positioned */
 .dropdown-frame {
-    background: rgba(192, 221, 255, 0.05);
-    border: 1px solid rgba(192, 221, 255, 0.2);
+    background: rgba(192, 221, 255, 0.05) !important;
+    border: 1px solid rgba(192, 221, 255, 0.2) !important;
     border-radius: 6px;
-    padding: 8px 12px;
+    padding: 8px 12px !important;
     margin-bottom: 12px;
     flex-shrink: 0;
+    position: static !important;
+    z-index: auto !important;
+    height: auto !important;
+    width: 100% !important;
+    box-sizing: border-box;
 }
 
 .dropdown-carpet {
-    width: 100%;
+    width: 100% !important;
+    height: auto !important;
+    background-color: transparent !important;
+    position: static !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
 }
 
 .filters-row {
@@ -41,6 +55,44 @@
     align-items: end !important;
     flex-wrap: wrap;
     margin-top: 8px;
+    padding: 0 !important;
+    position: static !important;
+    z-index: auto !important;
+    box-sizing: border-box;
+}
+
+/* Override dropdown styles within logs viewer to prevent floating/sticky behavior */
+.logsViewer-frame .dropdown-frame .filters-row > * {
+    position: static !important;
+    z-index: auto !important;
+    float: none !important;
+}
+
+/* Reset any problematic positioning on the create-frame class (from Dropdown.css line 64) */
+.logsViewer-frame .create-frame,
+.dropdown-frame .create-frame {
+    position: static !important;
+    z-index: auto !important;
+    height: auto !important;
+    margin: 2px !important;
+}
+
+/* Ensure individual dropdown components are properly positioned */
+.logsViewer-frame .dropdown-component,
+.logsViewer-frame .dropdown-wrapper,
+.logsViewer-frame .dropdown {
+    position: static !important;
+    z-index: auto !important;
+    display: inline-block !important;
+}
+
+/* Additional reset for any potential floating elements */
+.logsViewer-frame * {
+    position: static;
+}
+
+.logsViewer-frame .dropdown-frame * {
+    position: static !important;
 }
 
 .update-button {
