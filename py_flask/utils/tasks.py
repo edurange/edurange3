@@ -776,7 +776,7 @@ def query_small_language_model_task(self, task, generation_parameters):
             raise Exception (f"ERROR: Failed to load items from Redis cache: [{e}]")
 
         try:
-            prompt = f"<|system|>{system_prompt}<|end|>\n<|user|>\n{user_prompt}<|end|>\n<|assistant|> "
+            prompt = f"<s>[INST] <<SYS>>\n{system_prompt}\n<</SYS>>\n\n{user_prompt} [/INST]"
             response = language_model_object(
                 prompt,
                 max_new_tokens=max_tokens,
@@ -828,7 +828,7 @@ def query_small_language_model_task(self, task, generation_parameters):
 
 
         try:
-            prompt = f"<|system|>{finalized_system_prompt}<|end|>\n<|user|>\n{finalized_user_prompt}<|end|>\n<|assistant|> "
+            prompt = f"<s>[INST] <<SYS>>\n{finalized_system_prompt}\n<</SYS>>\n\n{finalized_user_prompt} [/INST]"
             generated_hint = language_model_object(
                 prompt,
                 temperature=temperature,

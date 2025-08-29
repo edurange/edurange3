@@ -46,12 +46,12 @@ def create_language_model_object(cpu_resources: int, gpu_resources: int) -> None
 
       try:
             language_model_object = AutoModelForCausalLM.from_pretrained(
-                  "microsoft/Phi-3-mini-4k-instruct-gguf",
-                  model_file="Phi-3-mini-4k-instruct-q4.gguf",
+                  "TheBloke/Llama-2-7B-Chat-GGML",
+                  model_file="llama-2-7b-chat.q4_0.bin",
                   model_type="llama",
                   gpu_layers=gpu_resources,
                   threads=cpu_resources,
-                  context_length=4086
+                  context_length=4096
             )
             return language_model_object
 
