@@ -23,17 +23,21 @@ def create_language_model_object() -> tuple:
           raise Exception("ERROR: ML libraries (torch, transformers) are not installed. Install ml_requirements.txt to use hint generation.")
 
       try:
-            # Load model optimized for CPU inference - using TinyLlama for chat/instruction following
+            # Load model optimized for CPU inference - using Phi-3-mini for instruction following
             model = AutoModelForCausalLM.from_pretrained(
-                "TinyLlama/TinyLlama-1.1B-Chat-v1.0",  # TinyLlama chat (1.1B parameters) - good instruction following
-                torch_dtype=torch.float32,   # float32 for CPU
-                device_map="cpu",            # Force CPU to avoid GPU detection overhead
-                low_cpu_mem_usage=True,      # Optimize CPU memory usage
-                use_cache=True               # Enable KV-cache for faster inference
+                "microsoft/Phi-3-mini-4k-instruct",  # Phi-3-mini (3.8B parameters) - excellent instruction following
+                torch_dtype=torch.float32,           # float32 for CPU
+                device_map="cpu",                    # Force CPU to avoid GPU detection overhead
+                low_cpu_mem_usage=True,              # Optimize CPU memory usage
+                use_cache=True,                      # Enable KV-cache for faster inference
+                trust_remote_code=True               # Required for Phi-3
             )
             
             # Load tokenizer
-            tokenizer = AutoTokenizer.from_pretrained("TinyLlama/TinyLlama-1.1B-Chat-v1.0")
+            tokenizer = AutoTokenizer.from_pretrained(
+                "microsoft/Phi-3-mini-4k-instruct",
+                trust_remote_code=True
+            )
             tokenizer.pad_token = tokenizer.eos_token
             
             return model, tokenizer

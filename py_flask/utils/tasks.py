@@ -777,13 +777,13 @@ def query_small_language_model_task(self, task, generation_parameters):
         try:
             import torch
             
-            # TinyLlama chat format for custom queries
-            prompt = f"<|system|>\n{system_prompt}</s>\n<|user|>\n{user_prompt}</s>\n<|assistant|>\n"
+            # Phi-3 chat format for custom queries
+            prompt = f"<|system|>\n{system_prompt}<|end|>\n<|user|>\n{user_prompt}<|end|>\n<|assistant|>\n"
             
-            # Tokenize input for TinyLlama (decoder-only model)
+            # Tokenize input for Phi-3 (decoder-only model)
             inputs = tokenizer(prompt, return_tensors="pt", truncation=True, max_length=1024).to(model.device)
             
-            # Generate response optimized for TinyLlama
+            # Generate response optimized for Phi-3
             with torch.no_grad():
                 outputs = model.generate(
                     **inputs,
@@ -877,8 +877,8 @@ def query_small_language_model_task(self, task, generation_parameters):
         try:
             import torch
             
-            # TinyLlama chat format - uses ChatML-style formatting
-            prompt = f"<|system|>\n{finalized_system_prompt}</s>\n<|user|>\n{finalized_user_prompt}</s>\n<|assistant|>\n"
+            # Phi-3 chat format - uses specific format for system/user/assistant
+            prompt = f"<|system|>\n{finalized_system_prompt}<|end|>\n<|user|>\n{finalized_user_prompt}<|end|>\n<|assistant|>\n"
             
             # Debug logging for prompt and context
             logger.info(f"=== HINT GENERATION DEBUG ===")
@@ -896,7 +896,7 @@ def query_small_language_model_task(self, task, generation_parameters):
             inputs = tokenizer(prompt, return_tensors="pt", truncation=True, max_length=1024).to(model.device)
             logger.info(f"Input token count: {inputs['input_ids'].shape[1]}")
             
-            # Generate response optimized for TinyLlama
+            # Generate response optimized for Phi-3
             with torch.no_grad():
                 outputs = model.generate(
                     **inputs,
