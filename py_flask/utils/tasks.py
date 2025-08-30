@@ -831,7 +831,7 @@ def query_small_language_model_task(self, task, generation_parameters):
         if disable_scenario_context:
 
             try:
-                finalized_system_prompt = "You are a cybersecurity instructor. A student needs help. Look at their recent commands and activity. Give them ONE direct hint about what to try next. Address them as 'you' and start immediately with the action. No introductions, explanations, or preambles - just the hint."
+                finalized_system_prompt = "Complete this hint for a cybersecurity student. Based on their recent activity, write EXACTLY ONE specific action they should take next. Start with a verb. Maximum 20 words."
                 
                 # Structure the context to prioritize recent activity
                 recent_context = ""
@@ -855,7 +855,7 @@ def query_small_language_model_task(self, task, generation_parameters):
                 raise Exception (f"ERROR: 'load_context_file_contents()' failed: [{e}]")
 
             try:
-                finalized_system_prompt = "You are a cybersecurity instructor. A student needs help with their lab. Look at their recent commands and the scenario context. Give them ONE direct hint about what to try next. Address them as 'you' and start immediately with the action. No introductions, explanations, or preambles - just the hint."
+                finalized_system_prompt = "Complete this hint for a cybersecurity student. Based on their recent activity and scenario context, write EXACTLY ONE specific action they should take next. Start with a verb. Maximum 20 words."
                 
                 # Structure the context to prioritize recent activity over scenario summary
                 recent_context = ""
@@ -877,8 +877,8 @@ def query_small_language_model_task(self, task, generation_parameters):
         try:
             import torch
             
-            # Phi-3 format with direct instruction to prevent preambles
-            prompt = f"<|system|>\n{finalized_system_prompt}<|end|>\n<|user|>\n{finalized_user_prompt}<|end|>\n<|assistant|>\nYou should"
+            # Phi-3 format with completion-style prompt to force single hint
+            prompt = f"<|system|>\n{finalized_system_prompt}<|end|>\n<|user|>\nStudent activity: {finalized_user_prompt}\n\nNext step:<|end|>\n<|assistant|>\n"
             
             # Debug logging for prompt and context
             logger.info(f"=== HINT GENERATION DEBUG ===")
@@ -900,16 +900,17 @@ def query_small_language_model_task(self, task, generation_parameters):
             with torch.no_grad():
                 outputs = model.generate(
                     **inputs,
-                    max_new_tokens=80,                   # Moderate length for direct hints
-                    temperature=temperature,
+                    max_new_tokens=25,                   # Very short to force single hint
+                    temperature=0.3,                     # Low temperature for focused response
                     do_sample=True,
                     pad_token_id=tokenizer.eos_token_id,
                     eos_token_id=tokenizer.eos_token_id,
-                    repetition_penalty=1.2,             # Higher penalty to avoid repetition
-                    top_p=0.85,                          # Slightly lower for more focused responses
-                    top_k=50,                            # Phi-3 works well with higher top_k
-                    no_repeat_ngram_size=2,              # Prevent 2-gram repetition
-                    early_stopping=True                  # Stop when hitting natural endpoints
+                    repetition_penalty=1.3,             # High penalty to avoid repetition
+                    top_p=0.7,                           # Lower for more deterministic responses
+                    top_k=30,                            # Smaller vocabulary for focus
+                    no_repeat_ngram_size=3,              # Prevent longer repetition
+                    early_stopping=True,                 # Stop when hitting natural endpoints
+                    stop_strings=[".", "\n", "Then", "Next", "Also"]  # Stop at sentence end or list continuation
                 )
             
             logger.info(f"Generated token count: {outputs[0].shape[0]}")
