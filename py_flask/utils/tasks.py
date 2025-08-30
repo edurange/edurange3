@@ -777,7 +777,7 @@ def query_small_language_model_task(self, task, generation_parameters):
         try:
             import torch
             
-            # Phi-3 chat format for custom queries
+            # Phi-3 format for custom queries
             prompt = f"<|system|>\n{system_prompt}<|end|>\n<|user|>\n{user_prompt}<|end|>\n<|assistant|>\n"
             
             # Tokenize input for Phi-3 (decoder-only model)
@@ -831,7 +831,7 @@ def query_small_language_model_task(self, task, generation_parameters):
         if disable_scenario_context:
 
             try:
-                finalized_system_prompt = "You are helping a student in a cybersecurity lab. Analyze their RECENT ACTIVITY (most important) and provide ONE specific actionable hint. Focus on their latest commands and messages - what should they try next? Be concise but detailed enough to be helpful. Respond with ONLY the hint, no preamble or explanation."
+                finalized_system_prompt = "You are a cybersecurity instructor. A student needs help. Look at their recent commands and activity. Give them ONE direct hint about what to try next. Address them as 'you' and start immediately with the action. No introductions, explanations, or preambles - just the hint."
                 
                 # Structure the context to prioritize recent activity
                 recent_context = ""
@@ -855,7 +855,7 @@ def query_small_language_model_task(self, task, generation_parameters):
                 raise Exception (f"ERROR: 'load_context_file_contents()' failed: [{e}]")
 
             try:
-                finalized_system_prompt = "You are helping a student in a cybersecurity lab. First analyze their RECENT ACTIVITY (most important), then consider the scenario context. Provide ONE specific actionable hint based on what they just tried. Be concise but detailed enough to be helpful. Respond with ONLY the hint, no preamble or explanation."
+                finalized_system_prompt = "You are a cybersecurity instructor. A student needs help with their lab. Look at their recent commands and the scenario context. Give them ONE direct hint about what to try next. Address them as 'you' and start immediately with the action. No introductions, explanations, or preambles - just the hint."
                 
                 # Structure the context to prioritize recent activity over scenario summary
                 recent_context = ""
@@ -877,8 +877,8 @@ def query_small_language_model_task(self, task, generation_parameters):
         try:
             import torch
             
-            # Phi-3 chat format - uses specific format for system/user/assistant
-            prompt = f"<|system|>\n{finalized_system_prompt}<|end|>\n<|user|>\n{finalized_user_prompt}<|end|>\n<|assistant|>\n"
+            # Phi-3 format with direct instruction to prevent preambles
+            prompt = f"<|system|>\n{finalized_system_prompt}<|end|>\n<|user|>\n{finalized_user_prompt}<|end|>\n<|assistant|>\nYou should"
             
             # Debug logging for prompt and context
             logger.info(f"=== HINT GENERATION DEBUG ===")
@@ -892,7 +892,7 @@ def query_small_language_model_task(self, task, generation_parameters):
             logger.info(f"Final prompt length: {len(prompt)}")
             logger.info(f"Final prompt preview: {prompt[:500]}...")
             
-            # Tokenize input for TinyLlama (decoder-only model)
+            # Tokenize input for Phi-3 (decoder-only model)
             inputs = tokenizer(prompt, return_tensors="pt", truncation=True, max_length=1024).to(model.device)
             logger.info(f"Input token count: {inputs['input_ids'].shape[1]}")
             
@@ -900,15 +900,16 @@ def query_small_language_model_task(self, task, generation_parameters):
             with torch.no_grad():
                 outputs = model.generate(
                     **inputs,
-                    max_new_tokens=120,   # Longer but concise hints
+                    max_new_tokens=80,                   # Moderate length for direct hints
                     temperature=temperature,
                     do_sample=True,
                     pad_token_id=tokenizer.eos_token_id,
                     eos_token_id=tokenizer.eos_token_id,
-                    repetition_penalty=1.1,
-                    top_p=0.9,           # Nucleus sampling for better quality
-                    top_k=40,            # Limit vocabulary for focused responses
-                    no_repeat_ngram_size=3
+                    repetition_penalty=1.2,             # Higher penalty to avoid repetition
+                    top_p=0.85,                          # Slightly lower for more focused responses
+                    top_k=50,                            # Phi-3 works well with higher top_k
+                    no_repeat_ngram_size=2,              # Prevent 2-gram repetition
+                    early_stopping=True                  # Stop when hitting natural endpoints
                 )
             
             logger.info(f"Generated token count: {outputs[0].shape[0]}")

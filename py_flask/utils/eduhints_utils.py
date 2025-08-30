@@ -23,13 +23,13 @@ def create_language_model_object() -> tuple:
           raise Exception("ERROR: ML libraries (torch, transformers) are not installed. Install ml_requirements.txt to use hint generation.")
 
       try:
-            # Load model optimized for CPU inference - using Phi-3-mini for instruction following
+            # Load model optimized for CPU inference - using Phi-3-mini with memory optimizations
             model = AutoModelForCausalLM.from_pretrained(
-                "microsoft/Phi-3-mini-4k-instruct",  # Phi-3-mini (3.8B parameters) - excellent instruction following
-                torch_dtype=torch.float32,           # float32 for CPU
-                device_map="cpu",                    # Force CPU to avoid GPU detection overhead
+                "microsoft/Phi-3-mini-4k-instruct",  # Phi-3-mini (3.8B parameters)
+                torch_dtype=torch.bfloat16,          # bfloat16 reduces memory by ~50%
+                device_map="cpu",                    # Force CPU
                 low_cpu_mem_usage=True,              # Optimize CPU memory usage
-                use_cache=True,                      # Enable KV-cache for faster inference
+                use_cache=False,                     # Disable cache to save memory
                 trust_remote_code=True               # Required for Phi-3
             )
             
@@ -38,6 +38,7 @@ def create_language_model_object() -> tuple:
                 "microsoft/Phi-3-mini-4k-instruct",
                 trust_remote_code=True
             )
+            tokenizer.pad_token = tokenizer.eos_token
             tokenizer.pad_token = tokenizer.eos_token
             
             return model, tokenizer
