@@ -901,7 +901,7 @@ def query_small_language_model_task(self, task, generation_parameters):
                 outputs = model.generate(
                     **inputs,
                     tokenizer=tokenizer,                 # Required for stop_strings
-                    max_new_tokens=25,                   # Very short to force single hint
+                    max_new_tokens=40,                   # Very short to force single hint
                     temperature=0.3,                     # Low temperature for focused response
                     do_sample=True,
                     pad_token_id=tokenizer.eos_token_id,
@@ -921,7 +921,7 @@ def query_small_language_model_task(self, task, generation_parameters):
             generated_hint = tokenizer.decode(outputs[0][inputs['input_ids'].shape[1]:], skip_special_tokens=True)
             
             # Clean up the response - remove extra whitespace and common artifacts
-            generated_hint = generated_hint.strip()
+            generated_hint = "EDUHINT: " + generated_hint.strip()
             
             # Add logging to debug the response
             logger.info(f"Generated hint (raw): '{generated_hint}'")
