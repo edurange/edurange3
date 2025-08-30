@@ -320,6 +320,9 @@ function Hints_Controller({ children }) {
 
             isEditing_state, set_isEditing_state,
             hint_state, set_hint_state,
+            student_bash_logs_state,
+            student_chat_logs_state,
+            student_responses_logs_state,
         }}>
             {children}
         </HintConfig_Context.Provider>
