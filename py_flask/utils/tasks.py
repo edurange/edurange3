@@ -900,6 +900,7 @@ def query_small_language_model_task(self, task, generation_parameters):
             with torch.no_grad():
                 outputs = model.generate(
                     **inputs,
+                    tokenizer=tokenizer,                 # Required for stop_strings
                     max_new_tokens=25,                   # Very short to force single hint
                     temperature=0.3,                     # Low temperature for focused response
                     do_sample=True,
