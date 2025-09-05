@@ -4,7 +4,7 @@ contentDefinitions:
   Reading1: &reading1
     type: reading
     content: |
-      # Debrief & Progress Summary
+      # Debrief & Progress Summary (UNDER CONSTRUCTION)
       * Once you have made some progress in the scenario, you can check this tab to get updated progress information.
       * In addition, the development team would appreciate your feedback and opinions (even critical ones!).
       * Below the progress stats, you will find a series of survey questions that will help us improve Edurange.

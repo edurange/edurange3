@@ -22,62 +22,56 @@ contentDefinitions:
     question_num: 1
   Reading2: &Reading2
     type: reading
-    content: "## Using the Terminal Commands in the Unix shell\n\n When using your\
-      \ computer (Mac, Linux, Windows), you often need to interact\n      with the\
-      \ operating system to access shared resources like disk storage \n      or external\
-      \ hardware.\n      \n      - A \u201C*shell*\u201D is a program that allows\
-      \ you to interact with the OS in text mode, also called a \u201C***c**ommand\
-      \ **l**ine **i**nterface*\u201D or CLI.\n      \n      \u201C***G**raphical\
-      \ **u**ser **i**nterfaces*\u201D (GUI) are generally designed to\n      simplify\
-      \ and expedite user interactions. However, they can sometimes restrict\n   \
-      \   the user beyond that requirement. Text-based interfaces are more complex\
-      \ by\n      comparison, but they allow more freedom.\n\n      - The device and/or\
+    content: "## Using the Terminal Commands in the Unix shell\n\nWhen using your\
+      \ computer (Mac, Linux, Windows), you often need to interact\nwith the operating\
+      \ system to access shared resources like disk storage \nor external hardware.\n\
+      \n- A \u201C*shell*\u201D is a program that allows you to interact with the\
+      \ OS in text mode, also called a \u201C***c**ommand **l**ine **i**nterface*\u201D\
+      \ or CLI.\n\n\u201C***G**raphical **u**ser **i**nterfaces*\u201D (GUI) are generally\
+      \ designed to\nsimplify and expedite user interactions. However, they can sometimes\
+      \ restrict\nthe user beyond that requirement. Text-based interfaces are more\
+      \ complex by\ncomparison, but they allow more freedom.\n\n- The device and/or\
       \ software that connects you to the command line can sometimes be called a \u201C\
-      *terminal*\u201D.\n      - The software that provides the command line interface\
-      \ itself on the host computer is called the \u201C*shell*\u201D because it wraps\
-      \ around the operating system.\n     \n      #### bash and Other Shells\n  \
-      \    In eduRange we use the \u201C***B**ourne **A**gain **Sh**ell*\u201D, \u201C\
-      `bash`\u201D.\n\n      you can look up the history of bash and other shells\
-      \ online\n\n## man pages and apropos\n\u201C*`man` pages*\" is short for \u201C\
-      **man**ual\u201D pages. These are text documents with lots of information on\
-      \ things installed on your system. \u201C`man`\u201D is a command for reading\
-      \ the `man` pages.\n      \n      The first command we explore is `ls`? Let's\
-      \ find that `man` page.\n      \n      Type:\n      \n      ```sh\n      man\
-      \ ls\n      ```\n To exit `man`, just type \u201C`q`\u201D to \u201C***q**uit*\u201D\
-      ."
+      *terminal*\u201D.\n- The software that provides the command line interface itself\
+      \ on the host computer is called the \u201C*shell*\u201D because it wraps around\
+      \ the operating system.\n\n#### bash and Other Shells\nIn eduRange we use the\
+      \ \u201C***B**ourne **A**gain **Sh**ell*\u201D, \u201C`bash`\u201D.\n\nyou can\
+      \ look up the history of bash and other shells online\n\n## man pages and apropos\n\
+      \u201C*`man` pages*\" is short for \u201C**man**ual\u201D pages. These are text\
+      \ documents with lots of information on things installed on your system. \u201C\
+      `man`\u201D is a command for reading the `man` pages.\n\nThe first command we\
+      \ explore is `ls`? Let's find that `man` page.\n\nType:\n\n```sh\nman ls\n```\n\
+      \ To exit `man`, just type \u201C`q`\u201D to \u201C***q**uit*\u201D."
   Reading3: &Reading3
     type: reading
     content: "- `man` pages are an important resource because they are specific to\
       \ the software actually installed on the system you\u2019re currently using.\n\
-      \      - Some commands have different behavior depending on their version.\n\
-      \      - An online resource may or may not have information specific to your\
-      \ system, but `man` always contains documentation for what you have installed.\n\
-      \      \n      There are even entirely different implementations of some programs\
-      \ - including shells, as mentioned earlier. When it comes to shell information\
-      \ remember to ask `man` about the right shell. In eduRange that will be `man\
-      \ bash`, but the default shell on your own systems might vary.\n      \n###\
-      \ man Page Key Points: SYNOPSIS and EXAMPLES\n      \n      For many commands,\
-      \ there\u2019s an overwhelming amount of information in the `man` pages. The\
-      \ pages are divided up into sections.\n      \n      Most every `man` page includes\
-      \ two particularly useful sections:\n      - A *synopsis* showing how the command\
-      \ is written in the format discussed earlier, and \n      - A series of *examples*\
-      \ showing exact instances of the command in particular uses.\n      \n     \
-      \ When in a `man` page, you can type a slash \u201C`/`\u201D to search for text.\n\
-      \      \n      The headers are in all capitals, so after opening up a particular\
-      \ page, to search for the synopsis you\u2019d type\n      \n      ```sh\n  \
-      \    /SYNOPSIS\n      \n      and then hit enter.\n      \n      - `man` will\
-      \ highlight all instances of the text \u201C`SYNOPSIS`\u201D.\n      - Typing\
-      \ \u201C`n`\u201D will bring you to the \u201C**n**ext\u201D search result.\n\
-      \      - \u201C`b`\u201D will take you \u201C**b**ack\u201D.\n      - Remember,\
-      \ \u201C`q`\u201D to \u201C**q**uit\u201D when you\u2019re done.\n      \n \
-      \     What happens when your search fails?\n      Try searching for the \u201C\
-      `EXAMPLES`\u201D section in `man ls`.\n      \n      As you read man pages you\
-      \ will notice that there are many variations on\n      some commands. These\
-      \ are expressed as options and are usually preceeded by \n      a \"-\"\n\n\
-      ### apropos\t\n    Because the command names can be arcane, it is helpful to\
-      \ know about the `apropos`\n    command which searches through all of the man\
-      \ pages.\n    Try\n    \n      ```sh\n      apropos rename\n      ```\n    \
-      \  What command best fits? Use man to find out more about it."
+      - Some commands have different behavior depending on their version.\n- An online\
+      \ resource may or may not have information specific to your system, but `man`\
+      \ always contains documentation for what you have installed.\n\nThere are even\
+      \ entirely different implementations of some programs - including shells, as\
+      \ mentioned earlier. When it comes to shell information remember to ask `man`\
+      \ about the right shell. In eduRange that will be `man bash`, but the default\
+      \ shell on your own systems might vary.\n\n### man Page Key Points: SYNOPSIS\
+      \ and EXAMPLES\n      \nFor many commands, there\u2019s an overwhelming amount\
+      \ of information in the `man` pages. The pages are divided up into sections.\n\
+      \nMost every `man` page includes two particularly useful sections:\n- A *synopsis*\
+      \ showing how the command is written in the format discussed earlier, and \n\
+      - A series of *examples* showing exact instances of the command in particular\
+      \ uses.\n\nWhen in a `man` page, you can type a slash \u201C`/`\u201D to search\
+      \ for text.\n\nThe headers are in all capitals, so after opening up a particular\
+      \ page, to search for the synopsis you\u2019d type\n\n```sh\n/SYNOPSIS\n```\n\
+      and then hit enter.\n\n- `man` will highlight all instances of the text \u201C\
+      `SYNOPSIS`\u201D.\n- Typing \u201C`n`\u201D will bring you to the \u201C**n**ext\u201D\
+      \ search result.\n- \u201C`b`\u201D will take you \u201C**b**ack\u201D.\n- Remember,\
+      \ \u201C`q`\u201D to \u201C**q**uit\u201D when you\u2019re done.\n\nWhat happens\
+      \ when your search fails?\nTry searching for the \u201C`EXAMPLES`\u201D section\
+      \ in `man ls`.\n\nAs you read man pages you will notice that there are many\
+      \ variations on\nsome commands. These are expressed as options and are usually\
+      \ preceeded by \na \"-\"\n\n### apropos\t\nBecause the command names can be\
+      \ arcane, it is helpful to know about the `apropos`\ncommand which searches\
+      \ through all of the man pages.\nTry\n\n  ```sh\n  apropos rename\n  ```\nWhat\
+      \ command best fits? Use man to find out more about it."
   Reading4: &Reading4
     type: reading
     content: "\u201C*`man` pages*\" is short for \u201C**man**ual\u201D pages. These\
@@ -547,7 +541,9 @@ contentDefinitions:
   Question15: &Question15
     type: question
     content: Take a look at the format of "comms_record.txt" in your home directory.
-      Use "`sort`" to reorder the records based on their Stardate.
+      Use "`sort`" to reorder the records based on their Stardate. You will need to 
+      use the option that designates which column to sort over. How many status updates 
+      were sent on date "2398.1"?
     comment: ''
     answers:
     - answer_type: String

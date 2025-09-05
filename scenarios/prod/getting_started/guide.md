@@ -32,84 +32,84 @@ Points: 15
 <!-- READING_START -->
 ## Using the Terminal Commands in the Unix shell
 
- When using your computer (Mac, Linux, Windows), you often need to interact
-      with the operating system to access shared resources like disk storage 
-      or external hardware.
-      
-      - A “*shell*” is a program that allows you to interact with the OS in text mode, also called a “***c**ommand **l**ine **i**nterface*” or CLI.
-      
-      “***G**raphical **u**ser **i**nterfaces*” (GUI) are generally designed to
-      simplify and expedite user interactions. However, they can sometimes restrict
-      the user beyond that requirement. Text-based interfaces are more complex by
-      comparison, but they allow more freedom.
+When using your computer (Mac, Linux, Windows), you often need to interact
+with the operating system to access shared resources like disk storage 
+or external hardware.
 
-      - The device and/or software that connects you to the command line can sometimes be called a “*terminal*”.
-      - The software that provides the command line interface itself on the host computer is called the “*shell*” because it wraps around the operating system.
-     
-      #### bash and Other Shells
-      In eduRange we use the “***B**ourne **A**gain **Sh**ell*”, “`bash`”.
+- A “*shell*” is a program that allows you to interact with the OS in text mode, also called a “***c**ommand **l**ine **i**nterface*” or CLI.
 
-      you can look up the history of bash and other shells online
+“***G**raphical **u**ser **i**nterfaces*” (GUI) are generally designed to
+simplify and expedite user interactions. However, they can sometimes restrict
+the user beyond that requirement. Text-based interfaces are more complex by
+comparison, but they allow more freedom.
+
+- The device and/or software that connects you to the command line can sometimes be called a “*terminal*”.
+- The software that provides the command line interface itself on the host computer is called the “*shell*” because it wraps around the operating system.
+
+#### bash and Other Shells
+In eduRange we use the “***B**ourne **A**gain **Sh**ell*”, “`bash`”.
+
+you can look up the history of bash and other shells online
 
 ## man pages and apropos
 “*`man` pages*" is short for “**man**ual” pages. These are text documents with lots of information on things installed on your system. “`man`” is a command for reading the `man` pages.
-      
-      The first command we explore is `ls`? Let's find that `man` page.
-      
-      Type:
-      
-      ```sh
-      man ls
-      ```
+
+The first command we explore is `ls`? Let's find that `man` page.
+
+Type:
+
+```sh
+man ls
+```
  To exit `man`, just type “`q`” to “***q**uit*”.
       
 <!-- READING_END -->
 
 <!-- READING_START -->
 - `man` pages are an important resource because they are specific to the software actually installed on the system you’re currently using.
-      - Some commands have different behavior depending on their version.
-      - An online resource may or may not have information specific to your system, but `man` always contains documentation for what you have installed.
-      
-      There are even entirely different implementations of some programs - including shells, as mentioned earlier. When it comes to shell information remember to ask `man` about the right shell. In eduRange that will be `man bash`, but the default shell on your own systems might vary.
-      
+- Some commands have different behavior depending on their version.
+- An online resource may or may not have information specific to your system, but `man` always contains documentation for what you have installed.
+
+There are even entirely different implementations of some programs - including shells, as mentioned earlier. When it comes to shell information remember to ask `man` about the right shell. In eduRange that will be `man bash`, but the default shell on your own systems might vary.
+
 ### man Page Key Points: SYNOPSIS and EXAMPLES
       
-      For many commands, there’s an overwhelming amount of information in the `man` pages. The pages are divided up into sections.
-      
-      Most every `man` page includes two particularly useful sections:
-      - A *synopsis* showing how the command is written in the format discussed earlier, and 
-      - A series of *examples* showing exact instances of the command in particular uses.
-      
-      When in a `man` page, you can type a slash “`/`” to search for text.
-      
-      The headers are in all capitals, so after opening up a particular page, to search for the synopsis you’d type
-      
-      ```sh
-      /SYNOPSIS
-      
-      and then hit enter.
-      
-      - `man` will highlight all instances of the text “`SYNOPSIS`”.
-      - Typing “`n`” will bring you to the “**n**ext” search result.
-      - “`b`” will take you “**b**ack”.
-      - Remember, “`q`” to “**q**uit” when you’re done.
-      
-      What happens when your search fails?
-      Try searching for the “`EXAMPLES`” section in `man ls`.
-      
-      As you read man pages you will notice that there are many variations on
-      some commands. These are expressed as options and are usually preceeded by 
-      a "-"
+For many commands, there’s an overwhelming amount of information in the `man` pages. The pages are divided up into sections.
+
+Most every `man` page includes two particularly useful sections:
+- A *synopsis* showing how the command is written in the format discussed earlier, and 
+- A series of *examples* showing exact instances of the command in particular uses.
+
+When in a `man` page, you can type a slash “`/`” to search for text.
+
+The headers are in all capitals, so after opening up a particular page, to search for the synopsis you’d type
+
+```sh
+/SYNOPSIS
+```
+and then hit enter.
+
+- `man` will highlight all instances of the text “`SYNOPSIS`”.
+- Typing “`n`” will bring you to the “**n**ext” search result.
+- “`b`” will take you “**b**ack”.
+- Remember, “`q`” to “**q**uit” when you’re done.
+
+What happens when your search fails?
+Try searching for the “`EXAMPLES`” section in `man ls`.
+
+As you read man pages you will notice that there are many variations on
+some commands. These are expressed as options and are usually preceeded by 
+a "-"
 
 ### apropos	
-    Because the command names can be arcane, it is helpful to know about the `apropos`
-    command which searches through all of the man pages.
-    Try
-    
-      ```sh
-      apropos rename
-      ```
-      What command best fits? Use man to find out more about it.
+Because the command names can be arcane, it is helpful to know about the `apropos`
+command which searches through all of the man pages.
+Try
+
+  ```sh
+  apropos rename
+  ```
+What command best fits? Use man to find out more about it.
 
 <!-- READING_END -->
 
@@ -344,7 +344,7 @@ You can use `mv` to move the filename and not just the directory it’s in, so t
 <!-- READING_END -->
 
 <!-- QUESTION_START -->
-Question: In the file-practice directory, rename file_1.txt to renamed_file1.txt and copy file2.txt to copied_file2.txt. What is the output of 'wrangle_flag' if you run it as a command?
+Question: In the file-practice directory, rename file1.txt to renamed_file1.txt and copy file2.txt to copied_file2.txt. What is the output of 'wrangle_flag' if you run it as a command?
 
 Answers:
 Value: $RANDOM
@@ -779,3 +779,4 @@ Points: 15
 <!-- QUESTION_END -->
 
 <!-- CHAPTER_END -->
+
