@@ -205,9 +205,10 @@ It is common to represent the filesystem tree in a manner like this:
 
 ### Exploring the Filesystem with ls
 
-Let's take a look at what files are in our current folder using "`ls`"
+Due to its tree structure, the locations of files stored in a filesystem are called paths. A “path” can refer to both a file or a directory. 
+When you begin a shell session, the directory designated for you on the system is called your “home directory”.
 
-Type:
+To see which files and directories are listed in your home directory, type:
 ```
 ls
 ```
@@ -221,7 +222,8 @@ file-practice     i                radio_logs.txt
 final-task        multimedia-data  toLearn
 ```
 
-These are all the files and directories in your current directory. Files with different extensions, as well as directories, may be different colors.
+These are the contents of your home directory. ls is short for “list” (files) and can be used in other parts of the file system to display files 
+and directories in your “current working directory” as well.
 
 <!-- READING_END -->
 
@@ -234,67 +236,91 @@ Points: 15
 <!-- QUESTION_END -->
 
 <!-- READING_START -->
+## Commands and Navigation - pwd, cd, ls
+
+Now, try:
+
+```
+ls /
+```
+
+In this case, `ls` is the command you’re invoking, and “/” is a path. Specifically, “/” will show you the contents of the root directory.
+
+`ls` doesn’t modify any files or your environment, so you are free to look around the filesystem without worry. There will be some paths that you don’t have permission to see, but ls can be a useful tool in navigating the file system.
+
 ### pwd
-So where are we exactly? We can use "`pwd`" to find out. 
+pwd stands for "print working directory" - it will tell you where you are within the filesystem, your current working directory.
+If you type:
+`pwd`
 
-`pwd` stands for "***p**rint **w**orking **d**irectory*" - it will tell you where you are within the filesystem, your current working directory.
-
-To learn more type `man pwd`. (Remember, type `q` to exit when you're done with `man`.)
+You should see something similar to `/home/<foo>` where “foo” is your username.
 
 ### cd
-
-“`cd`” stands for “***c**hange **d**irectory*”, meaning to navigate to a different folder. If you ever are lost in the filesystem, `cd` by itself will take you back to your home directory.
-
-Enter each of the following, one at a time. If you use `ls` after each, you’ll see that your working directory is changing:
-
-```sh
+“cd” stands for “change directory”, meaning to navigate to a different folder. If you are ever lost in the filesystem, cd by itself will take you back to your home directory.
+Enter each of the following, one at a time. If you use ls after each, you’ll see that your working directory is changing:
+```
 cd /
 cd /root
 cd
 cd ../
 ```
 
-- The first command sends you to the root of your entire file system.
-- The second command sends you to the root user's home directory, but notice that you don't have permissions to `cd` to that directory.
-- The third command sends you back to your home directory because no path was specified with the command.
-- The fourth command sends you backwards (up) a level (remember the `..` above).
-
+    - The first command sends you to the root of your entire file system.
+    - The second command sends you to the root user's home directory, but notice that you don't have permissions to cd to that directory.
+    - The third command sends you back to your home directory because no path was specified with the command.
+    - The fourth command sends you backwards (up) a level in the file system using .. .
 
 ### ls and File Access Control
-As mentioned before, “`ls`” “***l**i**s**ts*” files and directories.
+As mentioned before, “ls” “lists” files and directories. When using the command line, “options” allow you to tell the computer how you want it to output information. These are usually shown with a single hyphen (-) for one letter options or a double hyphen (--) for longer options. Let’s use ls to learn more about our file system.
 
-- We’ve already seen a little of what `ls` can do. But as we mentioned earlier, there are arguments and options you can give a command to change how it behaves.
+First, make sure you’ve returned to your home directory by entering:
+`cd`
 
-First make sure you’ve returned to your home directory -
+Then, try:
 
-```sh
-cd
-```
-
-Try -
-
-```sh
-ls -la
-```
+`ls -la`
 
 That's a lot of info! What you see are all the files and directories in the directory (folder) where you are currently working, including files that were hidden before!
-- The first column contains symbols describing the permissions set on that file or directory, more on that later.
-- The second column is the number of links or sub-directories in the directory, if this file is a directory. (In Unix, we tend to think of all things as files; even directories are just a special type of file.)
-- The third column is the user that owns the file.
-- The fourth is the group that owns the file.
-- The fifth is the size of the file.
-- The sixth is the date and time it was last edited.
-- And finally, the file name in the seventh column, on the far right.
+There’s also a lot more information than before, so rather than a list of filenames, we get a whole table with one file per row and columns with additional information about each.
+    - The first column is a string of characters indicating the type of file followed by its “permissions”, settings that determine who is allowed to use files and what they can do to them.
+    - A – at the beginning means a regular file. d is a directory (folder). l is a link. The rest of the string is either - or r, w, and x.
+    - r here stands for "read", w for "write" and x for "execute". - in the position of one of the letters means that type of permission is denied.
+    - Permissions can be set based for 1) the user owning the file, 2) users in the group owning the file, or 3) all other users, and so the permission string repeats each rwx position three times.
+    - The second column is the number of links or sub-directories in the directory, if this file is a directory. (In Unix, we tend to think of all things as files; even directories are just a special type of file.)
+    - The third column is the user that owns the file.
+    - The fourth is the group that owns the file.
+    - The fifth is the size of the file.
+    - The sixth is the date and time it was last edited.
+    - And finally, the file name in the seventh column, on the far right.
+Let’s learn more about what we can do with ls.
 
-Files whose name begin with a "." are considered *hiddden*
+Type:
+`man ls`
 
-Hidden files aren’t hidden in the “secret” sense as much as they are just “*hidden from view*” to reduce visual clutter. Hidden files are often used to store configuration and other information that might repeat in many places and would be distracting if it showed up all the time.
+When we wrote `ls -la`, “-la” was a collection of options, sometimes also informally called “flags”. Options like this can be combined without spaces to give the computer multiple instructions at once.
+Let's learn what “l” and “a” mean.
 
-#### Tab Completion:
-One very useful trick to save typing is that you can hit tab after partially typing the name of a file to autocomplete it.
-If there's only one file or directory, you won't even need to start typing after leading with your command.
-Try using tab completion with "`cd`" to find out what's at the end of the  "followMe" directory.
+### Locate Option "-l"
+Within the man page for ls, search for the “-l” option. Remember that to search inside a man page, you can use “/”.
+Type:
+`/-l`
 
+You should see the page move to the first occurrence of “-l” and that “-l” is highlighted. Remember, you can jump to the next matching result by hitting “n” (for “next”).
+Press “n” until you see “-l” highlighted at the beginning of the line; this is where the option is defined and will be above the line for “-L”.
+As we can see, the “long” listing option shows results with details in columns.
+Locate Option "-a"
+Now, let’s find information about “-a”. Type:
+`/-a`
+
+Hit “n” till you can't go any further. Now hit “b” (which stands for “back”) until you find the entry for “-a” (which is above “-A”).
+Remember when we mentioned that files can be hidden? By default, ls ignores file names that start with .. The “all” option specifies that hidden files, which start with . like .profile, should be displayed.
+Hidden files aren’t hidden in the “secret” sense as much as they are just “hidden from view” to reduce visual clutter. Hidden files are often used to store configuration and other information that might repeat in many places and would be distracting if it showed up all the time.
+
+### Globbing With ls
+If there are a lot of files in a directory, it can be useful to restrict what ls looks at to a subset of those files. The shell allows you to find things in your directory following a certain pattern. This is called “globbing”. For example, if you are only interested in files with the extension “.jpg”, you can use:
+`ls *.jpg`
+The “*” “star” is a special character called a “wildcard”. Wildcards represent a part of the pattern that could vary. * specifically means that any string of character(s) could go in that position of the glob pattern. We’ll discuss and use globs more later on.
+Now that we have learned a few basic commands, try to use this information to learn more about your filesystem.
 <!-- READING_END -->
 
 <!-- QUESTION_START -->
@@ -305,6 +331,50 @@ Value: .lasers.wav
 Points: 15
 <!-- QUESTION_END -->
 
+<!-- CHAPTER_END -->
+
+<!-- CHAPTER_START 5: Naming Conventions -->
+<!-- READING_START -->
+## Naming Conventions
+
+Information about your computer and users can be found by exploring the filesystem. Here are common names for the places that information is stored:
+
+    - /, as mentioned earlier, might be called just “root” or more specifically the “root node” or “root directory”.
+    - /home contains the “home” directories for all users, other than root. (On Mac OS, desktop users’ homes are in /Users instead.)
+    - /usr contains common data for resources provided to all (particularly unprivileged) “users”, such as libraries and the files that man uses to deliver documentation. Many commands are stored here as well.
+    - /usr/bin is where the “binary” executables in /usr are stored specifically.
+    - /bin also contains binary executables, but if you ls /bin, you’ll see Reading11: &reading11
+There are a number of other top-level directories related to system operation that are outside the scope of this first lesson. /etc stores shared data like configuration files; /dev and /mnt are related to how the operating system manages hardware.
+You won’t need to interact with these other areas today. For now, be aware that they’re system critical and not to be changed unless you know what you’re doing.
+
+### Navigation: Long and Complicated Paths
+Typing paths can be cumbersome. Shells provide shortcuts to help.
+A “.” (“dot”) is short for your “current working directory”. For now your current working directory will be the same as your home directory. 
+Here are some examples to demonstrate how you can navigate in the file system using what we have learned:
+    - If the current working directory is “/foo/bar”, then if you type “./baz” in the command line the current working directory will become “/foo/bar/baz”.
+    - If you wanted to return to the parent directory of the current working directory (the directory backwards/up a level), you would type “..” (“dot-dot”).
+    - “/..” is one exception - / is the root of all nodes, including itself, so “/..” is interpreted as just “/”.
+    - . and .. only have these meanings when they are used as directory names by themselves. For example: “/..foo” means “the file or directory called ‘..foo’ in our current location”. “../foo” means “the file or directory called ‘foo’ in the parent directory of our current location.”
+    - Another shortcut is “~” (“tilde”). Used by itself, ~ is interpreted as the path to your home directory.
+
+### Tab Completion
+The shell also has an auto-completion feature. Modern auto-correct algorithms share common ancestors with shell “tab completion”.
+While typing a path in the command line, you can hit tab to complete a path without having to type it all out. If the path you’ve typed has more than one possible completion, the shell will prompt you with a list of possibilities. If there are a lot of possibilities the shell may warn you that it’s about to print a big list. You can then add to your command input to narrow the available choices.
+
+### root Has More Than One Meaning
+In a Unix system, control over the root directory (or root “node”) is protected by restricting it to a single user. Early systems engineers chose to call this user “root”, which became a convention. Because this user has control of the root node, and thus anything stored on the system at all, the root user became the de facto authority over most things security-related. (In Windows, this user is instead called “administrator” by default, but its role is similar.)
+With both the root user and root node being important vocabulary for system administration, you'll come across ambiguities sometimes.
+    - The “root” (node), signified by just “/”, is the beginning of all the system's files.
+    - But if you were to log in as the “root” user, your home directory would be the folder “/root”, not the root node, “/”.
+    - root’s home directory “/root” is not to be confused with the formal root directory “/”, the beginning of the path to all the files, even though they both might be casually read as “root directory” aloud.
+To avoid confusion, it is best to call “/root” “slash-root” or something like “root’s home”. Reserve “root” itself to refer to the path “/” or the user “root” exclusively, specifying whether you mean a path or user when it isn’t obvious - this is generally how you can expect the terms to be used.
+
+### About root Privileges and Security
+A root user is someone who has access to everything on the computer. They could even delete everything on the computer.
+When setting up your own systems, be aware of how the root user and privileges are configured and controlled. Some systems might not ask to set up credentials initially, leaving the password for root set to a default value after install. In cybersecurity, not changing this default password can have huge implications.
+You won’t be using protected parts of the system in this exercise, but there are many security exploits related to them that you’ll likely encounter in the future.
+<!-- READING_END -->
+
 <!-- QUESTION_START -->
 Question: In your home directory there is subdirectory named followMe. Travel into the directory as far as you can go. At the end there is a file. What is the name of the file?
 
@@ -312,35 +382,21 @@ Answers:
 Value: $RANDOM
 Points: 15
 <!-- QUESTION_END -->
+<!-- CHAPTER_END -->
 
+<!-- CHAPTER_START 6: File Manipulation -->
 <!-- READING_START -->
-### Globbing With ls
-
-If there are a lot of files in a directory, it can be useful to restrict what `ls` looks at to a subset of those files. The shell allows you to do that with paths that describe a pattern. This is called “*globbing*”. For example, if you are only interested in files with the extension “`.jpg`”, you can use:
-
-```sh
-ls *.jpg
-```
-
-The “`*`” “star” is a special character called a “*wildcard*”. Wildcards represent a part of the pattern that could vary. `*` specifically means that any substring could occur in that position of the *glob pattern*.    
-
-So the “`*.jpg`” means any string followed by “`.jpg`”, including just “`.jpg`” by itself - the empty string is still a string, so it satisfies the pattern.
-
-We’ll discuss and use *globs* more later on.
-
 ## Commands: mv, cp, and mkdir
+
 ### mv
+mv is used to move or rename files and directories in the filesystem. As we discovered earlier, there is no separate command to rename a file, it is simply mv’ed from one name to another in the same directory.
 
-You can use `mv` to move the filename and not just the directory it’s in, so there is no separate command to “rename” a file - renaming is the same as `mv`ing it from one name to another in the same directory.
-          
 ### cp
-          
-`cp` is used to “***c**o**p**y*” a file to a new location.
-          
-### mkdir
-          
-`mkdir` is short for “***m**a**k**e **dir**ectory*” and does just what you’d think.
+cp is used to “copy” a file to a new location.
 
+### mkdir
+mkdir is short for “make directory” and does just what you’d think.
+Let’s try out using mkdir!
 <!-- READING_END -->
 
 <!-- QUESTION_START -->
@@ -468,10 +524,10 @@ Points: 6
 
 <!-- CHAPTER_END -->
 
-<!-- CHAPTER_START 5: File Manipulation -->
+<!-- CHAPTER_START 7: More File Utilities -->
 
 <!-- READING_START -->
-# File manipulation
+# More File Utilities
 
 So far we’ve looked at commands that browse and alter the filesystem, where data is saved. Next we’ll introduce some command line programs for reading and writing the data inside files, as well as some shell features that give us greater power over storing and manipulating that data.
 
@@ -596,7 +652,7 @@ Vim can be very useful and productive, but it has a steep learning curve for all
 
 <!-- CHAPTER_END -->
 
-<!-- CHAPTER_START 6: Redirection and Filters -->
+<!-- CHAPTER_START 8: Redirection and Filters -->
 
 <!-- READING_START -->
 # Redirection, Filters and Command Composition
@@ -766,7 +822,7 @@ Points: 20
 
 <!-- CHAPTER_END -->
 
-<!-- CHAPTER_START 7: ending -->
+<!-- CHAPTER_START 9: ending -->
 
 <!-- QUESTION_START -->
 Question: In the "final-task" directory in your home directory, there is a file called "hidden-instructions.txt". 
