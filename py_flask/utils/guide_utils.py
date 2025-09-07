@@ -1,13 +1,13 @@
+import ast
 import json
 import os
 import yaml
-import ast
+
 import docker
-from py_flask.utils.error_utils import (
-    custom_abort
-)
+
 from py_flask.config.extensions import db
-from py_flask.database.models import Scenarios, Users, Responses
+from py_flask.database.models import Responses, Scenarios, Users
+from py_flask.utils.error_utils import custom_abort
 
 # Guide utils are functions that primarily populate and run the 
 # question & answer 'guide' that students see on the eduRange webpage (not the terminal ssh)

@@ -1,81 +1,66 @@
-from sqlalchemy.exc import SQLAlchemyError
-import traceback
-from py_flask.database.user_schemas import CreateGroupSchema, TestUserListSchema
-from py_flask.database.models import Users, StudentGroups, ScenarioGroups, GroupUsers, Scenarios, TA_Assignments
-from py_flask.utils.dataBuilder import get_group_data, get_user_data, get_scenario_data, get_taAssignment_data
-from py_flask.config.extensions import db
-from py_flask.utils.chat_utils import gen_chat_names, getChatLibrary
-from py_flask.utils.common_utils import get_system_resources
-import redis
 import json
+import subprocess
+import traceback
 
 from flask import (
     Blueprint,
-    request,
-    jsonify,
+    current_app,
     g,
-    current_app
+    jsonify,
+    request,
 )
-from py_flask.utils.scenario_utils import (
-     identify_state
+from sqlalchemy.exc import SQLAlchemyError
+
+from py_flask.config.extensions import db
+from py_flask.database.models import (
+    GroupUsers,
+    Scenarios,
+    ScenarioGroups,
+    StudentGroups,
+    TA_Assignments,
+    Users,
+    generate_registration_code as grc,
 )
-from py_flask.utils.guide_utils import (
-    getContent, 
-    getScenarioMeta,
-    )
+from py_flask.database.user_schemas import CreateGroupSchema, TestUserListSchema
+from py_flask.utils.api_response import ApiResponse
 from py_flask.utils.auth_utils import jwt_and_csrf_required, staff_only
-from py_flask.utils.staff_utils import generateTestAccts, addGroupUsers
-from py_flask.database.models import generate_registration_code as grc
+from py_flask.utils.chat_utils import gen_chat_names, getChatLibrary
+from py_flask.utils.common_utils import get_system_resources
+from py_flask.utils.dataBuilder import (
+    get_group_data,
+    get_scenario_data,
+    get_taAssignment_data,
+    get_user_data,
+)
+from py_flask.utils.error_utils import custom_abort, safe_jsonify
+from py_flask.utils.guide_utils import getContent, getScenarioMeta
+from py_flask.utils.scenario_utils import identify_state
+from py_flask.utils.staffData_utils import get_staffData
 from py_flask.utils.staff_utils import (
+    NotifyCapture,
+    addGroupUsers,
     clearGroups,
     deleteUsers,
-    NotifyCapture,
+    edit_taAssignments,
+    generateTestAccts,
     getLogs,
-    edit_taAssignments
-    )
+)
 from py_flask.utils.tasks import (
-    create_scenario_task, 
-    start_scenario_task, 
-    stop_scenario_task, 
-    update_scenario_task,
+    cancel_generate_hint_task,
+    create_scenario_task,
     destroy_scenario_task,
     get_recent_student_logs_task,
-    query_small_language_model_task,
     initialize_system_resources_task,
+    query_small_language_model_task,
+    start_scenario_task,
+    stop_scenario_task,
+    update_scenario_task,
     update_system_resources_task,
-    cancel_generate_hint_task
 )
-from py_flask.utils.error_utils import (
-    custom_abort,
-    safe_jsonify
-)
-from py_flask.utils.api_response import ApiResponse
 
-from py_flask.utils.staffData_utils import get_staffData
-import subprocess
-
-#######
-# The `g` object is a global flask object that lasts ONLY for the life of a single request.
-#
-# The following values are populated when the jwt_and_csrf_required() function is invoked,
-# if the request passes auth:
-#   g.current_username
-#   g.current_user_id
-#   g.current_user_role
-#
-# You must import the `g` object from Flask, which will be the same instance of `g` as first 
-# accessed by jwt_and_csrf_required().  
-# 
-# You must also import jwt_and_csrf_required() from auth_utils.py and include it as a decorator
-# on any route where those values would be needed (i.e., an auth protected route)
-#
-# The values will then be available to routes that use the @jwt_and_csrf_required decorator.
-#
-# To ensure no accidental auth 'misses', always use these 3 variables to obtain these values, 
-# rather than parsing the values yourself by way of request body or directly from the JWT.  
-# That way, the values will always return null if the request hasn't been fully authenticated 
-# (i.e. if you forgot to use the decorator).
-#######
+# Flask g object contains user auth data populated by @jwt_and_csrf_required decorator:
+# - g.current_username, g.current_user_id, g.current_user_role
+# Always use these variables instead of parsing JWT directly.
 
 blueprint_staff = Blueprint(
     'edurange3_staff',
@@ -559,8 +544,16 @@ def update_model_route():
     requestJSON = request.json
 
     try: 
-        this_cpu_resources_selected = int(requestJSON["this_cpu_resources_selected"])
-        this_gpu_resources_selected = int(requestJSON["this_gpu_resources_selected"])
+        cpu_value = requestJSON.get("this_cpu_resources_selected")
+        gpu_value = requestJSON.get("this_gpu_resources_selected")
+        
+        if cpu_value is None:
+            raise Exception("ERROR: cpu_resources is None or missing from request")
+        if gpu_value is None:
+            raise Exception("ERROR: gpu_resources is None or missing from request")
+            
+        this_cpu_resources_selected = int(cpu_value)
+        this_gpu_resources_selected = int(gpu_value)
         
         if this_cpu_resources_selected is None:
             raise Exception (f"ERROR: cpu_resources is type None: Additional error reporting information: [{e}]")
@@ -594,6 +587,11 @@ def get_resources():
 
     cpu_resources_detected = sys_db_redis_client.get("cpu_resources")
     gpu_resources_detected = sys_db_redis_client.get("gpu_resources")
+
+    if cpu_resources_detected is None:
+        return jsonify({'error': 'CPU resources not found in database'}), 500
+    if gpu_resources_detected is None:
+        return jsonify({'error': 'GPU resources not found in database'}), 500
 
     cpu_resources_detected_int = int(cpu_resources_detected)
     gpu_resources_detected_int = int(gpu_resources_detected)

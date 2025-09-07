@@ -1,8 +1,16 @@
 from sqlalchemy.orm import joinedload
-from py_flask.database.models import ScenarioGroups, Scenarios, Users, GroupUsers, StudentGroups, TA_Assignments
-from py_flask.utils.chat_utils import getChannelDictList_byUser
+
 from py_flask.config.extensions import db
 from py_flask.database.db_classes import Edu3Mixin
+from py_flask.database.models import (
+    GroupUsers,
+    ScenarioGroups,
+    Scenarios,
+    StudentGroups,
+    TA_Assignments,
+    Users,
+)
+from py_flask.utils.chat_utils import getChannelDictList_byUser
 
 
 def get_group_data():

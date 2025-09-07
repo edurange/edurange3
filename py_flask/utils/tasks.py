@@ -1,37 +1,40 @@
 import json
+import logging
 import os
 import random
-import shutil
 import string
 import subprocess
 import yaml
-import redis
-import pickle
-import time
-import datetime
-import math
-import pyopencl as cl
-import asyncio
-import csv
-import logging
-
 from datetime import datetime
-from celery import Celery
-from celery import shared_task
+
+from celery import Celery, shared_task
 from celery.utils.log import get_task_logger
 from flask import current_app, flash, jsonify
-from py_flask.utils.terraform_utils import adjust_network, find_and_copy_template, write_resource
-from py_flask.config.settings import CELERY_BROKER_URL, CELERY_RESULT_BACKEND
-from py_flask.utils.scenario_utils import claimOctet
-from py_flask.utils.staff_utils import getLogs, getRecentLogs
-from py_flask.utils.scenario_utils import gather_files
-from py_flask.utils.staff_utils import NotifyCapture
-from py_flask.database.models import Scenarios, ScenarioGroups, Responses, BashHistory, Users
-from py_flask.utils.csv_utils import readCSV
-from py_flask.config.extensions import db
 from flask_sqlalchemy import SQLAlchemy
-from py_flask.utils.eduhints_utils import create_language_model_object, load_context_file_contents, export_hint_to_csv
+
+from py_flask.config.extensions import db
+from py_flask.config.settings import CELERY_BROKER_URL, CELERY_RESULT_BACKEND
+from py_flask.database.models import (
+    BashHistory,
+    Responses,
+    Scenarios,
+    ScenarioGroups,
+    Users,
+)
 from py_flask.utils.common_utils import get_system_resources
+from py_flask.utils.csv_utils import readCSV
+from py_flask.utils.eduhints_utils import (
+    create_language_model_object,
+    export_hint_to_csv,
+    load_context_file_contents,
+)
+from py_flask.utils.scenario_utils import claimOctet, gather_files
+from py_flask.utils.staff_utils import getLogs, getRecentLogs, NotifyCapture
+from py_flask.utils.terraform_utils import (
+    adjust_network,
+    find_and_copy_template,
+    write_resource,
+)
 
 # Create a custom logger
 logger = get_task_logger(__name__)

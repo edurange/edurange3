@@ -689,8 +689,7 @@ That should take the form of `<source> | <filter>' where:
 <!-- READING_END -->
 
 <!-- QUESTION_START -->
-Question: Take a look at the format of "comms_record.txt" in your home directory. Use "`sort`" to reorder the records based on their Stardate.
-You will need to use the option that designates which column to sort over. How many status updates were sent on date "2398.1"?
+Question: Take a look at the format of "comms_record.txt" in your home directory. Use "`sort`" to reorder the records based on their Stardate. You will need to use the option that designates which column to sort over. How many status updates were sent on date "2398.1"?
 
 
 Answers:

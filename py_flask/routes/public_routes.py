@@ -1,24 +1,26 @@
-from py_flask.config.extensions import db
-from py_flask.database.models import Users, Channels, ChannelUsers, FeedbackMessage
-from py_flask.utils.chat_utils import getChannelDictList_byUser
-from py_flask.utils.auth_utils import register_user, login_er3
-from py_flask.database.user_schemas import LoginSchema, RegistrationSchema
 import secrets
 import traceback
 
-from sqlalchemy.exc import SQLAlchemyError
-
-from py_flask.utils.error_utils import (
-    custom_abort
-)
-
 from flask import (
     Blueprint,
+    current_app,
+    jsonify,
     request,
     session,
-    jsonify,
-    current_app,
 )
+from sqlalchemy.exc import SQLAlchemyError
+
+from py_flask.config.extensions import db
+from py_flask.database.models import (
+    ChannelUsers,
+    Channels,
+    FeedbackMessage,
+    Users,
+)
+from py_flask.database.user_schemas import LoginSchema, RegistrationSchema
+from py_flask.utils.auth_utils import login_er3, register_user
+from py_flask.utils.chat_utils import getChannelDictList_byUser
+from py_flask.utils.error_utils import custom_abort
 db_ses = db.session
 edurange3_csrf = secrets.token_hex(32)
 

@@ -1,9 +1,11 @@
 import json
-import os
-from py_flask.database.models import Scenarios
-from py_flask.config.extensions import db
 import logging
+import os
+
 from celery.utils.log import get_task_logger
+
+from py_flask.config.extensions import db
+from py_flask.database.models import Scenarios
 
 # Ensure the logs directory exists
 os.makedirs('logs', exist_ok=True)

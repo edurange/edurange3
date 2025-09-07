@@ -1,21 +1,24 @@
-from py_flask.config.extensions import db
+from datetime import timedelta
+from functools import wraps
 
 from flask import (
-    request,
-    session,
+    g,
     jsonify,
     make_response,
-    g
+    request,
+    session,
 )
-from datetime import timedelta
-
-from functools import wraps
-from py_flask.database.models import GroupUsers, StudentGroups, Users, Channels, ChannelUsers
 from flask_jwt_extended import create_access_token, decode_token
 
-from py_flask.utils.error_utils import (
-    custom_abort,
+from py_flask.config.extensions import db
+from py_flask.database.models import (
+    ChannelUsers,
+    Channels,
+    GroupUsers,
+    StudentGroups,
+    Users,
 )
+from py_flask.utils.error_utils import custom_abort
 ###########
 #  This `@jwt_and_csrf_required()` decorator function should be used on ALL 
 #  non-legacy routes except those not requiring login.

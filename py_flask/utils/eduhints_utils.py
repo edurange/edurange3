@@ -1,14 +1,4 @@
-import sys
-import time
-import datetime
-import os
-import math
-import pyopencl as cl
-import asyncio
-import yaml
 import csv
-import pickle
-import redis
 
 try:
     import torch
@@ -38,7 +28,6 @@ def create_language_model_object() -> tuple:
                 "microsoft/Phi-3-mini-4k-instruct",
                 trust_remote_code=True
             )
-            tokenizer.pad_token = tokenizer.eos_token
             tokenizer.pad_token = tokenizer.eos_token
             
             return model, tokenizer
