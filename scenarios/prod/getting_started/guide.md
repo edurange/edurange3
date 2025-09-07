@@ -51,7 +51,7 @@ In eduRange we use the “***B**ourne **A**gain **Sh**ell*”, “`bash`”.
 
 you can look up the history of bash and other shells online
 
-## man pages and apropos
+### man pages and apropos
 “*`man` pages*" is short for “**man**ual” pages. These are text documents with lots of information on things installed on your system. “`man`” is a command for reading the `man` pages.
 
 The first command we explore is `ls`? Let's find that `man` page.
@@ -61,8 +61,8 @@ Type:
 ```sh
 man ls
 ```
- To exit `man`, just type “`q`” to “***q**uit*”.
-      
+To exit `man`, just type “`q`” to “***q**uit*”.
+
 <!-- READING_END -->
 
 <!-- READING_START -->
@@ -114,48 +114,6 @@ What command best fits? Use man to find out more about it.
 <!-- READING_END -->
 
 
-<!-- CHAPTER_END -->
-
-<!-- CHAPTER_START 3: Man Pages -->
-
-<!-- READING_START -->
-
-“*`man` pages*" is short for “**man**ual” pages. These are text documents
-with lots of information on things installed on your system. “`man`” is a
-command for reading the `man` pages.
-
-Try opening the "`man`" page for `ls` using:
-```
-man ls
-```
-To exit `man`, just type "`q`" to “***q**uit*”.
-
-### `man` Page Key Points: SYNOPSIS and EXAMPLES
-
-For many commands, there’s an overwhelming amount of information in the `man` pages. The pages are divided up into sections.
-
-Most every `man` page includes two particularly useful sections:
-
-- A *synopsis* showing how the command is written in the format discussed earlier, and 
-- A series of *examples* showing exact instances of the command in particular uses.
-
-When in a `man` page, you can type a slash “`/`” to search for text.
-
-The headers are in all capitals, so after opening up a particular page, to search for the synopsis you’d type:
-
-```sh
-/SYNOPSIS
-```
-
-and then hit enter.
-
-- `man` will highlight all instances of the text “`SYNOPSIS`”.
-- Typing “`n`” will bring you to the “**n**ext” search result.
-- “`b`” will take you “**b**ack”.
-- Remember, “`q`” to “**q**uit” when you’re done.
-
-<!-- READING_END -->
-
 <!-- QUESTION_START -->
 Question: Open the `man` page for `cp`. What option would provide verbose output? It’s worth noting that many commands provide an option with this name, not just `cp`.
 
@@ -173,7 +131,7 @@ Points: 15
 
 <!-- CHAPTER_END -->
 
-<!-- CHAPTER_START 4: Filesystem and Navigation -->
+<!-- CHAPTER_START 3: Filesystem and Navigation -->
 
 <!-- READING_START -->
 # Unix Filesystems
@@ -265,10 +223,10 @@ cd
 cd ../
 ```
 
-    - The first command sends you to the root of your entire file system.
-    - The second command sends you to the root user's home directory, but notice that you don't have permissions to cd to that directory.
-    - The third command sends you back to your home directory because no path was specified with the command.
-    - The fourth command sends you backwards (up) a level in the file system using .. .
+- The first command sends you to the root of your entire file system.
+- The second command sends you to the root user's home directory, but notice that you don't have permissions to cd to that directory.
+- The third command sends you back to your home directory because no path was specified with the command.
+- The fourth command sends you backwards (up) a level in the file system using .. .
 
 ### ls and File Access Control
 As mentioned before, “ls” “lists” files and directories. When using the command line, “options” allow you to tell the computer how you want it to output information. These are usually shown with a single hyphen (-) for one letter options or a double hyphen (--) for longer options. Let’s use ls to learn more about our file system.
@@ -282,16 +240,18 @@ Then, try:
 
 That's a lot of info! What you see are all the files and directories in the directory (folder) where you are currently working, including files that were hidden before!
 There’s also a lot more information than before, so rather than a list of filenames, we get a whole table with one file per row and columns with additional information about each.
-    - The first column is a string of characters indicating the type of file followed by its “permissions”, settings that determine who is allowed to use files and what they can do to them.
-    - A – at the beginning means a regular file. d is a directory (folder). l is a link. The rest of the string is either - or r, w, and x.
-    - r here stands for "read", w for "write" and x for "execute". - in the position of one of the letters means that type of permission is denied.
-    - Permissions can be set based for 1) the user owning the file, 2) users in the group owning the file, or 3) all other users, and so the permission string repeats each rwx position three times.
-    - The second column is the number of links or sub-directories in the directory, if this file is a directory. (In Unix, we tend to think of all things as files; even directories are just a special type of file.)
-    - The third column is the user that owns the file.
-    - The fourth is the group that owns the file.
-    - The fifth is the size of the file.
-    - The sixth is the date and time it was last edited.
-    - And finally, the file name in the seventh column, on the far right.
+    
+- The first column is a string of characters indicating the type of file followed by its “permissions”, settings that determine who is allowed to use files and what they can do to them.    
+- A – at the beginning means a regular file. d is a directory (folder). l is a link. The rest of the string is either - or r, w, and x.
+- r here stands for "read", w for "write" and x for "execute". - in the position of one of the letters means that type of permission is denied.
+- Permissions can be set based for 1) the user owning the file, 2) users in the group owning the file, or 3) all other users, and so the permission string repeats each rwx position three times.
+- The second column is the number of links or sub-directories in the directory, if this file is a directory. (In Unix, we tend to think of all things as files; even directories are just a special type of file.)
+- The third column is the user that owns the file.
+- The fourth is the group that owns the file.
+- The fifth is the size of the file.
+- The sixth is the date and time it was last edited.
+- And finally, the file name in the seventh column, on the far right.
+
 Let’s learn more about what we can do with ls.
 
 Type:
@@ -331,48 +291,31 @@ Value: .lasers.wav
 Points: 15
 <!-- QUESTION_END -->
 
-<!-- CHAPTER_END -->
-
-<!-- CHAPTER_START 5: Naming Conventions -->
 <!-- READING_START -->
 ## Naming Conventions
 
 Information about your computer and users can be found by exploring the filesystem. Here are common names for the places that information is stored:
 
-    - /, as mentioned earlier, might be called just “root” or more specifically the “root node” or “root directory”.
-    - /home contains the “home” directories for all users, other than root. (On Mac OS, desktop users’ homes are in /Users instead.)
-    - /usr contains common data for resources provided to all (particularly unprivileged) “users”, such as libraries and the files that man uses to deliver documentation. Many commands are stored here as well.
-    - /usr/bin is where the “binary” executables in /usr are stored specifically.
-    - /bin also contains binary executables, but if you ls /bin, you’ll see Reading11: &reading11
-There are a number of other top-level directories related to system operation that are outside the scope of this first lesson. /etc stores shared data like configuration files; /dev and /mnt are related to how the operating system manages hardware.
-You won’t need to interact with these other areas today. For now, be aware that they’re system critical and not to be changed unless you know what you’re doing.
+- `/`, as mentioned earlier, might be called just “root” or more specifically the “root node” or “root directory”.
+- `/home` contains the “home” directories for all users, other than root. (On Mac OS, desktop users’ homes are in `/Users` instead.)
+- `/usr` contains common data for resources provided to all (particularly unprivileged) “users”, such as libraries and the files that man uses to deliver documentation. Many commands are stored here as well.
+- `/usr/bin` is where the “binary” executables in `/usr` are stored specifically.
+- `/bin` also contains binary executables, but if you `ls /bin`, you’ll see there are many more in `/usr/bin` than `/bin`. Why? In different Unix distributions, user-land binaries may be stored in various places. But by convention, `/bin` contains commands that are always loaded, even in low-resource environments such as single-user (“safe”) mode.
 
 ### Navigation: Long and Complicated Paths
 Typing paths can be cumbersome. Shells provide shortcuts to help.
 A “.” (“dot”) is short for your “current working directory”. For now your current working directory will be the same as your home directory. 
 Here are some examples to demonstrate how you can navigate in the file system using what we have learned:
-    - If the current working directory is “/foo/bar”, then if you type “./baz” in the command line the current working directory will become “/foo/bar/baz”.
-    - If you wanted to return to the parent directory of the current working directory (the directory backwards/up a level), you would type “..” (“dot-dot”).
-    - “/..” is one exception - / is the root of all nodes, including itself, so “/..” is interpreted as just “/”.
-    - . and .. only have these meanings when they are used as directory names by themselves. For example: “/..foo” means “the file or directory called ‘..foo’ in our current location”. “../foo” means “the file or directory called ‘foo’ in the parent directory of our current location.”
-    - Another shortcut is “~” (“tilde”). Used by itself, ~ is interpreted as the path to your home directory.
+- If the current working directory is “/foo/bar”, then if you type “./baz” in the command line the current working directory will become “/foo/bar/baz”.
+- If you wanted to return to the parent directory of the current working directory (the directory backwards/up a level), you would type “..” (“dot-dot”).
+- “/..” is one exception - / is the root of all nodes, including itself, so “/..” is interpreted as just “/”.
+- . and .. only have these meanings when they are used as directory names by themselves. For example: “/..foo” means “the file or directory called ‘..foo’ in our current location”. “../foo” means “the file or directory called ‘foo’ in the parent directory of our current location.”
+- Another shortcut is “~” (“tilde”). Used by itself, ~ is interpreted as the path to your home directory.
 
 ### Tab Completion
 The shell also has an auto-completion feature. Modern auto-correct algorithms share common ancestors with shell “tab completion”.
 While typing a path in the command line, you can hit tab to complete a path without having to type it all out. If the path you’ve typed has more than one possible completion, the shell will prompt you with a list of possibilities. If there are a lot of possibilities the shell may warn you that it’s about to print a big list. You can then add to your command input to narrow the available choices.
 
-### root Has More Than One Meaning
-In a Unix system, control over the root directory (or root “node”) is protected by restricting it to a single user. Early systems engineers chose to call this user “root”, which became a convention. Because this user has control of the root node, and thus anything stored on the system at all, the root user became the de facto authority over most things security-related. (In Windows, this user is instead called “administrator” by default, but its role is similar.)
-With both the root user and root node being important vocabulary for system administration, you'll come across ambiguities sometimes.
-    - The “root” (node), signified by just “/”, is the beginning of all the system's files.
-    - But if you were to log in as the “root” user, your home directory would be the folder “/root”, not the root node, “/”.
-    - root’s home directory “/root” is not to be confused with the formal root directory “/”, the beginning of the path to all the files, even though they both might be casually read as “root directory” aloud.
-To avoid confusion, it is best to call “/root” “slash-root” or something like “root’s home”. Reserve “root” itself to refer to the path “/” or the user “root” exclusively, specifying whether you mean a path or user when it isn’t obvious - this is generally how you can expect the terms to be used.
-
-### About root Privileges and Security
-A root user is someone who has access to everything on the computer. They could even delete everything on the computer.
-When setting up your own systems, be aware of how the root user and privileges are configured and controlled. Some systems might not ask to set up credentials initially, leaving the password for root set to a default value after install. In cybersecurity, not changing this default password can have huge implications.
-You won’t be using protected parts of the system in this exercise, but there are many security exploits related to them that you’ll likely encounter in the future.
 <!-- READING_END -->
 
 <!-- QUESTION_START -->
@@ -384,7 +327,7 @@ Points: 15
 <!-- QUESTION_END -->
 <!-- CHAPTER_END -->
 
-<!-- CHAPTER_START 6: File Manipulation -->
+<!-- CHAPTER_START 4: File Manipulation -->
 <!-- READING_START -->
 ## Commands: mv, cp, and mkdir
 
@@ -472,7 +415,7 @@ Try using "`file`" to inspect the files in the "multimedia-data" directory.
 <!-- READING_END -->
 
 <!-- QUESTION_START -->
-Question: In the multimedia-content directory, which file is actually an OpenSSH RSA public key?
+Question: In the multimedia-data directory, which file is actually an OpenSSH RSA public key?
 
 Answers:
 Value: staff_schedule2.docx
@@ -524,7 +467,7 @@ Points: 6
 
 <!-- CHAPTER_END -->
 
-<!-- CHAPTER_START 7: More File Utilities -->
+<!-- CHAPTER_START 5: More File Utilities -->
 
 <!-- READING_START -->
 # More File Utilities
@@ -652,7 +595,7 @@ Vim can be very useful and productive, but it has a steep learning curve for all
 
 <!-- CHAPTER_END -->
 
-<!-- CHAPTER_START 8: Redirection and Filters -->
+<!-- CHAPTER_START 6: Redirection and Filters -->
 
 <!-- READING_START -->
 # Redirection, Filters and Command Composition
@@ -747,8 +690,7 @@ That should take the form of `<source> | <filter>' where:
 
 <!-- QUESTION_START -->
 Question: Take a look at the format of "comms_record.txt" in your home directory. Use "`sort`" to reorder the records based on their Stardate.
-You will need to use the option that designates which column to sort over.
-How many status updates were sent on date "2398.1"?
+You will need to use the option that designates which column to sort over. How many status updates were sent on date "2398.1"?
 
 
 Answers:
@@ -822,7 +764,7 @@ Points: 20
 
 <!-- CHAPTER_END -->
 
-<!-- CHAPTER_START 9: ending -->
+<!-- CHAPTER_START 7: ending -->
 
 <!-- QUESTION_START -->
 Question: In the "final-task" directory in your home directory, there is a file called "hidden-instructions.txt". 

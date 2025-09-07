@@ -36,12 +36,12 @@ contentDefinitions:
       \ on the host computer is called the \u201C*shell*\u201D because it wraps around\
       \ the operating system.\n\n#### bash and Other Shells\nIn eduRange we use the\
       \ \u201C***B**ourne **A**gain **Sh**ell*\u201D, \u201C`bash`\u201D.\n\nyou can\
-      \ look up the history of bash and other shells online\n\n## man pages and apropos\n\
+      \ look up the history of bash and other shells online\n\n### man pages and apropos\n\
       \u201C*`man` pages*\" is short for \u201C**man**ual\u201D pages. These are text\
       \ documents with lots of information on things installed on your system. \u201C\
       `man`\u201D is a command for reading the `man` pages.\n\nThe first command we\
       \ explore is `ls`? Let's find that `man` page.\n\nType:\n\n```sh\nman ls\n```\n\
-      \ To exit `man`, just type \u201C`q`\u201D to \u201C***q**uit*\u201D."
+      To exit `man`, just type \u201C`q`\u201D to \u201C***q**uit*\u201D."
   Reading3: &Reading3
     type: reading
     content: "- `man` pages are an important resource because they are specific to\
@@ -72,25 +72,6 @@ contentDefinitions:
       \ arcane, it is helpful to know about the `apropos`\ncommand which searches\
       \ through all of the man pages.\nTry\n\n  ```sh\n  apropos rename\n  ```\nWhat\
       \ command best fits? Use man to find out more about it."
-  Reading4: &Reading4
-    type: reading
-    content: "\u201C*`man` pages*\" is short for \u201C**man**ual\u201D pages. These\
-      \ are text documents\nwith lots of information on things installed on your system.\
-      \ \u201C`man`\u201D is a\ncommand for reading the `man` pages.\n\nTry opening\
-      \ the \"`man`\" page for `ls` using:\n```\nman ls\n```\nTo exit `man`, just\
-      \ type \"`q`\" to \u201C***q**uit*\u201D.\n\n### `man` Page Key Points: SYNOPSIS\
-      \ and EXAMPLES\n\nFor many commands, there\u2019s an overwhelming amount of\
-      \ information in the `man` pages. The pages are divided up into sections.\n\n\
-      Most every `man` page includes two particularly useful sections:\n\n- A *synopsis*\
-      \ showing how the command is written in the format discussed earlier, and \n\
-      - A series of *examples* showing exact instances of the command in particular\
-      \ uses.\n\nWhen in a `man` page, you can type a slash \u201C`/`\u201D to search\
-      \ for text.\n\nThe headers are in all capitals, so after opening up a particular\
-      \ page, to search for the synopsis you\u2019d type:\n\n```sh\n/SYNOPSIS\n```\n\
-      \nand then hit enter.\n\n- `man` will highlight all instances of the text \u201C\
-      `SYNOPSIS`\u201D.\n- Typing \u201C`n`\u201D will bring you to the \u201C**n**ext\u201D\
-      \ search result.\n- \u201C`b`\u201D will take you \u201C**b**ack\u201D.\n- Remember,\
-      \ \u201C`q`\u201D to \u201C**q**uit\u201D when you\u2019re done."
   Question2: &Question2
     type: question
     content: "Open the `man` page for `cp`. What option would provide verbose output?\
@@ -104,14 +85,14 @@ contentDefinitions:
     points_possible: 15
     options: []
     question_num: 2
-  Reading5: &Reading5
+  Reading4: &Reading4
     type: reading
     content: "- `man` pages are an important resource because they are specific to\
       \ the software actually installed on the system you\u2019re currently using.\n\
       - Some commands have different behavior depending on their version.\n- An online\
       \ resource may or may not have information specific to your system, but `man`\
       \ always contains documentation for what you have installed."
-  Reading6: &Reading6
+  Reading5: &Reading5
     type: reading
     content: "# Unix Filesystems\n\nUnix folders and files are arranged in a tree\
       \ structure, where the root node is the beginning of a path to any file in the\
@@ -149,7 +130,7 @@ contentDefinitions:
     points_possible: 15
     options: []
     question_num: 3
-  Reading7: &Reading7
+  Reading6: &Reading6
     type: reading
     content: "## Commands and Navigation - pwd, cd, ls\n\nNow, try:\n\n```\nls /\n\
       ```\n\nIn this case, `ls` is the command you\u2019re invoking, and \u201C/\u201D\
@@ -165,73 +146,72 @@ contentDefinitions:
       \ you are ever lost in the filesystem, cd by itself will take you back to your\
       \ home directory.\nEnter each of the following, one at a time. If you use ls\
       \ after each, you\u2019ll see that your working directory is changing:\n```\n\
-      cd /\ncd /root\ncd\ncd ../\n```\n\n    - The first command sends you to the\
-      \ root of your entire file system.\n    - The second command sends you to the\
-      \ root user's home directory, but notice that you don't have permissions to\
-      \ cd to that directory.\n    - The third command sends you back to your home\
-      \ directory because no path was specified with the command.\n    - The fourth\
-      \ command sends you backwards (up) a level in the file system using .. .\n\n\
-      ### ls and File Access Control\nAs mentioned before, \u201Cls\u201D \u201Clists\u201D\
-      \ files and directories. When using the command line, \u201Coptions\u201D allow\
-      \ you to tell the computer how you want it to output information. These are\
-      \ usually shown with a single hyphen (-) for one letter options or a double\
-      \ hyphen (--) for longer options. Let\u2019s use ls to learn more about our\
-      \ file system.\n\nFirst, make sure you\u2019ve returned to your home directory\
-      \ by entering:\n`cd`\n\nThen, try:\n\n`ls -la`\n\nThat's a lot of info! What\
-      \ you see are all the files and directories in the directory (folder) where\
-      \ you are currently working, including files that were hidden before!\nThere\u2019\
-      s also a lot more information than before, so rather than a list of filenames,\
-      \ we get a whole table with one file per row and columns with additional information\
-      \ about each.\n    - The first column is a string of characters indicating the\
-      \ type of file followed by its \u201Cpermissions\u201D, settings that determine\
-      \ who is allowed to use files and what they can do to them.\n    - A \u2013\
-      \ at the beginning means a regular file. d is a directory (folder). l is a link.\
-      \ The rest of the string is either - or r, w, and x.\n    - r here stands for\
-      \ \"read\", w for \"write\" and x for \"execute\". - in the position of one\
-      \ of the letters means that type of permission is denied.\n    - Permissions\
-      \ can be set based for 1) the user owning the file, 2) users in the group owning\
-      \ the file, or 3) all other users, and so the permission string repeats each\
-      \ rwx position three times.\n    - The second column is the number of links\
-      \ or sub-directories in the directory, if this file is a directory. (In Unix,\
-      \ we tend to think of all things as files; even directories are just a special\
-      \ type of file.)\n    - The third column is the user that owns the file.\n \
-      \   - The fourth is the group that owns the file.\n    - The fifth is the size\
-      \ of the file.\n    - The sixth is the date and time it was last edited.\n \
-      \   - And finally, the file name in the seventh column, on the far right.\n\
-      Let\u2019s learn more about what we can do with ls.\n\nType:\n`man ls`\n\nWhen\
-      \ we wrote `ls -la`, \u201C-la\u201D was a collection of options, sometimes\
-      \ also informally called \u201Cflags\u201D. Options like this can be combined\
-      \ without spaces to give the computer multiple instructions at once.\nLet's\
-      \ learn what \u201Cl\u201D and \u201Ca\u201D mean.\n\n### Locate Option \"-l\"\
-      \nWithin the man page for ls, search for the \u201C-l\u201D option. Remember\
-      \ that to search inside a man page, you can use \u201C/\u201D.\nType:\n`/-l`\n\
-      \nYou should see the page move to the first occurrence of \u201C-l\u201D and\
-      \ that \u201C-l\u201D is highlighted. Remember, you can jump to the next matching\
-      \ result by hitting \u201Cn\u201D (for \u201Cnext\u201D).\nPress \u201Cn\u201D\
-      \ until you see \u201C-l\u201D highlighted at the beginning of the line; this\
-      \ is where the option is defined and will be above the line for \u201C-L\u201D\
-      .\nAs we can see, the \u201Clong\u201D listing option shows results with details\
-      \ in columns.\nLocate Option \"-a\"\nNow, let\u2019s find information about\
-      \ \u201C-a\u201D. Type:\n`/-a`\n\nHit \u201Cn\u201D till you can't go any further.\
-      \ Now hit \u201Cb\u201D (which stands for \u201Cback\u201D) until you find the\
-      \ entry for \u201C-a\u201D (which is above \u201C-A\u201D).\nRemember when we\
-      \ mentioned that files can be hidden? By default, ls ignores file names that\
-      \ start with .. The \u201Call\u201D option specifies that hidden files, which\
-      \ start with . like .profile, should be displayed.\nHidden files aren\u2019\
-      t hidden in the \u201Csecret\u201D sense as much as they are just \u201Chidden\
-      \ from view\u201D to reduce visual clutter. Hidden files are often used to store\
-      \ configuration and other information that might repeat in many places and would\
-      \ be distracting if it showed up all the time.\n\n### Globbing With ls\nIf there\
-      \ are a lot of files in a directory, it can be useful to restrict what ls looks\
-      \ at to a subset of those files. The shell allows you to find things in your\
-      \ directory following a certain pattern. This is called \u201Cglobbing\u201D\
-      . For example, if you are only interested in files with the extension \u201C\
-      .jpg\u201D, you can use:\n`ls *.jpg`\nThe \u201C*\u201D \u201Cstar\u201D is\
-      \ a special character called a \u201Cwildcard\u201D. Wildcards represent a part\
-      \ of the pattern that could vary. * specifically means that any string of character(s)\
-      \ could go in that position of the glob pattern. We\u2019ll discuss and use\
-      \ globs more later on.\nNow that we have learned a few basic commands, try to\
-      \ use this information to learn more about your filesystem."
+      cd /\ncd /root\ncd\ncd ../\n```\n\n- The first command sends you to the root\
+      \ of your entire file system.\n- The second command sends you to the root user's\
+      \ home directory, but notice that you don't have permissions to cd to that directory.\n\
+      - The third command sends you back to your home directory because no path was\
+      \ specified with the command.\n- The fourth command sends you backwards (up)\
+      \ a level in the file system using .. .\n\n### ls and File Access Control\n\
+      As mentioned before, \u201Cls\u201D \u201Clists\u201D files and directories.\
+      \ When using the command line, \u201Coptions\u201D allow you to tell the computer\
+      \ how you want it to output information. These are usually shown with a single\
+      \ hyphen (-) for one letter options or a double hyphen (--) for longer options.\
+      \ Let\u2019s use ls to learn more about our file system.\n\nFirst, make sure\
+      \ you\u2019ve returned to your home directory by entering:\n`cd`\n\nThen, try:\n\
+      \n`ls -la`\n\nThat's a lot of info! What you see are all the files and directories\
+      \ in the directory (folder) where you are currently working, including files\
+      \ that were hidden before!\nThere\u2019s also a lot more information than before,\
+      \ so rather than a list of filenames, we get a whole table with one file per\
+      \ row and columns with additional information about each.\n    \n- The first\
+      \ column is a string of characters indicating the type of file followed by its\
+      \ \u201Cpermissions\u201D, settings that determine who is allowed to use files\
+      \ and what they can do to them.    \n- A \u2013 at the beginning means a regular\
+      \ file. d is a directory (folder). l is a link. The rest of the string is either\
+      \ - or r, w, and x.\n- r here stands for \"read\", w for \"write\" and x for\
+      \ \"execute\". - in the position of one of the letters means that type of permission\
+      \ is denied.\n- Permissions can be set based for 1) the user owning the file,\
+      \ 2) users in the group owning the file, or 3) all other users, and so the permission\
+      \ string repeats each rwx position three times.\n- The second column is the\
+      \ number of links or sub-directories in the directory, if this file is a directory.\
+      \ (In Unix, we tend to think of all things as files; even directories are just\
+      \ a special type of file.)\n- The third column is the user that owns the file.\n\
+      - The fourth is the group that owns the file.\n- The fifth is the size of the\
+      \ file.\n- The sixth is the date and time it was last edited.\n- And finally,\
+      \ the file name in the seventh column, on the far right.\n\nLet\u2019s learn\
+      \ more about what we can do with ls.\n\nType:\n`man ls`\n\nWhen we wrote `ls\
+      \ -la`, \u201C-la\u201D was a collection of options, sometimes also informally\
+      \ called \u201Cflags\u201D. Options like this can be combined without spaces\
+      \ to give the computer multiple instructions at once.\nLet's learn what \u201C\
+      l\u201D and \u201Ca\u201D mean.\n\n### Locate Option \"-l\"\nWithin the man\
+      \ page for ls, search for the \u201C-l\u201D option. Remember that to search\
+      \ inside a man page, you can use \u201C/\u201D.\nType:\n`/-l`\n\nYou should\
+      \ see the page move to the first occurrence of \u201C-l\u201D and that \u201C\
+      -l\u201D is highlighted. Remember, you can jump to the next matching result\
+      \ by hitting \u201Cn\u201D (for \u201Cnext\u201D).\nPress \u201Cn\u201D until\
+      \ you see \u201C-l\u201D highlighted at the beginning of the line; this is where\
+      \ the option is defined and will be above the line for \u201C-L\u201D.\nAs we\
+      \ can see, the \u201Clong\u201D listing option shows results with details in\
+      \ columns.\nLocate Option \"-a\"\nNow, let\u2019s find information about \u201C\
+      -a\u201D. Type:\n`/-a`\n\nHit \u201Cn\u201D till you can't go any further. Now\
+      \ hit \u201Cb\u201D (which stands for \u201Cback\u201D) until you find the entry\
+      \ for \u201C-a\u201D (which is above \u201C-A\u201D).\nRemember when we mentioned\
+      \ that files can be hidden? By default, ls ignores file names that start with\
+      \ .. The \u201Call\u201D option specifies that hidden files, which start with\
+      \ . like .profile, should be displayed.\nHidden files aren\u2019t hidden in\
+      \ the \u201Csecret\u201D sense as much as they are just \u201Chidden from view\u201D\
+      \ to reduce visual clutter. Hidden files are often used to store configuration\
+      \ and other information that might repeat in many places and would be distracting\
+      \ if it showed up all the time.\n\n### Globbing With ls\nIf there are a lot\
+      \ of files in a directory, it can be useful to restrict what ls looks at to\
+      \ a subset of those files. The shell allows you to find things in your directory\
+      \ following a certain pattern. This is called \u201Cglobbing\u201D. For example,\
+      \ if you are only interested in files with the extension \u201C.jpg\u201D, you\
+      \ can use:\n`ls *.jpg`\nThe \u201C*\u201D \u201Cstar\u201D is a special character\
+      \ called a \u201Cwildcard\u201D. Wildcards represent a part of the pattern that\
+      \ could vary. * specifically means that any string of character(s) could go\
+      \ in that position of the glob pattern. We\u2019ll discuss and use globs more\
+      \ later on.\nNow that we have learned a few basic commands, try to use this\
+      \ information to learn more about your filesystem."
   Question4: &Question4
     type: question
     content: What is the name of the hidden file in your home directory that is over
@@ -244,79 +224,48 @@ contentDefinitions:
     points_possible: 15
     options: []
     question_num: 4
-  Reading8: &Reading8
+  Reading7: &Reading7
     type: reading
     content: "## Naming Conventions\n\nInformation about your computer and users can\
       \ be found by exploring the filesystem. Here are common names for the places\
-      \ that information is stored:\n\n    - /, as mentioned earlier, might be called\
+      \ that information is stored:\n\n- `/`, as mentioned earlier, might be called\
       \ just \u201Croot\u201D or more specifically the \u201Croot node\u201D or \u201C\
-      root directory\u201D.\n    - /home contains the \u201Chome\u201D directories\
-      \ for all users, other than root. (On Mac OS, desktop users\u2019 homes are\
-      \ in /Users instead.)\n    - /usr contains common data for resources provided\
-      \ to all (particularly unprivileged) \u201Cusers\u201D, such as libraries and\
-      \ the files that man uses to deliver documentation. Many commands are stored\
-      \ here as well.\n    - /usr/bin is where the \u201Cbinary\u201D executables\
-      \ in /usr are stored specifically.\n    - /bin also contains binary executables,\
-      \ but if you ls /bin, you\u2019ll see Reading11: &reading11\nThere are a number\
-      \ of other top-level directories related to system operation that are outside\
-      \ the scope of this first lesson. /etc stores shared data like configuration\
-      \ files; /dev and /mnt are related to how the operating system manages hardware.\n\
-      You won\u2019t need to interact with these other areas today. For now, be aware\
-      \ that they\u2019re system critical and not to be changed unless you know what\
-      \ you\u2019re doing.\n\n### Navigation: Long and Complicated Paths\nTyping paths\
-      \ can be cumbersome. Shells provide shortcuts to help.\nA \u201C.\u201D (\u201C\
-      dot\u201D) is short for your \u201Ccurrent working directory\u201D. For now\
-      \ your current working directory will be the same as your home directory. \n\
-      Here are some examples to demonstrate how you can navigate in the file system\
-      \ using what we have learned:\n    - If the current working directory is \u201C\
-      /foo/bar\u201D, then if you type \u201C./baz\u201D in the command line the current\
-      \ working directory will become \u201C/foo/bar/baz\u201D.\n    - If you wanted\
-      \ to return to the parent directory of the current working directory (the directory\
-      \ backwards/up a level), you would type \u201C..\u201D (\u201Cdot-dot\u201D\
-      ).\n    - \u201C/..\u201D is one exception - / is the root of all nodes, including\
-      \ itself, so \u201C/..\u201D is interpreted as just \u201C/\u201D.\n    - .\
-      \ and .. only have these meanings when they are used as directory names by themselves.\
-      \ For example: \u201C/..foo\u201D means \u201Cthe file or directory called \u2018\
-      ..foo\u2019 in our current location\u201D. \u201C../foo\u201D means \u201Cthe\
-      \ file or directory called \u2018foo\u2019 in the parent directory of our current\
-      \ location.\u201D\n    - Another shortcut is \u201C~\u201D (\u201Ctilde\u201D\
-      ). Used by itself, ~ is interpreted as the path to your home directory.\n\n\
-      ### Tab Completion\nThe shell also has an auto-completion feature. Modern auto-correct\
-      \ algorithms share common ancestors with shell \u201Ctab completion\u201D.\n\
-      While typing a path in the command line, you can hit tab to complete a path\
-      \ without having to type it all out. If the path you\u2019ve typed has more\
-      \ than one possible completion, the shell will prompt you with a list of possibilities.\
-      \ If there are a lot of possibilities the shell may warn you that it\u2019s\
-      \ about to print a big list. You can then add to your command input to narrow\
-      \ the available choices.\n\n### root Has More Than One Meaning\nIn a Unix system,\
-      \ control over the root directory (or root \u201Cnode\u201D) is protected by\
-      \ restricting it to a single user. Early systems engineers chose to call this\
-      \ user \u201Croot\u201D, which became a convention. Because this user has control\
-      \ of the root node, and thus anything stored on the system at all, the root\
-      \ user became the de facto authority over most things security-related. (In\
-      \ Windows, this user is instead called \u201Cadministrator\u201D by default,\
-      \ but its role is similar.)\nWith both the root user and root node being important\
-      \ vocabulary for system administration, you'll come across ambiguities sometimes.\n\
-      \    - The \u201Croot\u201D (node), signified by just \u201C/\u201D, is the\
-      \ beginning of all the system's files.\n    - But if you were to log in as the\
-      \ \u201Croot\u201D user, your home directory would be the folder \u201C/root\u201D\
-      , not the root node, \u201C/\u201D.\n    - root\u2019s home directory \u201C\
-      /root\u201D is not to be confused with the formal root directory \u201C/\u201D\
-      , the beginning of the path to all the files, even though they both might be\
-      \ casually read as \u201Croot directory\u201D aloud.\nTo avoid confusion, it\
-      \ is best to call \u201C/root\u201D \u201Cslash-root\u201D or something like\
-      \ \u201Croot\u2019s home\u201D. Reserve \u201Croot\u201D itself to refer to\
-      \ the path \u201C/\u201D or the user \u201Croot\u201D exclusively, specifying\
-      \ whether you mean a path or user when it isn\u2019t obvious - this is generally\
-      \ how you can expect the terms to be used.\n\n### About root Privileges and\
-      \ Security\nA root user is someone who has access to everything on the computer.\
-      \ They could even delete everything on the computer.\nWhen setting up your own\
-      \ systems, be aware of how the root user and privileges are configured and controlled.\
-      \ Some systems might not ask to set up credentials initially, leaving the password\
-      \ for root set to a default value after install. In cybersecurity, not changing\
-      \ this default password can have huge implications.\nYou won\u2019t be using\
-      \ protected parts of the system in this exercise, but there are many security\
-      \ exploits related to them that you\u2019ll likely encounter in the future."
+      root directory\u201D.\n- `/home` contains the \u201Chome\u201D directories for\
+      \ all users, other than root. (On Mac OS, desktop users\u2019 homes are in `/Users`\
+      \ instead.)\n- `/usr` contains common data for resources provided to all (particularly\
+      \ unprivileged) \u201Cusers\u201D, such as libraries and the files that man\
+      \ uses to deliver documentation. Many commands are stored here as well.\n- `/usr/bin`\
+      \ is where the \u201Cbinary\u201D executables in `/usr` are stored specifically.\n\
+      - `/bin` also contains binary executables, but if you `ls /bin`, you\u2019ll\
+      \ see there are many more in `/usr/bin` than `/bin`. Why? In different Unix\
+      \ distributions, user-land binaries may be stored in various places. But by\
+      \ convention, `/bin` contains commands that are always loaded, even in low-resource\
+      \ environments such as single-user (\u201Csafe\u201D) mode.\n\n### Navigation:\
+      \ Long and Complicated Paths\nTyping paths can be cumbersome. Shells provide\
+      \ shortcuts to help.\nA \u201C.\u201D (\u201Cdot\u201D) is short for your \u201C\
+      current working directory\u201D. For now your current working directory will\
+      \ be the same as your home directory. \nHere are some examples to demonstrate\
+      \ how you can navigate in the file system using what we have learned:\n- If\
+      \ the current working directory is \u201C/foo/bar\u201D, then if you type \u201C\
+      ./baz\u201D in the command line the current working directory will become \u201C\
+      /foo/bar/baz\u201D.\n- If you wanted to return to the parent directory of the\
+      \ current working directory (the directory backwards/up a level), you would\
+      \ type \u201C..\u201D (\u201Cdot-dot\u201D).\n- \u201C/..\u201D is one exception\
+      \ - / is the root of all nodes, including itself, so \u201C/..\u201D is interpreted\
+      \ as just \u201C/\u201D.\n- . and .. only have these meanings when they are\
+      \ used as directory names by themselves. For example: \u201C/..foo\u201D means\
+      \ \u201Cthe file or directory called \u2018..foo\u2019 in our current location\u201D\
+      . \u201C../foo\u201D means \u201Cthe file or directory called \u2018foo\u2019\
+      \ in the parent directory of our current location.\u201D\n- Another shortcut\
+      \ is \u201C~\u201D (\u201Ctilde\u201D). Used by itself, ~ is interpreted as\
+      \ the path to your home directory.\n\n### Tab Completion\nThe shell also has\
+      \ an auto-completion feature. Modern auto-correct algorithms share common ancestors\
+      \ with shell \u201Ctab completion\u201D.\nWhile typing a path in the command\
+      \ line, you can hit tab to complete a path without having to type it all out.\
+      \ If the path you\u2019ve typed has more than one possible completion, the shell\
+      \ will prompt you with a list of possibilities. If there are a lot of possibilities\
+      \ the shell may warn you that it\u2019s about to print a big list. You can then\
+      \ add to your command input to narrow the available choices."
   Question5: &Question5
     type: question
     content: In your home directory there is subdirectory named followMe. Travel into
@@ -330,7 +279,7 @@ contentDefinitions:
     points_possible: 15
     options: []
     question_num: 5
-  Reading9: &Reading9
+  Reading8: &Reading8
     type: reading
     content: "## Commands: mv, cp, and mkdir\n\n### mv\nmv is used to move or rename\
       \ files and directories in the filesystem. As we discovered earlier, there is\
@@ -351,7 +300,7 @@ contentDefinitions:
     points_possible: 15
     options: []
     question_num: 6
-  Reading10: &Reading10
+  Reading9: &Reading9
     type: reading
     content: "### `chmod`\n\n`chmod` comes from \u201C***ch****ange* ***mod****e*\u201D\
       \ and alters the *permissions* of files and directories.\n\n- \u201C*Permissions*\u201D\
@@ -388,7 +337,7 @@ contentDefinitions:
     points_possible: 10
     options: []
     question_num: 7
-  Reading11: &Reading11
+  Reading10: &Reading10
     type: reading
     content: "### Background: File Types\n\nNot all files appear as they really are.\
       \ Just because you see a file named \u201C`foo.png`\u201D does not mean that\
@@ -404,8 +353,8 @@ contentDefinitions:
       \ the files in the \"multimedia-data\" directory."
   Question8: &Question8
     type: question
-    content: In the multimedia-content directory, which file is actually an OpenSSH
-      RSA public key?
+    content: In the multimedia-data directory, which file is actually an OpenSSH RSA
+      public key?
     comment: ''
     answers:
     - answer_type: String
@@ -414,7 +363,7 @@ contentDefinitions:
     points_possible: 10
     options: []
     question_num: 8
-  Reading12: &Reading12
+  Reading11: &Reading11
     type: reading
     content: "### `find`\n\n\u201C`find`\u201D does just what it sounds like - helps\
       \ you \u201C***find***\u201D files on the filesystem. `find` takes different\
@@ -466,7 +415,7 @@ contentDefinitions:
     points_possible: 6
     options: []
     question_num: 11
-  Reading13: &Reading13
+  Reading12: &Reading12
     type: reading
     content: "# More File Utilities\n\nSo far we\u2019ve looked at commands that browse\
       \ and alter the filesystem, where data is saved. Next we\u2019ll introduce some\
@@ -558,7 +507,7 @@ contentDefinitions:
     points_possible: 20
     options: []
     question_num: 14
-  Reading14: &Reading14
+  Reading13: &Reading13
     type: reading
     content: "## Text Editors\n\nThere are many ways to create and modify text files\
       \ on the command line. When you need all the features of an interactive text\
@@ -587,7 +536,7 @@ contentDefinitions:
       \ Escape, then type `:qa!` and press enter to forcefully exit.\n\nVim can be\
       \ very useful and productive, but it has a steep learning curve for all of its\
       \ hotkeys."
-  Reading15: &Reading15
+  Reading14: &Reading14
     type: reading
     content: "# Redirection, Filters and Command Composition\n\n## Input/Output Redirection\n\
       \nRedirection operators - written with angle brackets like \u201C`>`\u201D and\
@@ -647,7 +596,10 @@ contentDefinitions:
   Question15: &Question15
     type: question
     content: Take a look at the format of "comms_record.txt" in your home directory.
-      Use "`sort`" to reorder the records based on their Stardate.
+      Use "`sort`" to reorder the records based on their Stardate. You will need to use the 
+      option that designates which column to sort over. 
+      
+      How many status updates were sent on date "2398.1"?
     comment: ''
     answers:
     - answer_type: String
@@ -656,7 +608,7 @@ contentDefinitions:
     points_possible: 10
     options: []
     question_num: 15
-  Reading16: &Reading16
+  Reading15: &Reading15
     type: reading
     content: "### `uniq`\n\nThe `uniq` command is used to reduce the number of repeated\
       \ lines that are printed while viewing a file, and, as a result, it is very\
@@ -677,7 +629,7 @@ contentDefinitions:
     points_possible: 10
     options: []
     question_num: 16
-  Reading17: &Reading17
+  Reading16: &Reading16
     type: reading
     content: "### `grep`\n\nThe \u201C`grep`\u201D command has a similar use to `find`,\
       \ however, instead of searching for files, `grep` searches within files for\
@@ -740,55 +692,48 @@ studentGuide:
     content_array:
     - *Reading2
     - *Reading3
-  - chapter_num: 3
-    title: Man Pages
-    content_array:
-    - *Reading4
     - *Question2
-    - *Reading5
-  - chapter_num: 4
+    - *Reading4
+  - chapter_num: 3
     title: Filesystem and Navigation
     content_array:
-    - *Reading6
+    - *Reading5
     - *Question3
-    - *Reading7
+    - *Reading6
     - *Question4
-  - chapter_num: 5
-    title: Naming Conventions
-    content_array:
-    - *Reading8
+    - *Reading7
     - *Question5
-  - chapter_num: 6
+  - chapter_num: 4
     title: File Manipulation
     content_array:
-    - *Reading9
+    - *Reading8
     - *Question6
-    - *Reading10
+    - *Reading9
     - *Question7
-    - *Reading11
+    - *Reading10
     - *Question8
-    - *Reading12
+    - *Reading11
     - *Question9
     - *Question10
     - *Question11
-  - chapter_num: 7
+  - chapter_num: 5
     title: More File Utilities
     content_array:
-    - *Reading13
+    - *Reading12
     - *Question12
     - *Question13
     - *Question14
-    - *Reading14
-  - chapter_num: 8
+    - *Reading13
+  - chapter_num: 6
     title: Redirection and Filters
     content_array:
-    - *Reading15
+    - *Reading14
     - *Question15
-    - *Reading16
+    - *Reading15
     - *Question16
-    - *Reading17
+    - *Reading16
     - *Question17
-  - chapter_num: 9
+  - chapter_num: 7
     title: ending
     content_array:
     - *Question18
