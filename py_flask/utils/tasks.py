@@ -5,6 +5,9 @@ import random
 import string
 import subprocess
 import yaml
+import redis
+import pickle
+import time
 from datetime import datetime
 
 from celery import Celery, shared_task
@@ -777,6 +780,7 @@ def query_small_language_model_task(self, task, generation_parameters):
         except Exception as e:
             raise Exception (f"ERROR: Failed to load items from Redis cache: [{e}]")
 
+        
         try:
             import torch
             
@@ -798,8 +802,7 @@ def query_small_language_model_task(self, task, generation_parameters):
                     top_k=40,
                     pad_token_id=tokenizer.eos_token_id,
                     eos_token_id=tokenizer.eos_token_id
-                )
-            
+                    )   
             # Decode response (skip the input tokens for decoder-only models)
             response = tokenizer.decode(outputs[0][inputs['input_ids'].shape[1]:], skip_special_tokens=True)
             

@@ -7,33 +7,33 @@ try:
 except ImportError:
     ML_AVAILABLE = False
 
+
 def create_language_model_object() -> tuple:  
+    if not ML_AVAILABLE:
+        raise Exception("ERROR: ML libraries (torch, transformers) are not installed. Install ml_requirements.txt to use hint generation.")
 
-      if not ML_AVAILABLE:
-          raise Exception("ERROR: ML libraries (torch, transformers) are not installed. Install ml_requirements.txt to use hint generation.")
+    try:
+        # Load Qwen2.5-3B model optimized for CPU inference
+        model = AutoModelForCausalLM.from_pretrained(
+            "Qwen/Qwen2.5-3B-Instruct",         # Qwen2.5-3B (3B parameters)
+            torch_dtype=torch.bfloat16,          # bfloat16 reduces memory by ~50%
+            device_map="cpu",                    # Force CPU
+            low_cpu_mem_usage=True,              # Optimize CPU memory usage
+            use_cache=False,                     # Disable cache to save memory
+            trust_remote_code=False              # Qwen2.5 doesn't need this
+        )
+        
+        # Load tokenizer
+        tokenizer = AutoTokenizer.from_pretrained(
+            "Qwen/Qwen2.5-3B-Instruct",
+            trust_remote_code=False
+        )
+        tokenizer.pad_token = tokenizer.eos_token
+        
+        return model, tokenizer
 
-      try:
-            # Load model optimized for CPU inference - using Phi-3-mini with memory optimizations
-            model = AutoModelForCausalLM.from_pretrained(
-                "microsoft/Phi-3-mini-4k-instruct",  # Phi-3-mini (3.8B parameters)
-                torch_dtype=torch.bfloat16,          # bfloat16 reduces memory by ~50%
-                device_map="cpu",                    # Force CPU
-                low_cpu_mem_usage=True,              # Optimize CPU memory usage
-                use_cache=False,                     # Disable cache to save memory
-                trust_remote_code=True               # Required for Phi-3
-            )
-            
-            # Load tokenizer
-            tokenizer = AutoTokenizer.from_pretrained(
-                "microsoft/Phi-3-mini-4k-instruct",
-                trust_remote_code=True
-            )
-            tokenizer.pad_token = tokenizer.eos_token
-            
-            return model, tokenizer
-
-      except Exception as e:
-            raise Exception(f"ERROR: Failed to initialize model object: {e}")
+    except Exception as e:
+        raise Exception(f"ERROR: Failed to initialize model object: {e}")
 
 
 def load_context_file_contents(context_file_type: str, scenario_name: str) -> str:
