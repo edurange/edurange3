@@ -583,18 +583,20 @@ def cancel_generate_hint_route():
 
 def get_resources():
 
-    sys_db_redis_client = redis.Redis(host='localhost', port=6379, db=1)
+    # sys_db_redis_client = redis.Redis(host='localhost', port=6379, db=1)
 
-    cpu_resources_detected = sys_db_redis_client.get("cpu_resources")
-    gpu_resources_detected = sys_db_redis_client.get("gpu_resources")
+    cpu_resources_detected_int = 16
+    gpu_resources_detected_int = 0
 
-    if cpu_resources_detected is None:
-        return jsonify({'error': 'CPU resources not found in database'}), 500
-    if gpu_resources_detected is None:
-        return jsonify({'error': 'GPU resources not found in database'}), 500
 
-    cpu_resources_detected_int = int(cpu_resources_detected)
-    gpu_resources_detected_int = int(gpu_resources_detected)
+    # if cpu_resources_detected is None:
+    #     return jsonify({'error': 'CPU resources not found in database'}), 500
+    # if gpu_resources_detected is None:
+    #     return jsonify({'error': 'GPU resources not found in database'}), 500
+
+    # cpu_resources_detected_int = int(cpu_resources_detected)
+    # gpu_resources_detected_int = int(gpu_resources_detected)
+
 
 
     return jsonify({'cpu_resources_detected': cpu_resources_detected_int, 'gpu_resources_detected': gpu_resources_detected_int})

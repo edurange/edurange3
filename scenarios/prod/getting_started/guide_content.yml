@@ -369,15 +369,19 @@ contentDefinitions:
       \ you \u201C***find***\u201D files on the filesystem. `find` takes different\
       \ qualities that define what you\u2019re looking for, and does the repetitive\
       \ work of searching each directory in the tree work for you.\n\nAn example:\n\
-      \n```sh\nfind . *foo*\n```\n\n- First the \u201C`.`\u201D argument is a path\
-      \ that tells `find` where to start the search; in this case it's the current\
-      \ working directory. (Remember the dot is shorthand for the directory where\
-      \ you are. We could also give a relative path like \u201C`bar`\u201D or an absolute\
-      \ path from the root \u201C`/`\u201D. Wherever you\u2019d like to search from.)\n\
-      - Second, we provide an expression for a filename. Here we\u2019ve provided\
-      \ a glob pattern, \u201C`*foo*`\u201D. The `*`s on either side mean that we\
-      \ want everything with `foo` in the name, regardless of what is around it. The\
-      \ `*` can be any string, including an empty string, so \u201C`foo`\u201D, \u201C\
+      \n```sh\nfind . -iname \"*foo*\"\n```\n\n- First the \u201C`.`\u201D argument\
+      \ is a path that tells `find` where to start the search; in this case it's the\
+      \ current working directory. (Remember the dot is shorthand for the directory\
+      \ where you are. We could also give a relative path like \u201C`bar`\u201D or\
+      \ an absolute path from the root \u201C`/`\u201D. Wherever you\u2019d like to\
+      \ search from.)\n- Next, we provide the `-iname` flag to indicate that we are\
+      \ searching for a file with a case insensitive name containing \"foo\". If you\
+      \ knew the correct case for the file name, you could use the `-name` flag, as\
+      \ it would be a bit faster, but `-iname` is a safe default if you're unsure.\n\
+      - Last, we provide an expression for a filename. Here we\u2019ve provided a\
+      \ glob pattern, \u201C`*foo*`\u201D. The `*`s on either side mean that we want\
+      \ everything with `foo` in the name, regardless of what is around it. The `*`\
+      \ can be any string, including an empty string, so \u201C`foo`\u201D, \u201C\
       `myfoo`\u201D, \u201C`foobar`\u201D and \u201C`space food vendors.txt`\u201D\
       \ would all be valid matches."
   Question9: &Question9

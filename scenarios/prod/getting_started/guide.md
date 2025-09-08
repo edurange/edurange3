@@ -430,11 +430,12 @@ Points: 10
 An example:
 
 ```sh
-find . *foo*
+find . -iname "*foo*"
 ```
 
 - First the “`.`” argument is a path that tells `find` where to start the search; in this case it's the current working directory. (Remember the dot is shorthand for the directory where you are. We could also give a relative path like “`bar`” or an absolute path from the root “`/`”. Wherever you’d like to search from.)
-- Second, we provide an expression for a filename. Here we’ve provided a glob pattern, “`*foo*`”. The `*`s on either side mean that we want everything with `foo` in the name, regardless of what is around it. The `*` can be any string, including an empty string, so “`foo`”, “`myfoo`”, “`foobar`” and “`space food vendors.txt`” would all be valid matches.
+- Next, we provide the `-iname` flag to indicate that we are searching for a file with a case insensitive name containing "foo". If you knew the correct case for the file name, you could use the `-name` flag, as it would be a bit faster, but `-iname` is a safe default if you're unsure.
+- Last, we provide an expression for a filename. Here we’ve provided a glob pattern, “`*foo*`”. The `*`s on either side mean that we want everything with `foo` in the name, regardless of what is around it. The `*` can be any string, including an empty string, so “`foo`”, “`myfoo`”, “`foobar`” and “`space food vendors.txt`” would all be valid matches.
 
 <!-- READING_END -->
 
