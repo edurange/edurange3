@@ -82,6 +82,11 @@ sshSocketServer.on('connection', async (ssh_socket, request) => {
                 sshClient.shell((err, shell) => {
                     if (err) {
                         console.error("Error starting shell:", err);
+                        ssh_socket.send(JSON.stringify({ 
+                            type: 'error', 
+                            message: 'Failed to start SSH shell session',
+                            details: err.message 
+                        }));
                         return;
                     }
 
@@ -112,7 +117,21 @@ sshSocketServer.on('connection', async (ssh_socket, request) => {
                         console.log('Error from shell:', dataError.toString());
                     });
                 });
-            }).connect({
+            });
+
+            // Add error handler for SSH connection failures
+            sshClient.on('error', (err) => {
+                console.error('SSH Client connection error:', err);
+                ssh_socket.send(JSON.stringify({ 
+                    type: 'error', 
+                    message: 'SSH connection failed',
+                    details: `Cannot connect to SSH server on port ${data.SSH_port}: ${err.message}`,
+                    code: err.code,
+                    port: data.SSH_port
+                }));
+            });
+
+            sshClient.connect({
                 host: 'localhost',
                 port: data.SSH_port,
                 username: saniname,
@@ -121,6 +140,11 @@ sshSocketServer.on('connection', async (ssh_socket, request) => {
 
             ssh_socket.on('close', () => {
                 console.log('Client disconnected');
+                sshClient.end();
+            });
+
+            ssh_socket.on('error', (err) => {
+                console.error('WebSocket error:', err);
                 sshClient.end();
             });
         }

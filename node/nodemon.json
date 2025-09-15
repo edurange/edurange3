@@ -1,0 +1,15 @@
+{
+  "watch": ["*.js", "er3_modules/*.js"],
+  "ignore": ["node_modules/", "*.log"],
+  "ext": "js,json",
+  "delay": 2000,
+  "restartable": "rs",
+  "env": {
+    "NODE_ENV": "development"
+  },
+  "events": {
+    "restart": "echo 'WebSocket server restarting...'",
+    "crash": "echo 'WebSocket server crashed, auto-restarting in 2 seconds...'"
+  },
+  "verbose": true
+}
