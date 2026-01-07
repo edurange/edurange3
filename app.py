@@ -11,9 +11,6 @@ from py_flask.config.extensions import db
 from py_flask.database.models import StudentGroups, Users
 from py_flask.utils.common_utils import generate_alphanum, get_system_resources
 
-
-
-
 app = create_app()
 app.app_context().push()
 

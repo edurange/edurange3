@@ -10,6 +10,8 @@ import pickle
 import time
 from datetime import datetime
 
+from eduhints import EDUHints
+
 from celery import Celery, shared_task
 from celery.utils.log import get_task_logger
 from flask import current_app, flash, jsonify
@@ -26,18 +28,17 @@ from py_flask.database.models import (
 )
 from py_flask.utils.common_utils import get_system_resources
 from py_flask.utils.csv_utils import readCSV
-from py_flask.utils.eduhints_utils import (
-    create_language_model_object,
-    export_hint_to_csv,
-    load_context_file_contents,
-)
+
+
 from py_flask.utils.scenario_utils import claimOctet, gather_files
-from py_flask.utils.staff_utils import getLogs, getRecentLogs, NotifyCapture
+from py_flask.utils.staff_utils import getLogs, NotifyCapture
 from py_flask.utils.terraform_utils import (
     adjust_network,
     find_and_copy_template,
     write_resource,
 )
+
+from py_flask.utils.redis_utils import get_resource_settings_from_redis, get_logs_dict_from_redis
 
 # Create a custom logger
 logger = get_task_logger(__name__)
@@ -644,53 +645,6 @@ def scenarioCollectLogs(self, arg):
 @celery.on_after_configure.connect
 def setup_periodic_tasks(sender, **kwargs):
     sender.add_periodic_task(60.0, scenarioCollectLogs.s(''))
-
-# Machine learning tasks 
-
-@celery.task(bind=True, queue='eduhint', routing_key='eduhint')
-def initialize_system_resources_task(self):
-
-    sys_db_redis_client = redis.Redis(host='localhost', port=6379, db=1)
-
-    try: 
-        system_resources = get_system_resources()
-        cpu_resources = system_resources['cpu_resources']
-        gpu_resources = system_resources['gpu_resources']
-
-        if cpu_resources is None:
-            raise Exception (f"ERROR: Failed to initialize model, cpu_resources cannot be type None: [{e}]")
-
-        if gpu_resources is None:
-            raise Exception (f"ERROR: Failed to initialize model, gpu_resources cannot be type None: [{e}]")
-
-    except Exception as e:
-        raise Exception (f"ERROR: get_system_resources() or resource allocation failure: [{e}]")
-  
-    try:
-        sys_db_redis_client.set("cpu_resources", cpu_resources)
-        sys_db_redis_client.set("gpu_resources", gpu_resources)
-
-    except Exception as e:
-        raise Exception (f"ERROR: Failed to cache system resources in redis db2 [{e}]: ")
-
-  
-@celery.task(bind=True, queue='eduhint', routing_key='eduhint')
-def update_system_resources_task(self, cpu_resources, gpu_resources):
-
-    if cpu_resources is None:
-        raise Exception (f"ERROR: Failed to update model, cpu_resources cannot be type None: [{e}]")
-    
-    if gpu_resources is None:
-        raise Exception (f"ERROR: Failed to update model, gpu_resources cannot be type None: [{e}]")
-
-    sys_db_redis_client = redis.Redis(host='localhost', port=6379, db=1)
-
-    try:
-        sys_db_redis_client.set("cpu_resources", cpu_resources)
-        sys_db_redis_client.set("gpu_resources", gpu_resources)
-
-    except Exception as e:
-            raise Exception (f"ERROR: Failed to cache model and system resources in redis db2 [{e}]: ")
     
 @celery.task(bind=True, queue='eduhint', routing_key='eduhint')
 def get_recent_student_logs_task(self, student_id, number_of_logs):
@@ -698,7 +652,7 @@ def get_recent_student_logs_task(self, student_id, number_of_logs):
     user_db_redis_client = redis.Redis(host='localhost', port=6379, db=2)
 
     try:
-        logs_dict = getRecentLogs(student_id, number_of_logs)
+        logs_dict = getLogs(student_id, number_of_logs)
 
     except Exception as e:
             raise Exception(f"ERROR: Failed to retrieve logs with 'getRecentLogs()': {e}")
@@ -717,263 +671,44 @@ def get_recent_student_logs_task(self, student_id, number_of_logs):
 
     return logs_dict
 
+
+# Machine learning tasks 
+
+@celery.task(bind=True, queue='eduhint', routing_key='eduhint')
+def generate_hint_task(self, arg_scenario_name, arg_gen_params):
+
+    user_db_redis_client = redis.Redis(host='localhost', port=6379, db=2)
+    
+    try:
+        generate_hint_task_id = self.request.id
+        user_db_redis_client.set("generate_hint_task_id", generate_hint_task_id)
+        
+    except Exception as e:
+        raise Exception (f"ERROR: Failed to retrieve or set query_small_language_model_task_id to redis db2: [{e}]")
+
+    app = current_app
+    eduhints = app.eduhints
+
+    sys_prompt = "Complete this hint for a cybersecurity student. Based on their recent activity, write EXACTLY ONE specific action they should take next. Start with a verb. Maximum 20 words."
+
+    logs = get_logs_dict_from_redis(user_db_redis_client)
+
+    eduhints_query = {
+        "gen_params": arg_gen_params,
+        "activity": arg_scenario_name,
+        "logs": logs
+    }
+
+    res_data = eduhints.generate_hint(eduhints_query)
+
+    return {'generated_hint': res_data["eduhint"], 'logs_dict': logs, 'duration': 5 }
+
 @celery.task(bind=True, queue='eduhint', routing_key='eduhint')
 def cancel_generate_hint_task(self):
     user_db_redis_client = redis.Redis(host='localhost', port=6379, db=2)
 
-    query_small_language_model_task_id = user_db_redis_client.get("query_small_language_model_task_id")
+    generate_hint_task_id = user_db_redis_client.get("generate_hint_task_id")
     
-    self.app.control.revoke(query_small_language_model_task_id, terminate=True)
+    self.app.control.revoke(generate_hint_task_id, terminate=True)
     
-    return {'status': query_small_language_model_task_id}
-
-@celery.task(bind=True, queue='eduhint', routing_key='eduhint')
-def query_small_language_model_task(self, task, generation_parameters):
-
-    def get_resource_settings_from_redis(sys_db_redis_client):
-
-        try:
-            cpu_resources = sys_db_redis_client.get("cpu_resources")
-            gpu_resources = sys_db_redis_client.get("gpu_resources")
-
-        except Exception as e:
-            raise Exception (f"ERROR: Failed to retrieve cpu/gpu resources from redis db1. Additioanl information: [{e}]")
-        
-        return {'cpu_resources': cpu_resources, 'gpu_resources': gpu_resources}
-    
-    def get_logs_dict_from_redis(user_db_redis_client):
-
-        try:
-            logs_dict_pickle = user_db_redis_client.get("logs_dict")
-
-        except Exception as e:
-            raise Exception (f"ERROR: Failed to retrieve 'logs_dict' from redis db2: [{e}]")
-
-        try:
-            logs_dict = pickle.loads(logs_dict_pickle)
-        
-        except Exception as e:
-            raise Exception (f"ERROR: Failed to load logs_dict pickle: [{e}]")
-        
-        return logs_dict
-    
-    def set_query_small_language_model_task_id():
-
-        try:
-            query_small_language_model_task_id = self.request.id
-            user_db_redis_client.set("query_small_language_model_task_id", query_small_language_model_task_id)
-        
-        except Exception as e:
-            raise Exception (f"ERROR: Failed to retrieve or set query_small_language_model_task_id to redis db2: [{e}]")
-
-
-    def custom_query(model, tokenizer, generation_parameters):
-
-        start_time = time.time()
-
-        try:
-            temperature = float(generation_parameters.get('temperature'))
-            max_tokens = int(generation_parameters.get('max_tokens'))
-            system_prompt = generation_parameters.get('system_prompt')
-            user_prompt = generation_parameters.get('user_prompt')
-
-        except Exception as e:
-            raise Exception (f"ERROR: Failed to load items from Redis cache: [{e}]")
-
-        
-        try:
-            import torch
-            
-            # Phi-3 format for custom queries
-            prompt = f"<|system|>\n{system_prompt}<|end|>\n<|user|>\n{user_prompt}<|end|>\n<|assistant|>\n"
-            
-            # Tokenize input for Phi-3 (decoder-only model)
-            inputs = tokenizer(prompt, return_tensors="pt", truncation=True, max_length=1024).to(model.device)
-            
-            # Generate response optimized for Phi-3
-            with torch.no_grad():
-                outputs = model.generate(
-                    **inputs,
-                    max_new_tokens=min(max_tokens, 150),
-                    temperature=temperature,
-                    do_sample=True,
-                    repetition_penalty=1.1,
-                    top_p=0.9,
-                    top_k=40,
-                    pad_token_id=tokenizer.eos_token_id,
-                    eos_token_id=tokenizer.eos_token_id
-                    )   
-            # Decode response (skip the input tokens for decoder-only models)
-            response = tokenizer.decode(outputs[0][inputs['input_ids'].shape[1]:], skip_special_tokens=True)
-            
-            # Clean up the response
-            response = response.strip()
-            logger.info(f"Generated response (raw): '{response}'")
-            
-            # If response is empty, provide a fallback
-            if not response or len(response.strip()) < 5:
-                response = "I understand your question, but I need more context to provide a helpful response."
-
-        except Exception as e:
-            raise Exception (f"ERROR: Failed to generate results: [{e}]")
-        
-        stop_time = time.time()
-        duration = round(stop_time - start_time, 2)
-
-        return response, duration
-    
-    def generate_hint(model, tokenizer, generation_parameters, logs_dict):
-
-        start_time = time.time()
-
-        try:
-            temperature = float(generation_parameters.get('temperature'))
-            scenario_name = generation_parameters.get('scenario_name')
-            disable_scenario_context = generation_parameters.get('disable_scenario_context')
-
-        except Exception as e:
-            raise Exception (f"ERROR: Failed to load items from Redis cache: [{e}]")
-
-        if disable_scenario_context:
-
-            try:
-                finalized_system_prompt = "Complete this hint for a cybersecurity student. Based on their recent activity, write EXACTLY ONE specific action they should take next. Start with a verb. Maximum 20 words."
-                
-                # Structure the context to prioritize recent activity
-                recent_context = ""
-                if logs_dict.get('bash'):
-                    recent_context += f"MOST RECENT COMMANDS (analyze these first): {logs_dict['bash'][-500:]}\n\n"
-                if logs_dict.get('chat'):
-                    recent_context += f"RECENT QUESTIONS/DISCUSSION: {logs_dict['chat'][-300:]}\n\n"
-                if logs_dict.get('responses'):
-                    recent_context += f"Previous attempts: {logs_dict['responses'][-200:]}"
-                
-                finalized_user_prompt = recent_context.strip()
-            
-            except Exception as e:
-                raise Exception (f"ERROR: Failed to initialize prompts: [{e}]")
-        else:
-
-            try:
-                scenario_summary = load_context_file_contents('scenario_summaries', scenario_name)
-
-            except Exception as e:
-                raise Exception (f"ERROR: 'load_context_file_contents()' failed: [{e}]")
-
-            try:
-                finalized_system_prompt = "Complete this hint for a cybersecurity student. Based on their recent activity and scenario context, write EXACTLY ONE specific action they should take next. Start with a verb. Maximum 20 words."
-                
-                # Structure the context to prioritize recent activity over scenario summary
-                recent_context = ""
-                if logs_dict.get('bash'):
-                    recent_context += f"MOST RECENT COMMANDS (analyze these first): {logs_dict['bash'][-500:]}\n\n"
-                if logs_dict.get('chat'):
-                    recent_context += f"RECENT QUESTIONS/DISCUSSION: {logs_dict['chat'][-300:]}\n\n"
-                if logs_dict.get('responses'):
-                    recent_context += f"Previous attempts: {logs_dict['responses'][-200:]}\n\n"
-                
-                recent_context += f"Background scenario context: {scenario_summary[-400:]}"
-                
-                finalized_user_prompt = recent_context.strip()
-            
-            except Exception as e:
-                raise Exception (f"ERROR: Failed to initialize prompts: [{e}]")
-
-
-        try:
-            import torch
-            
-            # Phi-3 format with completion-style prompt to force single hint
-            prompt = f"<|system|>\n{finalized_system_prompt}<|end|>\n<|user|>\nStudent activity: {finalized_user_prompt}\n\nNext step:<|end|>\n<|assistant|>\n"
-            
-            # Debug logging for prompt and context
-            logger.info(f"=== HINT GENERATION DEBUG ===")
-            logger.info(f"Scenario name: {scenario_name}")
-            logger.info(f"Disable scenario context: {disable_scenario_context}")
-            logger.info(f"Temperature: {temperature}")
-            logger.info(f"Logs dict keys: {list(logs_dict.keys()) if logs_dict else 'None'}")
-            logger.info(f"Bash logs sample: {str(logs_dict.get('bash', 'None'))[:200]}...")
-            logger.info(f"Chat logs sample: {str(logs_dict.get('chat', 'None'))[:200]}...")
-            logger.info(f"Response logs sample: {str(logs_dict.get('responses', 'None'))[:200]}...")
-            logger.info(f"Final prompt length: {len(prompt)}")
-            logger.info(f"Final prompt preview: {prompt[:500]}...")
-            
-            # Tokenize input for Phi-3 (decoder-only model)
-            inputs = tokenizer(prompt, return_tensors="pt", truncation=True, max_length=1024).to(model.device)
-            logger.info(f"Input token count: {inputs['input_ids'].shape[1]}")
-            
-            # Generate response optimized for Phi-3
-            with torch.no_grad():
-                outputs = model.generate(
-                    **inputs,
-                    tokenizer=tokenizer,                 # Required for stop_strings
-                    max_new_tokens=40,                   # Very short to force single hint
-                    temperature=0.3,                     # Low temperature for focused response
-                    do_sample=True,
-                    pad_token_id=tokenizer.eos_token_id,
-                    eos_token_id=tokenizer.eos_token_id,
-                    repetition_penalty=1.3,             # High penalty to avoid repetition
-                    top_p=0.7,                           # Lower for more deterministic responses
-                    top_k=30,                            # Smaller vocabulary for focus
-                    no_repeat_ngram_size=3,              # Prevent longer repetition
-                    early_stopping=True,                 # Stop when hitting natural endpoints
-                    stop_strings=[".", "\n", "Then", "Next", "Also"]  # Stop at sentence end or list continuation
-                )
-            
-            logger.info(f"Generated token count: {outputs[0].shape[0]}")
-            logger.info(f"New tokens generated: {outputs[0].shape[0] - inputs['input_ids'].shape[1]}")
-            
-            # Decode response (skip the input tokens for decoder-only models)
-            generated_hint = tokenizer.decode(outputs[0][inputs['input_ids'].shape[1]:], skip_special_tokens=True)
-            
-            # Clean up the response - remove extra whitespace and common artifacts
-            generated_hint = "EDUHINT: " + generated_hint.strip()
-            
-            # Add logging to debug the response
-            logger.info(f"Generated hint (raw): '{generated_hint}'")
-            logger.info(f"Generated hint length: {len(generated_hint)}")
-            logger.info(f"Generated hint (cleaned): '{generated_hint.strip()}'")
-            
-            # If response is empty or too short, try to understand why
-            if not generated_hint or len(generated_hint.strip()) < 10:
-                logger.warning(f"Generated hint is too short or empty!")
-                logger.warning(f"Raw output length: {len(generated_hint)}")
-                logger.warning(f"Input prompt was: {prompt[-200:]}")  # Last 200 chars
-                
-                # Check if we have any context to work with
-                if logs_dict.get('bash') or logs_dict.get('chat') or logs_dict.get('responses'):
-                    generated_hint = "Based on your recent activity, consider checking your previous commands and reviewing the scenario instructions for the next step."
-                else:
-                    generated_hint = "No recent activity found. Start by reading the scenario instructions and try running some basic commands to explore the environment."
-            
-            logger.info(f"Final hint to return: '{generated_hint}'")
-
-        except Exception as e:
-            raise Exception (f"ERROR: Failed to generate results: [{e}]")
-
-        stop_time = time.time()
-        duration = round(stop_time - start_time, 2)
-
-        export_hint_to_csv(scenario_name, disable_scenario_context, finalized_system_prompt, finalized_user_prompt, generated_hint, duration)
-
-        return generated_hint, logs_dict, duration
-        
-    user_db_redis_client = redis.Redis(host='localhost', port=6379, db=2)
-    model, tokenizer = create_language_model_object()
-    
-    if task == "custom_query":
-        response, duration = custom_query(model, tokenizer, generation_parameters)
-        set_query_small_language_model_task_id()
-
-        return {'response': response, 'duration': duration}
-    
-    if task == "generate_hint":
-        logs_dict = get_logs_dict_from_redis(user_db_redis_client)
-        generated_hint, logs_dict, duration = generate_hint(model, tokenizer, generation_parameters, logs_dict)
-        set_query_small_language_model_task_id()
-
-        return {'generated_hint': generated_hint, 'logs_dict': logs_dict, 'duration': duration}
-
-    else: 
-        raise ValueError(f"ERROR: Invalid option for task, you provided: [{task}]")
-
+    return {'status': generate_hint_task_id}

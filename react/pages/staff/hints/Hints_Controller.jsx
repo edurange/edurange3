@@ -218,7 +218,7 @@ function Hints_Controller({ children }) {
                 db: '1',
                 task: "generate_hint",
                 scenario_name: selectedScenario_state.scenario_type?.toLowerCase() || 'n/a',
-                disable_scenario_context: checkForDisableScenarioContext,
+                enable_scenario_context: checkForDisableScenarioContext,
                 temperature: temp_selected
             };
 

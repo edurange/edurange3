@@ -1,14 +1,22 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect} from 'react';
 import '../Hints_Main.css';
 import { HintConfig_Context } from '../Hints_Controller';
 
 function Hint_LogsContainer() {
 
     const {
+        getStudentLogs,
+        selectedHintUser_state,
         student_bash_logs_state,
         student_chat_logs_state,
-        student_responses_logs_state, 
+        student_responses_logs_state,
     } = useContext(HintConfig_Context);
+
+    useEffect(() => {
+        if (selectedHintUser_state !== '') {
+        getStudentLogs();
+        }
+    }, [selectedHintUser_state]);
 
     return (
         <div className="expandable-logs-content">
@@ -23,15 +31,15 @@ function Hint_LogsContainer() {
                 placeholder="Student bash logs used for hint generation will appear here"
             />
             <label htmlFor="student-chat-logs" className="logs-textarea-label">Chat Logs:</label>
-            <textarea
-                id="student-chat-logs"
-                value={student_chat_logs_state}
-                rows={1}
-                readOnly
-                aria-live="polite"
-                className="logs-textarea"
-                placeholder="Student chat logs used for hint generation will appear here"
-            />
+                <textarea
+                    id="student-chat-logs"
+                    value={student_chat_logs_state}
+                    rows={1}
+                    readOnly
+                    aria-live="polite"
+                    className="logs-textarea"
+                    placeholder="Student chat logs used for hint generation will appear here"
+                />
             <label htmlFor="student-responses-logs" className="logs-textarea-label">Answer Logs:</label>
             <textarea
                 id="student-responses-logs"

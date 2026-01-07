@@ -50,12 +50,10 @@ from py_flask.utils.tasks import (
     create_scenario_task,
     destroy_scenario_task,
     get_recent_student_logs_task,
-    initialize_system_resources_task,
-    query_small_language_model_task,
+    generate_hint_task,
     start_scenario_task,
     stop_scenario_task,
-    update_scenario_task,
-    update_system_resources_task,
+    update_scenario_task
 )
 
 # Flask g object contains user auth data populated by @jwt_and_csrf_required decorator:
@@ -476,44 +474,38 @@ def query_small_language_model():
     this_task = requestJSON['task']
     
     this_scenario_name = requestJSON.get('scenario_name', None)
-    this_disable_scenario_context = requestJSON.get('disable_scenario_context', None)
-    this_temperature = requestJSON.get('temperature', None)
-    this_max_tokens = requestJSON.get('max_tokens', None)
-    this_system_prompt = requestJSON.get('system_prompt', None)
-    this_user_prompt = requestJSON.get('user_prompt', None)
 
-    generation_parameters = {
-        'scenario_name': this_scenario_name, 
-        'disable_scenario_context': this_disable_scenario_context, 
-        'temperature': this_temperature, 
-        'max_tokens': this_max_tokens, 
-        'system_prompt': this_system_prompt, 
-        'user_prompt': this_user_prompt
+    this_enable_scenario_context = requestJSON.get('enable_scenario_context', None)
+
+    this_temperature = requestJSON.get('temperature', None)
+
+    this_max_tokens = requestJSON.get('max_tokens', None)
+    this_max_tokens = int(requestJSON.get("max_tokens", 40))
+
+    gen_params = {
+        
+        "model_temp": this_temperature,
+        "max_tokens": this_max_tokens,
     }
      
     try:
-        response = query_small_language_model_task.delay(task=this_task, generation_parameters=generation_parameters).get(timeout=None)
+        response = generate_hint_task.delay(arg_scenario_name=this_scenario_name, arg_gen_params=gen_params).get(timeout=None)
         
         # Extract the specific fields for the response
-        if this_task == "generate_hint" and response and 'generated_hint' in response:
+        if this_task == "generate_hint" and response and "eduhint" in response:
+            md = response.get("meta_data", {})
             return ApiResponse.success(
                 data={
-                    "generated_hint": response.get('generated_hint', ''),
-                    "duration": response.get('duration', 0)
-                }, 
-                message="Hint generated successfully"
-            )
-        elif this_task == "custom_query" and response and 'response' in response:
-            return ApiResponse.success(
-                data={
-                    "response": response.get('response', ''),
-                    "duration": response.get('duration', 0)
+                    "generated_hint": response.get("eduhint", ""),
+                    "duration": md.get("duration")
                 },
-                message="Query completed successfully"  
-            )
+                message="Hint generated successfully"
+        )
+       
         else:
             # Fallback for other tasks or missing data
             return ApiResponse.success(data=response, message="Task completed successfully")
+    
     except Exception as e:
         return ApiResponse.server_error(
             message="Failed to generate response",

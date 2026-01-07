@@ -34,8 +34,7 @@
   }
 
   .expandable-settings-container .expandable-settings-content .slider-container {
-    width: 100%;
-    display: flex;;
+    display: flex;
   }
 
   input[type="range"] {
@@ -69,7 +68,6 @@
   }
 
   .logs-textarea {
-    display: flex;
     font-family: monospace;
     font-size: 12px;
     background-color: #000000;
@@ -78,9 +76,9 @@
     border: 1px solid #deb14f;
     border-radius: 5px;
     width: 95%;
-    overflow-y: auto;
-    overflow-x: auto;
-    resize: none;
+    overflow-y: hidden;
+    overflow-x: hidden;
+    resize: vertical;
     margin: 5px;
     gap: 5px;
   }
@@ -195,6 +193,26 @@
 
   .expandable-settings-container {
     margin-bottom: 10px;
+  }
+
+  .expandable-concepts-container {
+    margin-top: 10px;
+    margin-bottom: 0px;
+  }
+
+  .concepts-expand-button {
+    font-size: 13px;
+    width: 100%; 
+    border-radius: 10px;
+    box-sizing: flex; 
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    align-items: center; 
+    justify-content: center; 
+  }
+
+  .concepts-expand-button.clicked {
+    background-color: #deb14f;
   }
 
   .student-logs-expand-button {
@@ -391,9 +409,16 @@
     font-size: 12px;   
   }
 
+  .concepts-textarea-label {
+    display: flex;    
+    margin-top: 5px;     
+    margin-bottom: 5px;  
+    font-size: 12px;   
+  }
+
 
   .expandable-logs-container {
-    margin-top: 5px;
+    margin-top: 0px;
   }
   
 

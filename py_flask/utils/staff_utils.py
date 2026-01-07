@@ -186,41 +186,39 @@ def deleteUsers(users_to_delete):
         db_ses.rollback()
         return []
 
-def getLogs(optional_user_id=None):
-    
+def getLogs(optional_user_id=None, number_of_logs=None):
+
     def get_logsTable(model):
         method = "first" if optional_user_id else "all"
         query_result = model.query.filter_by(user_id=optional_user_id) if optional_user_id else model.query
         return getattr(query_result, method)()
 
-    chatLogs = get_logsTable(ChatMessages)
-    bashLogs = get_logsTable(BashHistory)
-    responseLogs = get_logsTable(Responses)
+    if number_of_logs is None:
+        chatLogs = get_logsTable(ChatMessages)
+        bashLogs = get_logsTable(BashHistory)
+        responseLogs = get_logsTable(Responses)
 
-    returnDict = {
-        "chat": Edu3Mixin.to_list(chatLogs),
-        "bash": Edu3Mixin.to_list(bashLogs),
-        "responses": Edu3Mixin.to_list(responseLogs)
+        return {
+            "chat": Edu3Mixin.to_list(chatLogs),
+            "bash": Edu3Mixin.to_list(bashLogs),
+            "responses": Edu3Mixin.to_list(responseLogs)
+        }
+
+    def get_recent_logsTable(model):
+        return (model.query
+                .filter_by(user_id=optional_user_id)
+                .order_by(model.timestamp.desc())
+                .limit(number_of_logs)
+                .all())
+
+    bashLogs = get_recent_logsTable(BashHistory)
+    chatLogs = get_recent_logsTable(ChatMessages)
+    responseLogs = get_recent_logsTable(Responses)
+
+    return {
+        "bash": [{"index": i, "bashEntry": log.to_dict().get("input")} for i, log in enumerate(bashLogs)],
+        "chat": [{"index": i, "chatEntry": log.to_dict().get("content")} for i, log in enumerate(chatLogs)],
+        "responses": [{"index": i, "responsesEntry": log.to_dict().get("content")} for i, log in enumerate(responseLogs)],
     }
 
-    return returnDict
-
-def getRecentLogs(student_id, number_of_logs):
-
-    def get_logsTable(model):
-        query = model.query.filter_by(user_id=student_id)
-        return query.order_by(model.timestamp.desc()).limit(number_of_logs).all()
-    
-    bashLogs = get_logsTable(BashHistory)
-    chatLogs = get_logsTable(ChatMessages)
-    responseLogs = get_logsTable(Responses)
-
-    returnDict = {
-        "bash": [{"index": i, "bashEntry": log.to_dict().get('input')} for i, log in enumerate(bashLogs)],
-        "chat": [{"index": i, "chatEntry": log.to_dict().get('content')} for i, log in enumerate(chatLogs)],
-        "responses": [{"index": i, "responsesEntry": log.to_dict().get('content')} for i, log in enumerate(responseLogs)]
-    }
-
-    return returnDict
-    
 

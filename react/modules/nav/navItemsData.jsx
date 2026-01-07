@@ -142,12 +142,13 @@ const logs = {
     path: `/staff/logs`,
     navStub: 'dash'
 };
-const staff_hints = {
-    title: "Hints",
-    icon: edurange_icons.light_bulb,
-    path: `/staff/hints`,
-    navStub: 'dash'
-};
+
+// const staff_hints = {
+//     title: "Hints",
+//     icon: edurange_icons.light_bulb,
+//     path: `/staff/hints`,
+//     navStub: 'dash'
+// };
 
 const hint_settings = {
     title: "Hint_Config",
@@ -223,7 +224,7 @@ export const navArrays = {
         },
         dash: {
             top: [feedback, staff, logout],
-            side: [staff, studentGroups, staff_scenarios, students, ta_chat, staff_hints, logs, issues]
+            side: [staff, studentGroups, staff_scenarios, students, ta_chat, logs, issues]
         },
         account: {
             top: [feedback, staff, logout],
@@ -254,7 +255,7 @@ export const navArrays = {
         },
         dash: {
             top: [feedback, staff, logout],
-            side: [staff, studentGroups, staff_scenarios, students, panopticon, ta_chat, staff_hints, logs, issues]
+            side: [staff, studentGroups, staff_scenarios, students, panopticon, ta_chat, logs, issues]
         },
         account: {
             top: [feedback, staff, logout],
