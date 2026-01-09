@@ -98,7 +98,7 @@ class CreateGroupSchema(Schema):
         validate.Regexp('^[A-Za-z0-9]+(-?[A-Za-z0-9]+)*$', error="Group name must be alphanumeric")
     ])
     should_generate = fields.Boolean(required=True)
-    new_user_count = fields.Integer(required=True, validate=validate.Range(min=1, max=100))
+    new_user_count = fields.Integer(required=True, validate=validate.Range(min=1, max=500))
     code = fields.String(required=False)
 
     @validates_schema

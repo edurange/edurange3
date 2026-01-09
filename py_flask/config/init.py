@@ -20,6 +20,18 @@ from py_flask.config.extensions import (
     jwtman,
 )
 
+try:
+    import torch
+    from transformers import AutoModelForCausalLM, AutoTokenizer
+    ML_AVAILABLE = True
+except ImportError:
+    torch = None
+    AutoModelForCausalLM = None
+    AutoTokenizer = None
+    ML_AVAILABLE = False
+
+from eduhints import EDUHints
+
 # check config object value
 def create_app(config_object="py_flask.config.settings"):
     """Create application factory, as explained here: http://flask.pocoo.org/docs/patterns/appfactories/.
@@ -31,6 +43,10 @@ def create_app(config_object="py_flask.config.settings"):
     # set security attrs for 'session' cookie
     app.config['SESSION_COOKIE_SECURE'] = True
     app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+    
+    # Extended timeout settings for AI hint generation
+    app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
+    app.config['PERMANENT_SESSION_LIFETIME'] = 3600  # 1 hour session timeout
 
     # store archive_id in config so other flask scripts have access
 
@@ -39,6 +55,13 @@ def create_app(config_object="py_flask.config.settings"):
     register_shellcontext(app)
     register_commands(app)
     configure_logger(app)
+
+    enable_ml_features = True
+
+    if enable_ml_features:
+        init_eduhints(app)
+    
+    
     return app
 
 def register_extensions(app):
@@ -77,3 +100,6 @@ def configure_logger(app):
     handler = logging.StreamHandler(sys.stdout)
     if not app.logger.handlers:
         app.logger.addHandler(handler)
+
+def init_eduhints(app):
+    app.eduhints = EDUHints()

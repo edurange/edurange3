@@ -27,7 +27,7 @@ function CreateGroup() {
 
     const handle_testUserCt_change = (event) => {
         const value = parseInt(event.target.value, 10);
-        if (value >= 0 && value <= 100) {
+        if (value >= 0 && value <= 500) {
             set_testUserCt_state(value);
             set_buttonDisabled_state(!groupName_state || !testUsersBool_state || !value);
         }
@@ -103,7 +103,7 @@ function CreateGroup() {
                                 value={testUserCt_state}
                                 onChange={handle_testUserCt_change}
                                 min="1"
-                                max="100"
+                                max="500"
                             />
                         </div>
                     )}

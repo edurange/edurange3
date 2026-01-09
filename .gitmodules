@@ -1,0 +1,3 @@
+[submodule "eduhints"]
+	path = eduhints
+	url = https://github.com/edurange/eduhints

@@ -4,6 +4,7 @@ import Hint_Textbox from './sub/Hint_Textbox';
 import { HintConfig_Context } from './Hints_Controller';
 import Hint_Settings from './sub/Hint_Settings';
 import Hint_LogsContainer from './sub/Hint_LogsContainer';
+import Hint_Concepts from './sub/Hint_Concepts';
 import Hint_Dropdowns from './sub/Hint_Dropdowns';
 import Hint_LoadingOverlay from './sub/Hint_LoadingOverlay';
 import Hint_ExperimentalOverlay from './sub/Hint_ExperimentalOverlay';
@@ -15,9 +16,8 @@ function Hints_Main() {
         isLoading_state,
         isClickedLogs,
         isClickedSettings,
-        isExpandedLogs,
-        isExpandedSettings,
-        toggleExpandLogs, toggleExpandSettings,
+        isExpandedLogs, isExpandedSettings, isExpandedConcepts,
+        toggleExpandLogs, toggleExpandSettings, toggleExpandConcepts,
         requestHint,
         getStudentLogs,
         selectedHintUser_state,
@@ -46,6 +46,11 @@ function Hints_Main() {
 
                 <Hint_Dropdowns/>
 
+                {/* <div className="expandable-settings-container">
+                    <button onClick={toggleExpandConcepts} className={`concepts-expand-button ${isClickedSettings ? 'clicked' : ''}`}>Concepts 📖</button>
+                    {isExpandedConcepts && <Hint_Concepts />}
+                </div> */}
+
                 <div className="expandable-logs-container">
                     <button onClick={toggleExpandLogs} className={`student-logs-expand-button ${isClickedLogs ? 'clicked' : ''}`}>Student Logs 📟 </button>
                     {isExpandedLogs && <Hint_LogsContainer />}
@@ -55,6 +60,7 @@ function Hints_Main() {
                     <button onClick={toggleExpandSettings} className={`settings-expand-button ${isClickedSettings ? 'clicked' : ''}`}>Settings ⚙️</button>
                     {isExpandedSettings && <Hint_Settings />}
                 </div>
+
                 
             </div>
 

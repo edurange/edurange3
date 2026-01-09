@@ -27,6 +27,11 @@ const pool = new Pool({
     port: process.env.CHATDB_PORT
 });
 
+// Handle pool errors to prevent crashes
+pool.on('error', (err) => {
+    console.error('Database pool error:', err);
+});
+
 async function updateLogsID() {
     try {
         const data = await fs.readFile('../logs/archive_id.txt', 'utf8');
@@ -336,6 +341,14 @@ chatSocketServer.on('connection', async (socketConnection, request) => {
     });
     socketConnection.on('close', () => {
         console.log(`User ${user_id} disconnected`);
+    });
+
+    socketConnection.on('error', (err) => {
+        console.error(`WebSocket error for user ${user_id}:`, err);
+        // Clean up user from userDict if connection fails
+        if (userDict[user_id]) {
+            delete userDict[user_id];
+        }
     });
 });
 

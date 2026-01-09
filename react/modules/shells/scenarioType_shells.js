@@ -24,12 +24,12 @@ import resData from '@modules/shells/scenarioResources';
 
 class Getting_Started_shell {
     constructor(input = {}) {
-        this.keywords = ["Linux shell"];
+        this.keywords = ["UNIX Command Line"];
         this.scenario_type = 'Getting_Started';
         this.icon = gettingStarted;
-        this.description_short = '"Getting Started" teaches basics of the Linux terminal shell.  These skills may also extend to the Mac terminal.';
+        this.description_short = '"Getting Started" teaches basics of the UNIX command line.';
         this.description_long = ("this is where the longer description goes");
-        this.resources = [ resData.ssh, resData.ls, resData.file, resData.echo, resData.touch, resData.angle_brackets, resData.vim, resData.find ]
+        this.resources = [ resData.ssh, resData.ls, resData.file, resData.echo, resData.touch, resData.vim, resData.find ]
     };
 };
 class Ssh_Inception_shell {

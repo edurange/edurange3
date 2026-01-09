@@ -1,79 +1,64 @@
-from sqlalchemy.exc import SQLAlchemyError
-import traceback
-from py_flask.database.user_schemas import CreateGroupSchema, TestUserListSchema
-from py_flask.database.models import Users, StudentGroups, ScenarioGroups, GroupUsers, Scenarios, TA_Assignments
-from py_flask.utils.dataBuilder import get_group_data, get_user_data, get_scenario_data, get_taAssignment_data
-from py_flask.config.extensions import db
-from py_flask.utils.chat_utils import gen_chat_names, getChatLibrary
-from py_flask.utils.common_utils import get_system_resources
-import redis
 import json
+import subprocess
+import traceback
 
 from flask import (
     Blueprint,
-    request,
-    jsonify,
+    current_app,
     g,
-    current_app
+    jsonify,
+    request,
 )
-from py_flask.utils.scenario_utils import (
-     identify_state
+from sqlalchemy.exc import SQLAlchemyError
+
+from py_flask.config.extensions import db
+from py_flask.database.models import (
+    GroupUsers,
+    Scenarios,
+    ScenarioGroups,
+    StudentGroups,
+    TA_Assignments,
+    Users,
+    generate_registration_code as grc,
 )
-from py_flask.utils.guide_utils import (
-    getContent, 
-    getScenarioMeta,
-    )
+from py_flask.database.user_schemas import CreateGroupSchema, TestUserListSchema
+from py_flask.utils.api_response import ApiResponse
 from py_flask.utils.auth_utils import jwt_and_csrf_required, staff_only
-from py_flask.utils.staff_utils import generateTestAccts, addGroupUsers
-from py_flask.database.models import generate_registration_code as grc
+from py_flask.utils.chat_utils import gen_chat_names, getChatLibrary
+from py_flask.utils.common_utils import get_system_resources
+from py_flask.utils.dataBuilder import (
+    get_group_data,
+    get_scenario_data,
+    get_taAssignment_data,
+    get_user_data,
+)
+from py_flask.utils.error_utils import custom_abort, safe_jsonify
+from py_flask.utils.guide_utils import getContent, getScenarioMeta
+from py_flask.utils.scenario_utils import identify_state
+from py_flask.utils.staffData_utils import get_staffData
 from py_flask.utils.staff_utils import (
+    NotifyCapture,
+    addGroupUsers,
     clearGroups,
     deleteUsers,
-    NotifyCapture,
+    edit_taAssignments,
+    generateTestAccts,
     getLogs,
-    edit_taAssignments
-    )
+)
 from py_flask.utils.tasks import (
-    create_scenario_task, 
-    start_scenario_task, 
-    stop_scenario_task, 
-    update_scenario_task,
+    cancel_generate_hint_task,
+    create_scenario_task,
     destroy_scenario_task,
     get_recent_student_logs_task,
-    query_small_language_model_task,
-    initialize_system_resources_task,
-    update_system_resources_task,
-    cancel_generate_hint_task
-)
-from py_flask.utils.error_utils import (
-    custom_abort
+    generate_hint_task,
+    start_scenario_task,
+    stop_scenario_task,
+    update_scenario_task
 )
 
-from py_flask.utils.staffData_utils import get_staffData
-import subprocess
-
-#######
-# The `g` object is a global flask object that lasts ONLY for the life of a single request.
-#
-# The following values are populated when the jwt_and_csrf_required() function is invoked,
-# if the request passes auth:
-#   g.current_username
-#   g.current_user_id
-#   g.current_user_role
-#
-# You must import the `g` object from Flask, which will be the same instance of `g` as first 
-# accessed by jwt_and_csrf_required().  
-# 
-# You must also import jwt_and_csrf_required() from auth_utils.py and include it as a decorator
-# on any route where those values would be needed (i.e., an auth protected route)
-#
-# The values will then be available to routes that use the @jwt_and_csrf_required decorator.
-#
-# To ensure no accidental auth 'misses', always use these 3 variables to obtain these values, 
-# rather than parsing the values yourself by way of request body or directly from the JWT.  
-# That way, the values will always return null if the request hasn't been fully authenticated 
-# (i.e. if you forgot to use the decorator).
-#######
+# Flask g object contains user auth data populated by @jwt_and_csrf_required decorator:
+# - g.current_username, g.current_user_id, g.current_user_role
+# Always use these variables instead of parsing JWT directly.
 
 blueprint_staff = Blueprint(
     'edurange3_staff',
@@ -489,24 +474,43 @@ def query_small_language_model():
     this_task = requestJSON['task']
     
     this_scenario_name = requestJSON.get('scenario_name', None)
-    this_disable_scenario_context = requestJSON.get('disable_scenario_context', None)
-    this_temperature = requestJSON.get('temperature', None)
-    this_max_tokens = requestJSON.get('max_tokens', None)
-    this_system_prompt = requestJSON.get('system_prompt', None)
-    this_user_prompt = requestJSON.get('user_prompt', None)
 
-    generation_parameters = {
-        'scenario_name': this_scenario_name, 
-        'disable_scenario_context': this_disable_scenario_context, 
-        'temperature': this_temperature, 
-        'max_tokens': this_max_tokens, 
-        'system_prompt': this_system_prompt, 
-        'user_prompt': this_user_prompt
+    this_enable_scenario_context = requestJSON.get('enable_scenario_context', None)
+
+    this_temperature = requestJSON.get('temperature', None)
+
+    this_max_tokens = requestJSON.get('max_tokens', None)
+    this_max_tokens = int(requestJSON.get("max_tokens", 40))
+
+    gen_params = {
+        
+        "model_temp": this_temperature,
+        "max_tokens": this_max_tokens,
     }
      
-    response = query_small_language_model_task.delay(task=this_task, generation_parameters=generation_parameters).get(timeout=None)
+    try:
+        response = generate_hint_task.delay(arg_scenario_name=this_scenario_name, arg_gen_params=gen_params).get(timeout=None)
+        
+        # Extract the specific fields for the response
+        if this_task == "generate_hint" and response and "eduhint" in response:
+            md = response.get("meta_data", {})
+            return ApiResponse.success(
+                data={
+                    "generated_hint": response.get("eduhint", ""),
+                    "duration": md.get("duration")
+                },
+                message="Hint generated successfully"
+        )
+       
+        else:
+            # Fallback for other tasks or missing data
+            return ApiResponse.success(data=response, message="Task completed successfully")
     
-    return jsonify(response)
+    except Exception as e:
+        return ApiResponse.server_error(
+            message="Failed to generate response",
+            details={"error": str(e), "task": this_task}
+        )
 
 @blueprint_staff.route("/get_student_logs", methods=['POST'])
 @jwt_and_csrf_required
@@ -516,9 +520,14 @@ def get_recent_student_logs_route():
     this_student_id = requestJSON["student_id"]
     this_number_of_logs = 3
 
-    logs_dict = get_recent_student_logs_task.delay(this_student_id, this_number_of_logs).get(timeout=None)
-    
-    return jsonify(logs_dict)
+    try:
+        logs_dict = get_recent_student_logs_task.delay(this_student_id, this_number_of_logs).get(timeout=None)
+        return ApiResponse.success(data=logs_dict, message="Student logs retrieved successfully")
+    except Exception as e:
+        return ApiResponse.server_error(
+            message="Failed to retrieve student logs",
+            details={"error": str(e), "student_id": this_student_id}
+        )
 
 @blueprint_staff.route("/update_model", methods=['POST'])
 @jwt_and_csrf_required
@@ -527,8 +536,16 @@ def update_model_route():
     requestJSON = request.json
 
     try: 
-        this_cpu_resources_selected = int(requestJSON["this_cpu_resources_selected"])
-        this_gpu_resources_selected = int(requestJSON["this_gpu_resources_selected"])
+        cpu_value = requestJSON.get("this_cpu_resources_selected")
+        gpu_value = requestJSON.get("this_gpu_resources_selected")
+        
+        if cpu_value is None:
+            raise Exception("ERROR: cpu_resources is None or missing from request")
+        if gpu_value is None:
+            raise Exception("ERROR: gpu_resources is None or missing from request")
+            
+        this_cpu_resources_selected = int(cpu_value)
+        this_gpu_resources_selected = int(gpu_value)
         
         if this_cpu_resources_selected is None:
             raise Exception (f"ERROR: cpu_resources is type None: Additional error reporting information: [{e}]")
@@ -558,13 +575,20 @@ def cancel_generate_hint_route():
 
 def get_resources():
 
-    sys_db_redis_client = redis.Redis(host='localhost', port=6379, db=1)
+    # sys_db_redis_client = redis.Redis(host='localhost', port=6379, db=1)
 
-    cpu_resources_detected = sys_db_redis_client.get("cpu_resources")
-    gpu_resources_detected = sys_db_redis_client.get("gpu_resources")
+    cpu_resources_detected_int = 16
+    gpu_resources_detected_int = 0
 
-    cpu_resources_detected_int = int(cpu_resources_detected)
-    gpu_resources_detected_int = int(gpu_resources_detected)
+
+    # if cpu_resources_detected is None:
+    #     return jsonify({'error': 'CPU resources not found in database'}), 500
+    # if gpu_resources_detected is None:
+    #     return jsonify({'error': 'GPU resources not found in database'}), 500
+
+    # cpu_resources_detected_int = int(cpu_resources_detected)
+    # gpu_resources_detected_int = int(gpu_resources_detected)
+
 
 
     return jsonify({'cpu_resources_detected': cpu_resources_detected_int, 'gpu_resources_detected': gpu_resources_detected_int})

@@ -100,3 +100,6 @@ machine_learning/eduhints/generated_hints/*
 
 #scenarios under construction
 scenarios/dev/construction/*
+
+# venv directory (name yours this)
+venv/

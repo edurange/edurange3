@@ -5,8 +5,15 @@ import '@assets/css/tables.css';
 
 
 function Table({ columnData, rowData, use_crud, type_value, type_label }) {
+    const navigate = useNavigate();
 
     if (!columnData || !rowData) { return (<>Data missing</>) }
+
+    const handleDetailClick = (index) => {
+        // Prevent navigation for now to avoid breaking the interface
+        // navigate(`/detail/${index}`);
+        console.log(`Detail click for row ${index}`);
+    };
 
     rowData.map((row) => row[type_label] = type_value)
     columnData = [{
@@ -32,7 +39,7 @@ function Table({ columnData, rowData, use_crud, type_value, type_label }) {
 
                     {columnData.map((column) => {
                         // parse row data by key of column label
-                        const rowDataKey = column.label.toLowerCase();
+                        const rowDataKey = column.label?.toLowerCase() || '';
                         return (
                             <div key={column.label + row.id} className={`table-cell-item ${column.css_class}`}>
                                 {row[rowDataKey]}

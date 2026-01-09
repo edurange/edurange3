@@ -1,5 +1,6 @@
 import React from 'react';
 import '@assets/css/tables.css';
+import '@assets/css/logs-improved.css';
 import Placard from '../../../components/Placard';
 import { nanoid } from 'nanoid';
 import Copy_button_flex from '../../../components/Copy_button_flex';

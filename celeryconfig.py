@@ -1,6 +1,10 @@
 from kombu import Exchange, Queue
 
 task_queues = (
+    Queue('celery',
+            Exchange('celery', type='direct'),
+            routing_key='celery'
+        ),
     Queue('eduhint',
             Exchange('eduhint', type='direct'),
             routing_key='eduhint',
@@ -11,29 +15,60 @@ task_queues = (
 task_routes = {
 
     # EDUHints tasks
-    'myapp.tasks.initialize_system_resources_task': {
+    'py_flask.utils.tasks.initialize_system_resources_task': {
         'queue': 'eduhint',
         'routing_key': 'eduhint',
     },
 
-    'myapp.tasks.update_system_resources_task': {
+    'py_flask.utils.tasks.update_system_resources_task': {
         'queue': 'eduhint',
         'routing_key': 'eduhint',
     },
 
-    'myapp.tasks.get_recent_student_logs_task': {
+    'py_flask.utils.tasks.get_recent_student_logs_task': {
         'queue': 'eduhint',
         'routing_key': 'eduhint',
     },
 
-    'myapp.tasks.query_small_language_model_task': {
+    'py_flask.utils.tasks.query_small_language_model_task': {
         'queue': 'eduhint',
         'routing_key': 'eduhint',
     },
 
-    'myapp.tasks.cancel_generate_hint_task': {
+    'py_flask.utils.tasks.cancel_generate_hint_task': {
         'queue': 'eduhint',
         'routing_key': 'eduhint',
+    },
+
+    # Default queue tasks (scenario management)
+    'py_flask.utils.tasks.create_scenario_task': {
+        'queue': 'celery',
+        'routing_key': 'celery',
+    },
+
+    'py_flask.utils.tasks.start_scenario_task': {
+        'queue': 'celery',
+        'routing_key': 'celery',
+    },
+
+    'py_flask.utils.tasks.stop_scenario_task': {
+        'queue': 'celery',
+        'routing_key': 'celery',
+    },
+
+    'py_flask.utils.tasks.update_scenario_task': {
+        'queue': 'celery',
+        'routing_key': 'celery',
+    },
+
+    'py_flask.utils.tasks.destroy_scenario_task': {
+        'queue': 'celery',
+        'routing_key': 'celery',
+    },
+
+    'py_flask.utils.tasks.scenarioCollectLogs': {
+        'queue': 'celery',
+        'routing_key': 'celery',
     },
 
 }
@@ -47,11 +82,11 @@ worker_prefetch_multiplier = 1
 task_annotations = {
 
     # Give EDUHints tasks highest priority for sake of performance.
-    'myapp.tasks.initialize_system_resources_task': {'priority': 10},
-    'myapp.tasks.update_system_resources_task': {'priority': 10},
-    'myapp.tasks.get_recent_student_logs_task': {'priority': 10},
-    'myapp.tasks.query_small_language_model_task': {'priority': 10},
-    'myapp.tasks.cancel_generate_hint_task': {'priority': 10}
+    'py_flask.utils.tasks.initialize_system_resources_task': {'priority': 10},
+    'py_flask.utils.tasks.update_system_resources_task': {'priority': 10},
+    'py_flask.utils.tasks.get_recent_student_logs_task': {'priority': 10},
+    'py_flask.utils.tasks.query_small_language_model_task': {'priority': 10},
+    'py_flask.utils.tasks.cancel_generate_hint_task': {'priority': 10}
 }
 
 

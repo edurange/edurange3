@@ -164,7 +164,18 @@ function Hints_Controller({ children }) {
                 reqJSON
             );
 
-            const student_logs_bash_returned_obj = response.data.bash;
+            // Check for error response (standardized format)
+            if (!response.data.success || response.data.error) {
+                console.error('Student logs error:', response.data.error);
+                set_student_bash_logs_state('Error loading bash logs');
+                set_student_chat_logs_state('Error loading chat logs');
+                set_student_responses_logs_state('Error loading response logs');
+                return;
+            }
+
+            // Extract data from standardized response
+            const logsData = response.data.data || response.data;
+            const student_logs_bash_returned_obj = logsData.bash;
             const student_logs_bash_concatenated_string = student_logs_bash_returned_obj
                 .filter(entry => entry.bashEntry !== null)
                 .map(entry => `Entry ${entry.index + 1}: [${entry.bashEntry}] `)
@@ -172,7 +183,7 @@ function Hints_Controller({ children }) {
             let student_logs_bash_stringified = JSON.stringify(student_logs_bash_concatenated_string);
             set_student_bash_logs_state(student_logs_bash_stringified);
 
-            const student_logs_chat_returned_obj = response.data.chat;
+            const student_logs_chat_returned_obj = logsData.chat;
             const student_logs_chat_concatenated_string = student_logs_chat_returned_obj
                 .filter(entry => entry.chatEntry !== null)
                 .map(entry => `Entry ${entry.index + 1}: [${entry.chatEntry}] `)
@@ -180,7 +191,7 @@ function Hints_Controller({ children }) {
             let student_logs_chat_stringified = JSON.stringify(student_logs_chat_concatenated_string);
             set_student_chat_logs_state(student_logs_chat_stringified);
 
-            const student_logs_responses_returned_obj = response.data.responses;
+            const student_logs_responses_returned_obj = logsData.responses;
             const student_logs_responses_concatenated_string = student_logs_responses_returned_obj
                 .filter(entry => entry.responsesEntry !== null)
                 .map(entry => `Entry ${entry.index + 1}: [${entry.responsesEntry}] `)
@@ -206,8 +217,8 @@ function Hints_Controller({ children }) {
                 port: '6379',
                 db: '1',
                 task: "generate_hint",
-                scenario_name: selectedScenario_state.scenario_type.toLowerCase(),
-                disable_scenario_context: checkForDisableScenarioContext,
+                scenario_name: selectedScenario_state.scenario_type?.toLowerCase() || 'n/a',
+                enable_scenario_context: checkForDisableScenarioContext,
                 temperature: temp_selected
             };
 
@@ -218,12 +229,35 @@ function Hints_Controller({ children }) {
                 reqJSON
             );
 
-            set_hint_state(response.data.generated_hint)
-            console.log("EDUHint Response Object", response)
+            // Handle standardized API response
+            if (response.data.success && response.data.data && response.data.data.generated_hint) {
+                set_hint_state(response.data.data.generated_hint);
+                console.log("EDUHint Response Object", response);
+            } else if (!response.data.success && response.data.error) {
+                set_hint_state(`Error: ${response.data.error}`);
+            } else {
+                set_hint_state('Error: No hint received from server');
+            }
 
         } catch (error) {
             console.error("Error fetching hint:", error);
-            // set_error('Failed to fetch hint.');
+            
+            // Handle specific error cases
+            if (error.response) {
+                // Server responded with error status
+                const errorData = error.response.data;
+                if (errorData && errorData.error) {
+                    set_hint_state(`Error: ${errorData.error} - ${errorData.message || 'Unknown error'}`);
+                } else {
+                    set_hint_state(`Server error: ${error.response.status} ${error.response.statusText}`);
+                }
+            } else if (error.request) {
+                // Network error
+                set_hint_state('Network error: Unable to connect to the server');
+            } else {
+                // Other error
+                set_hint_state(`Error: ${error.message}`);
+            }
 
         } finally {
             set_isLoading_state(false);
@@ -286,6 +320,9 @@ function Hints_Controller({ children }) {
 
             isEditing_state, set_isEditing_state,
             hint_state, set_hint_state,
+            student_bash_logs_state,
+            student_chat_logs_state,
+            student_responses_logs_state,
         }}>
             {children}
         </HintConfig_Context.Provider>

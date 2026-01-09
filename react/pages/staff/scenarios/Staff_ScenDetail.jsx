@@ -15,9 +15,14 @@ function Staff_ScenDetail() {
     const { scenarioID } = useParams();
     const { scenarios_state, set_scenarios_state, groups_state } = useContext(StaffRouter_context);
 
+    // Check if required state arrays exist
+    if (!scenarios_state || !groups_state) { 
+        return <>Loading scenario details...</>; 
+    }
+
     const thisScenario = scenarios_state.filter(scenario => scenario.id === parseInt(scenarioID))?.[0]
                         
-    if (!thisScenario) { return <>Group not found.</> } 
+    if (!thisScenario) { return <>Scenario not found.</> } 
 
     async function handle_deleteGroup_click(groupName) {
         try {
@@ -33,12 +38,13 @@ function Staff_ScenDetail() {
     }
 
     function getOwnerGroup(){
-
-        const matchingGroup = groups_state?.filter((group) => thisScenario.membership === group.id)?.[0]
+        if (!groups_state || !Array.isArray(groups_state)) return false;
+        const matchingGroup = groups_state.filter((group) => thisScenario.membership === group.id)?.[0]
         return matchingGroup ?? false;
     }
 
-    const membershipGroup = groups_state?.filter((group) => thisScenario.membership === group.id)?.[0] ?? false
+    const membershipGroup = Array.isArray(groups_state) ? 
+        groups_state.filter((group) => thisScenario.membership === group.id)?.[0] ?? false : false
 
     return (
         <div className="table-frame">
