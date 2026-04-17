@@ -1,17 +1,15 @@
 
 # eduRange3 [![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/coojac09/edurange-flask/blob/master/LICENSE) [![Py2&3](https://img.shields.io/badge/Python-2%20%26%203-green.svg)]()
 
-# SIGCSE? Click [Here](https://github.com/edurange/edurange3/tree/sigcse25)
-
-
 
 **NOTE:  If you are installing on a new Virtual Machine or Ubuntu  *24.04* installation,
-it is likely you will need to install 'git' via apt.**
+it is likely you will need to install 'git' as well as 'python3.12-venv' via apt.**
 To do so, enter the following in your bash cli:
 ```
 sudo apt update
 sudo apt upgrade
 sudo apt install git
+sudo apt install python3.12-venv
 ```
 It is also recommended that you use 'minimal installation' option for the Ubuntu install,
 as well as skip updates.  You can update from the command line with the above sequence.
@@ -26,11 +24,11 @@ First, clone this repository (choose ONE of these commands, not both!)
 
 If you're using standard git auth (no key), then use the HTTPS clone:
 ```bash
-git clone -b sigcse25 https://github.com/edurange/edurange3.git
+git clone https://github.com/edurange/edurange3.git
 ```
 If you're using an ssh key to auth, then use the SSH clone:
 ```bash
-git clone -b sigcse25 git@github.com:edurange/edurange3.git
+git clone git@github.com:edurange/edurange3.git
 ```
 
 ## Step 2: Install edurange3 and dependencies
@@ -39,10 +37,23 @@ Next, run the installation script from the project root (./install.sh), and inpu
 Please use unique responses for each prompt.
 ```bash
 cd edurange3
-./quick_install.sh
+git submodule update --init --recursive
+python3 -m venv <name>
+source <name>/bin/activate
+./install
 ```
 To verify that you're ready to launch the app, check that "flask" and "celery" are recognized bash commands, and whether "docker run hello-world" works.
-If any of these fail, simply log out and back in, and they should work then. 
+If any of these fail, simply log out and back in, and they should work then.
+
+
+### Network Selection (under construction)
+(1) private ip makes you a local cert auth
+(2) external ip in nginx, but certbot doesnt work
+(3) domain name - best current option, still need to mess with certbot
+
+After installation, you will neede to edit /etc/nginx/sites-available/default (delete lines, replace domain)
+`npm start` in one window - then `sudo certbot --nginx`
+*working on automating this*
 
 ## Step 3: Running Locally
 
