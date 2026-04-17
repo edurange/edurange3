@@ -480,7 +480,7 @@ def query_small_language_model():
     this_temperature = requestJSON.get('temperature', None)
 
     this_max_tokens = requestJSON.get('max_tokens', None)
-    this_max_tokens = int(requestJSON.get("max_tokens", 40))
+    this_max_tokens = int(requestJSON.get("max_tokens", 200))
 
     gen_params = {
         

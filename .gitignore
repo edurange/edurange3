@@ -103,3 +103,4 @@ scenarios/dev/construction/*
 
 # venv directory (name yours this)
 venv/
+eduvenv/
