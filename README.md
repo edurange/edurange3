@@ -47,11 +47,11 @@ If any of these fail, simply log out and back in, and they should work then.
 
 
 ### Network Selection (under construction)
-(1) private ip makes you a local cert auth
-(2) external ip in nginx, but certbot doesnt work
-(3) domain name - best current option, still need to mess with certbot
+- (1) private ip makes you a local cert auth
+- (2) external ip in nginx, but certbot doesnt work
+- (3) domain name - best current option, still need to mess with certbot
 
-After installation, you will neede to edit /etc/nginx/sites-available/default (delete lines, replace domain)
+After installation, you will need to edit /etc/nginx/sites-available/default (delete lines, replace domain)
 `npm start` in one window - then `sudo certbot --nginx`
 *working on automating this*
 
