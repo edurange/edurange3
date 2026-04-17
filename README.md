@@ -40,7 +40,7 @@ cd edurange3
 git submodule update --init --recursive
 python3 -m venv <name>
 source <name>/bin/activate
-./install
+./install.sh
 ```
 To verify that you're ready to launch the app, check that "flask" and "celery" are recognized bash commands, and whether "docker run hello-world" works.
 If any of these fail, simply log out and back in, and they should work then.
