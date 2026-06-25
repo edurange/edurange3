@@ -260,9 +260,8 @@ const chatSocketServer = new WebSocketServer({
         const provided_jwt = cookies.edurange3_jwt;
         const jwt_secret_key = (process.env.JWT_SECRET_KEY);
         const verified_jwt = jwt.verify(provided_jwt, jwt_secret_key);
-        const jwt_payload = verified_jwt.sub;
+        const jwt_payload = JSON.parse(verified_jwt.sub);
 
-        // attach payload getter to temporary 'info' object
         info.req.get_id = () => jwt_payload;
         done(true);
     }

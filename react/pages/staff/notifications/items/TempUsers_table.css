@@ -1,61 +1,70 @@
-.tempusers-frame{
+.tempusers-frame {
     display: flex;
     flex-direction: column;
-    background-color: rgba(255, 203, 144, 0.234);
+    background: var(--theme-surface-raised);
+    border: 1px solid var(--theme-border-strong);
     padding: 10px;
-    gap: 4px;
-    width: 97%;
+    gap: 5px;
+    width: 100%;
     box-sizing: border-box;
-    border-radius: 8px;
-    position: relative;
-    left: 4px;
+    border-radius: 6px;
+    color: var(--theme-text);
+    font-size: .82em;
 }
-.tempusers-item{
+
+.tempusers-item {
     display: flex;
     flex-direction: row;
-    background-color: rgba(255, 255, 255, 0.196);
+    background: var(--theme-surface);
     width: 100%;
-    min-height: 25px;
+    min-height: 28px;
     align-items: center;
     justify-content: space-evenly;
     border-radius: 4px;
 }
-.tempusers-creds-frame{
+
+.tempusers-creds-frame {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     width: 80%;
 }
 
-.copyall-row{
+.copyall-row {
     display: flex;
     flex-direction: row;
-    min-height: 40px;
+    min-height: 36px;
     align-items: center;
     justify-content: center;
-    gap: 20px;
-    font-size: 22px;
-    color: rgb(0, 36, 24);
-    background-color: rgba(127, 255, 212, 0.686);
-    border: 1px solid  rgb(0, 36, 24);
+    gap: 12px;
+    font-size: 18px;
+    color: var(--blue-dark);
+    background: var(--green-normal);
+    border: 1px solid var(--green-normal);
     border-radius: 4px;
-}
-.copyall-row:hover{
-    display: flex;
-    flex-direction: row;
-    min-height: 40px;
-    align-items: center;
-    justify-content: center;
-    gap: 20px;
-    color:rgba(127, 255, 212, 0.686);
-    border: 1px solid rgba(127, 255, 212, 0.686);
-    background-color:  rgb(0, 36, 24);
+    font-family: 'Share Tech Mono', monospace;
     cursor: pointer;
+    transition: background 0.15s;
 }
-.tempusers-rowheads{
+
+[data-theme="light"] .copyall-row {
+    color: rgb(255, 255, 255);
+}
+
+.copyall-row:hover {
+    background: var(--green-light);
+    color: var(--blue-dark);
+}
+
+.tempusers-rowheads {
     display: flex;
     flex-direction: row;
     justify-content: space-around;
     align-items: center;
     padding: 3px 0;
+    font-weight: 600;
+    color: var(--green-light);
+    font-size: .82em;
+    text-transform: uppercase;
+    letter-spacing: .4px;
 }

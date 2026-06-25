@@ -1,9 +1,18 @@
-.owner-group-frame{
-    border: firebrick solid 1px;
+.owner-group-frame {
+    border: 1px solid var(--theme-border);
+    border-radius: 6px;
     display: flex;
     flex-direction: column;
+    padding: 8px;
+    gap: 4px;
+    background: var(--theme-surface);
 }
-.owner-group-item{
+
+.owner-group-item {
     display: flex;
-    border: orange solid 1px;
+    border: 1px solid var(--theme-border);
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: .85em;
+    color: var(--theme-text);
 }

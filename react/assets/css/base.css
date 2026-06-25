@@ -107,9 +107,79 @@ body, html {
     min-height: 100vh;
   }
 
-  a, a:link, a:visited, a:hover, a:active {
+a, a:link, a:visited, a:hover, a:active {
     color: inherit;
     text-decoration: none;
+}
+
+/* ===== THEME SYSTEM ===== */
+:root,
+[data-theme="dark"] {
+    --theme-bg: rgb(7, 0, 17);
+    --theme-bg-alt: rgb(12, 4, 22);
+    --theme-surface: rgba(192, 221, 255, 0.04);
+    --theme-surface-raised: rgba(192, 221, 255, 0.07);
+    --theme-border: rgba(192, 221, 255, 0.1);
+    --theme-border-strong: rgba(192, 221, 255, 0.15);
+    --theme-text: rgb(192, 221, 255);
+    --theme-text-dim: rgba(192, 221, 255, 0.55);
+    --theme-input-bg: rgba(7, 0, 17, 0.6);
+    --theme-input-border: rgba(192, 221, 255, 0.18);
+    --theme-header-bg: rgba(12, 4, 22, 0.92);
+    --theme-header-border: rgba(192, 221, 255, 0.12);
+    --theme-sidebar-bg: rgba(12, 4, 22, 0.92);
+    --theme-sidebar-border: rgba(192, 221, 255, 0.12);
+    --theme-row-hover: rgba(192, 221, 255, 0.06);
+    --theme-btn-disabled: rgba(192, 221, 255, 0.25);
+    --theme-dropdown-option-bg: rgb(10, 5, 20);
+    --theme-checkbox-accent: var(--green-normal);
+    --theme-focus-ring: var(--green-normal);
+    --theme-login-card-bg: rgba(7, 0, 17, 0.75);
+}
+
+[data-theme="light"] {
+    --theme-bg: rgb(243, 247, 252);
+    --theme-bg-alt: rgb(233, 238, 246);
+    --theme-surface: rgba(0, 20, 50, 0.04);
+    --theme-surface-raised: rgba(0, 20, 50, 0.08);
+    --theme-border: rgba(0, 20, 50, 0.12);
+    --theme-border-strong: rgba(0, 20, 50, 0.18);
+    --theme-text: rgb(15, 25, 45);
+    --theme-text-dim: rgba(15, 25, 45, 0.65);
+    --theme-input-bg: rgb(255, 255, 255);
+    --theme-input-border: rgba(0, 20, 50, 0.25);
+    --theme-header-bg: rgba(255, 255, 255, 0.94);
+    --theme-header-border: rgba(0, 20, 50, 0.1);
+    --theme-sidebar-bg: rgba(255, 255, 255, 0.94);
+    --theme-sidebar-border: rgba(0, 20, 50, 0.1);
+    --theme-row-hover: rgba(0, 20, 50, 0.06);
+    --theme-btn-disabled: rgba(20, 30, 55, 0.3);
+    --theme-dropdown-option-bg: rgb(255, 255, 255);
+    --theme-checkbox-accent: var(--blue-normal);
+    --theme-focus-ring: var(--blue-normal);
+    --theme-login-card-bg: rgba(255, 255, 255, 0.85);
+
+    /* Color palette adjusted for light backgrounds */
+    --blue-muted: rgb(30, 60, 110);
+    --blue-light: rgb(0, 109, 233);
+    --aqua-light: rgb(0, 120, 140);
+    --aqua-muted: rgb(40, 100, 115);
+    --aqua-normal: rgb(0, 140, 160);
+    --green-light: rgb(0, 140, 80);
+    --green-muted: rgb(30, 120, 80);
+    --orange-light: rgb(180, 110, 0);
+    --orange-muted: rgb(140, 90, 20);
+    --orange-normal: rgb(160, 100, 0);
+    --orange-strong: rgb(180, 80, 0);
+    --purple-light: rgb(90, 60, 170);
+    --purple-normal: rgb(82, 73, 163);
+    --green-normal: rgb(0, 150, 90);
+    --green-strong: rgb(0, 130, 70);
+    --blue-normal: rgb(0, 100, 200);
+    --green-extreme: rgb(0, 150, 50);
+    --aqua-extreme: rgb(0, 120, 150);
+    --orange-extreme: rgb(190, 100, 0);
+    --orange-strong: rgb(160, 70, 0);
 }
 
 
@@ -178,8 +248,8 @@ body, html {
     background-color: rgba(0, 0, 0, 0.5);
 }
 #edurange-appframe {
-    background-color: rgb(7, 0, 17);
-    color: var(--blue-muted);
+    background-color: var(--theme-bg);
+    color: var(--theme-text);
     position: fixed;
     top: 0;
     bottom: 0;

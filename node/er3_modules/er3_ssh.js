@@ -1,4 +1,3 @@
-
 const http = require('http');
 const { Client } = require('ssh2');
 const WebSocketServer = require('ws').WebSocketServer;
@@ -6,18 +5,8 @@ const cookie = require('cookie');
 const dotenv = require('dotenv');
 const path = require('path');
 const jwt = require('jsonwebtoken');
-const pg = require('pg');
-const Joi = require('joi');
 
 dotenv.config({ path: path.join(__dirname, '..', '..', '.env') });
-const { Pool } = pg;
-const pool = new Pool({
-    host: 'localhost',
-    port: process.env.NODE_DB_PORT,
-    database: process.env.NODE_DB_NAME,
-    user: process.env.NODE_DB_USERNAME,
-    password: process.env.NODE_DB_PASSWORD,
-});
 
 const sshHttpServer = http.createServer((req, res) => {
     res.writeHead(200, { 'Content-Type': 'text/plain' });
@@ -27,105 +16,108 @@ const sshHttpServer = http.createServer((req, res) => {
 const sshSocketServer = new WebSocketServer({
     server: sshHttpServer,
     verifyClient: (info, done) => {
-        const cookies = cookie.parse(info.req.headers.cookie || '');
-        const er3_jwt = cookies.edurange3_jwt;
-        const skey = (process.env.JWT_SECRET_KEY);
-        const verified_jwt = jwt.verify(er3_jwt, skey);
-        const jwt_payload = verified_jwt.sub
-        info.req.get_id = () => jwt_payload;
-        done(true);
+        try {
+            const cookies = cookie.parse(info.req.headers.cookie || '');
+            const er3_jwt = cookies.edurange3_jwt;
+            const skey = process.env.JWT_SECRET_KEY;
+            const verified_jwt = jwt.verify(er3_jwt, skey);
+            const jwt_payload = JSON.parse(verified_jwt.sub);
+            info.req.get_id = () => jwt_payload;
+            done(true);
+        } catch (err) {
+            done(false, 401, 'Invalid JWT');
+        }
     }
 });
+
+function closeShell(shell) {
+    try { shell.close(); } catch (e) { /* already closed */ }
+}
+
 sshSocketServer.on('connection', async (ssh_socket, request) => {
-    const {username, user_role, user_id} = request.get_id();
-    
-    if (!username) {return {error: 'username not found in validated jwt'}};
+    const { username, user_role, user_id } = request.get_id() || {};
+    if (!username) {
+        ssh_socket.send(JSON.stringify({ type: 'error', message: 'Authentication required' }));
+        ssh_socket.close();
+        return;
+    }
     const saniname = username.replace(/-/g, '');
 
-    // DEV_ONLY
-    console.log(
-        `#  User connected to ssh pseudo-terminal w/ jwt id: `,
-        `\n#    username: ${saniname}`,
-        `\n#    user_role: ${user_role}`,
-        `\n#    user_id: ${user_id}`);
-        
-        ssh_socket.send(JSON.stringify({
-            type: 'greeting',
-            greeting: `\x1b[37m \x1b[32medu\x1b[31mRange\x1b[37;2m pseudo-terminal\x1b[95m by exoriparian\x1b[0m \n\n`
-        }));
-        
-        ssh_socket.on('message', async (message) => {
+    let sshClient = null;
+    let shell = null;
 
-        const data = JSON.parse(message);
+    ssh_socket.send(JSON.stringify({
+        type: 'greeting',
+        greeting: `\x1b[37m \x1b[32medu\x1b[31mRange\x1b[37;2m pseudo-terminal\x1b[95m by exoriparian\x1b[0m \r\n`
+    }));
 
-        if (data.hasOwnProperty('ping')){
-            ssh_socket.send(JSON.stringify({pong:"pong"}));
+    ssh_socket.on('message', async (message) => {
+        let data;
+        try { data = JSON.parse(message); } catch (e) { return; }
+
+        if (data.type === 'ping') {
+            if (ssh_socket.readyState === 1) {
+                ssh_socket.send(JSON.stringify({ pong: 'pong' }));
+            }
+            return;
+        }
+
+        if (data.type === 'resize' && shell) {
+            shell.setWindow(data.rows, data.cols);
             return;
         }
 
         if (data.type === 'set_credentials') {
-            const sshClient = new Client();
-            let sendTimer = null;
-            const SEND_INTERVAL = 10; // send data every 10ms
-            let bufferedData = ""; // Moved to this scope
-
-            function sendDataToFrontend() {
-                if (bufferedData) {
-                    ssh_socket.send(JSON.stringify({ type: 'edu3_response', result: bufferedData }));
-                    bufferedData = "";
-                }
+            if (sshClient) {
+                try { sshClient.end(); } catch (e) { /* ignore */ }
             }
 
-            sshClient.on('ready', () => {
-                console.log('SSH Client Ready');
+            sshClient = new Client();
 
-                sshClient.shell((err, shell) => {
+            sshClient.on('ready', () => {
+                sshClient.shell({
+                    term: 'xterm-256color',
+                    cols: data.cols || 80,
+                    rows: data.rows || 24,
+                }, (err, stream) => {
                     if (err) {
-                        console.error("Error starting shell:", err);
-                        ssh_socket.send(JSON.stringify({ 
-                            type: 'error', 
-                            message: 'Failed to start SSH shell session',
-                            details: err.message 
-                        }));
+                        ssh_socket.send(JSON.stringify({ type: 'error', message: err.message }));
                         return;
                     }
+                    shell = stream;
 
-                    shell.on('data', (dataOutput) => {
-                        bufferedData += dataOutput.toString();
-
-                        if (sendTimer) clearTimeout(sendTimer);
-
-                        if (dataOutput.toString().trim().endsWith("$")) {
-                            sendDataToFrontend();
-                        } else {
-                            sendTimer = setTimeout(sendDataToFrontend, SEND_INTERVAL);
+                    stream.on('data', (dataOutput) => {
+                        if (ssh_socket.readyState === 1) {
+                            ssh_socket.send(JSON.stringify({
+                                type: 'edu3_response',
+                                result: dataOutput.toString()
+                            }));
                         }
                     });
 
-                    ssh_socket.on('message', (message) => {
-                        const cmdData = JSON.parse(message);
-                        if (cmdData.type === 'edu3_command_data') {
-                            shell.write(cmdData.data);
+                    stream.stderr.on('data', (dataError) => {
+                        if (ssh_socket.readyState === 1) {
+                            ssh_socket.send(JSON.stringify({
+                                type: 'edu3_response',
+                                result: dataError.toString()
+                            }));
                         }
                     });
 
-                    shell.on('close', () => {
-                        console.log('Shell session closed');
-                    });
-
-                    shell.stderr.on('data', (dataError) => {
-                        console.log('Error from shell:', dataError.toString());
+                    stream.on('close', () => {
+                        shell = null;
+                        ssh_socket.send(JSON.stringify({
+                            type: 'edu3_response',
+                            result: '\r\n\x1b[33m--- SSH session closed ---\x1b[0m\r\n'
+                        }));
                     });
                 });
             });
 
-            // Add error handler for SSH connection failures
             sshClient.on('error', (err) => {
-                console.error('SSH Client connection error:', err);
-                ssh_socket.send(JSON.stringify({ 
-                    type: 'error', 
-                    message: 'SSH connection failed',
-                    details: `Cannot connect to SSH server on port ${data.SSH_port}: ${err.message}`,
+                ssh_socket.send(JSON.stringify({
+                    type: 'error',
+                    message: `SSH connection failed: ${err.message}`,
                     code: err.code,
                     port: data.SSH_port
                 }));
@@ -133,21 +125,34 @@ sshSocketServer.on('connection', async (ssh_socket, request) => {
 
             sshClient.connect({
                 host: 'localhost',
-                port: data.SSH_port,
+                port: data.SSH_port || 22,
                 username: saniname,
                 password: data.password,
+                readyTimeout: 10000,
+                keepaliveInterval: 30000,
+                keepaliveCountMax: 3,
             });
+            return;
+        }
 
-            ssh_socket.on('close', () => {
-                console.log('Client disconnected');
-                sshClient.end();
-            });
+        if (data.type === 'edu3_command_data' && shell) {
+            shell.write(data.data);
+        }
+    });
 
-            ssh_socket.on('error', (err) => {
-                console.error('WebSocket error:', err);
-                sshClient.end();
-            });
+    ssh_socket.on('close', () => {
+        if (shell) closeShell(shell);
+        if (sshClient) {
+            try { sshClient.end(); } catch (e) { /* ignore */ }
+        }
+    });
+
+    ssh_socket.on('error', () => {
+        if (shell) closeShell(shell);
+        if (sshClient) {
+            try { sshClient.end(); } catch (e) { /* ignore */ }
         }
     });
 });
+
 module.exports = { sshHttpServer, sshSocketServer };

@@ -133,20 +133,18 @@ function Scenario_controller() {
     }, [responseData_state, guideContent_state]);
 
     if (!guideContent_state?.scenario_meta) return (<>Scenario not found</>);
-    if (!guideContent_state) return null;
 
-    const saniname = userData_state?.username.replace(/-/g, '');
+    const saniname = (userData_state?.username || '').replace(/-/g, '');
     const SSH_username = guideContent_state.credentialsJSON?.[saniname]?.[0]?.username;
     const SSH_password = guideContent_state.credentialsJSON?.[saniname]?.[0]?.password;
     const SSH_IP = guideContent_state.SSH_IP;
 
     const theseChapters = guideContent_state?.contentYAML?.studentGuide?.chapters;
     const thisBriefing = guideContent_state?.briefingYAML?.studentGuide?.chapters;
-    const thisDebrief = guideContent_state.debriefYAML?.studentGuide?.chapters;
+    const thisDebrief = guideContent_state?.debriefYAML?.studentGuide?.chapters;
 
     if (!theseChapters) return null;
-    const fullBook = [...thisBriefing, ...theseChapters, ...thisDebrief];
-    if (!fullBook) return null;
+    const fullBook = [...(thisBriefing || []), ...theseChapters, ...(thisDebrief || [])];
 
     // Use the scorebook for points display instead of recalculating
     const scenario_points_possible = scorebook_state.total?.points_possible ?? 0;

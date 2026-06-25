@@ -2,6 +2,7 @@
 import React from "react";
 
 import { RiLightbulbFlashLine } from "react-icons/ri";
+import { IoMdSunny, IoMdMoon } from "react-icons/io";
 
 import {
     FaHouseChimney,
@@ -110,7 +111,9 @@ import {
     tower: <FaTowerObservation/>, 
     comments: <FaCommentDots />,
     form: <FaWpforms/>,
-    ta_assignments: <FaArrowsDownToPeople/>
+    ta_assignments: <FaArrowsDownToPeople/>,
+    sun: <IoMdSunny/>,
+    moon: <IoMdMoon/>
 }
 export default edurange_icons
 

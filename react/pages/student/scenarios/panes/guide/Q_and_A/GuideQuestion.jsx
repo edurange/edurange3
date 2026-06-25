@@ -155,11 +155,14 @@ function GuideQuestion({ scenario_id, questionObj, scenario_type }) {
 
     return (
         <div className='edu3-question-frame' key={scenario_id}>
-            <div className='edu-question-carpet'>
+            <div className='edu3-question-carpet'>
+                <div className='edu3-question-label'>Question {questionObj?.question_num ?? ''}</div>
                 <div className='edu3-question-text-row'>
-                    <ReactMarkdown className='edu-reading-text'>
-                        {questionObj?.content}
-                    </ReactMarkdown>
+                    <div className='edu-reading-text'>
+                        <ReactMarkdown>
+                            {questionObj?.content}
+                        </ReactMarkdown>
+                    </div>
                 </div>
                 <div className='edu3-response-row'>
                     <div className='edu3-response-row-top'>

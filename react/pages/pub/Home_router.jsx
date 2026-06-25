@@ -29,7 +29,7 @@ const loginExpiry = ((1000 * 60 * 60) * 11.5); // 11.5 hrs in milliseconds
 function Home_router() {
 
   const [navArraysObj_state, set_navArraysObj_state] = useState(navArrays.logout.home);
-  const [sideNav_isVisible_state, set_sideNav_isVisible_state] = useState(true);
+  const [sideNav_isVisible_state, set_sideNav_isVisible_state] = useState(false);
   const [sideNav_isSmall_state, set_sideNav_isSmall_state] = useState(false);
   const [userData_state, set_userData_state] = useState();
   const [chatData_state, set_chatData_state] = useState([]);

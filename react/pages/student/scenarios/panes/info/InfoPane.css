@@ -1,6 +1,6 @@
 .er3-infopane-frame{
-    border-top: rgba(218, 165, 32, 0.472) 1px solid;
-    border-left: rgba(218, 165, 32, 0.472) 1px solid;
+    border-top: var(--theme-border) 1px solid;
+    border-left: var(--theme-border) 1px solid;
     display: flex;
     height: 100%;
     flex-direction: column;
@@ -35,7 +35,7 @@
 }
 .er3-infopane-resources{
     display: flex;
-    background-color: rgba(0, 0, 0, 0.198);
+    background-color: var(--theme-surface);
     border-radius: 15px;  
     width: 96%;
     flex-direction: column;
@@ -48,9 +48,9 @@
     display: flex;
     flex-direction: column;
     padding: 2% 0;
-    border-left: 1px solid rgba(218, 165, 32, 0.413);
-    border-right: 1px solid rgba(218, 165, 32, 0.413);
-    border-bottom: 1px solid rgba(218, 165, 32, 0.413);
+    border-left: 1px solid var(--theme-border);
+    border-right: 1px solid var(--theme-border);
+    border-bottom: 1px solid var(--theme-border);
     box-sizing: border-box;
     border-bottom-left-radius: 15px;
     border-bottom-right-radius: 15px;
@@ -62,7 +62,7 @@
 }
 .er3-infopane-resource-item{
     margin: 0 10px;
-    color: rgb(223, 185, 88);
+    color: var(--theme-text);
     display: flex;
     box-sizing: border-box;
     min-height: 1.5em;
@@ -75,7 +75,7 @@
     color: rgb(88, 201, 223);
     display: flex;
     box-sizing: border-box;
-    background-color: rgba(240, 248, 255, 0.161);
+    background-color: var(--theme-surface-raised);
 }
 .er3-infopane-resource-link{
     padding-left: 10px;
@@ -99,7 +99,7 @@
     flex-direction: column;
     border-bottom-left-radius: 15px;
     border-bottom-right-radius: 15px;
-    border-bottom: 2px solid rgba(218, 165, 32, 0.407);
+    border-bottom: 2px solid var(--theme-border-strong);
     height: 100%;
     max-height: 23dvh;
     width: 100%;
@@ -109,7 +109,7 @@
     contain: content;
     overflow-y: hidden;
     overflow-x: hidden;
-    background-color: rgba(0, 106, 255, 0.112);
+    background-color: var(--theme-surface);
     cursor: default;
 }
 .er3-infopane-splash-row{

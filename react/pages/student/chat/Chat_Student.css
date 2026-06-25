@@ -23,13 +23,13 @@ textarea{
 }
 
 .chatStu-chat-carpet{
-  background-color: rgb(130, 154, 211);
+  background-color: var(--theme-surface);
   width: 99%;
   height: 98%;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
-  border: 1px solid black;
+  border: 1px solid var(--theme-border-strong);
   box-sizing: border-box;
   position: relative;
   left: 1%;
@@ -42,10 +42,10 @@ textarea{
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  border-bottom: 1px solid black;
+  border-bottom: 1px solid var(--theme-border-strong);
   box-sizing: border-box;
-  background-color: paleturquoise;
-  color: black;
+  background-color: var(--theme-surface-raised);
+  color: var(--theme-text);
 }
 .chatStu-message-item{
   width: 100%;
@@ -53,7 +53,7 @@ textarea{
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  color: black;
+  color: var(--theme-text);
 }
 .chatStu-panes-container-frame{
   width: 100%;
@@ -140,7 +140,7 @@ textarea{
   display: flex;
   flex-direction: column;
   overflow-y: auto;
-  border: 1px solid black;
+  border: 1px solid var(--theme-border-strong);
   box-sizing: border-box;
   position: relative;
   padding: 12px;

@@ -234,7 +234,7 @@ function Msg_Bubble({ is_staff, message_obj, user_id, is_outgoing, user_role }) 
                     </div>
                 </div>
             </div>
-            <div className={is_outgoing ? "bubble-stem bubble-stem-right" : <></>}></div>
+            <div className={is_outgoing ? "bubble-stem bubble-stem-right" : ""}></div>
         </div>
     );
 }

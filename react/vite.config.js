@@ -19,7 +19,8 @@ export default defineConfig({
         },
     },
     server: {
-        port: 3663
+        port: 3663,
+        allowedHosts: ['edurange.local']
     },
     build: {
         terserOptions: {

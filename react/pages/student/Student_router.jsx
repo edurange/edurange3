@@ -5,12 +5,39 @@ import { Route, Routes } from 'react-router-dom';
 import Scenarios_home from './scenarios/Scenarios_home';
 import Chat_Student from '@student/chat/Chat_Student';
 import Frame_side from '@frame/sidenav/Frame_side';
+import ChapterNav from '@frame/sidenav/ChapterNav';
 import Scenario_controller from './scenarios/Scenario_controller';
+import edurange_icons from '@modules/ui/edurangeIcons';
 import { HomeRouter_context } from '../pub/Home_router';
 
 import '@assets/css/dashboard.css';
 
 export const StudentRouter_context = React.createContext();
+
+class ScenarioErrorBoundary extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = { error: null };
+    }
+    static getDerivedStateFromError(error) {
+        return { error };
+    }
+    render() {
+        if (this.state.error) {
+            return (
+                <div style={{ padding: 20, color: 'var(--danger)', fontFamily: 'Share Tech Mono' }}>
+                    <h3>Something went wrong</h3>
+                    <pre style={{ whiteSpace: 'pre-wrap', fontSize: 13, marginTop: 12 }}>
+                        {this.state.error.message}
+                        {'\n\n'}
+                        {this.state.error.stack}
+                    </pre>
+                </div>
+            );
+        }
+        return this.props.children;
+    }
+}
 
 function Student_router() {
 
@@ -19,11 +46,12 @@ function Student_router() {
         timeStamp: Date.now(),
         message: "something"
     }]
-    const { login_state, userData_state, set_chatData_state, chatData_state, } = useContext(HomeRouter_context);
-    const [chatObjs_UL_state, set_chatObjs_UL_state] = useState([]); // unordered array of all chats
+    const { login_state, userData_state, set_chatData_state, chatData_state, guideContent_state } = useContext(HomeRouter_context);
+    const [chatObjs_UL_state, set_chatObjs_UL_state] = useState([]);
 
     const [notifsArray_state, set_notifsArray_state] = useState(fakeNotifs);
     const [guideBook_state, set_guideBook_state] = useState({});
+    const [chapterNavCollapsed_state, set_chapterNavCollapsed_state] = useState(false);
     const [scenarioList_state, set_scenarioList_state] = useState([]);
     const [scenarioPage_state, set_scenarioPage_state] = useState({
         chapter: 0,
@@ -47,8 +75,8 @@ function Student_router() {
         async function fetchScenarioList() {
             try {
                 const response = await axios.get("/get_group_scenarios");
-                if (response.data.scenarioTable) {
-                    set_scenarioList_state(response.data.scenarioTable);
+                if (response.data.scenarios_list) {
+                    set_scenarioList_state(response.data.scenarios_list);
                 };
             }
             catch (error) { console.log('get_scenarios_list error:', error); };
@@ -147,13 +175,25 @@ function Student_router() {
                         }}>
                             <Routes>
                                 <Route path="/" element={<Scenarios_home />} />
-                                <Route path="/:scenarioID" element={<Scenario_controller />} />
-                                <Route path="/:scenarioID/:pageID" element={<Scenario_controller />} />
+                                <Route path="/:scenarioID" element={<ScenarioErrorBoundary><Scenario_controller /></ScenarioErrorBoundary>} />
+                                <Route path="/:scenarioID/:pageID" element={<ScenarioErrorBoundary><Scenario_controller /></ScenarioErrorBoundary>} />
                                 <Route path="/:scenarioID/chat" element={<Chat_Student />} />
                             </Routes>
                         </StudentRouter_context.Provider>
                     </div>
                 </div>
+
+                {!!guideContent_state?.scenario_meta && (
+                    <div className={`newdash-sidebar-frame chapter-sidebar-right${chapterNavCollapsed_state ? ' chapter-sidebar-collapsed' : ''}`}>
+                        <div
+                            className='chapter-sidebar-toggle'
+                            onClick={() => set_chapterNavCollapsed_state(!chapterNavCollapsed_state)}
+                        >
+                            {chapterNavCollapsed_state ? edurange_icons.chevron_left : edurange_icons.chevron_right}
+                        </div>
+                        {!chapterNavCollapsed_state && <ChapterNav />}
+                    </div>
+                )}
             </div>
         </div>
     );

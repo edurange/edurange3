@@ -5,9 +5,9 @@ import HomeChapter from './Q_and_A/HomeChapter';
 import GuideReading from './Q_and_A/GuideReading';
 import GuideQuestion from './Q_and_A/GuideQuestion';
 import GuideTabs from './GuideTabs';
-import GuideDropdown from './GuideDropdown';
 
 function generate_thisChapter_reactArray(scenarioID, meta, thisChapter_contentArray) {
+    if (!thisChapter_contentArray) return [];
 
     const react_arr = [];
 
@@ -44,7 +44,7 @@ function GuidePane({fullBook, chapter_num, meta, scenarioID, pageID}) {
     const thisChapter_data = fullBook[pageID_int]
     const thisChapter_contentArray = thisChapter_data?.content_array;
 
-    if ((thisChapter_contentArray?.length < 1)) { return (<>Scenario content length less than 1</>); }
+    if (!thisChapter_contentArray || thisChapter_contentArray.length < 1) { return (<>Scenario content length less than 1</>); }
 
     let final_array = [
         (<div key='abc123'>
@@ -63,7 +63,6 @@ function GuidePane({fullBook, chapter_num, meta, scenarioID, pageID}) {
     return (
         <div className='guidepane-guide-frame'>
             <div className='guidepane-guide-main'>
-                <GuideDropdown fullBook={fullBook}/>
                 <article className='guidepane-guide-text'>
                     <div key={nanoid(5)}>
                         {final_array}

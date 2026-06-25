@@ -29,7 +29,7 @@ function Resources_card({ guideContent }) {
                         </div>
                     </div>
                 </Link>
-                {shellData.resources.map((val, key) => {
+                {shellData?.resources?.map((val, key) => {
                     return (
                         <a key={key} href={val.link} target="_blank" rel="noopener noreferrer">
                             <div className='resource-item' >-

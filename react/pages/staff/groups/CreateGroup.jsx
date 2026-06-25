@@ -73,11 +73,11 @@ function CreateGroup() {
 
     return (
         <div className='create-frame'>
-            CREATE GROUP
-            <form className='create-group-row' onSubmit={handle_createGroup_submit}>
+            <span className='create-label'>CREATE GROUP</span>
+            <form className='create-form' onSubmit={handle_createGroup_submit}>
                 <input
                     type="text"
-                    className="create-group-input"
+                    className="create-input-fields"
                     placeholder="Enter unique group name"
                     value={groupName_state}
                     onChange={handle_newGroup_name_change}
@@ -90,7 +90,6 @@ function CreateGroup() {
                         </div>
                         <br />
                         <input
-                            className='test-user-checkbox'
                             type="checkbox"
                             checked={testUsersBool_state}
                             onChange={handle_testUsersBool_toggle}
@@ -104,16 +103,19 @@ function CreateGroup() {
                                 onChange={handle_testUserCt_change}
                                 min="1"
                                 max="500"
+                                className='create-input-fields'
+                                style={{width: '70px'}}
                             />
                         </div>
                     )}
                 </div>
 
-                <div className='row-btns'>
-                    <button type="submit" className={`${buttonDisabled_state ? 'btn-disabled' : 'green-btn submit-btn row-btn'}`} disabled={buttonDisabled_state}>
-                        CREATE
-                    </button>
-                </div>
+                <button
+                    className={`create-btn ${buttonDisabled_state ? 'create-btn-disabled' : ''}`}
+                    disabled={buttonDisabled_state}
+                >
+                    CREATE
+                </button>
             </form>
         </div>
     );

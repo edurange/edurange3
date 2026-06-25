@@ -29,12 +29,12 @@ function FootControls({
 
 
 
-    const tempName = userData_state.username.replace(/-/g, '')
-    const creds = credentialsJSON[tempName]
-    const SSH_username = creds[0].username;
-    const SSH_password = creds[0].password;
-    const [SSH_ip, SSH_port_str] = SSH_IP.split(':');
-    const sshCommand = `ssh ${SSH_username}@${SSH_ip} -p ${SSH_port_str}`;
+    const tempName = userData_state?.username?.replace(/-/g, '') || '';
+    const creds = credentialsJSON?.[tempName];
+    const SSH_username = creds?.[0]?.username || 'unknown';
+    const SSH_password = creds?.[0]?.password || '';
+    const [SSH_ip, SSH_port_str] = (SSH_IP || ':').split(':');
+    const sshCommand = SSH_IP ? `ssh ${SSH_username}@${SSH_ip} -p ${SSH_port_str}` : 'SSH not available';
 
     const left_controls = (
         <>

@@ -34,8 +34,8 @@
     font-size: small;
     display: flex;
     flex-direction: row;
-    background-color: rgb(207, 148, 0);
-    color: rgb(44, 39, 0);
+    background-color: var(--green-normal);
+    color: var(--blue-dark);
     align-items: center;
     justify-content: center;
     justify-items: center;
@@ -43,13 +43,20 @@
     border-bottom-left-radius: 15px;
     width: 25%;
     font-size: 14px;
+}
 
+[data-theme="light"] .footcontrol-info-button {
+    color: rgb(255, 255, 255);
 }
 
 .footcontrol-info-button:hover {
-    background-color: rgb(255, 211, 144);
-    color: rgb(20, 16, 0);
+    background-color: var(--green-light);
+    color: var(--blue-dark);
     cursor: pointer;
+}
+
+[data-theme="light"] .footcontrol-info-button:hover {
+    color: rgb(255, 255, 255);
 }
 
 .footcontrol-web-ssh-button {
@@ -60,6 +67,7 @@
     display: flex;
     flex-direction: row;
     background-color: var(--purple-normal);
+    color: rgb(255, 255, 255);
     align-items: center;
     justify-content: center;
     justify-items: center;
@@ -69,7 +77,7 @@
 
 .footcontrol-web-ssh-button:hover {
     background-color: var(--purple-light);
-    color: rgb(0, 9, 20);
+    color: rgb(255, 255, 255);
     cursor: pointer;
 }
 
@@ -79,9 +87,9 @@
     font-size: small;
     display: flex;
     flex-direction: row;
-    color: rgb(255, 253, 244);
+    color: var(--theme-text);
     align-items: left;
-    background-color: rgba(0, 0, 0, 0.185);
+    background-color: var(--theme-surface);
 }
 
 .footcontrol-chat-button {
@@ -91,8 +99,8 @@
     font-size: small;
     display: flex;
     flex-direction: row;
-    background-color: rgb(24, 141, 69);
-    color: rgb(255, 244, 244);
+    background-color: var(--green-normal);
+    color: var(--blue-dark);
     align-items: center;
     justify-content: center;
     justify-items: center;
@@ -100,10 +108,18 @@
     font-size: 14px;
 }
 
+[data-theme="light"] .footcontrol-chat-button {
+    color: rgb(255, 255, 255);
+}
+
 .footcontrol-chat-button:hover {
-    background-color: rgb(79, 227, 136);
-    color: var(--green-deep);
+    background-color: var(--green-light);
+    color: var(--blue-dark);
     cursor: pointer;
+}
+
+[data-theme="light"] .footcontrol-chat-button:hover {
+    color: rgb(255, 255, 255);
 }
 
 .footcontrol-hint-button {
@@ -113,8 +129,8 @@
     font-size: small;
     display: flex;
     flex-direction: row;
-    background-color: rgb(141, 24, 122);
-    color: rgb(255, 244, 244);
+    background-color: var(--purple-normal);
+    color: rgb(255, 255, 255);
     align-items: center;
     justify-content: center;
     justify-items: center;
@@ -123,14 +139,14 @@
 }
 
 .footcontrol-hint-button:hover {
-    background-color: rgb(79, 227, 136);
-    color: var(--green-deep);
+    background-color: var(--green-light);
+    color: var(--blue-dark);
     cursor: pointer;
 }
 
 
 .footcontrol-ssh-label-frame {
-    color: goldenrod;
+    color: var(--theme-text);
     height: 100%;
     width: 12%;
     box-sizing: border-box;
@@ -151,14 +167,14 @@
     flex-direction: column;
     display: flex;
     width: 12%;
-    border-top: 1px solid rgba(218, 165, 32, 0.344);
-    border-bottom: 1px solid rgba(218, 165, 32, 0.344);
+    border-top: 1px solid var(--theme-border);
+    border-bottom: 1px solid var(--theme-border);
     text-align: left;
 
 }
 
 .footcontrol-ssh-sublabel-item {
-    color: goldenrod;
+    color: var(--theme-text);
     height: 100%;
     width: 100%;
     box-sizing: border-box;
@@ -168,7 +184,7 @@
 }
 
 .footcontrol-ssh-creds-frame {
-    color: var(--green-deep);
+    color: var(--theme-text);
     height: 100%;
     width: 100%;
     box-sizing: border-box;
@@ -179,7 +195,7 @@
 }
 
 .footcontrol-ssh-copy-section {
-    color: var(--orange-strong);
+    color: var(--theme-text);
     height: 100%;
     width: 14%;
     min-width: 45px;
@@ -193,7 +209,7 @@
     right:0;
     contain: content;
     box-sizing: border-box;
-    border-top: 1px solid rgba(218, 165, 32, 0.277);
+    border-top: 1px solid var(--theme-border);
 }
 
 .footcontrol-ssh-buttons-column {
@@ -222,7 +238,7 @@
 }
 
 .footcontrol-ssh-creds-values-frame {
-    color: var(--green-deep);
+    color: var(--theme-text);
     height: 100%;
     width: 100%;
     box-sizing: border-box;
@@ -230,12 +246,12 @@
     justify-content: space-around;
     display: flex;
     flex-direction: column;
-    border-top: 1px solid rgba(218, 165, 32, 0.344);
-    border-bottom: 1px solid rgba(218, 165, 32, 0.344);
+    border-top: 1px solid var(--theme-border);
+    border-bottom: 1px solid var(--theme-border);
 }
 
 .footcontrol-ssh-creds-values-row {
-    color: var(--green-deep);
+    color: var(--theme-text);
     height: 100%;
     width: 100%;
     box-sizing: border-box;
@@ -250,7 +266,7 @@
 
 .footcontrol-ssh-creds-values-text {
     align-items: center;
-    color: rgb(81, 217, 255);
+    color: var(--green-light);
     justify-content: flex-start;
     display: flex;
     text-align: left;
@@ -263,7 +279,7 @@
 
 .footcontrol-progress-text{
     display: flex;
-    background-color: rgba(2, 98, 105, 0.491);
+    background-color: var(--theme-surface);
     width: 100%;
     align-items: center;
     justify-content: center;

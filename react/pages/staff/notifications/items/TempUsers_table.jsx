@@ -38,7 +38,7 @@ function TempUsers_table({ userList }) {
             {userList.map((user, index) => {
                 return (
                     <div key={index + 567} className='tempusers-item'>
-                        <Copy_button_small thingToCopy={JSON.stringify({ username: user.username, password: user.password })} />
+                        <Copy_button_small thingToCopy={`${user.username}: ${user.password}`} />
                         <div className='tempusers-creds-frame'>
                             <div>{user.username}</div>
                             <div>{user.password}</div>
@@ -48,9 +48,9 @@ function TempUsers_table({ userList }) {
             })}
             <div className='copyflex-fix'>
 
-            <Copy_button_flex thingToCopy={userList.map((user) => {
-                return [user.username, user.password]
-            })} textLabel={'Copy All'} />
+            <Copy_button_flex thingToCopy={userList.map((user) => (
+                `${user.username}: ${user.password}`
+            )).join('\n')} textLabel={'Copy All'} />
             </div>
         </div>
     );

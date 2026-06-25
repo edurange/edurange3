@@ -382,9 +382,9 @@ function Staff_UsersGrid() {
     return (
         <>
             <div className="create-frame">
-                <div className="create-group-row">
+                <span className='create-label'>MODIFY USERS</span>
+                <div className='create-form'>
                     <select className="create-dropdown" value={actionSelection_state} onChange={handleActionChange}>
-                        
                         <option value="">Select Action</option>
 
                         {userData_state.role === 'staff' ? <option value="AssignToSelf">Assign Student to Self</option> : <></>}
@@ -435,15 +435,13 @@ function Staff_UsersGrid() {
                                 ))}
                         </select>
                     )}
-                    <div className="row-btns">
-                        <button
-                            onClick={handleUpdateDatabase}
-                            className={`row-btn ${buttonIsDisabled_state ? 'btn-disabled' : 'green-btn submit-btn'}`}
-                            disabled={buttonIsDisabled_state}
-                        >
-                            Update Database
-                        </button>
-                    </div>
+                    <button
+                        onClick={handleUpdateDatabase}
+                        className={`create-btn ${buttonIsDisabled_state ? 'create-btn-disabled' : ''}`}
+                        disabled={buttonIsDisabled_state}
+                    >
+                        Update Database
+                    </button>
                 </div>
             </div>
 

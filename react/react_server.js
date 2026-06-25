@@ -14,7 +14,7 @@ const app = express();
 app.use(express.static(path.join(__dirname, 'dist')));
 
 // handle other routes with index.html (react build)
-app.get('*', (req, res) => {
+app.get('/{*path}', (req, res) => {
     res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 

@@ -1,50 +1,48 @@
-.newdash-frame{
+.newdash-frame {
     width: 100%;
     height: 100%;
     display: flex;
-    border-radius: 15px ;
-    background-color: rgb(54, 8, 25);
-
-    border-bottom: 1px; 
-    border-top: 1px;
-    border-right: 1px;
-    border-style: solid;
-    border-color:   rgb(42, 6, 19);
-    padding-left: 9px;
-    contain: content;    
+    border-radius: 12px;
+    background: var(--theme-bg-alt);
+    border: 1px solid var(--theme-border);
     box-sizing: border-box;
+    contain: content;
 }
-.newdash-frame-carpet{
-    background-color: rgb(9, 16, 34);
+
+.newdash-frame-carpet {
+    background: transparent;
     width: 100%;
     height: 100%;
-    border-radius: 15px;
+    border-radius: 12px;
     display: flex;
 }
+
 .newdash-infopane-frame {
     display: flex;
-    background-color: rgb(22, 35, 71);
+    background: var(--theme-surface-raised);
     width: 100%;
-    border-radius: 15px ;
-    border-left: 1px solid  rgb(63, 9, 29);
-    padding: 1% 1%;
-    color: var(--muted-aqua);
+    border-radius: 10px;
+    border: 1px solid var(--theme-border-strong);
+    padding: 1.5%;
+    color: var(--theme-text);
     box-sizing: border-box;
 }
+
 .newdash-infopane-content {
     display: flex;
     flex-direction: column;
     width: 100%;
-    height:100%;
+    height: 100%;
     box-sizing: border-box;
     align-items: center;
     align-content: center;
     justify-content: center;
     justify-items: center;
 }
-.newdash-content-placard{
+
+.newdash-content-placard {
     font-size: 6dvh;
-    color: var(--muted-aqua);
+    color: var(--theme-text);
     min-height: 8%;
     padding: 4%;
     box-sizing: border-box;

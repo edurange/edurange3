@@ -18,9 +18,11 @@ function GuideReading({ readingObj }) {
     return (
         <div className={`edu3-reading-frame ${Object.keys(dynamicStyles).join(' ')}`} key={nanoid(3)}>
             <div className='edu3-reading-carpet'>
-                <ReactMarkdown className='markdownReading'>
-                    {this_content}
-                </ReactMarkdown>
+                <div className='markdownReading'>
+                    <ReactMarkdown>
+                        {this_content}
+                    </ReactMarkdown>
+                </div>
             </div>
         </div>
     );

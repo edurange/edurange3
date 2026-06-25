@@ -79,8 +79,8 @@ function CreateScenario() {
 
     return (
         <div className='create-frame'>
-            CREATE SCENARIO
-            <form onSubmit={handle_createScenario_submit} className='row-aligned form-frame'>
+            <span className='create-label'>CREATE SCENARIO</span>
+            <form onSubmit={handle_createScenario_submit} className='create-form'>
                 <select className='create-dropdown' value={selectedGroup?.name || ''} onChange={handle_groupName_change}>
                     <option value="" disabled>{selectedGroup ? '' : 'Choose Group'}</option>
                     {groups_state.length > 0 ? (
@@ -107,13 +107,17 @@ function CreateScenario() {
                     })}
                 </select>
                 <input
-                    className='create-input-fields col-xlarge'
+                    className='create-input-fields'
                     type="text"
                     placeholder="Enter unique scenario name"
                     value={newScenName_state}
                     onChange={handle_scenName_change}
                 />
-                <button className={`${buttonDisabled_state ? 'submit-btn row-btn btn-disabled' : 'green-btn submit-btn row-btn'}`} type="submit" disabled={buttonDisabled_state}>
+                <button
+                    className={`create-btn ${buttonDisabled_state ? 'create-btn-disabled' : ''}`}
+                    type="submit"
+                    disabled={buttonDisabled_state}
+                >
                     CREATE
                 </button>
             </form>

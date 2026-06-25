@@ -20,7 +20,7 @@ read -r enable_ml_features
 enable_ml_features=${enable_ml_features,,}
 
 # Add pip-executables to the path if they aren't already
-grep -qxF 'export PATH=$PATH:/home/$(whoami)/.local/bin' ~/.bashrc || echo 'export PATH=$PATH:/home/$(whoami)/.local/bin' >> ~/.bashrc
+grep -qxF 'export PATH=$PATH:/home/$(whoami)/.local/bin' ~/.bashrc || echo 'export PATH=$PATH:/home/$(whoami)/.local/bin' >>~/.bashrc
 source ~/.bashrc
 
 echo -e "${GRN}Installing python3-pip, npm, redis-server,  unzip, postgresql, lib-pq-dev, and wget${NC}"
@@ -42,8 +42,8 @@ fi
 pip3 uninstall --yes pyjwt
 pip3 install pyjwt==2.8.0
 
-nvm install 21
-nvm use 21
+nvm install 22
+nvm use 22
 npm install
 cd $curDir/node
 npm install
@@ -91,8 +91,7 @@ external_ip=$(dig @resolver4.opendns.com myip.opendns.com +short)
 
 echo "$hostAddress"
 
-while [ -z "$hostAddress" ]
-do 
+while [ -z "$hostAddress" ]; do
   #echo "READING PROMPT NUM"
   read promptnumber
 
@@ -104,8 +103,7 @@ do
     echo "  (1) $option1"
     echo "  (2) $option2"
 
-    while [ -z "$hostAddress" ]
-    do
+    while [ -z "$hostAddress" ]; do
       read optnumber
       if [ $optnumber -eq 1 ]; then
         hostAddress="$option1"
@@ -113,23 +111,22 @@ do
         hostAddress="$option2"
       fi
     done
-    
+
     localDomain=''
-    while [ -z "$localDomain" ]
-    do
+    while [ -z "$localDomain" ]; do
       echo " Please enter the domain you would like to use for your local installation (Ex: edurange.local)"
-    	read domainSelection
-     	localDomain="$domainSelection"
+      read domainSelection
+      localDomain="$domainSelection"
     done
 
-    sudo echo "$hostAddress $localDomain" | sudo cat - /etc/hosts > tmp && sudo mv tmp /etc/hosts
-    
+    sudo echo "$hostAddress $localDomain" | sudo cat - /etc/hosts >tmp && sudo mv tmp /etc/hosts
+
     wget https://github.com/FiloSottile/mkcert/releases/download/v1.4.3/mkcert-v1.4.3-linux-amd64
     sudo mv mkcert-v1.4.3-linux-amd64 /usr/bin/mkcert
     sudo chmod +x /usr/bin/mkcert
     mkcert -install
     mkcert $localDomain localhost $hostAddress
-    
+
     localCert=$(find ~+ -maxdepth 1 -name "$localDomain*" | grep -v key)
     localKey=$(find ~+ -maxdepth 1 -name "$localDomain*" | grep key)
 
@@ -137,8 +134,7 @@ do
     sudo sed -i "s|listen 80;|listen 443 ssl;\n    ssl_certificate $localCert;\n    ssl_certificate_key $localKey;|g" /etc/nginx/sites-available/default
     cat ./docs/nginx.port80Redirect.snippet | sudo tee -a /etc/nginx/sites-available/default
     sudo sed -i "s/DOMAIN_TO_BE_REPLACED/${localDomain}/g" /etc/nginx/sites-available/default
-    
-    
+
     # Start and kill firefox so it automatically sets up its initial configuration
     firefox &
     sleep 10
@@ -146,17 +142,14 @@ do
     # Add the created certificate to your Firefox profile's database. Different browsers and differently set up machines will need different commands (this is for Ubuntu 22.04.4 and Firefox)
     firefoxProfile=$(sudo grep -m 1 -Po '(?<=Path=).*' /$HOME/snap/firefox/common/.mozilla/firefox/profiles.ini)
     sudo certutil -d sql:$HOME/snap/firefox/common/.mozilla/firefox/${firefoxProfile} -A -t "C,," -n "EDURange" -i $localCert
-    
-    
+
     sudo service nginx reload
-    
-    
 
   elif [ $promptnumber -eq 2 ]; then
     #echo $external_ip
     hostAddress="$external_ip"
     #echo "$hostAddress CHANGED"
-  
+
   elif [ $promptnumber -eq 3 ]; then
     # TODO certbot cannot be used for generation here, because the site must be running
     # If certs are pre-existing, we can do the nginx config replacement for the user, but that's about it
@@ -168,37 +161,34 @@ do
   fi
 done
 
-
-if [ $# -eq 0 ];
-then
-	echo -e "${YLW}Please enter your database password:${NC}"
-	read dbpass
-	echo -e "${YLW}Please enter your database name ALL LOWERCASE:${NC}"
-	read dbname
-	echo -e "${YLW}Please enter your Flask (web interface) username NO SYMBOLS:${NC}"
-	read flaskUser
-	echo -e "${YLW}Please enter your Flask (web interface) password:${NC}"
-	read flaskPass
-	echo -e "${YLW}Please enter your root password for all containers:${NC}"
-	read rootPass
-	# Generate secret string for cookie encryption
+if [ $# -eq 0 ]; then
+  echo -e "${YLW}Please enter your database password:${NC}"
+  read dbpass
+  echo -e "${YLW}Please enter your database name ALL LOWERCASE:${NC}"
+  read dbname
+  echo -e "${YLW}Please enter your Flask (web interface) username NO SYMBOLS:${NC}"
+  read flaskUser
+  echo -e "${YLW}Please enter your Flask (web interface) password:${NC}"
+  read flaskPass
+  echo -e "${YLW}Please enter your root password for all containers:${NC}"
+  read rootPass
+  # Generate secret string for cookie encryption
   # TODO: Replace JWT_SECRET_KEY as well
-	secretKey=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w ${1:-20} | head -n 1)
+  secretKey=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w ${1:-20} | head -n 1)
   secretKeyJWT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w ${1:-20} | head -n 1)
-	cp ./.env.example ./.env
-	sed -i "s/DBNAME_REPLACEME/${dbname}/g" .env
+  cp ./.env.example ./.env
+  sed -i "s/DBNAME_REPLACEME/${dbname}/g" .env
   sed -i "s/DIFFERENT_SECRETKEY/${secretKeyJWT}/" .env
-	sed -i "s/DB_PASS_REPLACEME/${dbpass}/" .env
-	sed -i "s/someUser/${flaskUser}/" .env
-	sed -i "s/somePass/${flaskPass}/" .env
-	sed -i "s/YOURSECRETKEY/${secretKey}/" .env
-	sed -i "s/YOUR_URL_HERE/${hostAddress}/" .env
-	sed -i "s/someRootPass/${rootPass}/" .env
+  sed -i "s/DB_PASS_REPLACEME/${dbpass}/" .env
+  sed -i "s/someUser/${flaskUser}/" .env
+  sed -i "s/somePass/${flaskPass}/" .env
+  sed -i "s/YOURSECRETKEY/${secretKey}/" .env
+  sed -i "s/YOUR_URL_HERE/${hostAddress}/" .env
+  sed -i "s/someRootPass/${rootPass}/" .env
 
-# NOTE: This was for vagrant installations, investigate removing  
-elif [ $1 = "auto" ];
-then
-	cp ./.env.example ./.env
+# NOTE: This was for vagrant installations, investigate removing
+elif [ $1 = "auto" ]; then
+  cp ./.env.example ./.env
 fi
 
 echo -e "${GRN}Downloading and setting up terraform${NC}"
@@ -209,25 +199,23 @@ unzip terraform_1.2.2_linux_amd64.zip
 sudo mv terraform /usr/bin/terraform
 
 # Check to see if docker is already installed. If it is, skip this.
-if ! [ -x "$(command -v docker)" ];
-then
-	echo -e "${GRN}Downloading and setting up docker${NC}"
-	wget -O docker.sh get.docker.com
-	chmod +x docker.sh
-	
-	echo -e "${GRN}Creating a user group for docker, and adding your account...${NC}"
-	sudo groupadd docker
-	sudo usermod -aG docker $username
+if ! [ -x "$(command -v docker)" ]; then
+  echo -e "${GRN}Downloading and setting up docker${NC}"
+  wget -O docker.sh get.docker.com
+  chmod +x docker.sh
 
-	./docker.sh
+  echo -e "${GRN}Creating a user group for docker, and adding your account...${NC}"
+  sudo groupadd docker
+  sudo usermod -aG docker $username
+
+  ./docker.sh
 else
-	echo "Docker already installed. Skipping Docker installation."
+  echo "Docker already installed. Skipping Docker installation."
 fi
 
-# Initialize psql 
+# Initialize psql
 sudo -Hiu postgres psql -U postgres -c "alter user postgres with password '"$dbpass"';"
 sudo -Hiu postgres psql -U postgres -c "CREATE DATABASE $dbname ;"
-
 
 # Fix the script dumping us to a different directory after installation
 cd $current_directory

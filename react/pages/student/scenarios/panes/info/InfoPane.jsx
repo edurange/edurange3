@@ -18,18 +18,21 @@ function InfoPane() {
     return (
         <section className='er3-infopane-frame'>
 
-            <section className='er3-infopane-splash-frame'>
+                {shellData && (
+                <section className='er3-infopane-splash-frame'>
 
                 <section className='er3-infopane-placard-row'>
                     <span className='er3-infopane-placard-title' >{meta.scenario_name}</span>
                 </section>
 
                 <section className='er3-infopane-splash-row'>
+                    {shellData.icon && (
                     <div className='er3-infopane-splash-image-section'>
                         <div className='er3-infopane-splash-image' >
                             <img src={shellData.icon} />
                         </div>
                     </div>
+                    )}
                     <div className='er3-infopane-splash-blurb-frame' >
                         <div className='er3-infopane-splash-blurb-text'>
                             {shellData.description_short}
@@ -37,13 +40,16 @@ function InfoPane() {
                     </div>
                 </section>
 
+                {shellData.keywords && (
                 <section className='er3-infopane-keywords-row'>
                     <div className='er3-infopane-keywords-item'>
                         Keywords: {shellData.keywords.join(', ')}
                     </div>
                 </section>
+                )}
 
             </section>
+                )}
 
             <section className='er3-infopane-lower-section'>
                 <Resources_card guideContent={guideContent_state} />

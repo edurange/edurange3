@@ -200,18 +200,16 @@ export const navArrays = {
     student: {
         home: {
             top: [feedback, scenarios, logout],
-            side: [scenarios, issues, logout]
+            side: [issues]
         },
         dash: {
             top: [feedback, home, scenarios, logout],
-            side: [scenarios, issues, logout]
+            side: [issues]
         },
         account: {
             top: [feedback, scenarios, logout],
-            side: [scenarios, issues, logout]
+            side: [issues]
         },
-        // only exists in the context of a specific scenario
-        // e.g. /dashboard/scenarios/5
         guide: {
             top: [feedback, scenarios, logout],
         }

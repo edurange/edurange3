@@ -3,7 +3,7 @@
     90%, 100% { opacity: 0; } 
 }
 .welcome-text{
-    color: var(--blue-muted);
+    color: var(--theme-text);
     font-size: 68px;
 }
 .blink-me {

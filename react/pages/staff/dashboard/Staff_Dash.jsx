@@ -58,9 +58,11 @@ function Staff_Dash() {
 
             </div>
 
-            <div className='staff-dash-column-alt'>
-                <TempUsers_table userList={tempUsers_state} />
-            </div>
+            {(tempUsers_state && tempUsers_state.length > 0) && (
+                <div className='staff-dash-column-alt'>
+                    <TempUsers_table userList={tempUsers_state} />
+                </div>
+            )}
 
         </div>
     );

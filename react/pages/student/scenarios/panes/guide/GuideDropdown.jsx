@@ -45,7 +45,7 @@ function GuideDropdown({ fullBook }) {
                                 {edurange_icons.menuOpen_down}
                             </div>
                         </div>
-                        {`${selectedLabel}: ${fullBook.find(chap => Number(chap.chapter_num) === Number(pageID)).title ?? ''}`}
+                        {`${selectedLabel}: ${fullBook.find(chap => Number(chap.chapter_num) === Number(pageID))?.title ?? ''}`}
                     </div>
                     <div className='guidepane-dropdown-scorebox'>
                         <div className='awarded-box'>

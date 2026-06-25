@@ -1,109 +1,125 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import axios from 'axios';
 import { HomeRouter_context } from '@pub/Home_router';
 import edurange_icons from '@modules/ui/edurangeIcons';
 import './Login.css'
 import { genAlias } from '@modules/utils/chat_modules';
-import ErrorModal from '../../../components/ErrorModal';
 import { AppContext } from '../../../config/AxiosConfig';
 
 function Login() {
+    const [submitting, setSubmitting] = useState(false);
+    const [errorMsg, setErrorMsg] = useState('');
 
     const {
-        set_userData_state, set_login_state, set_chatData_state, chatData_state,
+        set_userData_state, set_login_state,
         loginExpiry
     } = useContext(HomeRouter_context);
     const {
-        errorModal_state, set_errorModal_state,
-        desiredNavMetas_state, set_desiredNavMetas_state,
-        clipboard_state, set_clipboard_state
+        set_errorModal_state,
+        set_desiredNavMetas_state,
     } = useContext(AppContext);
 
     async function sendLoginRequest(username_input, password_input) {
+        setErrorMsg('');
+        setSubmitting(true);
         try {
             const response = await axios.post('login', {
                 username: username_input,
                 password: password_input
             });
             const userData = response.data;
-    
+
             if (userData) {
                 const newAlias = genAlias();
                 userData.user_alias = newAlias;
                 set_userData_state(userData);
                 set_login_state(true);
-    
-                const newExpiry = Date.now() + loginExpiry;
+
                 sessionStorage.setItem('userData', JSON.stringify(userData));
                 sessionStorage.setItem('login', true);
-                sessionStorage.setItem('loginExpiry', newExpiry);
+                sessionStorage.setItem('loginExpiry', Date.now() + loginExpiry);
                 if ((userData?.role === 'staff') || (userData?.role === 'admin')) {
                     set_desiredNavMetas_state(['/staff', 'dash']);
                 } else {
                     set_desiredNavMetas_state(['/scenarios', 'dash']);
                 }
             } else {
-                const errData = response.data.error;
-                set_errorModal_state(errData);
+                setErrorMsg(response.data?.error || 'Login failed');
             }
         } catch (error) {
-            set_errorModal_state(error.response || error);
-            console.log('Login failure.');
+            const errData = error.response?.data?.error;
+            if (errData && typeof errData === 'string' && errData.length < 100) {
+                setErrorMsg(errData);
+            } else {
+                set_errorModal_state(error.response || error);
+            }
+        } finally {
+            setSubmitting(false);
         }
     };
-    
 
     const handleSubmit = event => {
         event.preventDefault();
-        const usernameInput = event.target.elements.username.value;
-        const passwordInput = event.target.elements.password.value;
-        sendLoginRequest(usernameInput, passwordInput);
-    };
-    const handleRegNav_click = event => {
-        event.preventDefault();
-        set_desiredNavMetas_state(['/register', `home`]);
+        const { username, password } = event.target.elements;
+        sendLoginRequest(username.value, password.value);
     };
 
     return (
-        <div className='login-container'>
-
-            <h2 className='login-placard'>
-                <div className='login-placard-text'>
-                    Enter your credentials
+        <div className='login-outer'>
+            <div className='login-card'>
+                <div className='login-brand'>
+                    <span className='login-brand-green'>edu</span>
+                    <span className='login-brand-orange'>Range</span>
                 </div>
-            </h2>
+                <h2 className='login-heading'>Sign in</h2>
 
-            <form className='login-submit-frame' onSubmit={handleSubmit}>
-                <div className='login-submit-row'>
-
-                    <div className='login-submit-row-left'>
-                        <div className='login-submit-item'>
-                            <label className='login-prompt-text' htmlFor='username'>Username:</label>
-                            <input className='login-input-text' type='text' id='username' name='username' />
-                        </div>
-
-                        <div className='login-submit-item'>
-                            <label className='login-prompt-text' htmlFor='password'>Password:</label>
-                            <input className='login-input-text' type='password' id='password' name='password' />
-                        </div>
+                <form className='login-form' onSubmit={handleSubmit}>
+                    <div className='login-field'>
+                        <label className='login-label' htmlFor='username'>Username</label>
+                        <input
+                            className='login-input'
+                            type='text'
+                            id='username'
+                            name='username'
+                            autoComplete='username'
+                            autoFocus
+                            disabled={submitting}
+                        />
                     </div>
 
-                    <div className='login-submit-row-right'>
-                        <button className='login-button' type='submit'>
-                            <div className='login-button-content'>
-                                {edurange_icons.user_check}
-                                <span className='login-button-text'>SUBMIT</span>
-                            </div>
-                        </button>
+                    <div className='login-field'>
+                        <label className='login-label' htmlFor='password'>Password</label>
+                        <input
+                            className='login-input'
+                            type='password'
+                            id='password'
+                            name='password'
+                            autoComplete='current-password'
+                            disabled={submitting}
+                        />
                     </div>
 
-                </div>
-            </form>
+                    {errorMsg && (
+                        <div className='login-error'>
+                            {errorMsg}
+                        </div>
+                    )}
 
-            <div className='reg-redirect-clicker' onClick={handleRegNav_click}>
-                No account? Register here!
+                    <button className='login-submit' type='submit' disabled={submitting}>
+                        {submitting ? (
+                            <>Verifying&hellip;</>
+                        ) : (
+                            <>{edurange_icons.user_check} Sign in</>
+                        )}
+                    </button>
+                </form>
+
+                <div className='login-register-link' role='button' tabIndex={0}
+                    onClick={() => set_desiredNavMetas_state(['/register', 'home'])}
+                    onKeyDown={e => e.key === 'Enter' && set_desiredNavMetas_state(['/register', 'home'])}>
+                    No account? Register here
+                </div>
             </div>
-
         </div>
     );
 };

@@ -18,9 +18,8 @@ function SSH_card({ guideContent }) {
     const SSH_IP = guideContent.SSH_IP;
     const SSH_username = guideContent.credentialsJSON?.[saniname]?.[0]?.username;
     const SSH_password = guideContent.credentialsJSON?.[saniname]?.[0]?.password;
-    const [SSH_ip, SSH_port_str] = SSH_IP.split(':');
-
-    const sshCommand = `ssh ${SSH_username}@${SSH_ip} -p ${SSH_port_str}`;
+    const [SSH_ip, SSH_port_str] = (SSH_IP || ':').split(':');
+    const sshCommand = SSH_IP ? `ssh ${SSH_username}@${SSH_ip} -p ${SSH_port_str}` : 'SSH not available';
 
     return (
         <section className='sshcard-frame'>

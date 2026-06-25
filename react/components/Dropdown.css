@@ -56,11 +56,11 @@
     box-sizing: border-box;
     font-size: medium;
     margin: 2px;
-    height: 48px;;
-    border: 1px solid rgb(218, 165, 32);
+    height: 48px;
+    border: 1px solid var(--theme-border);
     border-radius: 8px;
     padding: 5px;
-    background-color: rgb(0, 24, 77);
+    background: var(--theme-surface);
     z-index: 1;
 }
 .filters-row{

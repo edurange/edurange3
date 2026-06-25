@@ -41,7 +41,7 @@ def create_app(config_object="py_flask.config.settings"):
     app = Flask('edurange3')
     app.config.from_object(config_object)
     # set security attrs for 'session' cookie
-    app.config['SESSION_COOKIE_SECURE'] = True
+    app.config['SESSION_COOKIE_SECURE'] = not app.config.get('DEBUG', False)
     app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
     
     # Extended timeout settings for AI hint generation

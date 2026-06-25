@@ -1,6 +1,6 @@
 .sshcard-frame{
   display: block;
-  background-color: rgba(0, 0, 0, 0.198);
+  background-color: var(--theme-surface);
   border-radius: 15px;
   width: 96%;
   position: relative;
@@ -16,9 +16,9 @@
   box-sizing: border-box;
 }
 .sshcard-main{
-  border-left: 1px solid rgba(218, 165, 32, 0.413);
-  border-right: 1px solid rgba(218, 165, 32, 0.413);
-  border-bottom: 1px solid rgba(218, 165, 32, 0.413);
+  border-left: 1px solid var(--theme-border);
+  border-right: 1px solid var(--theme-border);
+  border-bottom: 1px solid var(--theme-border);
   box-sizing: border-box;
   display: flex;
   width: 100%;
@@ -44,7 +44,7 @@
   max-height: 2em;
   min-height: 1.6em;
   display: flex;
-  background-color: rgba(0, 136, 255, 0.221);
+  background-color: var(--theme-surface-raised);
   border-top-left-radius: 15px;
   border-top-right-radius: 15px;
   align-items: center;
@@ -62,7 +62,7 @@
 .sshcard-label-col{
   min-width: 35px;
   max-width: 35px;
-  color: goldenrod;
+  color: var(--theme-text);
   cursor: default;
   position: relative;
   left: 3%;
@@ -71,7 +71,7 @@
   min-width: calc(100% - 54px - 5.2dvh);
   max-width: calc(100% - 54px - 5.2dvh);
   height: 100%;
-  color: aqua;
+  color: var(--theme-text);
   align-items: center;
   display: flex;
   word-wrap: break-word ;
@@ -122,7 +122,7 @@
   height: 86%;
   flex-direction: column;
   background-color: rgba(95, 158, 160, 0.144);
-  color: rgba(255, 192, 34, 0.801);
+  color: var(--theme-text);
   border-radius: 8px;
   align-items: center;
   font-size: 14pt;

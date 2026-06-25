@@ -1,5 +1,5 @@
 "use strict";
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { nanoid } from 'nanoid';
 import Notifs_button from './Notifs_button';
 import '../frame.css';
@@ -11,9 +11,19 @@ import { AppContext } from '../../config/AxiosConfig';
 
 function Frame_head() {
 
+    const [theme, setTheme] = useState(() => localStorage.getItem('edurange-theme') || 'dark');
+
+    useEffect(() => {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('edurange-theme', theme);
+    }, [theme]);
+
+    function toggleTheme() {
+        setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+    }
+
     const {
         sideNav_isVisible_state, set_sideNav_isVisible_state,
-        sideNav_isSmall_state, set_sideNav_isSmall_state,
         navArraysObj_state
     } = useContext(HomeRouter_context);
     const {
@@ -21,45 +31,21 @@ function Frame_head() {
     } = useContext(AppContext);
     
     const navArrayToShow = navArraysObj_state?.top ?? navArrays.logout.home.top
-    const someNav = navArrays.top_logout
 
     function toggle_sideNav_vis() {
-        set_sideNav_isVisible_state(!sideNav_isVisible_state); // toggle to opposite
+        set_sideNav_isVisible_state(!sideNav_isVisible_state);
     };
-    function toggle_sideNav_size() {
-        set_sideNav_isSmall_state(!sideNav_isSmall_state); // toggle to opposite
-    };
-    function chooseSideIcon() {
-        if (sideNav_isVisible_state) {
-            return (
-                <>
-                    <div className='er3-homehead-hamburger-item hamburger-jr hamburger-pill-right'
-                    onClick={() => toggle_sideNav_size()}>
-                        {(sideNav_isSmall_state) ? edurange_icons.panelOpen_left : edurange_icons.panelClose_left}
-                    </div>
-                </>
-            )
-        }
-        else return (<></>);
-    };
-
     const panelVisSelector = (sideNav_isVisible_state) ? edurange_icons.menuClose_up : edurange_icons.menuOpen_down;
-    const panelSizeSelector = chooseSideIcon();
     const pillOrReg = (sideNav_isVisible_state) ? 'er3-homehead-hamburger-item hamburger-pill-left' : 'er3-homehead-hamburger-item';
 
     function Hamburger() {
-
         return (
             <div className='er3-homehead-hamburger-frame'>
                 <div
                     className={pillOrReg}
                     onClick={() => toggle_sideNav_vis()}
                 > {panelVisSelector} </div>
-
-                {panelSizeSelector}
-
             </div>
-
         );
     };
     return (
@@ -68,6 +54,12 @@ function Frame_head() {
             <div className="er3-homehead-left"><Hamburger /></div>
 
             <Frame_UserBox />
+
+            <div className='theme-toggle-wrapper'>
+                <button className='theme-toggle-btn' onClick={toggleTheme} title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}>
+                    {theme === 'dark' ? edurange_icons.sun : edurange_icons.moon}
+                </button>
+            </div>
 
             <div className='er3-homehead-right'>
                 <span className="er3-homehead-buttonbar">

@@ -1,7 +1,9 @@
+import json
 from datetime import timedelta
 from functools import wraps
 
 from flask import (
+    current_app,
     g,
     jsonify,
     make_response,
@@ -39,12 +41,12 @@ def jwt_and_csrf_required(fn):
         if not token: return jsonify({"error": "jwt request denied"}), 403
         try:
 
-            validated_jwt_token = decode_token(token)  # check if signature still valid
-            decoded_payload = validated_jwt_token["sub"]
+            validated_jwt_token = decode_token(token)
+            decoded_payload = json.loads(validated_jwt_token["sub"])
 
-            g.current_username = decoded_payload["username"]  
-            g.current_user_id = decoded_payload["user_id"] 
-            g.current_user_role = decoded_payload["user_role"] 
+            g.current_username = decoded_payload["username"]
+            g.current_user_id = decoded_payload["user_id"]
+            g.current_user_role = decoded_payload["user_role"]
             # Places values in special Flask `g` object which ONLY lasts for life of request
             # The `g` object can be accessed by any routes decorated with jwt_and_csrf_required()
             # To avoid auth 'misses', use the `g` object any time the values are needed
@@ -65,36 +67,28 @@ def admin_only():
         custom_abort("Insufficient role privileges.", 403)
 
 def login_er3(userObj):
-
     login_return = make_response(jsonify(userObj))
-    # generate JWT and encode these values. (NOT hidden from user)
-    # note: 'identity' is a payload keyword for Flask-JWT-Extended. best to leave it
-    token_return = create_access_token(identity=(
-        {  
+    token_return = create_access_token(identity=json.dumps({
         "username": userObj["username"],
         "user_role": userObj["role"],
         "user_id": userObj["id"]
-        }
-        
-        ), expires_delta=timedelta(hours=12))
-    
-    # httponly=True - mitigates XSS attacks by 'blinding' client to the JWT
+    }), expires_delta=timedelta(hours=12))
+
+    is_secure = not current_app.config.get('DEBUG', False)
+
     login_return.set_cookie(
         'edurange3_jwt',
-        token_return, 
-        samesite='Lax', 
+        token_return,
+        samesite='Lax',
         httponly=True,
-        secure=True,
+        secure=is_secure,
         path='/'
     )
-
-    # CSRF token: mitigate JWT/session related CSRF attacks
-    # no httponly=True ; JS needs access to value
     login_return.set_cookie(
-        'X-XSRF-TOKEN', 
-        session['X-XSRF-TOKEN'], 
+        'X-XSRF-TOKEN',
+        session['X-XSRF-TOKEN'],
         samesite='Lax',
-        secure=True,
+        secure=is_secure,
         path='/'
     )
     return login_return
