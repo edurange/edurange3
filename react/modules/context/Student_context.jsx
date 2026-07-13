@@ -6,7 +6,7 @@ import Login from '@pub/login/Login';
 
 export const Student_context = ({ children }) => {
 
-    const login_session = JSON.parse(sessionStorage.getItem('login'));
+    const login_session = JSON.parse(localStorage.getItem('login'));
     const { login_state } = useContext(HomeRouter_context);
     
     const shouldShow = ((login_session === true) || (login_state === true) )

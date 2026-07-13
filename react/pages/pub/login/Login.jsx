@@ -35,9 +35,9 @@ function Login() {
                 set_userData_state(userData);
                 set_login_state(true);
 
-                sessionStorage.setItem('userData', JSON.stringify(userData));
-                sessionStorage.setItem('login', true);
-                sessionStorage.setItem('loginExpiry', Date.now() + loginExpiry);
+                localStorage.setItem('userData', JSON.stringify(userData));
+                localStorage.setItem('login', true);
+                localStorage.setItem('loginExpiry', Date.now() + loginExpiry);
                 if ((userData?.role === 'staff') || (userData?.role === 'admin')) {
                     set_desiredNavMetas_state(['/staff', 'dash']);
                 } else {

@@ -141,6 +141,10 @@ function Staff_router() {
                 if (message.chat_logs)
                     set_chatObjs_UL_state(message.chat_logs);
                 set_aliasDict_state(message.aliasDict ?? {});
+            } else if (message.message_type === 'refresh_jwt') {
+                // Node saw our JWT nearing expiry. Hit /api/refresh to rotate
+                // the auth cookies (handled by jwt_and_csrf_required). Silent.
+                axios.post('/refresh').catch(() => {});
             }
         };
 

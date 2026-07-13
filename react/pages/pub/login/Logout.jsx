@@ -26,10 +26,10 @@ function Logout () {
             if (responseData.message) {
                 set_userData_state();
                 set_login_state(false);
-                sessionStorage.setItem('login', false);
-                sessionStorage.setItem('loginExpiry', 0);
-                sessionStorage.setItem('userData', '{}');
-                sessionStorage.setItem('navStub','home')
+                localStorage.setItem('login', false);
+                localStorage.setItem('loginExpiry', 0);
+                localStorage.setItem('userData', '{}');
+                localStorage.setItem('navStub','home')
                 set_desiredNavMetas_state(['/','home'])
             }
             else {

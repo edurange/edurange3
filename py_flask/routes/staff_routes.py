@@ -9,6 +9,7 @@ from flask import (
     jsonify,
     request,
 )
+from marshmallow import ValidationError
 from sqlalchemy.exc import SQLAlchemyError
 
 from py_flask.config.extensions import db
@@ -32,7 +33,7 @@ from py_flask.utils.dataBuilder import (
     get_taAssignment_data,
     get_user_data,
 )
-from py_flask.utils.error_utils import custom_abort, safe_jsonify
+from py_flask.utils.error_utils import custom_abort, safe_jsonify, validation_error_handler
 from py_flask.utils.guide_utils import getContent, getScenarioMeta
 from py_flask.utils.scenario_utils import identify_state
 from py_flask.utils.staffData_utils import get_staffData
@@ -78,6 +79,10 @@ def handle_sqlalchemy_error(error):
 def general_error_handler(error):
     error_handler = custom_abort(error)
     return error_handler.get_response()
+
+@blueprint_staff.errorhandler(ValidationError)
+def handle_validation_error(error):
+    return validation_error_handler(error)
 
 # TESTED AND WORKING ROUTES
 @blueprint_staff.route("/create_group", methods=['POST'])

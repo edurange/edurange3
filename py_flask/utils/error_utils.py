@@ -9,8 +9,44 @@ class CustomHTTPException(HTTPException):
         self.response = response
 
 def custom_abort(message="Unspecified Server Error", status_code=500):
+    # `jsonify` happily serializes str/dict/list — but NOT arbitrary exception
+    # objects. Routes like `general_error_handler` reach this with the raw
+    # caught exception (e.g. `custom_abort(error)`). Without this guard,
+    # jsonify raises a second TypeError and Flask returns its default HTML 500
+    # page, masking the original error. Coerce only exception instances to str
+    # so legitimate dict/list payloads (some callers pass structured bodies)
+    # still serialize normally. Marshmallow ValidationErrors are intercepted
+    # earlier by `validation_error_handler` and never reach here.
+    if isinstance(message, BaseException):
+        message = str(message) or type(message).__name__
     response = make_response(jsonify({'error': message}), status_code)
     raise CustomHTTPException(response)
+
+def validation_error_handler(err):
+    """Turn a marshmallow/ValidationError into a JSON 422 response.
+
+    `err.messages` is the marshmallow standard, e.g.
+        {'username': ['Missing data for required field.'],
+         'password': ['Shorter than minimum length 3.']}
+    Most existing clients (Login.jsx, ErrorModal) read the `error` key as a
+    flat string, so we flatten messages into one and also include the
+    structured `details` for future clients.
+    """
+    messages = getattr(err, 'messages', None) or {}
+    flat = []
+    for field, msgs in messages.items():
+        if isinstance(msgs, (list, tuple)):
+            for m in msgs:
+                flat.append(f'{field}: {m}' if field != '_schema' else str(m))
+        elif isinstance(msgs, dict):
+            flat.append(f'{field}: {json.dumps(msgs)}')
+        else:
+            flat.append(f'{field}: {msgs}')
+    error_str = '; '.join(flat) if flat else 'Validation failed'
+    return make_response(
+        jsonify({'error': error_str, 'details': messages}),
+        422,
+    )
 
 def safe_jsonify(data, status_code=200):
     """

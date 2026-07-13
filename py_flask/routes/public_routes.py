@@ -8,6 +8,7 @@ from flask import (
     request,
     session,
 )
+from marshmallow import ValidationError
 from sqlalchemy.exc import SQLAlchemyError
 
 from py_flask.config.extensions import db
@@ -20,7 +21,7 @@ from py_flask.database.models import (
 from py_flask.database.user_schemas import LoginSchema, RegistrationSchema
 from py_flask.utils.auth_utils import login_er3, register_user
 from py_flask.utils.chat_utils import getChannelDictList_byUser
-from py_flask.utils.error_utils import custom_abort
+from py_flask.utils.error_utils import custom_abort, validation_error_handler
 db_ses = db.session
 edurange3_csrf = secrets.token_hex(32)
 
@@ -41,6 +42,10 @@ def handle_sqlalchemy_error(error):
         custom_abort(f"Database error occurred: {str(error)}", 500)
     else: custom_abort(f"Database error occurred.", 500)
 
+@blueprint_public.errorhandler(ValidationError)
+def handle_validation_error(error):
+    return validation_error_handler(error)
+
 @blueprint_public.errorhandler(Exception)
 def general_error_handler(error):
     error_handler = custom_abort(error)
@@ -54,6 +59,12 @@ def login_edurange3():
     
     validated_user_obj = Users.query.filter_by(username=validated_data["username"]).first()
 
+    # Marking the session permanent makes Flask emit a real Expires on the
+    # signed session cookie and re-sign it on every request
+    # (SESSION_REFRESH_EACH_REQUEST is True by default), turning the CSRF
+    # reference into a sliding window whose lifetime tracks
+    # PERMANENT_SESSION_LIFETIME.
+    session.permanent = True
     if 'X-XSRF-TOKEN' not in session:
         session['X-XSRF-TOKEN'] = secrets.token_hex(32)
 

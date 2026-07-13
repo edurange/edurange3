@@ -1,360 +1,354 @@
-/* Improved styling for logs components with better readability */
+/* Logs viewer — themed via --theme-* tokens (works in dark and light).
+   Layout: one row per log entry. User/time/cwd/input inline; output
+   appears as a hover tooltip, and clicking opens a full modal. */
 
-/* Main logs viewer container - improved styling with higher specificity */
+:root {
+    --log-mono: 'Menlo', 'Consolas', 'DejaVu Sans Mono', 'Liberation Mono', 'Courier New', monospace;
+}
+
 .logsViewer-frame {
-    width: 100% !important;
-    height: 100% !important;
-    display: flex !important;
-    background: linear-gradient(135deg, #0A0C31 0%, #161240 100%) !important;
-    border-radius: 8px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background: var(--theme-bg);
     padding: 16px;
     box-sizing: border-box;
-    position: relative !important;
     overflow: hidden;
 }
 
 .logsViewer-carpet {
-    width: 100% !important;
-    height: 100% !important;
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 12px !important;
-    position: relative !important;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
     overflow: hidden;
 }
 
-/* Filters section - more compact and properly positioned */
-.dropdown-frame {
-    background: rgba(192, 221, 255, 0.05) !important;
-    border: 1px solid rgba(192, 221, 255, 0.2) !important;
-    border-radius: 6px;
-    padding: 8px 12px !important;
-    margin-bottom: 12px;
+/* Filters bar — scoped with .logsViewer-frame to override the older
+   .dropdown-frame rules from Dropdown.css. Each dropdown (label + select)
+   and each button is a flex item that holds its own width; gaps keep them
+   from overlapping. */
+.logsViewer-frame .dropdown-frame {
+    display: block;
+    width: 100%;
+    height: auto;
+    background: var(--theme-surface);
+    border: 1px solid var(--theme-border);
+    border-radius: 8px;
+    padding: 10px 14px;
     flex-shrink: 0;
-    position: static !important;
-    z-index: auto !important;
-    height: auto !important;
-    width: 100% !important;
     box-sizing: border-box;
 }
 
-.dropdown-carpet {
-    width: 100% !important;
-    height: auto !important;
-    background-color: transparent !important;
-    position: static !important;
-    flex-direction: column !important;
-    align-items: stretch !important;
+.logsViewer-frame .dropdown-carpet {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    gap: 8px;
+    align-items: stretch;
+    background: transparent;
 }
 
-.filters-row {
-    display: flex !important;
-    flex-direction: row !important;
-    width: 100% !important;
-    gap: 12px !important;
-    align-items: end !important;
+.logsViewer-frame .filters-row {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    align-items: flex-start;
     flex-wrap: wrap;
-    margin-top: 8px;
-    padding: 0 !important;
-    position: static !important;
-    z-index: auto !important;
+    box-sizing: border-box;
+    width: 100%;
+    padding: 0;
+}
+
+/* Each dropdown wrapper — fixed max width so labels never overlap neighbor */
+.logsViewer-frame .filters-row .create-frame {
+    flex: 0 0 auto;
+    min-width: 130px;
+    max-width: 220px;
+    height: auto;
+    margin: 0;
+    padding: 6px 8px;
+    display: flex;
+    flex-direction: column;
+    background: var(--theme-surface);
+    border: 1px solid var(--theme-border);
+    border-radius: 6px;
     box-sizing: border-box;
 }
 
-/* Override dropdown styles within logs viewer to prevent floating/sticky behavior */
-.logsViewer-frame .dropdown-frame .filters-row > * {
-    position: static !important;
-    z-index: auto !important;
-    float: none !important;
+.logsViewer-frame .filters-row .create-frame .placard-text {
+    font-size: 11px;
+    color: var(--theme-text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    height: auto;
+    line-height: 1.2;
 }
 
-/* Reset any problematic positioning on the create-frame class (from Dropdown.css line 64) */
-.logsViewer-frame .create-frame,
-.dropdown-frame .create-frame {
-    position: static !important;
-    z-index: auto !important;
-    height: auto !important;
-    margin: 2px !important;
+.logsViewer-frame .filters-row .create-frame .create-dropdown {
+    width: 100%;
+    box-sizing: border-box;
+    background: var(--theme-input-bg);
+    color: var(--theme-text);
+    border: 1px solid var(--theme-input-border);
+    border-radius: 4px;
+    padding: 4px 6px;
+    font-size: 12px;
+    cursor: pointer;
 }
 
-/* Ensure individual dropdown components are properly positioned */
-.logsViewer-frame .dropdown-component,
-.logsViewer-frame .dropdown-wrapper,
-.logsViewer-frame .dropdown {
-    position: static !important;
-    z-index: auto !important;
-    display: inline-block !important;
-}
-
-/* Additional reset for any potential floating elements */
-.logsViewer-frame * {
+/* Buttons — never float, never overlap, fixed-size flex items */
+.logsViewer-frame .filters-row .update-button {
+    flex: 0 0 auto;
+    margin-top: 18px;
+    height: 32px;
+    box-sizing: border-box;
     position: static;
-}
-
-.logsViewer-frame .dropdown-frame * {
-    position: static !important;
 }
 
 .update-button {
     background: var(--blue-normal);
-    color: white;
+    color: #fff;
     border: none;
-    border-radius: 4px;
-    padding: 6px 12px;
+    border-radius: 6px;
+    padding: 6px 14px;
     font-size: 12px;
     font-weight: 500;
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    transition: background-color 0.15s ease;
     height: 32px;
-    min-width: 70px;
+    min-width: 80px;
 }
+.update-button:hover:not(:disabled) { background: var(--blue-strong); }
+.update-button:disabled { background: var(--theme-btn-disabled); cursor: not-allowed; }
 
-.update-button:hover:not(:disabled) {
-    background: var(--blue-strong);
+.download-button {
+    background: var(--green-normal);
+    color: var(--green-dark);
+    font-weight: 600;
 }
+.download-button:hover { background: var(--green-strong); color: var(--green-dark); }
 
-.update-button:disabled {
-    background: #666;
-    cursor: not-allowed;
-    opacity: 0.6;
-}
-
-/* Logs body layout */
+/* Body */
 .logsViewer-body {
-    display: flex !important;
-    width: 100% !important;
-    flex: 1 !important;
-    flex-direction: column !important;
-    gap: 16px !important;
-    position: relative;
-    top: 0;
-    left: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    flex: 1;
     overflow-y: auto;
     min-height: 0;
 }
+.logsViewer-item { display: flex; flex-direction: column; }
 
-.logsViewer-item {
-    display: flex !important;
-    width: 100% !important;
-    flex-direction: column !important;
-}
-
-/* Enhanced log table styling */
+/* Per-log card */
 .logTable-frame {
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(192, 221, 255, 0.15);
-    border-radius: 8px;
-    padding: 12px;
+    background: var(--theme-surface);
+    border: 1px solid var(--theme-border);
+    border-radius: 10px;
+    padding: 12px 14px;
     box-sizing: border-box;
-    backdrop-filter: blur(5px);
-    flex-shrink: 0;
-    overflow: hidden;
 }
-
-/* Improved grid container */
-.logGrid-frame {
-    width: 100%;
-    padding: 0;
-    position: relative;
-    left: 0;
-    margin-top: 8px;
-    overflow: hidden;
-}
-
-.grid-container {
-    display: grid;
-    grid-template-columns: 
-        minmax(140px, 1.8fr)  /* Timestamp */
-        minmax(80px, 0.8fr)   /* Log Type */
-        minmax(60px, 0.6fr)   /* Log ID */
-        minmax(70px, 0.7fr)   /* User ID */
-        minmax(120px, 1.5fr)  /* Scenario Type */
-        minmax(90px, 1fr)     /* Archive ID */
-        minmax(200px, 4fr)    /* Content */
-        minmax(80px, 0.6fr);  /* Copy button */
-    gap: 2px;
-    width: 100%;
-    border-radius: 6px;
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-}
-
-/* Enhanced grid headers */
-.grid-header {
-    background: linear-gradient(135deg, #4ed281 0%, #3fe0b8 100%);
-    color: #003218;
+.logTable-frame .placard-frame-static,
+.logTable-frame .placard-text {
+    color: var(--theme-text);
     font-weight: 600;
     font-size: 13px;
-    text-align: center;
-    padding: 12px 8px;
-    border: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    letter-spacing: 0.4px;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    box-sizing: border-box;
-    height: 50px;
+    margin-bottom: 8px;
 }
 
-/* Enhanced grid items */
-.grid-item {
-    background: rgba(255, 255, 255, 0.95);
-    color: #2c2c2c;
-    border: 1px solid rgba(192, 221, 255, 0.2);
-    padding: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+/* Empty state */
+.log-empty {
+    color: var(--theme-text-dim);
+    font-size: 13px;
+    font-style: italic;
+    padding: 18px;
     text-align: center;
+}
+
+/* ---- Row-based log list ---- */
+.log-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.log-row {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 7px 10px;
+    font-family: var(--log-mono);
     font-size: 12px;
-    line-height: 1.4;
-    min-height: 45px;
-    max-height: 120px;
-    box-sizing: border-box;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
+    line-height: 1.5;
+    color: var(--theme-text);
+    border-radius: 4px;
+    position: relative;
+    cursor: default;
+    min-width: 0;
     overflow: hidden;
 }
 
-.grid-item:nth-child(8n+1) { /* Timestamp column */
-    justify-content: flex-start;
-    font-family: 'Courier New', monospace;
-    font-size: 11px;
-    color: #444;
-}
+.log-row:nth-child(even) { background: var(--theme-surface); }
+.log-row:hover { background: var(--theme-row-hover); }
 
-.grid-item:nth-child(8n+2) { /* Log Type column */
+.log-row-clickable { cursor: pointer; }
+
+.log-row-user {
+    color: var(--green-normal);
     font-weight: 600;
-    color: var(--blue-deep);
+    flex-shrink: 0;
+    min-width: 60px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-.grid-item:nth-child(8n+3), /* Log ID */
-.grid-item:nth-child(8n+4), /* User ID */
-.grid-item:nth-child(8n+6) { /* Archive ID */
-    font-family: 'Courier New', monospace;
-    color: #666;
-}
-
-.grid-item:nth-child(8n+5) { /* Scenario Type */
-    font-weight: 500;
-    color: var(--orange-deep);
-}
-
-.grid-item:nth-child(8n+7) { /* Content column */
-    padding: 2px;
-    align-items: stretch;
-    justify-content: stretch;
-}
-
-.grid-item:nth-child(8n+7) .content-box {
-    width: 100%;
-    height: 100%;
-    margin: 0;
-}
-
-/* Enhanced content box with better scrolling */
-.content-box {
-    background: rgba(239, 240, 228, 0.98);
-    border: 1px solid rgba(192, 221, 255, 0.3);
-    border-radius: 4px;
-    padding: 6px;
-    margin: 1px;
-    max-height: 100px;
-    min-height: 40px;
-    overflow-y: auto !important;
-    overflow-x: hidden;
-    text-align: left;
+.log-row-time {
+    color: var(--theme-text-dim);
+    flex-shrink: 0;
     font-size: 11px;
-    line-height: 1.3;
-    color: #333;
-    word-break: break-word;
-    word-wrap: break-word;
-    white-space: pre-wrap;
-    box-sizing: border-box;
-    scrollbar-width: thin;
-    scrollbar-color: rgba(192, 221, 255, 0.5) transparent;
-    position: relative;
+    white-space: nowrap;
 }
 
-.content-box::-webkit-scrollbar {
-    width: 8px;
+.log-row-cwd {
+    color: var(--blue-light);
+    flex-shrink: 0;
+    font-size: 11px;
+    white-space: nowrap;
 }
 
-.content-box::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.1);
-    border-radius: 4px;
+.log-row-input {
+    color: var(--theme-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+    flex: 1 1 auto;
 }
 
-.content-box::-webkit-scrollbar-thumb {
-    background: rgba(192, 221, 255, 0.6);
-    border-radius: 4px;
-    border: 1px solid rgba(192, 221, 255, 0.2);
+.log-row-output-preview {
+    color: var(--theme-text-dim);
+    font-size: 11px;
+    flex-shrink: 1;
+    max-width: 240px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    opacity: 0.5;
 }
 
-.content-box::-webkit-scrollbar-thumb:hover {
-    background: rgba(192, 221, 255, 0.8);
-}
+.log-row:hover .log-row-output-preview { opacity: 1; }
+.log-row-clickable:hover .log-row-output-preview { opacity: 1; }
 
-/* Hover effects for better interactivity */
-.grid-item:hover {
-    background: rgba(255, 255, 255, 1);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transform: translateY(-1px);
-    transition: all 0.2s ease;
-}
-
-/* Enhanced empty state */
-.grid-empty-frame {
-    background: linear-gradient(135deg, rgba(82, 82, 75, 0.8) 0%, rgba(83, 83, 83, 0.8) 100%);
-    border: 1px solid rgba(192, 221, 255, 0.2);
+/* ---- Hover tooltip ---- */
+.log-tooltip {
+    display: none;
+    position: absolute;
+    bottom: calc(100% + 4px);
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: 600px;
+    max-height: 320px;
+    overflow: auto;
+    background: var(--theme-input-bg);
+    border: 1px solid var(--theme-border-strong);
     border-radius: 8px;
-    color: var(--blue-muted);
-    font-size: 16px;
-    font-weight: 500;
-    padding: 32px;
-    text-align: center;
-    backdrop-filter: blur(5px);
+    padding: 10px 12px;
+    font-family: var(--log-mono);
+    font-size: 11px;
+    line-height: 1.45;
+    color: var(--theme-text);
+    white-space: pre-wrap;
+    word-break: break-word;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.45);
+    z-index: 100;
+    pointer-events: none;
+    scrollbar-width: thin;
+    scrollbar-color: var(--theme-border-strong) transparent;
 }
+.log-tooltip::-webkit-scrollbar { width: 6px; }
+.log-tooltip::-webkit-scrollbar-thumb { background: var(--theme-border-strong); border-radius: 3px; }
 
-.grid-empty-carpet {
-    background: transparent;
-    border-radius: 0;
-}
+.log-row-clickable:hover .log-tooltip { display: block; }
 
-/* Responsive adjustments */
-@media (max-width: 1200px) {
-    .grid-container {
-        grid-template-columns: 
-            minmax(120px, 1.5fr)
-            minmax(70px, 0.7fr)
-            minmax(50px, 0.5fr)
-            minmax(60px, 0.6fr)
-            minmax(100px, 1.2fr)
-            minmax(80px, 0.8fr)
-            minmax(180px, 3.5fr)
-            minmax(70px, 0.5fr);
-    }
-    
-    .grid-header,
-    .grid-item {
-        font-size: 11px;
-        padding: 6px;
-    }
+/* ---- Log cell modal ---- */
+.logCellModal-backdrop {
+    display: flex;
+    position: fixed;
+    left: 0; top: 0;
+    width: 100%; height: 100%;
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(2px);
 }
-
-@media (max-width: 768px) {
-    .filters-row {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    
-    .grid-container {
-        grid-template-columns: 1fr;
-        gap: 1px;
-    }
-    
-    .grid-item:nth-child(8n+7) .content-box {
-        max-height: 60px;
-    }
+.logCellModal-frame {
+    width: 720px;
+    max-width: 90vw;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--theme-bg);
+    border: 1px solid var(--theme-border-strong);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.45);
+    position: relative;
+    color: var(--theme-text);
 }
+.logCellModal-close {
+    position: absolute;
+    right: 8px; top: 8px;
+    width: 30px; height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--theme-text-dim);
+    font-size: 20px;
+    font-weight: 700;
+    border-radius: 6px;
+    transition: background 0.12s, color 0.12s;
+    z-index: 2;
+}
+.logCellModal-close:hover { background: var(--theme-surface-raised); color: var(--danger); }
+.logCellModal-header {
+    padding: 14px 16px;
+    background: var(--theme-surface-raised);
+    border-bottom: 1px solid var(--theme-border);
+}
+.logCellModal-title {
+    font-family: var(--log-mono);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--green-normal);
+}
+.logCellModal-subtitle {
+    margin-top: 2px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--theme-text-dim);
+}
+.logCellModal-body {
+    margin: 0;
+    padding: 16px;
+    flex: 1;
+    overflow: auto;
+    font-family: var(--log-mono);
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--theme-text);
+    white-space: pre-wrap;
+    word-break: break-word;
+    background: var(--theme-input-bg);
+    scrollbar-width: thin;
+    scrollbar-color: var(--theme-border-strong) transparent;
+}
+.logCellModal-body::-webkit-scrollbar { width: 10px; }
+.logCellModal-body::-webkit-scrollbar-thumb { background: var(--theme-border-strong); border-radius: 5px; }

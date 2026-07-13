@@ -9,6 +9,7 @@ from flask import (
     make_response,
     request,
     session,
+    Response,
 )
 from flask_jwt_extended import create_access_token, decode_token
 
@@ -21,10 +22,76 @@ from py_flask.database.models import (
     Users,
 )
 from py_flask.utils.error_utils import custom_abort
+
+# Session/JWT lifetime in seconds. Keep in sync with PERMANENT_SESSION_LIFETIME
+# in py_flask/config/init.py and `expires_delta` in login_er3 below.
+SESSION_LIFETIME_SECONDS = 60 * 60 * 12  # 12 hours
+SESSION_LIFETIME = timedelta(seconds=SESSION_LIFETIME_SECONDS)
+
 ###########
 #  This `@jwt_and_csrf_required()` decorator function should be used on ALL 
 #  non-legacy routes except those not requiring login.
+#
+#  On every successful call it rotates the JWT (fresh `exp` = now + 12h) and
+#  re-issues the two auth cookies, so any `/api` activity slides both the JWT
+#  and the Flask session (CSRF reference) forward. This keeps a student's
+#  browser session alive for as long as they remain active, without forcing
+#  periodic polling.
 ###########
+def _rotate_auth_cookies(response):
+    """Re-issue fresh `edurange3_jwt` and `X-XSRF-TOKEN` cookies on `response`.
+
+    Routes may return a Flask `Response`, a tuple `(body, status[, headers])`,
+    a plain `dict` (auto-jsonified later by Flask), or `None`. Normalize
+    everything to a `Response` so we can attach `Set-Cookie` headers without
+    breaking the underlying payload.
+    """
+    if response is None:
+        return response
+    try:
+        if not isinstance(response, Response):
+            if isinstance(response, dict):
+                # `make_response` does not handle dicts; jsonify first.
+                response = make_response(jsonify(response))
+            else:
+                # Tuples like (jsonify(...), 200) and bare strings are OK.
+                response = make_response(response)
+
+        identity = json.dumps({
+            "username": g.current_username,
+            "user_role": g.current_user_role,
+            "user_id": g.current_user_id,
+        })
+        fresh_token = create_access_token(identity=identity, expires_delta=SESSION_LIFETIME)
+        is_secure = not current_app.config.get('DEBUG', False)
+        response.set_cookie(
+            'edurange3_jwt',
+            fresh_token,
+            samesite='Lax',
+            httponly=True,
+            secure=is_secure,
+            path='/',
+            max_age=SESSION_LIFETIME_SECONDS,
+        )
+        # Keep the readable CSRF mirror in lockstep with the (rotated) session.
+        server_CSRF = session.get('X-XSRF-TOKEN')
+        if server_CSRF:
+            response.set_cookie(
+                'X-XSRF-TOKEN',
+                server_CSRF,
+                samesite='Lax',
+                secure=is_secure,
+                path='/',
+                max_age=SESSION_LIFETIME_SECONDS,
+            )
+    except Exception:
+        # Rotation must never break the underlying response. On failure we
+        # return `response` as Flask received it; the existing auth cookies
+        # stay valid until their natural expiry / next successful rotation.
+        current_app.logger.exception("Failed to rotate auth cookies")
+    return response
+
+
 def jwt_and_csrf_required(fn):
     @wraps(fn)
     def wrapper(*args, **kwargs):
@@ -54,7 +121,12 @@ def jwt_and_csrf_required(fn):
         except Exception as err:
             custom_abort('Invalid Credentials', 403)
 
-        return fn(*args, **kwargs)
+        response = fn(*args, **kwargs)
+        # Sliding window: roll the JWT cookie forward on every authenticated
+        # response. The Flask session cookie is also re-signed because
+        # session.permanent is True (see login route) and
+        # SESSION_REFRESH_EACH_REQUEST defaults to True.
+        return _rotate_auth_cookies(response)
     
     return wrapper
 
@@ -72,7 +144,7 @@ def login_er3(userObj):
         "username": userObj["username"],
         "user_role": userObj["role"],
         "user_id": userObj["id"]
-    }), expires_delta=timedelta(hours=12))
+    }), expires_delta=SESSION_LIFETIME)
 
     is_secure = not current_app.config.get('DEBUG', False)
 
@@ -82,14 +154,16 @@ def login_er3(userObj):
         samesite='Lax',
         httponly=True,
         secure=is_secure,
-        path='/'
+        path='/',
+        max_age=SESSION_LIFETIME_SECONDS,
     )
     login_return.set_cookie(
         'X-XSRF-TOKEN',
         session['X-XSRF-TOKEN'],
         samesite='Lax',
         secure=is_secure,
-        path='/'
+        path='/',
+        max_age=SESSION_LIFETIME_SECONDS,
     )
     return login_return
 

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useCallback } from 'react';
+import axios from 'axios';
 import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
 import 'xterm/css/xterm.css';
@@ -101,6 +102,11 @@ function SSH_web(props) {
                     term.write(message.result);
                 } else if (message.type === 'error') {
                     term.write(`\r\n\x1b[31mError: ${message.message}\x1b[0m\r\n`);
+                } else if (message.type === 'refresh_jwt') {
+                    // Node saw our JWT nearing expiry. Hit /api/refresh to
+                    // rotate the auth cookies (handled by jwt_and_csrf_required).
+                    // Silent; the open terminal is not affected.
+                    axios.post('/refresh').catch(() => {});
                 }
             } catch (e) {
                 term.write(event.data);

@@ -10,8 +10,10 @@ from py_flask.database.models import (
     StudentGroups,  
 )
 from py_flask.utils.error_utils import (
-    custom_abort
+    custom_abort,
+    validation_error_handler,
 )
+from marshmallow import ValidationError
 from sqlalchemy.exc import SQLAlchemyError  # Import SQLAlchemy exceptions
 
 from py_flask.utils.scenario_utils import (
@@ -78,6 +80,10 @@ def general_error_handler(error):
     error_handler = custom_abort(error)
 
     return error_handler.get_response()
+
+@blueprint_scenarios.errorhandler(ValidationError)
+def handle_validation_error(error):
+    return validation_error_handler(error)
 
 ### Reviewed / Working Routes  ##############
 

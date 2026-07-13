@@ -22,9 +22,11 @@ import Hints_Controller, { HintConfig_Context } from '../staff/hints/Hints_Contr
 
 export const HomeRouter_context = React.createContext();
 
-// note: this only impacts UI render. To change actual jwt expiry, 
-// look in py_flask/utils/auth_utils.py > er3_login().
-const loginExpiry = ((1000 * 60 * 60) * 11.5); // 11.5 hrs in milliseconds
+// note: this only impacts UI render. Backend session/JWT lifetime lives in
+// py_flask/utils/auth_utils.py (SESSION_LIFETIME) and py_flask/config/init.py
+// (PERMANENT_SESSION_LIFETIME). Keep this value a bit below that so the UI
+// gate rebuffs stale tabs before the server does.
+const loginExpiry = ((1000 * 60 * 60) * 12); // 12 hrs in milliseconds
 
 function Home_router() {
 
@@ -69,8 +71,8 @@ function Home_router() {
     set_navArraysObj_state(new_navObj);
 
     const newExpiry = (Date.now() + loginExpiry);
-    sessionStorage.setItem('loginExpiry', JSON.stringify(newExpiry));
-    sessionStorage.setItem('navMetas', JSON.stringify(navMetas));
+    localStorage.setItem('loginExpiry', JSON.stringify(newExpiry));
+    localStorage.setItem('navMetas', JSON.stringify(navMetas));
 
     navigate(desiredNavPath);
   };

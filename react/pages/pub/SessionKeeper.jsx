@@ -18,18 +18,18 @@ function SessionKeeper () {
     
     function restoreSession () {
         console.log('Restoring session...');
-        
-        const expiryString = sessionStorage?.getItem('loginExpiry');
-        
+
+        const expiryString = localStorage?.getItem('loginExpiry');
+
         if (!expiryString)  { return <Login/>; };
-    
+
         const expiry = JSON.parse(expiryString);
-        
+
         if (expiry < Date.now()) { return <Login/>; };
-        
-        const userDataString = sessionStorage?.getItem('userData');
-        const navMetasString = sessionStorage?.getItem('navMetas');
-        const login_str = sessionStorage?.getItem('login');
+
+        const userDataString = localStorage?.getItem('userData');
+        const navMetasString = localStorage?.getItem('navMetas');
+        const login_str = localStorage?.getItem('login');
 
         if ((!userDataString) || (!navMetasString)) { return <Login/>; };
         

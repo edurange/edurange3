@@ -253,7 +253,7 @@ const chatSocketServer = new WebSocketServer({
     server: chatHttpServer,
     verifyClient: (info, done) => {
 
-        // in this block, the jwt-containing-cookie is unpacked from header, 
+        // in this block, the jwt-containing-cookie is unpacked from header,
         // and the jwt is then checked against the secret_key signature
 
         const cookies = cookie.parse(info.req.headers.cookie || '');
@@ -263,9 +263,27 @@ const chatSocketServer = new WebSocketServer({
         const jwt_payload = JSON.parse(verified_jwt.sub);
 
         info.req.get_id = () => jwt_payload;
+        // Expose the JWT `exp` so the keepalive handler can detect imminent
+        // expiry and ask the browser to refresh the cookie.
+        info.req.get_jwt_exp = () => verified_jwt.exp;
         done(true);
     }
 });
+
+// Refresh threshold for the chat socket (mirrors er3_ssh.js).
+const JWT_REFRESH_THRESHOLD_MS = 15 * 60 * 1000; // 15 minutes
+const JWT_REFRESH_THROTTLE_MS = 60 * 1000; // 1 minute
+
+function _maybeRequestJwtRefresh(ws, exp, lastAt, updateLastAt) {
+    if (!exp) return;
+    const remainingMs = (exp * 1000) - Date.now();
+    if (remainingMs >= JWT_REFRESH_THRESHOLD_MS) return;
+    if (Date.now() - lastAt < JWT_REFRESH_THROTTLE_MS) return;
+    updateLastAt(Date.now());
+    if (ws.readyState === 1) {
+        ws.send(JSON.stringify({ message_type: 'refresh_jwt', remaining_ms: remainingMs }));
+    }
+}
 
 async function handleConnection(socketConnection, request) {
     const { username, user_role, user_id } = request.get_id();
@@ -292,11 +310,13 @@ async function handleConnection(socketConnection, request) {
 }
 
 ///////
-// main 
+// main
 chatSocketServer.on('connection', async (socketConnection, request) => {
 
     await handleConnection(socketConnection, request);
     const { username, user_role, user_id } = request.get_id();
+    const jwt_exp = request.get_jwt_exp ? request.get_jwt_exp() : null;
+    let lastRefreshRequestAt = 0;
     const chatLogs = await getChatLogs();
 
     try {
@@ -324,7 +344,10 @@ chatSocketServer.on('connection', async (socketConnection, request) => {
             'handshake': async () => {
                 console.log('handshake req received');
             },
-            'keepalive': () => socketConnection.send(JSON.stringify({ message_type: 'keepalive', message: 'pong', ok: true })),
+            'keepalive': () => {
+                socketConnection.send(JSON.stringify({ message_type: 'keepalive', message: 'pong', ok: true }));
+                _maybeRequestJwtRefresh(socketConnection, jwt_exp, lastRefreshRequestAt, (t) => { lastRefreshRequestAt = t; });
+            },
             'chat_message': async () => await handleChatMessage(this_message, socketConnection, user_id, this_timestamp, archive_id),
             'announcement': async () => await handleAnnouncement(this_message, socketConnection, user_id, this_timestamp, archive_id)
         };

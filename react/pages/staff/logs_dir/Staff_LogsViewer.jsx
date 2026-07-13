@@ -6,6 +6,23 @@ import Placard from '@components/Placard.jsx';
 import '@components/Dropdown.css';
 import '@assets/css/logs-improved.css';
 
+function downloadCSV(filename, rows) {
+    const esc = (v) => {
+        const s = v == null ? '' : String(v);
+        return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+    };
+    const csv = rows.map(r => r.map(esc).join(',')).join('\r\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
 function Staff_LogsViewer() {
 
     const [userFilter_state, set_userFilter_state] = useState('ALL');
@@ -58,12 +75,12 @@ function Staff_LogsViewer() {
     
     const userFilter_options = [
         { value: 'ALL', label: 'ALL' },
-        ...users_state.map((user) => ({ value: user.id, label: user.id }))
+        ...users_state.map((user) => ({ value: user.id, label: user.username }))
     ];
 
     const scenarioFilter_options = [
         { value: 'ALL', label: 'ALL' },
-        ...scenarios_state.map((scenario) => ({ value: scenario.id, label: scenario.id }))
+        ...scenarios_state.map((scenario) => ({ value: scenario.id, label: scenario.name }))
     ];
 
     const dateRangeFilter_options = [{ value: 'ALL', label: 'ALL' },];
@@ -130,7 +147,42 @@ function Staff_LogsViewer() {
         const filtered_byScenarioType = filterByScenarioType(filtered_byUser, scenarioTypeFilter_state);
         set_logsToShow_state(filtered_byScenarioType)
     }, [userFilter_state, logTypeFilter_state, scenarioTypeFilter_state, logs_state]);
-    
+
+    const userMap = useMemo(() => {
+        const m = new Map();
+        (users_state ?? []).forEach(u => m.set(Number(u.id), u.username ?? u.id));
+        return m;
+    }, [users_state]);
+
+    function handleDownloadCSV() {
+        if (!logsToShow_state) return;
+        const header = ['username', 'user_id', 'timestamp', 'log_type', 'scenario_type', 'input', 'output', 'content'];
+        const rows = [header];
+        const pushSection = (items, logType) => {
+            (items ?? []).forEach((it) => {
+                rows.push([
+                    userMap.get(Number(it.user_id)) ?? it.user_id,
+                    it.user_id,
+                    it.timestamp ?? '',
+                    logType,
+                    it.scenario_type ?? '',
+                    it.input ?? '',
+                    it.output ?? '',
+                    it.content ?? '',
+                ]);
+            });
+        };
+        pushSection(logsToShow_state.bash, 'bash');
+        pushSection(logsToShow_state.chat, 'chat');
+        pushSection(logsToShow_state.responses, 'responses');
+
+        if (rows.length <= 1) { return; }
+
+        const stamp = new Date().toISOString().slice(0, 16).replace(/[T:]/g, '-');
+        const userSuffix = userFilter_state === 'ALL' ? 'all-users' : (userMap.get(Number(userFilter_state)) ?? userFilter_state);
+        downloadCSV(`edurange3-logs-${userSuffix}-${stamp}.csv`, rows);
+    }
+
     return (
         <div className='logsViewer-frame'>
 
@@ -177,6 +229,7 @@ function Staff_LogsViewer() {
                                 validation_setter={(isValid) => handleValidationChange('dropdown3', isValid)}
                             /> */}
                             <button className='update-button' disabled={!allValid}>Update</button>
+                            <button className='update-button download-button' onClick={handleDownloadCSV}>Download CSV</button>
 
                         </div>
 

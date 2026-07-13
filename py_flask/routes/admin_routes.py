@@ -13,8 +13,10 @@ from flask import (
 from py_flask.utils.auth_utils import jwt_and_csrf_required, admin_only
 
 from py_flask.utils.error_utils import (
-    custom_abort
+    custom_abort,
+    validation_error_handler,
 )
+from marshmallow import ValidationError
 import subprocess
 
 #######
@@ -54,9 +56,13 @@ def handle_sqlalchemy_error(error):
     else: custom_abort(f"Database error occurred.", 500)
 
 @blueprint_admin.errorhandler(Exception)
-def general_error_handler(error): 
+def general_error_handler(error):
     error_handler = custom_abort(error)
     return error_handler.get_response()
+
+@blueprint_admin.errorhandler(ValidationError)
+def handle_validation_error(error):
+    return validation_error_handler(error)
 
 def editRole(userID_list, is_promoting):
     

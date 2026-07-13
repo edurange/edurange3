@@ -23,12 +23,23 @@ const sshSocketServer = new WebSocketServer({
             const verified_jwt = jwt.verify(er3_jwt, skey);
             const jwt_payload = JSON.parse(verified_jwt.sub);
             info.req.get_id = () => jwt_payload;
+            // Expose the JWT `exp` (epoch seconds) so the keepalive handler can
+            // detect imminent expiry and ask the browser to refresh the cookie.
+            info.req.get_jwt_exp = () => verified_jwt.exp;
             done(true);
         } catch (err) {
             done(false, 401, 'Invalid JWT');
         }
     }
 });
+
+// Refresh threshold: ask the browser to refresh the auth cookie when the JWT
+// has fewer than this many milliseconds of life remaining. Keeps the SSH-only
+// tail alive indefinitely without adding any new polling traffic.
+const JWT_REFRESH_THRESHOLD_MS = 15 * 60 * 1000; // 15 minutes
+// Minimum gap between refresh requests on the same connection so we don't
+// hammer /api/refresh if the browser is slow to rotate the cookie.
+const JWT_REFRESH_THROTTLE_MS = 60 * 1000; // 1 minute
 
 function closeShell(shell) {
     try { shell.close(); } catch (e) { /* already closed */ }
@@ -45,6 +56,7 @@ sshSocketServer.on('connection', async (ssh_socket, request) => {
 
     let sshClient = null;
     let shell = null;
+    let lastRefreshRequestAt = 0;
 
     ssh_socket.send(JSON.stringify({
         type: 'greeting',
@@ -58,6 +70,7 @@ sshSocketServer.on('connection', async (ssh_socket, request) => {
         if (data.type === 'ping') {
             if (ssh_socket.readyState === 1) {
                 ssh_socket.send(JSON.stringify({ pong: 'pong' }));
+                _maybeRequestJwtRefresh(ssh_socket, request, lastRefreshRequestAt, (t) => { lastRefreshRequestAt = t; });
             }
             return;
         }
@@ -154,5 +167,22 @@ sshSocketServer.on('connection', async (ssh_socket, request) => {
         }
     });
 });
+
+// Shared helper: emit a `refresh_jwt` control frame when the verified JWT (the
+// one the browser presented at WebSocket handshake) is close to expiry. The
+// SSH socket is already open and stays open regardless, so this is purely
+// about keeping the browser's auth cookie fresh for *future* connections
+// (and for any /api/* calls the page might make).
+function _maybeRequestJwtRefresh(ws, request, lastAt, updateLastAt) {
+    const exp = request.get_jwt_exp ? request.get_jwt_exp() : null;
+    if (!exp) return;
+    const remainingMs = (exp * 1000) - Date.now();
+    if (remainingMs >= JWT_REFRESH_THRESHOLD_MS) return;
+    if (Date.now() - lastAt < JWT_REFRESH_THROTTLE_MS) return;
+    updateLastAt(Date.now());
+    if (ws.readyState === 1) {
+        ws.send(JSON.stringify({ type: 'refresh_jwt', remaining_ms: remainingMs }));
+    }
+}
 
 module.exports = { sshHttpServer, sshSocketServer };

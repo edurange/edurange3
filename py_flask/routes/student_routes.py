@@ -6,9 +6,11 @@ from flask import (
     request,
     jsonify,
     make_response,
+    session,
     g, # see note
     current_app
 )
+from marshmallow import ValidationError
 import traceback
 
 from py_flask.utils.auth_utils import jwt_and_csrf_required
@@ -16,6 +18,7 @@ from py_flask.utils.chat_utils import getChannelDictList_byUser, getChatHistory_
 from sqlalchemy.exc import SQLAlchemyError
 from py_flask.utils.error_utils import (
     custom_abort,
+    validation_error_handler,
 )
 
 
@@ -61,6 +64,10 @@ def general_error_handler(error):
     error_handler = custom_abort(error)
     return error_handler.get_response()
 
+@blueprint_student.errorhandler(ValidationError)
+def handle_validation_error(error):
+    return validation_error_handler(error)
+
 @blueprint_student.route("/logout", methods=["POST"])
 # @jwt_and_csrf_required
 def logout():
@@ -68,6 +75,7 @@ def logout():
     response_data = {"message": f"User has been successfully logged out."}
     response = make_response(jsonify(response_data))
 
+    session.clear()
     response.set_cookie('edurange3_jwt', '', expires=0, samesite='Lax', httponly=True, path='/')
     response.set_cookie('X-XSRF-TOKEN', '', expires=0, samesite='Lax', path='/')
     
@@ -88,6 +96,15 @@ def get_identity():
         'user_id' : current_user_id,
         'user_role': current_user_role
     })
+
+# Lightweight endpoint used by the SSH/chat WebSocket clients when the JWT
+# approaches expiry. Authenticated by the same decorator (which also rotates
+# the cookies via _rotate_auth_cookies), so a successful POST slides both the
+# JWT and the CSRF session forward by SESSION_LIFETIME.
+@blueprint_student.route('/refresh', methods=['POST'])
+@jwt_and_csrf_required
+def refresh_session():
+    return jsonify({'ok': True})
 
 @blueprint_student.route('/get_chat_history', methods=['GET'])
 @jwt_and_csrf_required
