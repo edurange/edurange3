@@ -285,6 +285,16 @@ function _maybeRequestJwtRefresh(ws, exp, lastAt, updateLastAt) {
     }
 }
 
+// Produce a local-time ISO string (no Z suffix) for the `timestamp without time
+// zone` DB column. The pg driver reads such columns as local time too, so this
+// keeps live echoes and DB-loaded timestamps consistent.
+function localTimestamp() {
+    const d = new Date();
+    const off = d.getTimezoneOffset();
+    const local = new Date(d.getTime() - off * 60000);
+    return local.toISOString().slice(0, -1); // strip trailing Z
+}
+
 async function handleConnection(socketConnection, request) {
     const { username, user_role, user_id } = request.get_id();
     if (!user_id) {
@@ -336,7 +346,11 @@ chatSocketServer.on('connection', async (socketConnection, request) => {
     socketConnection.on('message', async (message) => {
         const this_message = JSON.parse(message);
         const this_message_type = this_message.message_type;
-        const this_timestamp = new Date().toISOString();
+        // Store local wall-clock ISO (no Z) so pg `timestamp without time zone`
+        // reads it back as local time → Date object → ISO with Z = same local
+        // moment. The browser parses it the same way whether from live echo or
+        // from a DB reload, so timestamps never shift on refresh.
+        const this_timestamp = localTimestamp();
         const this_scenario_id = Number(this_message.scenario_id)
 
         // handle messages by message_type

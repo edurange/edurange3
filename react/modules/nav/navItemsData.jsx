@@ -130,10 +130,10 @@ const staff_scenarios = {
     path: `/staff/scenarios`,
     navStub: 'dash'
 };
-const panopticon = {
-    title: "Panopticon",
+const globalChat = {
+    title: "Global Chat",
     icon: edurange_icons.tower,
-    path: `/staff/panopticon`,
+    path: `/staff/global-chat`,
     navStub: 'dash'
 };
 const logs = {
@@ -253,7 +253,7 @@ export const navArrays = {
         },
         dash: {
             top: [feedback, staff, logout],
-            side: [staff, studentGroups, staff_scenarios, students, panopticon, ta_chat, logs, issues]
+            side: [staff, studentGroups, staff_scenarios, students, globalChat, ta_chat, logs, issues]
         },
         account: {
             top: [feedback, staff, logout],

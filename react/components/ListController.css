@@ -1,44 +1,54 @@
+/* ListController.css — themed sort bar for chat views */
 
-.sortBy-frame {
-    display: flex;
-    height: 100%;
-    width: 20%;
-    align-self: flex-end;
-    justify-self: flex-end;
-    flex-direction: row;
-}
 .chat-listController-bar {
     display: flex;
     width: 100%;
-    /* justify-content: space-between; user-filter is disabled */
     justify-content: flex-end;
-    border: 1px solid goldenrod;
-    border-radius: 8px;
-    max-height: 40px;
-    min-height: 40px;
-}
-.userSelect-frame{
-    display: flex;
-    height: 100%;
-    width: 20%;
-    flex-direction: row;
     align-items: center;
+    padding: 6px 10px;
+    box-sizing: border-box;
+    flex-shrink: 0;
+    min-height: 44px;
+    max-height: 44px;
 }
-.userSelect-label{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    min-width: 80px;
-    max-width: 80px;
 
+.sortBy-frame {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+}
 
-}
-.sort-checkbox{
+.sortBy-item {
     display: flex;
-    flex-direction: row;
-    background-color: rgba(240, 248, 255, 0.12);
+    flex-direction: column;
+    gap: 3px;
 }
-.sorting-row{
-    display: flex;
+
+.sortBy-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: var(--theme-text-dim);
+    font-weight: 600;
+}
+
+.sortBy-select {
+    background: var(--theme-input-bg);
+    color: var(--theme-text);
+    border: 1px solid var(--theme-input-border);
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-size: 12px;
+    font-family: inherit;
+    cursor: pointer;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.sortBy-select:focus {
+    border-color: var(--blue-normal);
+}
+
+.sortBy-select:hover {
+    border-color: var(--theme-border-strong);
 }

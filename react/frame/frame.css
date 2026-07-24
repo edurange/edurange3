@@ -248,7 +248,7 @@ body, html{
 
 .newdash-sidebar-item { display: flex; flex-direction: row; width: 100%; }
 .newdash-sidebar-icon { width: 50px; height: 40px; display: flex; justify-content: center; justify-items: center; align-items: center; align-content: center; }
-.newdash-sidebar-title { display: flex; align-items: center; padding-right: 10px; font-size: .88em; text-align: end; width: 100%; }
+.newdash-sidebar-title { display: flex; align-items: center; padding-left: 6px; padding-right: 10px; font-size: .88em; text-align: end; width: 100%; white-space: nowrap; }
 
 .chapter-sidebar-right {
     border-left: 1px solid var(--theme-border);

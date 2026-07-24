@@ -207,7 +207,7 @@ function Staff_router() {
                             <Route path="/groups/:groupID/*" element={<Staff_GroupDetail />} />
                             <Route path="/students/*" element={<Staff_Users />} />
                             <Route path="/students/:userID/*" element={<Staff_UserDetail />} />
-                            <Route path="/panopticon/" element={<Chat_Staff is_allSeeing={true} />} />
+                            <Route path="/global-chat/" element={<Chat_Staff is_allSeeing={true} />} />
                             <Route path="/ta_chat/" element={<Chat_Staff is_allSeeing={false} />} />
                             <Route path="/logs/" element={<Staff_LogsViewer />} />
                             <Route path="/hints/" element={<Hints_Main />} />
