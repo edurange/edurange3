@@ -39,9 +39,6 @@ if [[ "$enable_ml_features" == "y" ]]; then
   pip3 install -r requirements/ml_requirements.txt
 fi
 
-pip3 uninstall --yes pyjwt
-pip3 install pyjwt==2.8.0
-
 nvm install 22
 nvm use 22
 npm install

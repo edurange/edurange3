@@ -44,13 +44,8 @@ def create_app(config_object="py_flask.config.settings"):
     app.config['SESSION_COOKIE_SECURE'] = not app.config.get('DEBUG', False)
     app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
     
-    # Extended timeout settings for AI hint generation
     app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
-    # Sliding window: with session.permanent=True the signed session cookie is
-    # re-issued (fresh signature + Expires) on every authenticated request, and
-    # itsdangerous accepts signatures up to this age. Must be >= the JWT
-    # lifetime in auth_utils.login_er3 so the server-side CSRF reference
-    # outlives the JWT.
+    # Keep in sync with SESSION_LIFETIME_SECONDS in auth_utils.py.
     app.config['PERMANENT_SESSION_LIFETIME'] = 60 * 60 * 12  # 12 hours
 
     # store archive_id in config so other flask scripts have access

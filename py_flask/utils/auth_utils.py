@@ -28,16 +28,8 @@ from py_flask.utils.error_utils import custom_abort
 SESSION_LIFETIME_SECONDS = 60 * 60 * 12  # 12 hours
 SESSION_LIFETIME = timedelta(seconds=SESSION_LIFETIME_SECONDS)
 
-###########
-#  This `@jwt_and_csrf_required()` decorator function should be used on ALL 
-#  non-legacy routes except those not requiring login.
-#
-#  On every successful call it rotates the JWT (fresh `exp` = now + 12h) and
-#  re-issues the two auth cookies, so any `/api` activity slides both the JWT
-#  and the Flask session (CSRF reference) forward. This keeps a student's
-#  browser session alive for as long as they remain active, without forcing
-#  periodic polling.
-###########
+# Use @jwt_and_csrf_required on every route that requires login. It rotates the
+# JWT and auth cookies on each successful call (12h sliding window).
 def _rotate_auth_cookies(response):
     """Re-issue fresh `edurange3_jwt` and `X-XSRF-TOKEN` cookies on `response`.
 
@@ -114,18 +106,11 @@ def jwt_and_csrf_required(fn):
             g.current_username = decoded_payload["username"]
             g.current_user_id = decoded_payload["user_id"]
             g.current_user_role = decoded_payload["user_role"]
-            # Places values in special Flask `g` object which ONLY lasts for life of request
-            # The `g` object can be accessed by any routes decorated with jwt_and_csrf_required()
-            # To avoid auth 'misses', use the `g` object any time the values are needed
 
         except Exception as err:
             custom_abort('Invalid Credentials', 403)
 
         response = fn(*args, **kwargs)
-        # Sliding window: roll the JWT cookie forward on every authenticated
-        # response. The Flask session cookie is also re-signed because
-        # session.permanent is True (see login route) and
-        # SESSION_REFRESH_EACH_REQUEST defaults to True.
         return _rotate_auth_cookies(response)
     
     return wrapper
@@ -186,6 +171,7 @@ def register_user(validated_registration_data):
         username=data["username"],
         password=data["password"], # automatically hashed
         active=True,
+        is_static=data.get("is_static", False),
     )
     db_ses.add(new_user)
     db_ses.commit()

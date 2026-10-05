@@ -40,6 +40,7 @@ from py_flask.utils.staffData_utils import get_staffData
 from py_flask.utils.staff_utils import (
     NotifyCapture,
     addGroupUsers,
+    clearChannels,
     clearGroups,
     deleteUsers,
     edit_taAssignments,
@@ -207,7 +208,7 @@ def scenario_interface():
     if method not in ('LIST','CREATE', 'START', 'STOP', 'UPDATE', 'DESTROY'):
         return custom_abort(f'Unrecognized METHOD property: {method}', 400)
 
-    def list_scenarios():
+    def list_scenarios(requestJSON):
 
         db_ses = db.session
         all_scenarios = db_ses.query(Scenarios).all()
@@ -359,11 +360,15 @@ def delete_group():
     group_users = db_ses.query(GroupUsers).filter(GroupUsers.group_id == group_id).all()
 
     if group_scenarios is not None:
-        jsonify({"message":"Cannot delete group - Are there still scenarios for this group?"})
+        return jsonify({"message":"Cannot delete group - Are there still scenarios for this group?"}), 400
     else:
         players = []
         for user in group_users:
-            players.append(db_ses.query(Users).filter(Users.id == user.id).first())
+            players.append(db_ses.query(Users).filter(Users.id == user.user_id).first())
+        static_user_ids = [plr.id for plr in players if plr is not None and plr.is_static]
+        if static_user_ids:
+            clearChannels(static_user_ids)
+        for user in group_users:
             user.delete()
         for plr in players:
             if plr is not None:
@@ -464,11 +469,6 @@ def add_user_to_container():
     container_list = subprocess.run(docker_query.split(' '))
     
     containers = container_list.split("\n")
-
-    # for i, c in enumerate(containers):
-        # do not use - pseudocode
-        # internal_command = f"useradd --home-dir /home/USERNAME --create-home --shell /bin/bash --password $(echo PASSWORD | openssl passwd -1 -stdin) USERNAME"
-        # os.system(f"docker exec {internal_command} {c}")
 
 
 @blueprint_staff.route("/query_slm", methods=['POST'])

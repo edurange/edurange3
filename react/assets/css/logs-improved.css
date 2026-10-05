@@ -63,7 +63,7 @@
 }
 
 /* Each dropdown wrapper — fixed max width so labels never overlap neighbor */
-.logsViewer-frame .filters-row .create-frame {
+.logsViewer-frame .filters-row .dropdown-frame {
     flex: 0 0 auto;
     min-width: 130px;
     max-width: 220px;
@@ -78,7 +78,7 @@
     box-sizing: border-box;
 }
 
-.logsViewer-frame .filters-row .create-frame .placard-text {
+.logsViewer-frame .filters-row .dropdown-frame .placard-text {
     font-size: 11px;
     color: var(--theme-text-dim);
     text-transform: uppercase;
@@ -87,7 +87,7 @@
     line-height: 1.2;
 }
 
-.logsViewer-frame .filters-row .create-frame .create-dropdown {
+.logsViewer-frame .filters-row .dropdown-frame .dropdown-select {
     width: 100%;
     box-sizing: border-box;
     background: var(--theme-input-bg);

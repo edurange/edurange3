@@ -1,5 +1,5 @@
 
-.create-frame{
+.dropdown-frame {
     display: flex;
     flex-direction: column;
     gap: 4px;
@@ -13,7 +13,7 @@
     z-index: 1;
 }
 
-.create-dropdown {
+.dropdown-select {
     background: var(--theme-input-bg);
     color: var(--theme-text);
     border: 1px solid var(--theme-input-border);

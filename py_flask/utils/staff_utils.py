@@ -34,6 +34,7 @@ def generateTestAccts(group_db_obj, new_user_count, group_code):
             'password' : newPass,
             'confirm_password' : newPass,
             'code' : group_code,
+            'is_static' : True,
         }
         retObj = register_user(user_dict)
         newUser_id = retObj['user_id']
@@ -103,7 +104,7 @@ def edit_taAssignments(students_idList, ta_id, is_assigning):
 
 
 def NotifyCapture(description):
-    Notification.create(detail=description)
+    Notification.create(detail=str(description)[:60])
 
 def NotifyClear():
     notification = Notification.query.all()

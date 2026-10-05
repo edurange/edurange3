@@ -103,7 +103,7 @@ class Scenarios(Edu3Mixin, SurrogatePK, Model):
 
 
 class Notification(Edu3Mixin, SurrogatePK, Model):
-    detail = Column(db.String(60), unique=False, nullable=False)
+    detail = Column(db.String(200), unique=False, nullable=False)
     date = Column(db.DateTime, nullable=False, default=datetime.now(timezone.utc))
 
 class ScenarioGroups(Edu3Mixin, SurrogatePK, Model):

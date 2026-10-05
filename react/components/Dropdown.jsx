@@ -15,10 +15,10 @@ function Dropdown({
     };
 
     return (
-        <div className='create-frame'>
+        <div className='dropdown-frame'>
             <Placard is_button={false} placard_text={label} textSize={'medium'}/>
             <select
-                className='create-dropdown'
+                className='dropdown-select'
                 value={choice_state}
                 onChange={handleDropdownChange}
             >

@@ -104,9 +104,10 @@ scenarios/dev/construction/*
 # venv directory (name yours this)
 venv/
 eduvenv/
+.venv/
+.chambervenv/
 
-AGENTS.md 
-# codeArbiter plugin — vendored reference copy, not project source
+# opencode vendored copy (not project source)
 .opencode/*
 
 # codeArbiter project state (scaffolded per-repo by /ca:init)

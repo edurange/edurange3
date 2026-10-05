@@ -2,6 +2,7 @@ import json
 import logging
 import os
 import random
+import shutil
 import string
 import subprocess
 import yaml
@@ -21,6 +22,7 @@ from py_flask.config.extensions import db
 from py_flask.config.settings import CELERY_BROKER_URL, CELERY_RESULT_BACKEND
 from py_flask.database.models import (
     BashHistory,
+    ChatMessages,
     Responses,
     Scenarios,
     ScenarioGroups,
@@ -40,32 +42,24 @@ from py_flask.utils.terraform_utils import (
 
 from py_flask.utils.redis_utils import get_resource_settings_from_redis, get_logs_dict_from_redis
 
-# Create a custom logger
 logger = get_task_logger(__name__)
 
-# Configure the root logger
 logging.basicConfig(level=logging.INFO)
 
-# Create a file handler
 file_handler = logging.FileHandler("logs/celery_tasks.log")
 file_handler.setLevel(logging.INFO)
 
-# Create a console handler
 console_handler = logging.StreamHandler()
 console_handler.setLevel(logging.INFO)
 
-# Create a formatter
 formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
-# Set the formatter for both handlers
 file_handler.setFormatter(formatter)
 console_handler.setFormatter(formatter)
 
-# Add the handlers to the logger
 logger.addHandler(file_handler)
 logger.addHandler(console_handler)
 
-# Ensure propagation is set to True
 logger.propagate = False
 
 
@@ -482,9 +476,9 @@ def destroy_scenario_task(self, scenario_id):
                 logger.error("Invalid Status")
                 NotifyCapture("Failed to delete scenario" + name + ": Invalid Status")
                 raise Exception(f"Scenario in an Invalid state for Destruction")
-            s_responses = Responses.query.filter_by(scenario_id=s_id).all()
-            for r in s_responses:
-                r.delete()
+            for model in (Responses, BashHistory, ChatMessages):
+                for row in model.query.filter_by(scenario_id=scenario.id).all():
+                    row.delete()
             if os.path.isdir(os.path.join("./scenarios/tmp/", name)):
                 logger.info("Folder Found, current directory: {}".format(os.getcwd()))
 
