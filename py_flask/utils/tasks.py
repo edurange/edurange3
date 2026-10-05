@@ -624,10 +624,10 @@ def scenarioCollectLogs(self, arg):
                     model=BashHistory,
                     scenario_type=scenario_rawObj.scenario_type,
                     scenario_id=scenario_rawObj.id,
-                    container_name=line[6].split(':')[0],
+                    container_name=line[6].split(':', 1)[0],
                     timestamp=clean_datetime,
                     current_directory=line[5],
-                    input=line[6].split(':')[-1],
+                    input=line[6].split(':', 1)[-1],
                     output=line[7],
                     archive_id=this_archive_id,
                     user_id=user_rawObj.id

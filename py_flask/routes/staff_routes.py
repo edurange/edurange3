@@ -13,6 +13,7 @@ from marshmallow import ValidationError
 from sqlalchemy.exc import SQLAlchemyError
 
 from py_flask.config.extensions import db
+from py_flask.config.settings import KNOWN_SCENARIOS
 from py_flask.database.models import (
     GroupUsers,
     Scenarios,
@@ -100,8 +101,15 @@ def create_group():
     new_code = grc()
 
     group_obj = StudentGroups.create(name=group_name, owner_id=g.current_user_id, code=new_code)
-    # add admin to all groups on creation
-    addGroupUsers(group_obj, [{"id" : 1}])
+
+    # Admins are added to every group; do not route through addGroupUsers(),
+    # which clears a user's other memberships.
+    for admin in Users.query.filter_by(is_admin=True).all():
+        exists = db.session.query(GroupUsers).filter_by(
+            user_id=admin.id, group_id=group_obj.id).first()
+        if not exists:
+            db.session.add(GroupUsers(user_id=admin.id, group_id=group_obj.id))
+    db.session.commit()
     
 
     if (validatedJSON['should_generate']):
@@ -236,6 +244,13 @@ def scenario_interface():
         scenario_type = requestJSON["type"]
         scenario_name = requestJSON["name"]
         scenario_group_name = requestJSON["group_name"]
+
+        if scenario_type.lower() not in [s.lower() for s in KNOWN_SCENARIOS]:
+            return custom_abort(f'Unrecognized scenario type: {scenario_type}', 400)
+
+        if not isinstance(scenario_name, str) or not (3 <= len(scenario_name) <= 25) \
+                or not scenario_name.isalnum():
+            return custom_abort('Scenario name must be 3-25 alphanumeric characters.', 400)
 
         db_ses = db.session
         owner_user_id = g.current_user_id
@@ -552,28 +567,25 @@ def update_model_route():
         this_cpu_resources_selected = int(cpu_value)
         this_gpu_resources_selected = int(gpu_value)
         
-        if this_cpu_resources_selected is None:
-            raise Exception (f"ERROR: cpu_resources is type None: Additional error reporting information: [{e}]")
-        
-        if this_gpu_resources_selected is None:
-            raise Exception (f"ERROR: gpu_resources is type None: Additional error reporting information: [{e}]")
-        
     except Exception as e:
-        raise Exception (f"ERROR: Failed to assign cpu/gpu resources. Additional error reporting information: [{e}]")
+        return ApiResponse.server_error(
+            message="Failed to assign cpu/gpu resources",
+            details={"error": str(e)}
+        )
 
-    try:
-        update_model_task.delay(this_cpu_resources_selected, this_gpu_resources_selected)
-        return jsonify({'Status': 'Model reinitialized successfully'})
-
-    except Exception as e:
-        return jsonify({f'Error': 'Model failed to initialize '})
+    # TODO: no update_model_task is defined in py_flask/utils/tasks.py yet.
+    return ApiResponse.server_error(
+        message="Model reinitialization is not implemented",
+        details={"cpu_resources": this_cpu_resources_selected,
+                 "gpu_resources": this_gpu_resources_selected}
+    )
 
 @blueprint_staff.route("/cancel_hint", methods=['POST'])
 @jwt_and_csrf_required
 def cancel_generate_hint_route(): 
-    cancel_hint_response = cancel_generate_hint_celery.delay().get(timeout=None)
-    
-    return jsonify({'cancel_hint_req_status': response})
+    cancel_hint_response = cancel_generate_hint_task.delay().get(timeout=None)
+
+    return jsonify({'cancel_hint_req_status': cancel_hint_response})
 
 @blueprint_staff.route("/get_resources", methods=['POST'])
 @jwt_and_csrf_required

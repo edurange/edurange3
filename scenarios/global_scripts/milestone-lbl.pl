@@ -360,7 +360,7 @@ while(true)
 		}
 	}
    Time::HiRes::sleep(0.1);
-   seek($fh, 0, 1);
+   seek($FH, 0, 1);
 }
 
 

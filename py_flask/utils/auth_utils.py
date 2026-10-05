@@ -163,7 +163,10 @@ def register_user(validated_registration_data):
     db_ses = db.session
     data = validated_registration_data
 
-    group = StudentGroups.query.filter_by(code=data["code"]).first()
+    if not data.get("code"):
+        return jsonify({"error": "group matching this code not found"}), 404
+
+    group = StudentGroups.query.filter_by(code=data["code"], hidden=False).first()
     if group is None:
         return jsonify({"error": "group matching this code not found"}), 404
 

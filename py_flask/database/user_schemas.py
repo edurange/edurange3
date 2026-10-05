@@ -58,11 +58,10 @@ class RegistrationSchema(ma.SQLAlchemyAutoSchema):
     
     username = String(required=True, validate=[
         validate.Length(min=3, max=25, error="Username must be between 3 and 25 characters"),
-        validate.ContainsNoneOf(banned_names, error="Nice try bucko, use a different name"),
         validate.Regexp('^[a-zA-Z0-9]+$', error="Username must be alphanumeric")
         ])
     
-    code = String(required=True, validate=[validate.Length(min=0, max=8)])
+    code = String(required=True, validate=[validate.Length(min=1, max=8)])
     password = String(required=True, validate=[validate.Length(min=6, max=40)])
     confirm_password = String(required=True)
     
@@ -73,6 +72,9 @@ class RegistrationSchema(ma.SQLAlchemyAutoSchema):
         confirm_password_input = data.get("confirm_password")
         code_input = data.get("code")
 
+        if username_input and username_input.lower() in self.banned_names:
+            raise ValidationError("Nice try bucko, use a different name", field_names=["username"])
+
         if password_input != confirm_password_input:
             custom_abort("Passwords do not match", 400)
 
@@ -82,7 +84,8 @@ class RegistrationSchema(ma.SQLAlchemyAutoSchema):
 
             custom_abort("User already exists.", 409)
 
-        group = db_ses.query(StudentGroups).filter_by(code=code_input).first()
+        group = db_ses.query(StudentGroups).filter_by(
+            code=code_input, hidden=False).first()
 
         if group is None:
             return custom_abort('Student group w/ this code not found.', 403)

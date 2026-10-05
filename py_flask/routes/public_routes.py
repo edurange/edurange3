@@ -104,7 +104,7 @@ def registration():
         return jsonify({
             "message":"account successfully registered",
             "user_id": newUser_id,
-            "channel_id": newChan.id
+            "channel_id": newChan
         })
     
     else: custom_abort('User already exists.  Account NOT registered!', 409)
