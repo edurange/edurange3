@@ -205,6 +205,16 @@ def get_scenarios():
 
     return jsonify({"scenarios_list":myScenarios})
 
+def _user_in_scenario(user_id, scenario_id):
+    """True if the user's group is linked to the scenario."""
+    return db_ses.query(ScenarioGroups).join(
+        GroupUsers, GroupUsers.group_id == ScenarioGroups.group_id
+    ).filter(
+        ScenarioGroups.scenario_id == scenario_id,
+        GroupUsers.user_id == user_id,
+    ).first() is not None
+
+
 @blueprint_scenarios.route('/check_response', methods=['POST'])
 @jwt_and_csrf_required
 def checkResponse():
@@ -216,10 +226,17 @@ def checkResponse():
     this_student_response = requestJSON['student_response']
     this_scenario_type = (requestJSON['scenario_type'])
 
+    is_student = (g.current_user_role == 'student')
+    if is_student and not _user_in_scenario(current_user_id, this_scenario_id):
+        return custom_abort("Scenario is not assigned to your group.", 403)
+
     with open('./logs/archive_id.txt', 'r') as log_id_file:
         this_archive_id = log_id_file.read().rstrip()
     
-    gradedResponse = evaluateResponse (current_user_id, this_scenario_id, question_num, this_student_response )
+    gradedResponse = evaluateResponse(
+        current_user_id, this_scenario_id, question_num, this_student_response,
+        include_answer=not is_student,
+    )
 
     pointsScored = 0
     pointsPossible = 0

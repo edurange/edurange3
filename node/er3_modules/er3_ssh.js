@@ -20,7 +20,7 @@ const sshSocketServer = new WebSocketServer({
             const cookies = cookie.parse(info.req.headers.cookie || '');
             const er3_jwt = cookies.edurange3_jwt;
             const skey = process.env.JWT_SECRET_KEY;
-            const verified_jwt = jwt.verify(er3_jwt, skey);
+            const verified_jwt = jwt.verify(er3_jwt, skey, { algorithms: ['HS256'] });
             const jwt_payload = JSON.parse(verified_jwt.sub);
             info.req.get_id = () => jwt_payload;
             // Expose the JWT `exp` (epoch seconds) so the keepalive handler can

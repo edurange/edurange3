@@ -259,7 +259,7 @@ const chatSocketServer = new WebSocketServer({
         const cookies = cookie.parse(info.req.headers.cookie || '');
         const provided_jwt = cookies.edurange3_jwt;
         const jwt_secret_key = (process.env.JWT_SECRET_KEY);
-        const verified_jwt = jwt.verify(provided_jwt, jwt_secret_key);
+        const verified_jwt = jwt.verify(provided_jwt, jwt_secret_key, { algorithms: ['HS256'] });
         const jwt_payload = JSON.parse(verified_jwt.sub);
 
         info.req.get_id = () => jwt_payload;

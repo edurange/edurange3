@@ -14,6 +14,34 @@ from py_flask.utils.error_utils import custom_abort
 
 ## TESTED/WORKING 
 
+def _redact_guide_for_student(node):
+    """Recursively remove answer keys and instructor comments from a guide tree.
+
+    Answers live both under top-level contentDefinitions and inline in
+    studentGuide.chapters[].content_array[], so the whole tree must be walked.
+    """
+    if isinstance(node, dict):
+        node.pop("answers", None)
+        node.pop("comment", None)
+        for value in node.values():
+            _redact_guide_for_student(value)
+    elif isinstance(node, list):
+        for item in node:
+            _redact_guide_for_student(item)
+    return node
+
+
+def _credentials_for_user(credentialsJSON, user_role, username):
+    """Return only the caller's credential entry for students; the full map for staff."""
+    if user_role != "student":
+        return credentialsJSON
+    saniName = username.replace("-", "")
+    user_creds = credentialsJSON.get(saniName)
+    if not user_creds:
+        return None
+    return {saniName: user_creds}
+
+
 def getContent(user_role, scenario_id, username):
     db_ses = db.session
     statusSwitch = {
@@ -42,14 +70,13 @@ def getContent(user_role, scenario_id, username):
         contentJSON = json.load(fp)
     with open(f'scenarios/tmp/{unique_name}/students.json', 'r') as fp:
         credentialsJSON = json.load(fp)
-    
-    if (user_role == 'student'):
-        saniName = username.replace('-','')
-        user_creds = credentialsJSON[saniName][0]
-        if not user_creds:
-            return custom_abort("Error retrieving user credentials.  Arborting.", 500)
-    else: 
-        user_creds = credentialsJSON
+
+    credentialsJSON = _credentials_for_user(credentialsJSON, user_role, username)
+    if credentialsJSON is None:
+        return custom_abort("Error retrieving user credentials.  Arborting.", 500)
+
+    if user_role == 'student':
+        contentJSON = _redact_guide_for_student(contentJSON)
 
     return contentJSON, credentialsJSON, unique_name
 
@@ -95,14 +122,13 @@ def getYamlContent(user_role, scenario_id, username):
 
     with open(f'scenarios/tmp/{unique_name}/students.json', 'r') as fp:
         credentialsJSON = json.load(fp)
-    
-    if (user_role == 'student'):
-        saniName = username.replace('-','')
-        user_creds = credentialsJSON[saniName][0]
-        if not user_creds:
-            return custom_abort("Error retrieving user credentials.  Arborting.", 500)
-    else: 
-        user_creds = credentialsJSON
+
+    credentialsJSON = _credentials_for_user(credentialsJSON, user_role, username)
+    if credentialsJSON is None:
+        return custom_abort("Error retrieving user credentials.  Arborting.", 500)
+
+    if user_role == 'student':
+        contentYAML = _redact_guide_for_student(contentYAML)
 
     return contentYAML, briefingYAML, debriefYAML, credentialsJSON, unique_name
 
@@ -157,8 +183,12 @@ def readQuestions(scenario_uniqueName):
         questions = [value for value in yml_full['contentDefinitions'].values() if value['type'] == 'question']
         return questions
 
-def evaluateResponse(user_id, scenario_id, question_num, student_response):
-    """Check student answer matches correct one from YAML file."""
+def evaluateResponse(user_id, scenario_id, question_num, student_response, include_answer=True):
+    """Check student answer matches correct one from YAML file.
+
+    include_answer controls whether the correct answer is echoed back; callers
+    serving students must pass False so a wrong guess cannot reveal it.
+    """
     db_ses = db.session
     scenario = db_ses.query (Scenarios).filter_by(id=scenario_id).first()
 
@@ -181,10 +211,12 @@ def evaluateResponse(user_id, scenario_id, question_num, student_response):
 
         tempResponseItem = {
             "submitted_response": student_response,
-            "correct_response": correctResponse,
             "points_awarded": 0,
             "points_possible" : i['points_possible']
         }
+
+        if include_answer:
+            tempResponseItem["correct_response"] = correctResponse
 
         if "${" in correctResponse:
             correctResponse = str(bashResponse(scenario_id, user_id, correctResponse))

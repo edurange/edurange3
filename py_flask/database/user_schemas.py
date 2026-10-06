@@ -43,11 +43,15 @@ class LoginSchema(ma.SQLAlchemyAutoSchema):
         password_plain_input = data.get("password")
         user = db_ses.query(Users).filter_by(username=username_input).first()
 
-        if (
-            not user 
-            or not bcrypt.check_password_hash(user.password, password_plain_input)
-            ):
-                custom_abort("Invalid credentials.", 403)
+        # Missing user or passwordless account: same generic 401, no 500.
+        if not user or not user.password:
+            custom_abort("Invalid credentials.", 401)
+
+        if not bcrypt.check_password_hash(user.password, password_plain_input):
+            custom_abort("Invalid credentials.", 401)
+
+        if not user.active:
+            custom_abort("Account is not active.", 403)
 
     class Meta:
         model = Users

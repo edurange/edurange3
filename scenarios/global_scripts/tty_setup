@@ -67,7 +67,52 @@ else
 	echo "ForceCommand /usr/local/src/ttylog/start_ttylog.sh" >> /etc/ssh/sshd_config
 fi
 
-echo "cat /var/log/annotator/* > /usr/local/src/merged_logs.csv" > /usr/local/src/mergeLogs.sh
+cat > /usr/local/src/finalizeLogs.sh <<'FINALIZE'
+#!/bin/bash
+MILESTONE=/var/log/milestones/milestone_file
+CONTCSVDIR=/usr/local/src/logs/analyze_cont
+ANNDIR=/var/log/annotator
+LOGDIR=/usr/local/src/logs
+
+if [ ! -f "$MILESTONE" ] || [ ! -d "$CONTCSVDIR" ]; then
+    exit 0
+fi
+
+mkdir -p "$ANNDIR"
+
+for ttylog in "$LOGDIR"/*/ttylog.*; do
+    if [ ! -f "$ttylog" ]; then
+        continue
+    fi
+    if ! grep -q "END tty_sid" "$ttylog"; then
+        continue
+    fi
+
+    user=$(basename "$(dirname "$ttylog")")
+    n=$(basename "$ttylog" | cut -d. -f3)
+
+    csv="$CONTCSVDIR/analyze.$user.$n.csv"
+    ann="$ANNDIR/annotate.$user.$n"
+
+    if [ -s "$ann" ]; then
+        continue
+    fi
+
+    rm -f "$csv"
+    timeout 8 python3 /usr/local/src/ttylog/analyze.py "$ttylog" "$csv" >/dev/null 2>&1
+
+    tmp=$(mktemp)
+    timeout 8 perl /usr/local/src/ttylog/milestone-lbl.pl "$MILESTONE" "$csv" "$tmp" >/dev/null 2>&1
+    if [ -s "$tmp" ]; then
+        mv "$tmp" "$ann"
+    else
+        rm -f "$tmp"
+    fi
+done
+FINALIZE
+chmod +x /usr/local/src/finalizeLogs.sh
+
+echo "flock -n /var/run/finalizeLogs.lock /usr/local/src/finalizeLogs.sh; cat /var/log/annotator/* > /usr/local/src/merged_logs.csv" > /usr/local/src/mergeLogs.sh
 echo "zip -r /usr/local/src/raw_logs /usr/local/src/logs /var/log/annotator" > /usr/local/src/zipRawLogs.sh
 
 chmod +x /usr/local/src/mergeLogs.sh
