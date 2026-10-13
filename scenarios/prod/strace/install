@@ -6,7 +6,7 @@ strace which start 2>&1 | tail -n +2 > strace-identify || :
 gcc -o mystery mystery.c
 rm mystery.c
 
-chmod 771 /usr/bin/cat
+chmod 4771 /usr/bin/cat
 
 random_flag=$1
 sed -i "s/REPLACE_ME/$random_flag/g" /usr/bin/secret_fork
@@ -31,9 +31,8 @@ done</usr/local/src/user_names.txt
 if [ ! -d "/tmp" ]; then
   mkdir /tmp
 fi
-chmod 1777 /tmp
-mkdir -p /tmp/data
+chmod 711 /tmp
 touch /tmp/filenames
 chmod 774 /tmp/filenames
 
-chmod 751 /usr/bin/strace
+chmod 4751 /usr/bin/strace
