@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """User models."""
 from datetime import datetime, timezone
-import random
+import secrets
 import string
 
 from py_flask.database.db_classes import (
@@ -17,7 +17,7 @@ from py_flask.config.extensions import bcrypt
 
 
 def generate_registration_code(size=8, chars=string.ascii_lowercase + string.digits):
-    return "".join(random.choice(chars) for _ in range(size))
+    return "".join(secrets.choice(chars) for _ in range(size))
 
 
 class StudentGroups(Edu3Mixin, SurrogatePK, Model):

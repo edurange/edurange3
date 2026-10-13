@@ -1,3 +1,12 @@
+# eduRange3 edge site (base server block; copied by install.sh).
+#
+#   mode 1 - local name:  install.sh turns the plain HTTP listener below into a
+#                         TLS listener (adds the mkcert cert/key lines), then
+#                         appends nginx.port80Redirect.snippet.
+#   mode 2 - public domain: left as plain HTTP so certbot can complete its ACME
+#                         challenge; `certbot --nginx` then adds TLS + redirect.
+#
+# `DOMAIN_TO_BE_REPLACED` is substituted by install.sh.
 server {
     server_name DOMAIN_TO_BE_REPLACED;
     listen 80;

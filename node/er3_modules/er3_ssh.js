@@ -8,6 +8,18 @@ const jwt = require('jsonwebtoken');
 
 dotenv.config({ path: path.join(__dirname, '..', '..', '.env') });
 
+// Only accept WebSocket upgrades whose Origin matches the Host the browser
+// used (blocks cross-site WebSocket hijacking). Headerless clients are allowed.
+function originAllowed(req) {
+    const origin = req.headers.origin;
+    if (!origin) return true;
+    try {
+        return new URL(origin).host === req.headers.host;
+    } catch (e) {
+        return false;
+    }
+}
+
 const sshHttpServer = http.createServer((req, res) => {
     res.writeHead(200, { 'Content-Type': 'text/plain' });
     res.end('HTTP server for SSH WebSocket upgrade.\n');
@@ -17,6 +29,9 @@ const sshSocketServer = new WebSocketServer({
     server: sshHttpServer,
     verifyClient: (info, done) => {
         try {
+            if (!originAllowed(info.req)) {
+                return done(false, 403, 'Forbidden origin');
+            }
             const cookies = cookie.parse(info.req.headers.cookie || '');
             const er3_jwt = cookies.edurange3_jwt;
             const skey = process.env.JWT_SECRET_KEY;
@@ -81,6 +96,14 @@ sshSocketServer.on('connection', async (ssh_socket, request) => {
         }
 
         if (data.type === 'set_credentials') {
+            // Never trust a client-supplied port blindly: require a valid,
+            // non-privileged port so a student cannot reach the host's own sshd
+            // (port 22) or other privileged services.
+            const sshPort = Number(data.SSH_port);
+            if (!Number.isInteger(sshPort) || sshPort < 1024 || sshPort > 65535) {
+                ssh_socket.send(JSON.stringify({ type: 'error', message: 'A valid non-privileged SSH port is required' }));
+                return;
+            }
             if (sshClient) {
                 try { sshClient.end(); } catch (e) { /* ignore */ }
             }
@@ -138,7 +161,7 @@ sshSocketServer.on('connection', async (ssh_socket, request) => {
 
             sshClient.connect({
                 host: 'localhost',
-                port: data.SSH_port || 22,
+                port: sshPort,
                 username: saniname,
                 password: data.password,
                 readyTimeout: 10000,

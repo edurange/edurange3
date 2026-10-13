@@ -88,6 +88,30 @@ async function getUsers_byChannel(channelID) {
     }
 }
 
+async function isChannelMember(channelId, userId) {
+    try {
+        const r = await pool.query(
+            'SELECT 1 FROM channel_users WHERE channel_id = $1 AND user_id = $2 LIMIT 1',
+            [channelId, userId]);
+        return r.rows.length > 0;
+    } catch (error) {
+        console.error('Failed to check channel membership:', error);
+        return false;
+    }
+}
+
+// Only accept WebSocket upgrades whose Origin matches the Host the browser
+// used (blocks cross-site WebSocket hijacking). Headerless clients are allowed.
+function originAllowed(req) {
+    const origin = req.headers.origin;
+    if (!origin) return true;
+    try {
+        return new URL(origin).host === req.headers.host;
+    } catch (e) {
+        return false;
+    }
+}
+
 // INCOMING (from front)
 const ChatMessage_schema = Joi.object({
     message_type: Joi.string(),
@@ -217,6 +241,12 @@ async function handleChatMessage(message, socketConnection, user_id, timestamp, 
     }
 
     message.data = value;
+
+    if (!userDict[user_id]?.is_staff && !(await isChannelMember(value.channel_id, user_id))) {
+        socketConnection.send(JSON.stringify({ message_type: 'chatError', error: 'Not a member of this channel' }));
+        return;
+    }
+
     const chat_message_receipt = new Chat_Receipt(user_id, message, timestamp);
 
     try {
@@ -230,6 +260,11 @@ async function handleChatMessage(message, socketConnection, user_id, timestamp, 
     }
 }
 async function handleAnnouncement(message, socketConnection, user_id, timestamp, archive_id) {
+
+    if (!userDict[user_id]?.is_staff) {
+        socketConnection.send(JSON.stringify({ message_type: 'chatError', error: 'Announcements are staff-only' }));
+        return;
+    }
 
     const { error, value } = ChatMessage_schema.validate(message.data);
     if (error) {
@@ -266,6 +301,9 @@ const chatSocketServer = new WebSocketServer({
         // and the jwt is then checked against the secret_key signature
 
         try {
+            if (!originAllowed(info.req)) {
+                return done(false, 403, 'Forbidden origin');
+            }
             const cookies = cookie.parse(info.req.headers.cookie || '');
             const provided_jwt = cookies.edurange3_jwt;
             const jwt_secret_key = (process.env.JWT_SECRET_KEY);

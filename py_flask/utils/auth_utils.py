@@ -105,12 +105,26 @@ def jwt_and_csrf_required(fn):
             validated_jwt_token = decode_token(token)
             decoded_payload = json.loads(validated_jwt_token["sub"])
 
-            g.current_username = decoded_payload["username"]
-            g.current_user_id = decoded_payload["user_id"]
-            g.current_user_role = decoded_payload["user_role"]
-
         except Exception as err:
             custom_abort('Invalid Credentials', 403)
+
+        # Re-derive identity/role/active from the database so demotions and
+        # deactivations take effect immediately (the role inside the JWT is not
+        # trusted, and a deactivated/deleted user is rejected).
+        user = Users.query.filter_by(id=decoded_payload["user_id"]).first()
+        if not user or not user.active:
+            custom_abort('Invalid Credentials', 403)
+
+        if user.is_admin:
+            derived_role = 'admin'
+        elif user.is_staff:
+            derived_role = 'staff'
+        else:
+            derived_role = 'student'
+
+        g.current_username = user.username
+        g.current_user_id = user.id
+        g.current_user_role = derived_role
 
         response = fn(*args, **kwargs)
         return _rotate_auth_cookies(response)

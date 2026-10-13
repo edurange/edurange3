@@ -140,7 +140,12 @@ def build_execute_files(s_files, g_files, u_files, flags):
         if f == "install":
             execs += " " + str(" ".join(v for v in flags))
         if f == "change_root_pass":
-            root_pass = os.getenv("ROOT_PASS", "root")
+            root_pass = os.getenv("ROOT_PASS")
+            if not root_pass or root_pass.strip().lower() == "root":
+                raise ValueError(
+                    "ROOT_PASS must be set to a strong, non-default value; "
+                    "refusing to use the insecure 'root' default."
+                )
             execs += " " + str(root_pass)
         if i != len(s_files) - 1:
             execs += "\","

@@ -1,3 +1,6 @@
+# HTTP -> HTTPS redirect. Appended after the base site by install.sh (local-name
+# mode) so that port 80 redirects to the TLS server.
+# `DOMAIN_TO_BE_REPLACED` is substituted by install.sh.
 server {
     if ($host = DOMAIN_TO_BE_REPLACED) {
         return 301 https://$host$request_uri;

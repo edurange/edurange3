@@ -4,8 +4,7 @@ import os
 from py_flask.database.models import GroupUsers, StudentGroups, Users, Channels, ChannelUsers, ChatMessages
 
 
-from random import seed, getrandbits
-
+import random
 def gen_chat_names(student_ids, sid): 
     """
     Synopsis
@@ -68,9 +67,11 @@ def gen_chat_names(student_ids, sid):
     # Collect only the useful part of the DB query
     student_ids = map(lambda row: row[0], student_ids)
     
-    seed(sid)
+    # Deterministic per-scenario aliases WITHOUT reseeding the global RNG
+    # (reseeding the shared RNG made later-generated passwords/codes predictable).
+    rng = random.Random(sid)
     # Note the size of the word arrays are specified here
-    return {id: adjectives[getrandbits(32)%70] + nouns[getrandbits(32)%70] for id in student_ids}
+    return {id: adjectives[rng.getrandbits(32)%70] + nouns[rng.getrandbits(32)%70] for id in student_ids}
 
 def getChannelDictList_byUser(userID, username):
 

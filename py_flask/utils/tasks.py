@@ -1,7 +1,7 @@
 import json
 import logging
 import os
-import random
+import secrets
 import shutil
 import string
 import subprocess
@@ -124,7 +124,7 @@ def create_scenario_task(self, scen_name, scen_type, students_list, grp_id, scen
         for student in students_list:
             username = "".join(e for e in student["username"] if e.isalnum())
             password = "".join(
-                random.choice(string.ascii_letters + string.digits) for _ in range(6)
+                secrets.choice(string.ascii_letters + string.digits) for _ in range(6)
             )
 
             usernames.append(username)
@@ -158,7 +158,7 @@ def create_scenario_task(self, scen_name, scen_type, students_list, grp_id, scen
                     q_num = item["question_num"]
                     if item["answers"][0]["value"] == "$RANDOM":
                         rnd_ans = "".join(
-                            random.choice(string.ascii_letters + string.digits)
+                            secrets.choice(string.ascii_letters + string.digits)
                             for _ in range(8)
                         )
                         content["contentDefinitions"]["Question" + str(q_num)][
