@@ -22,6 +22,17 @@ def custom_abort(message="Unspecified Server Error", status_code=500):
     response = make_response(jsonify({'error': message}), status_code)
     raise CustomHTTPException(response)
 
+def error_response(message, status_code=500):
+    """Build (and return, never raise) a JSON error Response.
+
+    Error handlers must *return* a response. `custom_abort` raises an
+    exception, so calling it from inside a Flask error handler produces a
+    second, unhandled exception and Flask falls back to its default HTML 500
+    page. Handlers should use this helper instead.
+    """
+    return make_response(jsonify({'error': message}), status_code)
+
+
 def validation_error_handler(err):
     """Turn a marshmallow/ValidationError into a JSON 422 response.
 

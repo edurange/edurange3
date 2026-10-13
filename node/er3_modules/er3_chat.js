@@ -126,9 +126,18 @@ async function checkForChannel(channelId, ownerId, ownerName) {
     }
 }
 
-async function getChatLogs(){
-    const chatLogs = (await pool.query('SELECT * FROM chat_messages'))?.rows;
-    return chatLogs;
+async function getChatLogs(userId, isStaff){
+    // Staff may see the whole archive; students only see messages in channels
+    // they belong to. Previously every socket received the entire table.
+    if (isStaff) {
+        const chatLogs = (await pool.query('SELECT * FROM chat_messages'))?.rows;
+        return chatLogs;
+    }
+    const scoped = (await pool.query(
+        `SELECT cm.* FROM chat_messages cm
+         JOIN channel_users cu ON cu.channel_id = cm.channel_id
+         WHERE cu.user_id = $1`, [userId]))?.rows;
+    return scoped;
 }
 
 async function echoMessage_toChannelUsers(messageReceipt, channelId) {
@@ -256,17 +265,25 @@ const chatSocketServer = new WebSocketServer({
         // in this block, the jwt-containing-cookie is unpacked from header,
         // and the jwt is then checked against the secret_key signature
 
-        const cookies = cookie.parse(info.req.headers.cookie || '');
-        const provided_jwt = cookies.edurange3_jwt;
-        const jwt_secret_key = (process.env.JWT_SECRET_KEY);
-        const verified_jwt = jwt.verify(provided_jwt, jwt_secret_key, { algorithms: ['HS256'] });
-        const jwt_payload = JSON.parse(verified_jwt.sub);
+        try {
+            const cookies = cookie.parse(info.req.headers.cookie || '');
+            const provided_jwt = cookies.edurange3_jwt;
+            const jwt_secret_key = (process.env.JWT_SECRET_KEY);
+            const verified_jwt = jwt.verify(provided_jwt, jwt_secret_key, { algorithms: ['HS256'] });
+            const jwt_payload = JSON.parse(verified_jwt.sub);
 
-        info.req.get_id = () => jwt_payload;
-        // Expose the JWT `exp` so the keepalive handler can detect imminent
-        // expiry and ask the browser to refresh the cookie.
-        info.req.get_jwt_exp = () => verified_jwt.exp;
-        done(true);
+            info.req.get_id = () => jwt_payload;
+            // Expose the JWT `exp` so the keepalive handler can detect imminent
+            // expiry and ask the browser to refresh the cookie.
+            info.req.get_jwt_exp = () => verified_jwt.exp;
+            done(true);
+        } catch (err) {
+            // A missing/expired/forged cookie makes jwt.verify throw. Reject the
+            // upgrade cleanly instead of letting the error reach the process
+            // global handler (which previously left sockets half-open).
+            console.error('Chat WS auth rejected:', err.message);
+            done(false, 401, 'Unauthorized');
+        }
     }
 });
 
@@ -325,9 +342,10 @@ chatSocketServer.on('connection', async (socketConnection, request) => {
 
     await handleConnection(socketConnection, request);
     const { username, user_role, user_id } = request.get_id();
+    const is_staff = (user_role === 'admin' || user_role === 'staff');
     const jwt_exp = request.get_jwt_exp ? request.get_jwt_exp() : null;
     let lastRefreshRequestAt = 0;
-    const chatLogs = await getChatLogs();
+    const chatLogs = await getChatLogs(Number(user_id), is_staff);
 
     try {
         socketConnection.send(JSON.stringify(
@@ -344,7 +362,14 @@ chatSocketServer.on('connection', async (socketConnection, request) => {
     }
 
     socketConnection.on('message', async (message) => {
-        const this_message = JSON.parse(message);
+        let this_message;
+        try {
+            this_message = JSON.parse(message);
+        } catch (err) {
+            console.error('Ignoring malformed chat frame:', err.message);
+            socketConnection.send(JSON.stringify({ message_type: 'chatError', error: 'Malformed message' }));
+            return;
+        }
         const this_message_type = this_message.message_type;
         // Store local wall-clock ISO (no Z) so pg `timestamp without time zone`
         // reads it back as local time → Date object → ISO with Z = same local

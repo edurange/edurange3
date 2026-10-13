@@ -34,7 +34,7 @@ function AxiosConfig({ children }) {
     axios.defaults.headers.post['Content-Type'] = 'application/json';
 
     useEffect(() => {
-        async function getCSRFfromCookie() {
+        function getCSRFfromCookie() {
             const name = 'X-XSRF-TOKEN';
             const value = `; ${document.cookie}`;
             const parts = value.split(`; ${name}=`);
@@ -52,6 +52,14 @@ function AxiosConfig({ children }) {
             axios.defaults.headers.common['X-XSRF-TOKEN'] = csrfToken || "";
             axios.defaults.withCredentials = true; // very important
             axios.defaults.headers.post['Content-Type'] = 'application/json';
+            // The CSRF cookie is only set after login, and it is rotated on
+            // every authenticated response. Read it on each request instead of
+            // once at mount so the header is never stale.
+            axios.interceptors.request.use(config => {
+                const current = getCSRFfromCookie();
+                config.headers['X-XSRF-TOKEN'] = current || "";
+                return config;
+            });
             axios.interceptors.response.use(response => {
                 // triggers on 200-series status code
                 return response;
@@ -68,7 +76,10 @@ function AxiosConfig({ children }) {
         setConfig();
     }, []);
 
-    if (String(axios?.defaults?.baseURL) !== String("/api") || !csrfToken_state) {
+    // Render even before a CSRF cookie exists: it is only set after login and
+    // is now attached per-request by the interceptor. Gating on csrfToken_state
+    // here would leave the initial (login) page blank.
+    if (String(axios?.defaults?.baseURL) !== String("/api")) {
         return null
     }
     else {

@@ -18,6 +18,7 @@ from py_flask.utils.chat_utils import getChannelDictList_byUser, getChatHistory_
 from sqlalchemy.exc import SQLAlchemyError
 from py_flask.utils.error_utils import (
     custom_abort,
+    error_response,
     validation_error_handler,
 )
 
@@ -54,15 +55,23 @@ blueprint_student = Blueprint(
 @blueprint_student.errorhandler(SQLAlchemyError)
 def handle_sqlalchemy_error(error):
     current_app.logger.error(f"SQLAlchemy Error: {error}\n{traceback.format_exc()}")
-    if current_app.config['DEBUG']:
-        custom_abort(f"Database error occurred: {str(error)}", 500)
-    else: custom_abort(f"Database error occurred.", 500)
+    try:
+        db.session.rollback()
+    except Exception:
+        pass
+    message = f"Database error occurred: {error}" if current_app.config['DEBUG'] else "Database error occurred."
+    return error_response(message, 500)
 
 # catch-all handler
 @blueprint_student.errorhandler(Exception)
 def general_error_handler(error):
-    error_handler = custom_abort(error)
-    return error_handler.get_response()
+    current_app.logger.error(f"Unhandled error: {error}\n{traceback.format_exc()}")
+    try:
+        db.session.rollback()
+    except Exception:
+        pass
+    message = str(error) if current_app.config['DEBUG'] else "Internal server error"
+    return error_response(message, 500)
 
 @blueprint_student.errorhandler(ValidationError)
 def handle_validation_error(error):
@@ -82,25 +91,6 @@ def logout():
     return response
 
 
-@blueprint_student.route('/get_identity', methods=['GET']) # DEV_ONLY
-@jwt_and_csrf_required
-def get_identity():
-
-    current_username = g.current_username
-    current_user_id = g.current_user_id
-    current_user_role = g.current_user_role
-
-    return jsonify({
-        'message': 'Welcome',
-        'username': current_username,
-        'user_id' : current_user_id,
-        'user_role': current_user_role
-    })
-
-# Lightweight endpoint used by the SSH/chat WebSocket clients when the JWT
-# approaches expiry. Authenticated by the same decorator (which also rotates
-# the cookies via _rotate_auth_cookies), so a successful POST slides both the
-# JWT and the CSRF session forward by SESSION_LIFETIME.
 @blueprint_student.route('/refresh', methods=['POST'])
 @jwt_and_csrf_required
 def refresh_session():

@@ -160,7 +160,6 @@ gcc ../resetFakeUsers.c -o ../resetFakeUsers
 
 chown root.root ../resetFakeUsers
 chmod 755 ../resetFakeUsers
-chmod u+s ../resetFakeUsers
 cp -p -t /bin/ ../resetFakeUsers
 
 chmod 750 ../resetUsers
@@ -178,3 +177,8 @@ chmod 751 /bin/chmod
 chmod 750 /usr/sbin/usermod
 groupadd edurange
 chown root.edurange /bin/chmod /usr/bin/passwd
+
+# Security: the provisioning script lists every fake user's plaintext password,
+# and the answer tarball / helper source were left world-readable in the
+# student-visible home directory. Remove them once provisioning is done.
+rm -f /home/ubuntu/install /home/ubuntu/resetFakeUsers.c /home/ubuntu/treasure-hunt-users-fall12.tar

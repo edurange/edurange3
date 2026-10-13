@@ -14,6 +14,7 @@ from py_flask.utils.auth_utils import jwt_and_csrf_required, admin_only
 
 from py_flask.utils.error_utils import (
     custom_abort,
+    error_response,
     validation_error_handler,
 )
 from marshmallow import ValidationError
@@ -51,14 +52,22 @@ blueprint_admin = Blueprint(
 def handle_sqlalchemy_error(error):
 
     current_app.logger.error(f"SQLAlchemy Error: {error}\n{traceback.format_exc()}")
-    if current_app.config['DEBUG']:
-        custom_abort(f"Database error occurred: {str(error)}", 500)
-    else: custom_abort(f"Database error occurred.", 500)
+    try:
+        db.session.rollback()
+    except Exception:
+        pass
+    message = f"Database error occurred: {error}" if current_app.config['DEBUG'] else "Database error occurred."
+    return error_response(message, 500)
 
 @blueprint_admin.errorhandler(Exception)
 def general_error_handler(error):
-    error_handler = custom_abort(error)
-    return error_handler.get_response()
+    current_app.logger.error(f"Unhandled error: {error}\n{traceback.format_exc()}")
+    try:
+        db.session.rollback()
+    except Exception:
+        pass
+    message = str(error) if current_app.config['DEBUG'] else "Internal server error"
+    return error_response(message, 500)
 
 @blueprint_admin.errorhandler(ValidationError)
 def handle_validation_error(error):

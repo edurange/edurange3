@@ -53,12 +53,14 @@ def addGroupUsers(group_obj, userDict_list):
         user_id = user_dict['id']
         user = Users.query.get(user_id)
         if user:
-            existing_relations = db_ses.query(GroupUsers).filter_by(user_id=user_id).all()
-            for relation in existing_relations:
-                db_ses.delete(relation)
-
-            new_relation = GroupUsers(user=user, group=group_obj, group_id=group_obj.id)
-            db_ses.add(new_relation)
+            # Additive: add the membership only if absent. Do NOT delete the
+            # user's other memberships (previously this stripped them, e.g.
+            # removing a user from their original group when reassigned).
+            already = db_ses.query(GroupUsers).filter_by(
+                user_id=user_id, group_id=group_obj.id).first()
+            if not already:
+                new_relation = GroupUsers(user=user, group=group_obj, group_id=group_obj.id)
+                db_ses.add(new_relation)
 
             assigned_user_ids.append(user_id)
     db_ses.commit()

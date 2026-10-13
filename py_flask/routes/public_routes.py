@@ -21,7 +21,7 @@ from py_flask.database.models import (
 from py_flask.database.user_schemas import LoginSchema, RegistrationSchema
 from py_flask.utils.auth_utils import login_er3, register_user
 from py_flask.utils.chat_utils import getChannelDictList_byUser
-from py_flask.utils.error_utils import custom_abort, validation_error_handler
+from py_flask.utils.error_utils import custom_abort, error_response, validation_error_handler
 db_ses = db.session
 edurange3_csrf = secrets.token_hex(32)
 
@@ -34,13 +34,14 @@ blueprint_public = Blueprint(
 
 @blueprint_public.errorhandler(SQLAlchemyError)
 def handle_sqlalchemy_error(error):
-
     # log full error, including traceback
     current_app.logger.error(f"SQLAlchemy Error: {error}\n{traceback.format_exc()}")
-    # return detail in debug mode or generic error message in prod
-    if current_app.config['DEBUG']:
-        custom_abort(f"Database error occurred: {str(error)}", 500)
-    else: custom_abort(f"Database error occurred.", 500)
+    try:
+        db.session.rollback()
+    except Exception:
+        pass
+    message = f"Database error occurred: {error}" if current_app.config['DEBUG'] else "Database error occurred."
+    return error_response(message, 500)
 
 @blueprint_public.errorhandler(ValidationError)
 def handle_validation_error(error):
@@ -48,8 +49,13 @@ def handle_validation_error(error):
 
 @blueprint_public.errorhandler(Exception)
 def general_error_handler(error):
-    error_handler = custom_abort(error)
-    return error_handler.get_response()
+    current_app.logger.error(f"Unhandled error: {error}\n{traceback.format_exc()}")
+    try:
+        db.session.rollback()
+    except Exception:
+        pass
+    message = str(error) if current_app.config['DEBUG'] else "Internal server error"
+    return error_response(message, 500)
 
 @blueprint_public.route("/login", methods=["POST"])
 def login_edurange3():
@@ -109,18 +115,16 @@ def registration():
     
     else: custom_abort('User already exists.  Account NOT registered!', 409)
 
-@blueprint_public.route("/error_test", methods=["POST"])
-def error_test():
-    custom_abort('test error back at ya', 400)
-    return jsonify({'response': 'you shouldnt see this'})
-
 @blueprint_public.route("/feedback", methods=["POST"])
 def submit_feedback():
 
-    requestJSON = request.json
-    db_ses = db.session
-    scenario_type = requestJSON['scenario_type'] if requestJSON['scenario_type'] else 'NONE'
-    content = requestJSON['content']
+    requestJSON = request.json or {}
+    content = (requestJSON.get('content') or '').strip()
+    if not content:
+        return error_response("Feedback content is required.", 400)
+    if len(content) > 4000:
+        return error_response("Feedback content is too long (max 4000 characters).", 400)
+    scenario_type = requestJSON.get('scenario_type') or 'NONE'
 
     new_message = FeedbackMessage (
         scenario_type = scenario_type,

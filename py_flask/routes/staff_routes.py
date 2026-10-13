@@ -25,7 +25,7 @@ from py_flask.database.models import (
 )
 from py_flask.database.user_schemas import CreateGroupSchema, TestUserListSchema
 from py_flask.utils.api_response import ApiResponse
-from py_flask.utils.auth_utils import jwt_and_csrf_required, staff_only
+from py_flask.utils.auth_utils import jwt_and_csrf_required, staff_only, admin_only
 from py_flask.utils.chat_utils import gen_chat_names, getChatLibrary
 from py_flask.utils.common_utils import get_system_resources
 from py_flask.utils.dataBuilder import (
@@ -34,7 +34,7 @@ from py_flask.utils.dataBuilder import (
     get_taAssignment_data,
     get_user_data,
 )
-from py_flask.utils.error_utils import custom_abort, safe_jsonify, validation_error_handler
+from py_flask.utils.error_utils import custom_abort, error_response, safe_jsonify, validation_error_handler
 from py_flask.utils.guide_utils import getContent, getScenarioMeta
 from py_flask.utils.scenario_utils import identify_state
 from py_flask.utils.staffData_utils import get_staffData
@@ -70,17 +70,24 @@ blueprint_staff = Blueprint(
 
 @blueprint_staff.errorhandler(SQLAlchemyError)
 def handle_sqlalchemy_error(error):
-
     current_app.logger.error(f"SQLAlchemy Error: {error}\n{traceback.format_exc()}")
-    if current_app.config['DEBUG']:
-        custom_abort(f"Database error occurred: {str(error)}", 500)
-    else: custom_abort(f"Database error occurred.", 500)
+    try:
+        db.session.rollback()
+    except Exception:
+        pass
+    message = f"Database error occurred: {error}" if current_app.config['DEBUG'] else "Database error occurred."
+    return error_response(message, 500)
 
 # catch-all handler
 @blueprint_staff.errorhandler(Exception)
 def general_error_handler(error):
-    error_handler = custom_abort(error)
-    return error_handler.get_response()
+    current_app.logger.error(f"Unhandled error: {error}\n{traceback.format_exc()}")
+    try:
+        db.session.rollback()
+    except Exception:
+        pass
+    message = str(error) if current_app.config['DEBUG'] else "Internal server error"
+    return error_response(message, 500)
 
 @blueprint_staff.errorhandler(ValidationError)
 def handle_validation_error(error):
@@ -91,6 +98,7 @@ def handle_validation_error(error):
 @jwt_and_csrf_required
 def create_group():
     staff_only()
+    admin_only()
 
     requestJSON = request.json
 
@@ -336,6 +344,7 @@ def scenario_interface():
             return None
 
     def destroy_scenario(requestJSON):
+        admin_only()
         if ("scenario_id" not in requestJSON):
             return custom_abort("Required request property scenario_id was None", 400)
 
@@ -366,6 +375,7 @@ def scenario_interface():
 @jwt_and_csrf_required
 def delete_group():
     staff_only()
+    admin_only()
     
     db_ses = db.session
     group_name = request.json.get('group_name')
@@ -400,6 +410,7 @@ def delete_group():
 @jwt_and_csrf_required
 def delete_users():
     staff_only()
+    admin_only()
 
     requestJSON = request.json
     users_to_delete = requestJSON.get('users_to_delete')
@@ -422,6 +433,7 @@ def delete_users():
 @jwt_and_csrf_required
 def assign_group_users():
     staff_only()
+    admin_only()
 
     requestJSON = request.json
 
@@ -441,6 +453,7 @@ def assign_group_users():
 @jwt_and_csrf_required
 def clear_groups():
     staff_only()
+    admin_only()
 
     users_to_clear = request.json['users_to_clear']
     clearedUserIDs = clearGroups(users_to_clear)
@@ -462,6 +475,7 @@ def get_chat_library():
 @jwt_and_csrf_required
 def edit_ta_assignments():
     staff_only()
+    admin_only()
 
     requestJSON = request.json
 
@@ -472,23 +486,33 @@ def edit_ta_assignments():
     returnDict = edit_taAssignments(userID_list, ta_id, is_assigning)
     return jsonify(returnDict)
 
-#TODO: A lot
 @blueprint_staff.route("/add_user_to_container", methods=['POST'])
+@jwt_and_csrf_required
 def add_user_to_container():
+    staff_only()
     requestJSON = request.json
 
     username = g.current_username
     scenario_name = requestJSON['scenario_name']
 
-    docker_query = f"docker ps -q --filter={scenario_name}"
-    container_list = subprocess.run(docker_query.split(' '))
-    
-    containers = container_list.split("\n")
+    result = subprocess.run(
+        ['docker', 'ps', '-q', '--filter', f'name={scenario_name}'],
+        capture_output=True, text=True,
+    )
+    containers = result.stdout.splitlines()
+
+    return jsonify({
+        'result': 'success',
+        'username': username,
+        'scenario_name': scenario_name,
+        'containers': containers,
+    })
 
 
 @blueprint_staff.route("/query_slm", methods=['POST'])
 @jwt_and_csrf_required
 def query_small_language_model():
+    staff_only()
     requestJSON = request.json
 
     this_task = requestJSON['task']
@@ -535,6 +559,7 @@ def query_small_language_model():
 @blueprint_staff.route("/get_student_logs", methods=['POST'])
 @jwt_and_csrf_required
 def get_recent_student_logs_route():
+    staff_only()
     requestJSON = request.json
     
     this_student_id = requestJSON["student_id"]
@@ -552,7 +577,7 @@ def get_recent_student_logs_route():
 @blueprint_staff.route("/update_model", methods=['POST'])
 @jwt_and_csrf_required
 def update_model_route():
-    
+    staff_only()
     requestJSON = request.json
 
     try: 
@@ -583,6 +608,7 @@ def update_model_route():
 @blueprint_staff.route("/cancel_hint", methods=['POST'])
 @jwt_and_csrf_required
 def cancel_generate_hint_route(): 
+    staff_only()
     cancel_hint_response = cancel_generate_hint_task.delay().get(timeout=None)
 
     return jsonify({'cancel_hint_req_status': cancel_hint_response})
@@ -591,6 +617,7 @@ def cancel_generate_hint_route():
 @jwt_and_csrf_required
 
 def get_resources():
+    staff_only()
 
     # sys_db_redis_client = redis.Redis(host='localhost', port=6379, db=1)
 
